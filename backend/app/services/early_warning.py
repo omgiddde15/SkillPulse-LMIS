@@ -43,7 +43,7 @@ DEFAULT_POOR_WAPE_THRESHOLD: float = 0.50     # WAPE > 50% denotes low forecast 
 
 ALERT_LIMITATIONS: str = (
     "SkillPulse early-warning alerts are decision-support heuristics designed to assist state skill missions "
-    "and district planners. They are generated from synthetic pilot data and prototype thresholds (+15 / -15). "
+    "and district planners. They operate on prototype heuristic thresholds (±15), not empirically calibrated policy rules. "
     "They do NOT represent automated policy decisions or budget mandates. All classifications require "
     "qualitative human review, ground-truth district surveys, and employer consultations."
 )

@@ -515,8 +515,8 @@ class ProjectedMismatch(BaseModel):
         default=(
             "Projected relative mismatch is an experimental cross-sectional percentile difference "
             "comparing projected recruitment demand rank against projected certification throughput rank. "
-            "It is NOT an absolute job opening deficit or worker shortage headcount, and the +/-15 thresholds "
-            "are uncalibrated prototype assumptions requiring human expert validation."
+            "It is NOT an absolute job opening deficit or worker shortage headcount, and alert thresholds "
+            "are prototype heuristic thresholds (±15), not empirically calibrated policy rules."
         ),
         description="Disclosures regarding prototype nature of mismatch score.",
     )
@@ -695,7 +695,7 @@ class SeatSimulationRequest(BaseModel):
 
     period: Optional[str] = Field(
         default=None,
-        description="Base reporting period for baseline calibration (format: YYYY-MM, e.g. '2026-09'). Defaults to latest available period.",
+        description="Base reporting period for baseline cutoff (format: YYYY-MM, e.g. '2026-09'). Defaults to latest available period.",
     )
     horizon_months: int = Field(
         ...,

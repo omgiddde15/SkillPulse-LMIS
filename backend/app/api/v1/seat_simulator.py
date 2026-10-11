@@ -39,7 +39,7 @@ def simulate_seat_allocation(payload: SeatSimulationRequest) -> Dict[str, Any]:
     1. Historical baseline sanctioned seats across the trailing three cohort periods.
     2. Empirical training pipeline funnel yields (utilization, completion, certification).
     3. Proportional scaling of forecast certified candidate throughput at horizon h.
-    4. Recalibration of cross-sectional regional supply percentile ranks.
+    4. Recalculation of cross-sectional regional supply percentile ranks.
     5. Net delta on projected relative mismatch score and classification.
     """
     service = get_simulator_service()

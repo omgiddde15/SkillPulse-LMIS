@@ -4,7 +4,7 @@ Smart India Hackathon 2026 - Problem Statement SIH26246
 AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine
 
 This service implements Module 6 (Training-Seat Allocation Simulator):
-- Calibrates baseline training intake capacity over trailing concluding cohorts (T, T-1, T-2).
+- Calculates baseline training intake capacity over trailing concluding cohorts (T, T-1, T-2).
 - Calculates empirical pipeline funnel rates (seat utilization, completion, certification).
 - Evaluates proposed future sanctioned batch/cohort seat allocations for a district-occupation.
 - Scales forecast certified-candidate throughput under a transparent constant-yield assumption.
@@ -51,8 +51,8 @@ SIMULATION_ASSUMPTIONS: str = (
 
 SIMULATION_LIMITATIONS: str = (
     "SkillPulse seat simulations provide strategic scenario planning aids and decision-support tools for state "
-    "skill development missions, ITI directorates, and sector skill councils. Projections reflect synthetic pilot series and "
-    "prototype threshold assumptions (±15 percentile points). Simulated outcomes do NOT constitute binding "
+    "skill development missions, ITI directorates, and sector skill councils. Projections reflect synthetic demonstration data "
+    "and prototype heuristic thresholds (±15), not empirically calibrated policy rules. Simulated outcomes do NOT constitute binding "
     "budget allocations, physical staffing quotas, or guaranteed employment additions. All policy adjustments "
     "require ground-level capacity feasibility checks, instructor readiness reviews, and employer validation."
 )

@@ -769,7 +769,7 @@ export default function SeatSimulator({ period = '2026-09', onPeriodChange }) {
                     </td>
                   </tr>
                   <tr>
-                    <td className="col-label">{t('simulator.thTotalSeatsCalibrated')}</td>
+                    <td className="col-label">{t('simulator.thTotalSeatsBaseline', 'Total Seats in Baseline Window')}</td>
                     <td className="col-val">
                       {currentScenario.baseline_seat_allocation?.total_seats_in_window} {t('simulator.seatsUnits', { count: '' }).trim()}
                     </td>

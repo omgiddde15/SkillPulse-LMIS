@@ -233,20 +233,20 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
 
     const disclaimers = isHindi
       ? [
+          'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी मेट्रिक्स प्रायोगिक प्रेक्षणों पर परिकलित हैं।',
           'वर्तमान अवधि असंतुलन सूत्र: समग्र मांग स्कोर (0-100) − आपूर्ति आउटपुट पर्सेंटाइल रैंक (0-100)। सीमा: -100 से +100 अंक।',
           'समग्र मांग स्कोर विज्ञापन मात्रा (30%), मांग वृद्धि (25%), रिक्ति स्थायित्व (15%), नियोक्ता विविधता (15%) और वेतन आकर्षण (15%) को संश्लेषित करता है।',
           'असंतुलन स्कोर क्षेत्रीय श्रृंखलाओं में सापेक्ष रैंकिंग असंतुलन को दर्शाते हैं, श्रमिकों की निरपेक्ष कमी या अधिशेष को नहीं।',
-          '+/-15.0 स्कोर सीमाएं निर्णय समर्थन के लिए विन्यास योग्य प्रोटोटाइप ह्युरिस्टिक्स हैं, न कि अनुभवजन्य या वैधानिक अधिदेश।',
+          'प्रोटोटाइप नीति सीमाएं: स्कोर सीमाएं प्रोटोटाइप ह्युरिस्टिक सीमाएं (±15) हैं, न कि अनुभवजन्य रूप से कैलिब्रेट किए गए नीति नियम।',
           'TVET रिपोर्टिंग मानकों के तहत, उम्मीदवार रोजगार ट्रैकिंग हेतु 90-दिवसीय अनुवर्ती विंडो आवश्यक है। अपरिपक्व बैच लंबित चिह्नित हैं।',
-          'सभी अंतर विश्लेषण मेट्रिक्स SIH26246 बेंचमार्क मूल्यांकन के लिए उत्पन्न सिंथेटिक पायलट डेटासेट पर कैलिब्रेट किए गए हैं।',
         ]
       : [
+          'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All gap analysis metrics are computed on synthetic pilot observations.',
           'Current-Period Mismatch Formula: Demand Composite Score (0-100) - Supply Output Percentile Rank (0-100). Range: -100 to +100 points.',
           'Demand Composite Score synthesizes posting volume (30%), demand growth (25%), vacancy persistence (15%), employer diversity (15%), and wage attractiveness (15%).',
           'Mismatch scores denote relative ranking imbalances across regional pilot series, NOT an absolute shortage or surplus of worker headcounts.',
-          'The +/-15.0 score thresholds are prototype heuristics for decision support, not empirical or statutory mandates.',
+          'Prototype Decision Thresholds: Alerts and classifications operate on prototype heuristic thresholds (±15), not empirically calibrated policy rules.',
           'Under TVET reporting standards, candidate employment tracking requires a 90-day post-certification follow-up window. Immature cohorts are marked pending.',
-          'All gap analysis metrics are calibrated on synthetic pilot datasets generated for SIH26246 benchmark evaluation.',
         ];
 
     exportTableToCsv({
@@ -258,6 +258,7 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
         : 'SkillPulse LMIS — Relative Demand-Supply Gap Analysis Export',
       metadata: isHindi
         ? {
+            'डेटा स्रोत (Data Provenance)': 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)',
             'रिपोर्टिंग अवधि (Reporting Period)': period,
             'निर्यात समय (Export Timestamp)': new Date().toISOString(),
             'कुल फ़िल्टर रिकॉर्ड (Total Records)': String(sortedResults.length),
@@ -269,6 +270,7 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
             'क्रमबद्ध दिशा (Sort Direction)': sortDirection,
           }
         : {
+            'Data Provenance': 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
             'Reporting Period': period,
             'Export Timestamp': new Date().toISOString(),
             'Total Filtered Records': String(sortedResults.length),

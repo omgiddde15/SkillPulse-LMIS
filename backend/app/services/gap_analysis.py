@@ -319,8 +319,8 @@ class GapAnalysisService:
                 "supply_pressure": f"<= {self.supply_pressure_threshold:.1f}",
                 "balanced_monitoring": f"Between {self.supply_pressure_threshold:.1f} and +{self.demand_pressure_threshold:.1f}",
                 "assumptions_note": (
-                    "Alert thresholds (+15 / -15) are configurable prototype heuristic design assumptions, "
-                    "not empirically validated econometric or statutory policy triggers."
+                    "Alert thresholds are prototype heuristic thresholds (±15), "
+                    "not empirically calibrated policy rules."
                 ),
             },
             "limitations": GAP_ANALYSIS_LIMITATIONS,

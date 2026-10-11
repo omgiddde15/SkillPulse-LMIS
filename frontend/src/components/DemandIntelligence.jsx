@@ -672,7 +672,7 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
               <strong>{t('demand.methodologyDemoTitle', 'Synthetic Demo Status:')}</strong>{' '}
               {t(
                 'demand.methodologyDemoText',
-                'Historical monthly job postings spanning October 2024 to September 2026 are calibrated synthetic estimates for Smart India Hackathon decision-support prototyping.'
+                'Historical monthly job postings spanning October 2024 to September 2026 are synthetic demonstration data (not official statistics) for Smart India Hackathon decision-support prototyping.'
               )}
             </p>
           </section>

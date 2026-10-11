@@ -370,7 +370,7 @@ export default function Overview({
           <strong>{t('overview.methodologySyntheticTitle', 'Synthetic Pilot Observations:')}</strong>{' '}
           {t(
             'overview.methodologySyntheticText',
-            'All metrics displayed originate from synthetic pilot datasets spanning October 2024 through September 2026, calibrated to regional economic profiles across Karnataka, Maharashtra, and Telangana.'
+            'All metrics displayed originate from synthetic demonstration data (not official statistics) spanning October 2024 through September 2026 across regional economic profiles in Karnataka, Maharashtra, and Telangana.'
           )}
         </p>
         <p style={{ marginTop: '0.35rem' }}>

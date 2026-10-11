@@ -281,22 +281,22 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
 
     const disclaimers = isHindi
       ? [
+          'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी पूर्वानुमान मेट्रिक्स प्रायोगिक प्रेक्षणों पर परिकलित हैं।',
           'प्रत्याशित असंतुलन सूत्र: पूर्वानुमान मांग विज्ञापन रैंक (0-100) − पूर्वानुमान आपूर्ति थ्रूपुट रैंक (0-100)। सीमा: -100 से +100 अंक।',
           'मेट्रिक भेद: प्रत्याशित असंतुलन एकल-मात्रा विज्ञापन रैंक बनाम थ्रूपुट रैंक का मूल्यांकन करता है, जो वर्तमान अंतर विश्लेषण बहु-संकेत मांग सूचकांक से भिन्न है।',
           'प्रशिक्षण-से-विज्ञापन मानक अनुपात: (पूर्वानुमान आपूर्ति थ्रूपुट / पूर्वानुमान मांग विज्ञापन) × 100। प्रति 100 ऑनलाइन विज्ञापनों पर प्रमाणित उम्मीदवारों के रूप में व्यक्त।',
           'वर्णनात्मक मानक सूचना: यह अनुपात एक प्रशासनिक मानक है जो विज्ञापनों के विरुद्ध थ्रूपुट की तुलना करता है। यह रिक्ति-पूर्ति दर या कौशल कमी का प्रमाण नहीं है।',
           'प्रेडिक्शन इंटरवल्स: 80% प्रेडिक्शन इंटरवल बिंदु पूर्वानुमान ± 1.282 × आउट-ऑफ़-सैंपल RMSE के रूप में परिकलित हैं।',
-          'प्रोटोटाइप निर्णय सीमाएं: +/-15.0 स्कोर सीमाएं निर्णय समर्थन के लिए प्रोटोटाइप ह्युरिस्टिक्स हैं, न कि वैधानिक अधिदेश।',
-          'सभी पूर्वानुमान मेट्रिक्स SIH26246 बेंचमार्क मूल्यांकन के लिए सिंथेटिक पायलट प्रेक्षणों पर कैलिब्रेट किए गए हैं।',
+          'प्रोटोटाइप निर्णय सीमाएं: अलर्ट और वर्गीकरण प्रोटोटाइप ह्युरिस्टिक सीमाओं (±15) पर संचालित होते हैं, न कि अनुभवजन्य रूप से कैलिब्रेट किए गए नीति नियमों पर।',
         ]
       : [
+          'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All forecast metrics are computed on synthetic pilot observations.',
           'Projected Mismatch Formula: Forecast Demand Postings Rank (0-100) - Forecast Supply Throughput Rank (0-100). Range: -100 to +100 points.',
           'Metric Distinction: Projected mismatch evaluates single-quantity posting ranks vs throughput ranks, differing from current-period Gap Analysis multi-signal demand composite.',
           'Training-to-Posting Benchmark Ratio: (Forecast Supply Throughput / Forecast Demand Postings) * 100. Expressed as certified candidates per 100 online postings.',
           'Descriptive Benchmark Notice: This ratio is an administrative benchmark comparing projected certification throughput against online postings. It is NOT an empirical vacancy-coverage rate, market clearance measure, or proof of a skill shortage.',
           'Prediction Intervals: 80% prediction intervals calculated as point forecast +/- 1.282 * out-of-sample RMSE based on 16 rolling-origin backtest residuals.',
-          'Prototype Decision Thresholds: The +/-15.0 score thresholds are prototype model heuristics for decision support, not statutory mandates.',
-          'All forecast metrics are calibrated on synthetic pilot observations for SIH26246 benchmark evaluation.',
+          'Prototype Decision Thresholds: Alerts and classifications operate on prototype heuristic thresholds (±15), not empirically calibrated policy rules.',
         ];
 
     exportTableToCsv({
@@ -308,6 +308,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
         : 'SkillPulse LMIS — Time-Series Workforce Demand & Supply Forecasts Export',
       metadata: isHindi
         ? {
+            'डेटा स्रोत (Data Provenance)': 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)',
             'आधार रिपोर्टिंग अवधि (Base Period)': period,
             'पूर्वानुमान क्षितिज (Forecast Horizon)': `${selectedHorizon} माह आगे (+${selectedHorizon}M)`,
             'निर्यात समय (Export Timestamp)': new Date().toISOString(),
@@ -319,6 +320,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
             'क्रमबद्ध दिशा (Sort Direction)': sortDirection,
           }
         : {
+            'Data Provenance': 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
             'Base Reporting Period': period,
             'Forecast Horizon': `${selectedHorizon} Months Ahead`,
             'Export Timestamp': new Date().toISOString(),
@@ -980,13 +982,13 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
             </p>
             <p style={{ marginTop: '0.35rem' }}>
               <strong>{isHindi ? 'प्रोटोटाइप नीति सीमाएं (±15 अंक):' : 'Prototype Policy Thresholds (±15 Points):'}</strong> {isHindi
-                ? 'मांग दबाव और आपूर्ति दबाव को सीमांकित करने वाली ±15.0 स्कोर सीमाएं निर्णय समर्थन के लिए प्रोटोटाइप ह्युरिस्टिक्स हैं, न कि अनुभवजन्य या कानूनी रूप से बाध्यकारी अधिदेश।'
-                : 'The ±15.0 score thresholds demarcating Demand Pressure and Supply Pressure are prototype heuristics for decision support, not empirical or legally binding mandates.'}
+                ? 'मांग दबाव और आपूर्ति दबाव को सीमांकित करने वाली सीमाएं प्रोटोटाइप ह्युरिस्टिक सीमाएं (±15) हैं, न कि अनुभवजन्य रूप से कैलिब्रेट किए गए नीति नियम।'
+                : 'The threshold boundaries demarcating Demand Pressure and Supply Pressure are prototype heuristic thresholds (±15), not empirically calibrated policy rules.'}
             </p>
             <p style={{ marginTop: '0.35rem' }}>
               <strong>{isHindi ? 'सिंथेटिक पायलट आधार रेखा:' : 'Synthetic Pilot Baseline:'}</strong> {isHindi
-                ? 'सभी पूर्वानुमान और प्रत्याशित असंतुलन स्कोर SIH26246 बेंचमार्क मूल्यांकन के लिए उत्पन्न सिंथेटिक पायलट श्रृंखला पर कैलिब्रेट किए गए हैं। अनुमान सापेक्ष रैंक अंतर दर्शाते हैं, प्रत्यक्ष कर्मी कमी या अधिशेष नहीं।'
-                : 'All forecasts and projected mismatch scores are calibrated on synthetic pilot series generated for SIH26246 benchmark evaluation. Projections denote relative rank differences, not an absolute worker shortage or surplus headcount.'}
+                ? 'सभी पूर्वानुमान और प्रत्याशित असंतुलन स्कोर SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं) पर आधारित हैं। अनुमान सापेक्ष रैंक अंतर दर्शाते हैं, प्रत्यक्ष कर्मी कमी या अधिशेष नहीं।'
+                : 'All forecasts and projected mismatch scores are computed on synthetic demonstration datasets for SIH26246 (not official statistics). Projections denote relative rank differences, not an absolute worker shortage or surplus headcount.'}
             </p>
           </section>
         </>

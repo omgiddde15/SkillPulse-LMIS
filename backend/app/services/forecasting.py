@@ -51,7 +51,7 @@ FORECAST_LIMITATIONS: str = (
     "(not a direct empirical quantile interval); uncertainty evidence is explicitly flagged as limited "
     "where out-of-sample residual samples are small (such as the 12-month horizon with 7 backtest folds). "
     "Backtesting metrics (MAE, WAPE) evaluate performance strictly on the synthetic training horizon. "
-    "Projected relative mismatch thresholds (+15 / -15) are uncalibrated prototype assumptions."
+    "Projected relative mismatch thresholds are prototype heuristic thresholds (±15), not empirically calibrated policy rules."
 )
 
 FORECAST_METHODOLOGY: str = (
@@ -514,7 +514,7 @@ class ForecastingService:
             target_horizons = list(SUPPORTED_HORIZONS)
 
         # 3. Compute forecasts across all master entities to ensure
-        # cross-sectional percentile ranks are calibrated across the entire pilot sample
+        # cross-sectional percentile ranks are calculated across the entire pilot sample
         all_geos = list(self._geographies.values())
         all_occs = list(self._occupations.values())
 
