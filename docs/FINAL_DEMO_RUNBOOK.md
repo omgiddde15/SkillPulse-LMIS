@@ -77,7 +77,7 @@ This sequence guides the jury through the end-to-end policy workflow of SkillPul
    - Refresh the browser to demonstrate persistent language state via `localStorage`.
    - Switch back to English (or proceed in Hindi as requested by judges).
 4. **Transparency & Methodology Disclosure:**
-   - Highlight the explicit disclaimers: all baseline observations are calibrated synthetic data for SIH26246 benchmark evaluation; relative mismatch scores reflect percentile differences ($-100$ to $+100$), not absolute job deficits.
+   - Highlight the explicit disclaimers: all baseline observations are synthetic demonstration data (not official statistics); relative mismatch scores reflect percentile differences ($-100$ to $+100$), not absolute job deficits.
 
 ---
 
@@ -135,7 +135,7 @@ This sequence guides the jury through the end-to-end policy workflow of SkillPul
    - Explain that model selection is **100% deterministic**, choosing the winning model based on minimum out-of-sample rolling-origin backtest Mean Absolute Error (MAE) and WAPE (with tie-breaker: Naive > MA3 > Linear Trend).
    - Point out the **80% Prediction Interval bands** (`lower_80` and `upper_80`) derived from out-of-sample backtest RMSE ($\pm 1.282 \times \text{RMSE}$).
 4. **Key Talking Point:**
-   > *"District-level administrative time series have quarterly cycles and short history. Rather than overfitting opaque deep-learning models, SkillPulse uses deterministic rolling-origin backtesting across transparent baseline models with auditable prediction intervals."*
+   > *"District-level administrative time series have short history (24 monthly observations per series). Rather than overfitting opaque deep-learning models, SkillPulse uses deterministic rolling-origin backtesting across transparent baseline models with auditable prediction intervals."*
 
 ---
 
@@ -147,7 +147,7 @@ This sequence guides the jury through the end-to-end policy workflow of SkillPul
    - Inspect the alert generated for `KA_DHA` / `CNC Machine Operator`:
      - **Trigger Condition:** High demand momentum coupled with a persistent relative mismatch $> +50$ points.
      - **Suggested Policy Action:** Authorize emergency batch expansions under PMKVY 4.0; incentivize dual-training partnerships with regional automotive/machining industry clusters.
-   - Point out transparent limitation notices: alerts are decision-support signals operating on calibrated benchmark thresholds.
+   - Point out transparent limitation notices: alerts are decision-support signals operating on prototype heuristic thresholds (±15), not empirically calibrated policy rules.
 
 ---
 
@@ -218,7 +218,7 @@ Refer to this verified mapping table for the nine demo benchmark occupations:
 > A score of $+50$ indicates that employer demand is in the 75th percentile while training output is in the 25th percentile. We deliberately present relative percentiles rather than absolute headcount counts to avoid misleading planners with unobserved informal sector hiring."*
 
 ### Q2: "Why do you use time-series models instead of complex neural networks (e.g. LSTM)?"
-> *"District-level administrative skill pipelines have quarterly reporting cycles with limited sample history. Complex neural nets severely overfit short series and cannot provide interpretable error bands. We evaluate transparent baseline models—**Naive**, **3-Month Moving Average (MA3)**, and **Linear Trend**—using deterministic rolling-origin backtesting with explicit 80% prediction intervals, enabling planners to audit exactly why a model was selected."*
+> *"District-level administrative skill pipelines have short history (24 monthly observations per series). Complex neural nets severely overfit short series and cannot provide interpretable error bands. We evaluate transparent baseline models—**Naive**, **3-Month Moving Average (MA3)**, and **Linear Trend**—using deterministic rolling-origin backtesting with explicit 80% prediction intervals, enabling planners to audit exactly why a model was selected."*
 
 ### Q3: "How does the Seat Allocation Simulator model policy interventions?"
 > *"The simulator recalculates projected supply output using a proportional yield formulation:  
@@ -226,7 +226,7 @@ Refer to this verified mapping table for the nine demo benchmark occupations:
 > where $k$ represents the posting-to-opening realization multiplier and $\alpha$ represents the local candidate availability factor. It evaluates policy elasticity without claiming to replace statutory administrative processes."*
 
 ### Q4: "Is this real or synthetic data?"
-> *"All baseline observations for this SIH pilot demonstration are calibrated synthetic data modeled after real-world structural ratios from NCS, MoLE, and NCVET open datasets. We explicitly label this across every dashboard screen and CSV export because data provenance integrity is a foundational requirement for public sector systems."*
+> *"All observations in this pilot are synthetic demonstration data. They are not official statistics or real vacancies. This is labelled in the interface and in every CSV export."*
 
 ---
 
