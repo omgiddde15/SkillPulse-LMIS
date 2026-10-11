@@ -6,6 +6,7 @@ import {
   getSectorDisplayName,
   formatExplanatoryFactor,
 } from '../i18n/translations';
+import DistrictComparisonCharts from './DistrictComparisonCharts';
 
 export default function Overview({
   demandData,
@@ -16,6 +17,7 @@ export default function Overview({
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'demand_pressure' | 'supply_pressure'
+  const [selectedDistrictId, setSelectedDistrictId] = useState(null);
 
   const demandResults = demandData?.results || [];
   const gapResults = gapData?.results || [];
@@ -49,20 +51,26 @@ export default function Overview({
 
   // Filtered table rows
   const getFilteredGapRows = () => {
+    let list = gapResults;
+    if (selectedDistrictId) {
+      list = list.filter((r) => r.district_id === selectedDistrictId);
+    }
     if (filterMode === 'demand_pressure') {
-      return [...qualifyingDemandRecords].sort(
-        (a, b) => b.relative_mismatch_score - a.relative_mismatch_score
-      );
+      return [...list]
+        .filter((r) => r.classification === 'Demand Pressure' || r.relative_mismatch_score >= 15.0)
+        .sort((a, b) => b.relative_mismatch_score - a.relative_mismatch_score);
     }
     if (filterMode === 'supply_pressure') {
-      return [...qualifyingSupplyRecords].sort(
-        (a, b) => a.relative_mismatch_score - b.relative_mismatch_score
-      );
+      return [...list]
+        .filter((r) => r.classification === 'Supply Pressure' || r.relative_mismatch_score <= -15.0)
+        .sort((a, b) => a.relative_mismatch_score - b.relative_mismatch_score);
     }
-    return gapResults.slice(0, 10); // Show top 10 by default
+    return selectedDistrictId ? list : list.slice(0, 10); // Show all occupations for selected district, or top 10 overall
   };
 
   const displayedRows = getFilteredGapRows();
+  const selectedDistrictObj = gapResults.find((r) => r.district_id === selectedDistrictId);
+  const selectedDistrictName = selectedDistrictObj?.district_name || selectedDistrictId;
 
   const getClassificationBadgeClass = (classification) => {
     if (classification === 'Demand Pressure') return 'demand-pressure';
@@ -224,11 +232,36 @@ export default function Overview({
         </div>
       </section>
 
+      {/* District-Wise Workforce Comparison Pack (Charts A, B & Spatial Matrix) */}
+      <DistrictComparisonCharts
+        gapData={gapData}
+        selectedDistrictId={selectedDistrictId}
+        onSelectDistrict={setSelectedDistrictId}
+        period={period}
+      />
+
       {/* Main Ranking Table Card Panel */}
       <section className="card-panel">
         <div className="card-panel-header">
           <div className="card-title-group">
-            <h2>{t('overview.tableTitle', 'Relative Demand-Supply Mismatch Rankings')}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <h2>{t('overview.tableTitle', 'Relative Demand-Supply Mismatch Rankings')}</h2>
+              {selectedDistrictId && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.15rem 0.5rem', backgroundColor: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: '4px', fontSize: '0.72rem', color: 'var(--teal-800)', fontWeight: 600 }}>
+                  <span>📍 {isHindi ? 'सक्रिय ज़िला:' : 'Filtered to:'}</span>
+                  <strong>{getDistrictDisplayName(selectedDistrictName, isHindi)}</strong>
+                  <span>({displayedRows.length} {isHindi ? 'व्यवसाय' : 'occupations'})</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDistrictId(null)}
+                    style={{ border: 'none', background: 'none', color: '#c2410c', cursor: 'pointer', fontWeight: 700, padding: 0, marginLeft: '0.2rem' }}
+                    title={isHindi ? 'फ़िल्टर हटाएं' : 'Reset filter'}
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+            </div>
             <p>
               {t('overview.tableSubtitle', 'Cross-sectional ranking comparing composite demand index against recent 3-month certification output')}
             </p>

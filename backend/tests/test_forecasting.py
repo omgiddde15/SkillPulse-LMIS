@@ -615,3 +615,37 @@ def test_forecast_benchmark_ratio(client: TestClient) -> None:
     assert item["benchmark_ratio"] == 50.5
     assert item["data_coverage_pct"] == 100.0  # Not confused with data coverage pct
 
+
+# ============================================================================
+# 15. Historical Series Exposure for Forecast Visualizations
+# ============================================================================
+def test_forecast_historical_series_exposure(client: TestClient) -> None:
+    """Verify that forecast responses additively expose authentic historical observations for time-series visualization."""
+    resp = client.get("/api/v1/forecasts?period=2026-09&horizon=3&district_id=MH_PUN&occupation_id=OCC_IT_001")
+    assert resp.status_code == 200
+    results = resp.json()["results"]
+    assert len(results) >= 1
+    item = results[0]
+
+    # Demand historical series verification
+    dem_hist = item["demand_forecast"]["historical_series"]
+    assert isinstance(dem_hist, list)
+    assert len(dem_hist) == 24  # Full 24-month observation sequence
+    assert dem_hist[0]["period"] == "2024-10"
+    assert dem_hist[-1]["period"] == "2026-09"
+    assert dem_hist[-1]["value"] == item["demand_forecast"]["last_observed_value"]
+    for pt in dem_hist:
+        assert isinstance(pt["period"], str)
+        assert pt["value"] >= 0.0
+
+    # Supply historical series verification
+    sup_hist = item["supply_forecast"]["historical_series"]
+    assert isinstance(sup_hist, list)
+    assert len(sup_hist) == 24
+    assert sup_hist[0]["period"] == "2024-10"
+    assert sup_hist[-1]["period"] == "2026-09"
+    assert sup_hist[-1]["value"] == item["supply_forecast"]["last_observed_value"]
+    for pt in sup_hist:
+        assert isinstance(pt["period"], str)
+        assert pt["value"] >= 0.0
+

@@ -31,6 +31,7 @@ from app.schemas.data_models import (
     ForecastResponse,
     ForecastResultItem,
     Geography,
+    HistoricalObservationPoint,
     Occupation,
     ProjectedMismatch,
 )
@@ -351,6 +352,7 @@ class ForecastingService:
         series: List[float],
         horizon: int,
         quantity_type: str,
+        periods: Optional[List[str]] = None,
     ) -> ForecastPoint:
         """Run backtesting, deterministic model selection, and forecast generation for a series.
         
@@ -358,12 +360,23 @@ class ForecastingService:
             series: Consecutive time-ordered historical values.
             horizon: Forecast horizon (3, 6, 12).
             quantity_type: 'online_job_postings' or 'certified_candidate_throughput'.
+            periods: Optional chronological period identifiers corresponding to series.
             
         Returns:
             ForecastPoint model populated with point forecast, empirical intervals, and errors.
         """
         n = len(series)
         is_postings = quantity_type == "online_job_postings"
+
+        hist_series = None
+        if periods and len(periods) == len(series):
+            hist_series = [
+                HistoricalObservationPoint(
+                    period=p,
+                    value=float(int(round(v))) if is_postings else round(float(v), 1),
+                )
+                for p, v in zip(periods, series)
+            ]
 
         if n < MIN_TRAIN_HISTORY + horizon:
             last_obs_insufficient = (
@@ -375,6 +388,7 @@ class ForecastingService:
                 point_forecast=None,
                 point_forecast_integer=None,
                 last_observed_value=last_obs_insufficient,
+                historical_series=hist_series,
                 prediction_interval_lower=None,
                 prediction_interval_upper=None,
                 interval_confidence=0.80,
@@ -460,6 +474,7 @@ class ForecastingService:
             point_forecast=pt_val,
             point_forecast_integer=pt_int_val,
             last_observed_value=last_obs,
+            historical_series=hist_series,
             prediction_interval_lower=low_val,
             prediction_interval_upper=up_val,
             interval_confidence=0.80,
@@ -543,22 +558,20 @@ class ForecastingService:
 
                     # Extract postings series up to base_period
                     postings_dict = self._postings_history.get(key, {})
-                    postings_series = [
-                        postings_dict[p] for p in periods_up_to_base if p in postings_dict
-                    ]
+                    postings_periods = [p for p in periods_up_to_base if p in postings_dict]
+                    postings_series = [postings_dict[p] for p in postings_periods]
 
                     # Extract certifications series up to base_period
                     certs_dict = self._certifications_history.get(key, {})
-                    certs_series = [
-                        certs_dict[p] for p in periods_up_to_base if p in certs_dict
-                    ]
+                    certs_periods = [p for p in periods_up_to_base if p in certs_dict]
+                    certs_series = [certs_dict[p] for p in certs_periods]
 
                     # Compute individual forecasts
                     d_point = self.forecast_quantity(
-                        postings_series, h, "online_job_postings"
+                        postings_series, h, "online_job_postings", periods=postings_periods
                     )
                     s_point = self.forecast_quantity(
-                        certs_series, h, "certified_candidate_throughput"
+                        certs_series, h, "certified_candidate_throughput", periods=certs_periods
                     )
 
                     if d_point.status == "valid" and d_point.point_forecast is not None:

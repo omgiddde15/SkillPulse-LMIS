@@ -406,6 +406,15 @@ class DatasetMetadata(BaseModel):
         return v
 
 
+class HistoricalObservationPoint(BaseModel):
+    """Historical monthly observation period and value for time-series inspection."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    period: str = Field(..., description="Reporting period in YYYY-MM format.")
+    value: float = Field(..., description="Observed historical value (synthetic demonstration observation).")
+
+
 class ForecastPoint(BaseModel):
     """Point forecast with empirical prediction interval and backtesting error metrics."""
 
@@ -430,6 +439,10 @@ class ForecastPoint(BaseModel):
     last_observed_value: Optional[float] = Field(
         default=None,
         description="Observed historical value at base reporting period (synthetic demonstration observation).",
+    )
+    historical_series: Optional[List[HistoricalObservationPoint]] = Field(
+        default=None,
+        description="Chronological historical monthly observations up to base period used by forecasting engine (synthetic demonstration data).",
     )
     prediction_interval_lower: Optional[float] = Field(
         default=None,

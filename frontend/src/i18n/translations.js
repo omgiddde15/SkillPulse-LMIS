@@ -138,6 +138,17 @@ export const translations = {
     'overview.methodologyPlacementTitle': 'Placement Maturity Safeguard:',
     'overview.methodologyPlacementText': 'Training batches completing within the 90-day tracking window are explicitly marked as pending follow-up and are excluded from placement rate calculations to prevent premature assessment bias.',
 
+    // District Comparison Pack
+    'overview.districtComparisonTitle': 'District-Wise Workforce Comparison Pack',
+    'overview.districtComparisonScope': '6 Pilot Districts • 3 States',
+    'overview.districtComparisonDesc': 'Cross-district comparative intelligence evaluating average demand index, TVET supply output index, and relative mismatch scores.',
+    'overview.chartATitle': 'Chart A: Demand vs. Supply Index Comparison',
+    'overview.chartASubtitle': 'Ranked cross-sectional percentile comparison (0 to 100 pts)',
+    'overview.chartBTitle': 'Chart B: Relative Demand-Supply Mismatch (Zero-Centered)',
+    'overview.chartBSubtitle': 'Diverging chart centered at zero (0.0): Left = Supply Pressure | Right = Demand Pressure',
+    'overview.spatialMatrixTitle': 'Pilot District Geographic Spatial Matrix (3 States)',
+    'overview.spatialMatrixDesc': 'Official geographic coordinates, relative mismatch classifications, and demand-supply scores across pilot districts.',
+
     // Demand Intelligence Page
     'demand.introTitle': 'SkillPulse Demand Intelligence Engine',
     'demand.introDesc': 'Evaluates multi-source employer hiring intent across 5 explainable components into a cross-sectional percentile composite score (0 to 100). Combines job posting volumes, trailing 3-month growth velocity, vacancy persistence, recruitment employer diversity, and wage attractiveness.',
@@ -665,6 +676,17 @@ export const translations = {
     'overview.methodologyPercentileText': 'सापेक्ष असंतुलन स्कोर क्रॉस-सेक्शनल पर्सेंटाइल रैंकों के बीच अंतर (मांग सूचकांक − आपूर्ति आउटपुट सूचकांक) को दर्शाता है, जो −100.0 और +100.0 के बीच सीमित है। +15 से अधिक स्कोर सापेक्ष मांग दबाव दर्शाते हैं; −15 से कम स्कोर सापेक्ष आपूर्ति दबाव दर्शाते हैं। ये स्कोर सापेक्ष रैंकिंग असंतुलन को इंगित करते हैं, प्रत्यक्ष कामगार कमी या आधिक्य को नहीं।',
     'overview.methodologyPlacementTitle': 'प्लेसमेंट परिपक्वता सुरक्षा नियम:',
     'overview.methodologyPlacementText': '90-दिवसीय ट्रैकिंग अवधि के भीतर पूर्ण होने वाले प्रशिक्षण बैचों को स्पष्ट रूप से अनुवर्ती समीक्षा प्रतीक्षारत चिह्नित किया गया है और समयपूर्व मूल्यांकन पूर्वाग्रह से बचने के लिए उन्हें प्लेसमेंट दर गणना से बाहर रखा गया है।',
+
+    // District Comparison Pack
+    'overview.districtComparisonTitle': 'ज़िला-स्तरीय कार्यबल विश्लेषण एवं तुलना',
+    'overview.districtComparisonScope': '6 पायलट ज़िले • 3 राज्य',
+    'overview.districtComparisonDesc': 'कर्नाटक, महाराष्ट्र और तेलंगाना में औसत मांग सूचकांक, आपूर्ति सूचकांक और सापेक्ष असंतुलन की तुलना।',
+    'overview.chartATitle': 'चार्ट A: मांग एवं आपूर्ति सूचकांक तुलना',
+    'overview.chartASubtitle': '0 से 100 अंक पर्सेंटाइल स्केल पर रैंक की गई तुलना',
+    'overview.chartBTitle': 'चार्ट B: सापेक्ष मांग-आपूर्ति असंतुलन (शून्य-केंद्रित)',
+    'overview.chartBSubtitle': 'शून्य (0.0) पर आधारित विचलन चार्ट: बायीं ओर आपूर्ति दबाव | दायीं ओर मांग दबाव',
+    'overview.spatialMatrixTitle': 'पायलट ज़िला भौगोलिक स्थानिक मैट्रिक्स (3 राज्य)',
+    'overview.spatialMatrixDesc': 'कर्नाटक, महाराष्ट्र और तेलंगाना के 6 पायलट ज़िलों की आधिकारिक भौगोलिक स्थिति, वर्गीकरण और स्कोर।',
 
     // Demand Intelligence Page
     'demand.introTitle': 'स्किलपल्स मांग विश्लेषण इंजन',

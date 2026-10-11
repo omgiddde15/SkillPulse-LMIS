@@ -9,6 +9,7 @@ import {
   getStateDisplayName,
   getSectorDisplayName,
 } from '../i18n/translations';
+import ForecastTimeSeriesChart from './ForecastTimeSeriesChart';
 
 const STATES = [
   { code: 'KA', name: 'Karnataka' },
@@ -45,6 +46,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
   // Sorting
   const [sortField, setSortField] = useState('projected_mismatch_score');
   const [sortDirection, setSortDirection] = useState('desc'); // 'asc' | 'desc'
+  const [activeTrendSeries, setActiveTrendSeries] = useState('demand'); // 'demand' | 'supply'
 
 
   const executeForecastFetch = useCallback(async () => {
@@ -1105,6 +1107,90 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
                           </em>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Interactive Full Time-Series Observation & Forecast Trend Chart */}
+                    <div style={{ marginTop: '1.25rem', marginBottom: '1.25rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--slate-800)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span>📈</span>
+                          <span>{isHindi ? 'विस्तृत समय-श्रृंखला रुझान एवं अनिश्चितता चार्ट' : 'Time-Series Observation & Horizon Forecast Trend'}</span>
+                        </h4>
+                        <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
+                          <button
+                            type="button"
+                            style={{
+                              border: 'none',
+                              backgroundColor: activeTrendSeries === 'demand' ? '#ffffff' : 'transparent',
+                              color: activeTrendSeries === 'demand' ? 'var(--teal-800)' : 'var(--slate-600)',
+                              fontWeight: activeTrendSeries === 'demand' ? 700 : 500,
+                              boxShadow: activeTrendSeries === 'demand' ? 'var(--shadow-sm)' : 'none',
+                              padding: '0.25rem 0.65rem',
+                              fontSize: '0.74rem',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => setActiveTrendSeries('demand')}
+                          >
+                            {isHindi ? '1. मांग (ऑनलाइन विज्ञापन)' : '1. Demand (Online Postings)'}
+                          </button>
+                          <button
+                            type="button"
+                            style={{
+                              border: 'none',
+                              backgroundColor: activeTrendSeries === 'supply' ? '#ffffff' : 'transparent',
+                              color: activeTrendSeries === 'supply' ? 'var(--slate-900)' : 'var(--slate-600)',
+                              fontWeight: activeTrendSeries === 'supply' ? 700 : 500,
+                              boxShadow: activeTrendSeries === 'supply' ? 'var(--shadow-sm)' : 'none',
+                              padding: '0.25rem 0.65rem',
+                              fontSize: '0.74rem',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => setActiveTrendSeries('supply')}
+                          >
+                            {isHindi ? '2. आपूर्ति (प्रमाणित आउटपुट)' : '2. Supply (Certified Throughput)'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {activeTrendSeries === 'demand' ? (
+                        <ForecastTimeSeriesChart
+                          historicalSeries={selectedItem.demand_forecast?.historical_series || []}
+                          pointForecast={selectedItem.demand_forecast?.point_forecast_integer}
+                          predictionIntervalLower={selectedItem.demand_forecast?.prediction_interval_lower}
+                          predictionIntervalUpper={selectedItem.demand_forecast?.prediction_interval_upper}
+                          basePeriod={selectedItem.base_period}
+                          targetPeriod={selectedItem.target_period}
+                          horizonMonths={selectedItem.horizon_months}
+                          modelSelected={selectedItem.demand_forecast?.model_selected}
+                          backtestMae={selectedItem.demand_forecast?.backtest_mae}
+                          backtestWape={selectedItem.demand_forecast?.backtest_wape}
+                          quantityTitle={isHindi ? 'ऑनलाइन जॉब-विज्ञापन मांग समय-श्रृंखला' : 'Online Job-Postings Demand Historical Series & Forecast'}
+                          unit={isHindi ? 'विज्ञापन' : 'postings'}
+                          isPostings={true}
+                          color="#0d9488"
+                          accentColor="#115e59"
+                        />
+                      ) : (
+                        <ForecastTimeSeriesChart
+                          historicalSeries={selectedItem.supply_forecast?.historical_series || []}
+                          pointForecast={selectedItem.supply_forecast?.point_forecast}
+                          predictionIntervalLower={selectedItem.supply_forecast?.prediction_interval_lower}
+                          predictionIntervalUpper={selectedItem.supply_forecast?.prediction_interval_upper}
+                          basePeriod={selectedItem.base_period}
+                          targetPeriod={selectedItem.target_period}
+                          horizonMonths={selectedItem.horizon_months}
+                          modelSelected={selectedItem.supply_forecast?.model_selected}
+                          backtestMae={selectedItem.supply_forecast?.backtest_mae}
+                          backtestWape={selectedItem.supply_forecast?.backtest_wape}
+                          quantityTitle={isHindi ? 'प्रमाणित उम्मीदवार आपूर्ति आउटपुट समय-श्रृंखला' : 'TVET Certified Throughput Historical Series & Forecast'}
+                          unit={isHindi ? 'उम्मीदवार' : 'candidates'}
+                          isPostings={false}
+                          color="#475569"
+                          accentColor="#1e293b"
+                        />
+                      )}
                     </div>
 
                     {/* Mismatch & Methodological Summary Callout */}
