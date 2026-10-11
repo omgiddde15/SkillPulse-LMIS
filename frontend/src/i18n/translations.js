@@ -110,6 +110,11 @@ export const translations = {
     'overview.throughputOutpacesDemand': '{district}, {state} • Throughput outpaces demand ({count} cases ≤ −15)',
     'overview.supplyThresholdNote': 'Threshold: Score ≤ −15.0',
     'overview.noSupplyPressure': 'No district-occupation exhibits supply pressure in this cycle',
+    'overview.datasetNotice': 'Synthetic Demonstration Data (SIH26246)',
+    'overview.compositeDemandSubtext': 'Composite Demand Index (0–100 pts, not job vacancies)',
+    'overview.mismatchDiffSubtextPos': 'Relative Percentile Difference (−100 to +100 pts, not missing headcount)',
+    'overview.mismatchDiffSubtextNeg': 'Relative Percentile Difference (−100 to +100 pts)',
+    'overview.mismatchInterpretation': 'Mismatch scores denote relative ranking differences between employer demand intensity and TVET certification throughput (−100 to +100 pts); a score of +50 denotes demand ranks 50 percentile points above supply, not an absolute worker shortage.',
     'overview.tableTitle': 'Relative Demand-Supply Mismatch Rankings',
     'overview.tableSubtitle': 'Cross-sectional ranking comparing composite demand index against recent 3-month certification output',
     'overview.filterTop10': 'Top 10 Ranks',
@@ -320,6 +325,9 @@ export const translations = {
     'forecasts.estimatedOpenings': 'Estimated Job Openings:',
     'forecasts.effectiveSupply': 'Effective Local Certified Output:',
     'forecasts.pipelineCoverageRate': 'Scenario Pipeline Coverage Rate:',
+    'forecasts.observedHistorySynthetic': 'Observed History (Synthetic)',
+    'forecasts.pointForecastLabel': 'Point Forecast',
+    'forecasts.predictionIntervalNote': 'The 80% prediction interval represents statistical model uncertainty based on backtest residuals, not a guaranteed policy or market outcome.',
     'forecasts.methodologyTitle': 'Forecasting Methodology, Intervals & Policy Disclaimers',
 
     // Early-Warning Alerts Page
@@ -630,6 +638,11 @@ export const translations = {
     'overview.throughputOutpacesDemand': '{district}, {state} • आपूर्ति मांग से अधिक ({count} मामले ≤ −15)',
     'overview.supplyThresholdNote': 'सीमा: स्कोर ≤ −15.0',
     'overview.noSupplyPressure': 'इस चक्र में किसी भी ज़िला-व्यवसाय में आपूर्ति दबाव नहीं है',
+    'overview.datasetNotice': 'सिंथेटिक प्रदर्शन डेटा (SIH26246)',
+    'overview.compositeDemandSubtext': 'समग्र मांग सूचकांक (0–100 अंक, रिक्तियां नहीं)',
+    'overview.mismatchDiffSubtextPos': 'सापेक्ष पर्सेंटाइल अंतर (−100 से +100 अंक, उम्मीदवार कमी नहीं)',
+    'overview.mismatchDiffSubtextNeg': 'सापेक्ष पर्सेंटाइल अंतर (−100 से +100 अंक)',
+    'overview.mismatchInterpretation': 'असंतुलन स्कोर नियोक्ता मांग तीव्रता और TVET प्रमाणीकरण थ्रूपुट के बीच सापेक्ष पर्सेंटाइल अंतर (−100 से +100 अंक) को दर्शाता है; +50 का स्कोर यह दर्शाता है कि मांग आपूर्ति से 50 पर्सेंटाइल अंक ऊपर है, न कि कार्यबल की पूर्ण कमी।',
     'overview.tableTitle': 'सापेक्ष मांग-आपूर्ति असंतुलन रैंकिंग',
     'overview.tableSubtitle': 'समग्र मांग सूचकांक की हालिया 3-महीने के प्रमाणीकरण आउटपुट से तुलना करती क्रॉस-सेक्शनल रैंकिंग',
     'overview.filterTop10': 'शीर्ष 10 रैंक',
@@ -840,6 +853,9 @@ export const translations = {
     'forecasts.estimatedOpenings': 'अनुमानित कुल रिक्तियां:',
     'forecasts.effectiveSupply': 'प्रभावी स्थानीय प्रमाणित आउटपुट:',
     'forecasts.pipelineCoverageRate': 'परिदृश्य पाइपलाइन कवरेज दर:',
+    'forecasts.observedHistorySynthetic': 'प्रेक्षित इतिहास (सिंथेटिक)',
+    'forecasts.pointForecastLabel': 'बिंदु पूर्वानुमान',
+    'forecasts.predictionIntervalNote': '80% प्रेडिक्शन इंटरवल बैकटेस्ट अवशेषों पर आधारित सांख्यिकीय मॉडल अनिश्चितता को दर्शाता है, गारंटीकृत नीतिगत या बाजार परिणाम को नहीं।',
     'forecasts.methodologyTitle': 'पूर्वानुमान पद्धति, इंटरवल्स एवं नीतिगत अस्वीकरण',
 
     // Early-Warning Alerts Page

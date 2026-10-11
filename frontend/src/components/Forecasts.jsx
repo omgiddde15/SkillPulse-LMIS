@@ -209,6 +209,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
           { key: 'occupation_title', label: 'व्यवसाय शीर्षक (Occupation Title)' },
           // Demand Forecast
           { key: 'demand_model', label: 'चयनित मांग मॉडल (Demand Model)', format: (_, r) => r.demand_forecast?.model_selected || '' },
+          { key: 'demand_observed_history', label: 'मांग प्रेक्षित इतिहास (सिंथेटिक) (Demand Observed History)', format: (_, r) => r.demand_forecast?.last_observed_value ?? '' },
           { key: 'demand_forecast_postings', label: 'पूर्वानुमानित ऑनलाइन जॉब विज्ञापन (Forecast Postings)', format: (_, r) => r.demand_forecast?.point_forecast_integer ?? '' },
           { key: 'demand_lower', label: 'मांग 80% अंतराल निचली सीमा (Demand Lower Bound)', format: (_, r) => r.demand_forecast?.prediction_interval_lower ?? '' },
           { key: 'demand_upper', label: 'मांग 80% अंतराल ऊपरी सीमा (Demand Upper Bound)', format: (_, r) => r.demand_forecast?.prediction_interval_upper ?? '' },
@@ -216,6 +217,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
           { key: 'demand_wape', label: 'मांग बैकटेस्ट WAPE (Demand Backtest WAPE)', format: (_, r) => (r.demand_forecast?.backtest_wape != null ? (Number(r.demand_forecast.backtest_wape) * 100).toFixed(1) + '%' : '') },
           // Supply Forecast
           { key: 'supply_model', label: 'चयनित आपूर्ति मॉडल (Supply Model)', format: (_, r) => r.supply_forecast?.model_selected || '' },
+          { key: 'supply_observed_history', label: 'आपूर्ति प्रेक्षित इतिहास (सिंथेटिक) (Supply Observed History)', format: (_, r) => (r.supply_forecast?.last_observed_value != null ? Number(r.supply_forecast.last_observed_value).toFixed(1) : '') },
           { key: 'supply_forecast_throughput', label: 'पूर्वानुमानित प्रमाणित आउटपुट (Forecast Throughput /mo)', format: (_, r) => (r.supply_forecast?.point_forecast != null ? Number(r.supply_forecast.point_forecast).toFixed(1) : '') },
           { key: 'supply_lower', label: 'आपूर्ति 80% अंतराल निचली सीमा (Supply Lower Bound)', format: (_, r) => (r.supply_forecast?.prediction_interval_lower != null ? Number(r.supply_forecast.prediction_interval_lower).toFixed(1) : '') },
           { key: 'supply_upper', label: 'आपूर्ति 80% अंतराल ऊपरी सीमा (Supply Upper Bound)', format: (_, r) => (r.supply_forecast?.prediction_interval_upper != null ? Number(r.supply_forecast.prediction_interval_upper).toFixed(1) : '') },
@@ -245,6 +247,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
           { key: 'occupation_title', label: 'Occupation Title' },
           // Demand Forecast
           { key: 'demand_model', label: 'Demand Model Selected', format: (_, r) => r.demand_forecast?.model_selected || '' },
+          { key: 'demand_observed_history', label: 'Demand Observed History (Synthetic)', format: (_, r) => r.demand_forecast?.last_observed_value ?? '' },
           { key: 'demand_forecast_postings', label: 'Forecast Online Postings (Integer)', format: (_, r) => r.demand_forecast?.point_forecast_integer ?? '' },
           { key: 'demand_lower', label: 'Demand 80% Interval Lower Bound', format: (_, r) => r.demand_forecast?.prediction_interval_lower ?? '' },
           { key: 'demand_upper', label: 'Demand 80% Interval Upper Bound', format: (_, r) => r.demand_forecast?.prediction_interval_upper ?? '' },
@@ -252,6 +255,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
           { key: 'demand_wape', label: 'Demand Backtest WAPE', format: (_, r) => (r.demand_forecast?.backtest_wape != null ? (Number(r.demand_forecast.backtest_wape) * 100).toFixed(1) + '%' : '') },
           // Supply Forecast
           { key: 'supply_model', label: 'Supply Model Selected', format: (_, r) => r.supply_forecast?.model_selected || '' },
+          { key: 'supply_observed_history', label: 'Supply Observed History (Synthetic)', format: (_, r) => (r.supply_forecast?.last_observed_value != null ? Number(r.supply_forecast.last_observed_value).toFixed(1) : '') },
           { key: 'supply_forecast_throughput', label: 'Forecast Certified Throughput (/mo)', format: (_, r) => (r.supply_forecast?.point_forecast != null ? Number(r.supply_forecast.point_forecast).toFixed(1) : '') },
           { key: 'supply_lower', label: 'Supply 80% Interval Lower Bound', format: (_, r) => (r.supply_forecast?.prediction_interval_lower != null ? Number(r.supply_forecast.prediction_interval_lower).toFixed(1) : '') },
           { key: 'supply_upper', label: 'Supply 80% Interval Upper Bound', format: (_, r) => (r.supply_forecast?.prediction_interval_upper != null ? Number(r.supply_forecast.prediction_interval_upper).toFixed(1) : '') },
@@ -384,6 +388,115 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
       case 'naive': return 'Last-Observation (Naive)';
       default: return modelCode || 'Deterministic Baseline';
     }
+  };
+
+  const renderIntervalTrack = (lower, point, upper, observed, isPostings) => {
+    if (lower == null || point == null || upper == null) {
+      return (
+        <div className="interval-visualizer">
+          <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', textAlign: 'center' }}>
+            {isHindi ? 'प्रेडिक्शन इंटरवल उपलब्ध नहीं' : 'Prediction interval unavailable'}
+          </div>
+        </div>
+      );
+    }
+
+    const minBound = Math.min(lower, observed != null ? observed : lower);
+    const maxBound = Math.max(upper, observed != null ? observed : upper);
+    const margin = Math.max((maxBound - minBound) * 0.1, 1);
+    const domainMin = Math.max(0, minBound - margin);
+    const domainMax = maxBound + margin;
+    const span = domainMax - domainMin || 1;
+
+    const lowerPct = Math.max(0, Math.min(100, ((lower - domainMin) / span) * 100));
+    const upperPct = Math.max(0, Math.min(100, ((upper - domainMin) / span) * 100));
+    const pointPct = Math.max(0, Math.min(100, ((point - domainMin) / span) * 100));
+    const observedPct = observed != null ? Math.max(0, Math.min(100, ((observed - domainMin) / span) * 100)) : null;
+
+    const fillLeft = lowerPct;
+    const fillWidth = Math.max(2, upperPct - lowerPct);
+
+    return (
+      <div className="interval-visualizer" style={{ padding: '0.65rem 0.85rem' }}>
+        <div className="interval-labels" style={{ fontSize: '0.72rem' }}>
+          <span>
+            {isHindi ? 'निचली (80%):' : 'Lower (80%):'} {isPostings ? Math.round(lower) : Number(lower).toFixed(1)}
+          </span>
+          <strong style={{ color: isPostings ? 'var(--teal-800)' : 'var(--slate-800)' }}>
+            {isHindi ? 'बिंदु अनुमान:' : 'Point Forecast:'} {isPostings ? Math.round(point) : Number(point).toFixed(1)}
+          </strong>
+          <span>
+            {isHindi ? 'ऊपरी (80%):' : 'Upper (80%):'} {isPostings ? Math.round(upper) : Number(upper).toFixed(1)}
+          </span>
+        </div>
+
+        <div className="interval-range-track" style={{ position: 'relative', height: '10px', backgroundColor: 'var(--slate-200)', borderRadius: '9999px', overflow: 'visible', margin: '0.45rem 0' }}>
+          {/* 80% Confidence Interval Fill */}
+          <div
+            className="interval-range-fill"
+            style={{
+              position: 'absolute',
+              left: `${fillLeft}%`,
+              width: `${fillWidth}%`,
+              top: 0,
+              bottom: 0,
+              background: isPostings
+                ? 'linear-gradient(90deg, #99f6e4, #0d9488)'
+                : 'linear-gradient(90deg, #cbd5e1, #64748b)',
+              borderRadius: '9999px',
+            }}
+            title={`80% Prediction Interval: [${lower}, ${upper}]`}
+          />
+
+          {/* Point Forecast Marker */}
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pointPct}%`,
+              top: '-3px',
+              bottom: '-3px',
+              width: '3px',
+              backgroundColor: isPostings ? '#115e59' : '#1e293b',
+              borderRadius: '2px',
+              transform: 'translateX(-50%)',
+              zIndex: 3,
+            }}
+            title={`Point Forecast: ${point}`}
+          />
+
+          {/* Observed History Marker (if within range) */}
+          {observedPct != null && (
+            <div
+              style={{
+                position: 'absolute',
+                left: `${observedPct}%`,
+                top: '-4px',
+                bottom: '-4px',
+                width: '3px',
+                backgroundColor: '#f59e0b',
+                borderRadius: '2px',
+                transform: 'translateX(-50%)',
+                zIndex: 2,
+              }}
+              title={`${isHindi ? 'प्रेक्षित इतिहास (सिंथेटिक)' : 'Observed History (Synthetic)'}: ${observed}`}
+            />
+          )}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: 'var(--slate-500)', marginTop: '0.1rem' }}>
+          {observed != null && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#f59e0b', borderRadius: '2px' }}></span>
+              <span>{isHindi ? 'प्रेक्षित इतिहास:' : 'Observed History:'} {isPostings ? Math.round(observed) : Number(observed).toFixed(1)}</span>
+            </span>
+          )}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', backgroundColor: isPostings ? '#0d9488' : '#64748b', borderRadius: '2px' }}></span>
+            <span>{isHindi ? '80% सांख्यिकीय अनिश्चितता बैंड' : '80% Statistical Uncertainty Band'}</span>
+          </span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -791,9 +904,12 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
                         <div className="component-card-top">
                           <div>
                             <span className="component-name">{isHindi ? '1. जॉब-विज्ञापन मांग अनुमान' : '1. Job-Posting Demand Projection'}</span>
-                            <div style={{ marginTop: '0.2rem' }}>
+                            <div style={{ marginTop: '0.2rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                               <span className="model-badge">
                                 {isHindi ? 'मॉडल:' : 'Model:'} {getModelLabel(selectedItem.demand_forecast?.model_selected)}
+                              </span>
+                              <span className="model-badge" style={{ backgroundColor: '#f1f5f9', color: 'var(--slate-700)' }}>
+                                +{selectedItem.horizon_months}M ({selectedItem.target_period})
                               </span>
                             </div>
                           </div>
@@ -804,31 +920,60 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
                           </span>
                         </div>
 
-                        <div className="component-value-row">
-                          <span className="component-raw-val" style={{ color: 'var(--teal-800)' }}>
-                            {selectedItem.demand_forecast?.point_forecast_integer ?? 'N/A'} {isHindi ? 'विज्ञापन' : 'postings'}
+                        {/* Observed History vs Forecast Point Side-by-Side Comparison */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+                          <div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+                              {t('forecasts.observedHistorySynthetic', 'Observed History (Synthetic)')}
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                              {selectedItem.demand_forecast?.last_observed_value ?? 'N/A'}
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-500)' }}> {isHindi ? 'विज्ञापन' : 'postings'}</span>
+                            </div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-400)' }}>
+                              {isHindi ? 'आधार अवधि:' : 'Base:'} {selectedItem.base_period}
+                            </div>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--teal-700)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                              {t('forecasts.pointForecastLabel', 'Point Forecast')}
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--teal-800)', fontFamily: 'var(--font-mono)' }}>
+                              {selectedItem.demand_forecast?.point_forecast_integer ?? 'N/A'}
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--teal-600)' }}> {isHindi ? 'विज्ञापन' : 'postings'}</span>
+                            </div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--teal-600)' }}>
+                              {isHindi ? 'लक्षित अवधि:' : 'Target:'} {selectedItem.target_period} (+{selectedItem.horizon_months}M)
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="component-value-row" style={{ marginTop: '0.2rem' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+                            {isHindi ? 'क्रॉस-सेक्शनल पर्सेंटाइल:' : 'Cross-Sectional Rank:'}
                           </span>
                           <span className="component-score-val">
                             {t('common.rank', 'Rank')}: {selectedItem.projected_mismatch?.forecast_demand_rank !== null && selectedItem.projected_mismatch?.forecast_demand_rank !== undefined ? selectedItem.projected_mismatch.forecast_demand_rank.toFixed(1) : 'N/A'}/100
                           </span>
                         </div>
 
-                        {/* Interval Visualizer */}
-                        <div className="interval-visualizer">
-                          <div className="interval-labels">
-                            <span>{isHindi ? 'निचली:' : 'Lower:'} {selectedItem.demand_forecast?.prediction_interval_lower ?? 'N/A'}</span>
-                            <strong style={{ color: 'var(--teal-800)' }}>{isHindi ? 'बिंदु:' : 'Point:'} {selectedItem.demand_forecast?.point_forecast_integer ?? 'N/A'}</strong>
-                            <span>{isHindi ? 'ऊपरी:' : 'Upper:'} {selectedItem.demand_forecast?.prediction_interval_upper ?? 'N/A'}</span>
-                          </div>
-                          <div className="interval-range-track">
-                            <div className="interval-range-fill" style={{ left: '15%', right: '15%' }} />
-                          </div>
-                        </div>
+                        {/* Accurate 80% Prediction Interval Visualizer */}
+                        {renderIntervalTrack(
+                          selectedItem.demand_forecast?.prediction_interval_lower,
+                          selectedItem.demand_forecast?.point_forecast_integer,
+                          selectedItem.demand_forecast?.prediction_interval_upper,
+                          selectedItem.demand_forecast?.last_observed_value,
+                          true
+                        )}
 
-                        <div className="component-subtext">
+                        <div className="component-subtext" style={{ marginTop: '0.4rem' }}>
                           <strong>{isHindi ? 'बैकटेस्टिंग त्रुटि:' : 'Backtesting Error:'}</strong> MAE = {selectedItem.demand_forecast?.backtest_mae !== null && selectedItem.demand_forecast?.backtest_mae !== undefined ? selectedItem.demand_forecast.backtest_mae.toFixed(2) : 'N/A'} {isHindi ? 'विज्ञापन' : 'postings'} • WAPE = {selectedItem.demand_forecast?.backtest_wape !== null && selectedItem.demand_forecast?.backtest_wape !== undefined ? `${(selectedItem.demand_forecast.backtest_wape * 100).toFixed(1)}%` : 'N/A'}
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-600)', fontStyle: 'italic', marginTop: '0.25rem' }}>
+                          ℹ️ {t('forecasts.predictionIntervalNote', 'The 80% prediction interval represents statistical model uncertainty based on backtest residuals, not a guaranteed policy or market outcome.')}
+                        </div>
+                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--slate-400)', marginTop: '0.15rem' }}>
                           <em>{selectedItem.demand_forecast?.interval_disclaimer || 'Normal error distribution approximation on out-of-sample RMSE.'}</em>
                         </div>
                       </div>
@@ -838,9 +983,12 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
                         <div className="component-card-top">
                           <div>
                             <span className="component-name">{isHindi ? '2. प्रमाणीकरण आउटपुट आपूर्ति अनुमान' : '2. Certification Throughput Projection'}</span>
-                            <div style={{ marginTop: '0.2rem' }}>
+                            <div style={{ marginTop: '0.2rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                               <span className="model-badge">
                                 {isHindi ? 'मॉडल:' : 'Model:'} {getModelLabel(selectedItem.supply_forecast?.model_selected)}
+                              </span>
+                              <span className="model-badge" style={{ backgroundColor: '#f1f5f9', color: 'var(--slate-700)' }}>
+                                +{selectedItem.horizon_months}M ({selectedItem.target_period})
                               </span>
                             </div>
                           </div>
@@ -851,31 +999,60 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
                           </span>
                         </div>
 
-                        <div className="component-value-row">
-                          <span className="component-raw-val" style={{ color: 'var(--slate-800)' }}>
-                            {selectedItem.supply_forecast?.point_forecast !== null && selectedItem.supply_forecast?.point_forecast !== undefined ? selectedItem.supply_forecast.point_forecast.toFixed(1) : 'N/A'} {isHindi ? 'उम्मीदवार' : 'candidates'}
+                        {/* Observed History vs Forecast Point Side-by-Side Comparison */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+                          <div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+                              {t('forecasts.observedHistorySynthetic', 'Observed History (Synthetic)')}
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                              {selectedItem.supply_forecast?.last_observed_value != null ? selectedItem.supply_forecast.last_observed_value.toFixed(1) : 'N/A'}
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-500)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
+                            </div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-400)' }}>
+                              {isHindi ? 'आधार अवधि:' : 'Base:'} {selectedItem.base_period}
+                            </div>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-800)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                              {t('forecasts.pointForecastLabel', 'Point Forecast')}
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                              {selectedItem.supply_forecast?.point_forecast !== null && selectedItem.supply_forecast?.point_forecast !== undefined ? selectedItem.supply_forecast.point_forecast.toFixed(1) : 'N/A'}
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-600)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
+                            </div>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-600)' }}>
+                              {isHindi ? 'लक्षित अवधि:' : 'Target:'} {selectedItem.target_period} (+{selectedItem.horizon_months}M)
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="component-value-row" style={{ marginTop: '0.2rem' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+                            {isHindi ? 'क्रॉस-सेक्शनल पर्सेंटाइल:' : 'Cross-Sectional Rank:'}
                           </span>
                           <span className="component-score-val">
                             {t('common.rank', 'Rank')}: {selectedItem.projected_mismatch?.forecast_supply_rank !== null && selectedItem.projected_mismatch?.forecast_supply_rank !== undefined ? selectedItem.projected_mismatch.forecast_supply_rank.toFixed(1) : 'N/A'}/100
                           </span>
                         </div>
 
-                        {/* Interval Visualizer */}
-                        <div className="interval-visualizer">
-                          <div className="interval-labels">
-                            <span>{isHindi ? 'निचली:' : 'Lower:'} {selectedItem.supply_forecast?.prediction_interval_lower !== null && selectedItem.supply_forecast?.prediction_interval_lower !== undefined ? selectedItem.supply_forecast.prediction_interval_lower.toFixed(1) : 'N/A'}</span>
-                            <strong style={{ color: 'var(--slate-800)' }}>{isHindi ? 'बिंदु:' : 'Point:'} {selectedItem.supply_forecast?.point_forecast !== null && selectedItem.supply_forecast?.point_forecast !== undefined ? selectedItem.supply_forecast.point_forecast.toFixed(1) : 'N/A'}</strong>
-                            <span>{isHindi ? 'ऊपरी:' : 'Upper:'} {selectedItem.supply_forecast?.prediction_interval_upper !== null && selectedItem.supply_forecast?.prediction_interval_upper !== undefined ? selectedItem.supply_forecast.prediction_interval_upper.toFixed(1) : 'N/A'}</span>
-                          </div>
-                          <div className="interval-range-track">
-                            <div className="interval-range-fill" style={{ left: '20%', right: '20%', background: 'linear-gradient(90deg, #cbd5e1, #64748b)' }} />
-                          </div>
-                        </div>
+                        {/* Accurate 80% Prediction Interval Visualizer */}
+                        {renderIntervalTrack(
+                          selectedItem.supply_forecast?.prediction_interval_lower,
+                          selectedItem.supply_forecast?.point_forecast,
+                          selectedItem.supply_forecast?.prediction_interval_upper,
+                          selectedItem.supply_forecast?.last_observed_value,
+                          false
+                        )}
 
-                        <div className="component-subtext">
+                        <div className="component-subtext" style={{ marginTop: '0.4rem' }}>
                           <strong>{isHindi ? 'बैकटेस्टिंग त्रुटि:' : 'Backtesting Error:'}</strong> MAE = {selectedItem.supply_forecast?.backtest_mae !== null && selectedItem.supply_forecast?.backtest_mae !== undefined ? selectedItem.supply_forecast.backtest_mae.toFixed(2) : 'N/A'} {isHindi ? 'प्रमाणित' : 'certs'} • WAPE = {selectedItem.supply_forecast?.backtest_wape !== null && selectedItem.supply_forecast?.backtest_wape !== undefined ? `${(selectedItem.supply_forecast.backtest_wape * 100).toFixed(1)}%` : 'N/A'}
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-600)', fontStyle: 'italic', marginTop: '0.25rem' }}>
+                          ℹ️ {t('forecasts.predictionIntervalNote', 'The 80% prediction interval represents statistical model uncertainty based on backtest residuals, not a guaranteed policy or market outcome.')}
+                        </div>
+                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--slate-400)', marginTop: '0.15rem' }}>
                           <em>{selectedItem.supply_forecast?.interval_disclaimer || 'Normal error distribution approximation on out-of-sample RMSE.'}</em>
                         </div>
                       </div>

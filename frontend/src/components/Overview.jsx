@@ -101,6 +101,10 @@ export default function Overview({
           <div className="stat-card-subtext">
             API: {backendHealth?.status === 'healthy' ? t('overview.connectedLive', 'Connected (Live :8000) • 3 States • 6 Districts') : t('app.statusOffline', 'Offline')}
           </div>
+          <div style={{ fontSize: '0.68rem', color: 'var(--slate-500)', marginTop: '0.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+            <span>🔬</span>
+            <span>{t('overview.datasetNotice', 'Synthetic Demonstration Data (SIH26246)')}</span>
+          </div>
         </div>
 
         {/* Card 2: Highest-Ranked Employer Demand */}
@@ -116,6 +120,9 @@ export default function Overview({
                 <span style={{ fontSize: '0.9rem', color: 'var(--slate-500)', fontWeight: 500 }}>
                   /100
                 </span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
+                {t('overview.compositeDemandSubtext', 'Composite Demand Index (0–100 pts, not job vacancies)')}
               </div>
               <div className="stat-card-meta">
                 {topDemandItem.occupation_title}
@@ -145,6 +152,9 @@ export default function Overview({
               <div className="stat-card-value" style={{ color: '#c2410c' }}>
                 {formatMismatch(topPositiveMismatch.relative_mismatch_score)}
                 <span style={{ fontSize: '0.85rem', fontWeight: 600 }}> {t('common.pts', 'pts')}</span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#9a3412', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
+                {t('overview.mismatchDiffSubtextPos', 'Relative Percentile Difference (−100 to +100 pts, not missing headcount)')}
               </div>
               <div className="stat-card-meta">
                 {topPositiveMismatch.occupation_title}
@@ -183,6 +193,9 @@ export default function Overview({
               <div className="stat-card-value" style={{ color: '#1d4ed8' }}>
                 {formatMismatch(topNegativeMismatch.relative_mismatch_score)}
                 <span style={{ fontSize: '0.85rem', fontWeight: 600 }}> {t('common.pts', 'pts')}</span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#1e40af', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
+                {t('overview.mismatchDiffSubtextNeg', 'Relative Percentile Difference (−100 to +100 pts)')}
               </div>
               <div className="stat-card-meta">
                 {topNegativeMismatch.occupation_title}
@@ -271,6 +284,10 @@ export default function Overview({
               {t('overview.filterSupplyPressure', 'Supply Pressure ({count})', { count: qualifyingSupplyRecords.length })}
             </button>
           </div>
+        </div>
+
+        <div style={{ margin: '0 1.25rem 0.75rem 1.25rem', padding: '0.5rem 0.75rem', backgroundColor: '#f8fafc', borderLeft: '3px solid var(--teal-600)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', color: 'var(--slate-700)', lineHeight: 1.45 }}>
+          💡 <strong>{isHindi ? 'परिणाम व्याख्या:' : 'Interpretation:'}</strong> {t('overview.mismatchInterpretation', 'Mismatch scores denote relative ranking differences between employer demand intensity and TVET certification throughput (−100 to +100 pts); a score of +50 denotes demand ranks 50 percentile points above supply, not an absolute worker shortage.')}
         </div>
 
         <div className="table-responsive">

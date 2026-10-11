@@ -366,11 +366,15 @@ class ForecastingService:
         is_postings = quantity_type == "online_job_postings"
 
         if n < MIN_TRAIN_HISTORY + horizon:
+            last_obs_insufficient = (
+                float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+            ) if series else None
             return ForecastPoint(
                 quantity=quantity_type,
                 model_selected=None,
                 point_forecast=None,
                 point_forecast_integer=None,
+                last_observed_value=last_obs_insufficient,
                 prediction_interval_lower=None,
                 prediction_interval_upper=None,
                 interval_confidence=0.80,
@@ -448,11 +452,14 @@ class ForecastingService:
                 "Intervals constrained to non-negative floats with lower <= point <= upper."
             )
 
+        last_obs = float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+
         return ForecastPoint(
             quantity=quantity_type,
             model_selected=best_model,
             point_forecast=pt_val,
             point_forecast_integer=pt_int_val,
+            last_observed_value=last_obs,
             prediction_interval_lower=low_val,
             prediction_interval_upper=up_val,
             interval_confidence=0.80,

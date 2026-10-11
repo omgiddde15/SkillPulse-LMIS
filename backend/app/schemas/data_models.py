@@ -427,6 +427,10 @@ class ForecastPoint(BaseModel):
         default=None,
         description="Non-negative integer forecast count (populated for discrete job postings).",
     )
+    last_observed_value: Optional[float] = Field(
+        default=None,
+        description="Observed historical value at base reporting period (synthetic demonstration observation).",
+    )
     prediction_interval_lower: Optional[float] = Field(
         default=None,
         description="Approximate empirical lower prediction interval bound (non-negative).",
