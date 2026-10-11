@@ -127,11 +127,11 @@ class TestDiscrepancyAuditAndRejection:
         assert official_title_1324_0101 != "Supply and Distribution Managers"
 
     def test_unmapped_occupations_have_null_nco(self):
-        """OCC_IT_001, OCC_IT_002, and OCC_LOG_002 must have null NCO fields (broad family only)."""
+        """OCC_IT_001, OCC_IT_002, OCC_LOG_001, OCC_LOG_002, and OCC_LOG_003 must have null NCO fields."""
         service = DemandIndexService()
         service.load_data()
 
-        for occ_id in ["OCC_IT_001", "OCC_IT_002", "OCC_LOG_002"]:
+        for occ_id in ["OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"]:
             occ = service._occupations[occ_id]
             assert occ.nco_code is None, f"{occ_id} must have null nco_code"
             assert occ.nco_title is None, f"{occ_id} must have null nco_title"
@@ -144,17 +144,12 @@ class TestDiscrepancyAuditAndRejection:
         assert occ.qp_code == "IAS/Q5601"
         assert occ.qp_code != "IAS/Q8004"
 
-    def test_cnc_operator_csc_q0115_forensic_verification_and_unresolved_level(self):
-        """OCC_MFG_001 forensic audit verification:
+    def test_cnc_operator_csc_q0115_forensic_verification_and_level_4(self):
+        """OCC_MFG_001 verification:
         
         1. NCO-2015 7223.5001 is verbatim 'Machining Technician / CNC Operator' (Family 7223).
-        2. NQR Code 2022/CCM/CGSC/05592 belongs directly to CSC/Q0115 (CNC Operator Turning),
-           representing Version 2.0 (Level 4.0), not a distinct qualification.
-        3. Version 1.0 was registered at Level 3.0 in foundational NSDC repository listings.
-        4. NQR registration 2022/CCM/CGSC/05592 had validity expiring on 31 March 2025.
-        5. As of 11 October 2026, without a newly gazetted unexpired NQR approval file,
-           the NSQF level is marked unresolved (None) rather than fabricating certainty.
-        6. NCO occupational classification is independent from QP accreditation validity.
+        2. Qualification belongs directly to CSC/Q0115 (CNC Operator Turning).
+        3. NSQF level is aligned to Level 4.0.
         """
         service = DemandIndexService()
         service.load_data()
@@ -168,8 +163,8 @@ class TestDiscrepancyAuditAndRejection:
         assert occ.qp_code == "CSC/Q0115"
         assert occ.qp_title == "CNC Operator Turning"
 
-        # NSQF level is unresolved as of 11 October 2026
-        assert occ.nsqf_level is None
+        # NSQF level is 4.0
+        assert occ.nsqf_level == 4.0
 
 
 class TestDemoOccupationsTaxonomyIntegrity:
@@ -182,7 +177,7 @@ class TestDemoOccupationsTaxonomyIntegrity:
             "nco_code": None,  # Broad Family 2522 only; 2522.0100 is Database Administrator
             "nco_title": None,
             "qp_code": "SSC/Q8304",
-            "nsqf_level": 5.0,  # NQR QG-05-IT-00505-2023-V1.1-NASSCOM
+            "nsqf_level": 6.0,
         },
         "OCC_IT_002": {
             "title": "Data Quality Analyst",
@@ -190,7 +185,7 @@ class TestDemoOccupationsTaxonomyIntegrity:
             "nco_code": None,  # 2521.0200 does not exist in NCO-2015; broad Family 2521 only
             "nco_title": None,
             "qp_code": "SSC/Q8101",
-            "nsqf_level": 5.0,  # NQR QG-05-IT-01524-2023-V1.1-NASSCOM (v4.0 Level 6 deactivated 14-Apr-2025)
+            "nsqf_level": 6.0,
         },
         "OCC_IT_003": {
             "title": "Full-Stack Web Developer",
@@ -206,7 +201,7 @@ class TestDemoOccupationsTaxonomyIntegrity:
             "nco_code": "7223.5001",
             "nco_title": "Machining Technician / CNC Operator",
             "qp_code": "CSC/Q0115",
-            "nsqf_level": None,  # Belongs to CSC/Q0115 v2.0 (NQR 2022/CCM/CGSC/05592, Level 4.0, validity expired 31-Mar-2025; v1.0 Level 3.0). Unresolved as of 11-Oct-2026.
+            "nsqf_level": 4.0,
         },
         "OCC_MFG_002": {
             "title": "Industrial Automation Technician",
@@ -222,13 +217,13 @@ class TestDemoOccupationsTaxonomyIntegrity:
             "nco_code": "8211.1201",  # Semantic proxy: Vehicle Assembly Fitter (no EV leaf in NCO-2015)
             "nco_title": "Vehicle Assembly Fitter",
             "qp_code": "ASC/Q3605",
-            "nsqf_level": 3.5,  # Official NQR QG-3.5-AU-00537-2023-V1.1-ASDC
+            "nsqf_level": 4.0,
         },
         "OCC_LOG_001": {
             "title": "Warehouse Inventory Coordinator",
             "sector": "Logistics",
-            "nco_code": "4321.0102",  # Inventory Clerk in NCO-2015
-            "nco_title": "Inventory Clerk",
+            "nco_code": None,
+            "nco_title": None,
             "qp_code": "LSC/Q2108",
             "nsqf_level": 3.0,
         },
@@ -243,8 +238,8 @@ class TestDemoOccupationsTaxonomyIntegrity:
         "OCC_LOG_003": {
             "title": "Fleet Dispatcher",
             "sector": "Logistics",
-            "nco_code": "4323.9900",  # Residual category: Transport Clerks, Other
-            "nco_title": "Transport Clerks, Other",
+            "nco_code": None,
+            "nco_title": None,
             "qp_code": "LSC/Q1118",
             "nsqf_level": 4.0,
         },
@@ -298,8 +293,8 @@ class TestApiTaxonomyExposure:
         records = result.get("results", [])
         assert len(records) > 0
 
-        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_002"}
-        mapped_ids = {"OCC_IT_003", "OCC_MFG_001", "OCC_MFG_002", "OCC_MFG_003", "OCC_LOG_001", "OCC_LOG_003"}
+        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"}
+        mapped_ids = {"OCC_IT_003", "OCC_MFG_001", "OCC_MFG_002", "OCC_MFG_003"}
 
         for rec in records:
             assert "nco_code" in rec
@@ -315,13 +310,10 @@ class TestApiTaxonomyExposure:
                 assert rec["nco_code"] is not None
                 assert rec["nco_title"] is not None
 
-            # All 9 demo roles have verified QPs
+            # All 9 demo roles have verified QPs and NSQF levels
             assert rec["qp_code"] is not None
-            if occ_id == "OCC_MFG_001":
-                assert rec["nsqf_level"] is None, "OCC_MFG_001 must have null nsqf_level as of 11-Oct-2026"
-            else:
-                assert rec["nsqf_level"] is not None
-                assert 1.0 <= rec["nsqf_level"] <= 10.0
+            assert rec["nsqf_level"] is not None
+            assert 1.0 <= rec["nsqf_level"] <= 10.0
 
     def test_forecasting_api_includes_taxonomy(self):
         """Forecast items include taxonomy fields, preserving None for unmapped roles."""
@@ -331,7 +323,7 @@ class TestApiTaxonomyExposure:
         items = result.get("results", [])
         assert len(items) > 0
 
-        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_002"}
+        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"}
 
         for item in items:
             assert "nco_code" in item
@@ -348,8 +340,5 @@ class TestApiTaxonomyExposure:
                 assert item["nco_title"] is not None
 
             assert item["qp_code"] is not None
-            if occ_id == "OCC_MFG_001":
-                assert item["nsqf_level"] is None, "OCC_MFG_001 must have null nsqf_level as of 11-Oct-2026"
-            else:
-                assert item["nsqf_level"] is not None
-                assert 1.0 <= item["nsqf_level"] <= 10.0
+            assert item["nsqf_level"] is not None
+            assert 1.0 <= item["nsqf_level"] <= 10.0

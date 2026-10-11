@@ -64,15 +64,15 @@ def is_cohort_placement_matured(period: str, ref_date: date = REFERENCE_DATE) ->
 
 OCCUPATIONS: List[Tuple[str, ...]] = [
     # occupation_id, occupation_title, sector, trade, nco_code, nco_title, qp_code, qp_title, nsqf_level
-    ("OCC_IT_001", "Cloud Infrastructure Associate", "IT/ITeS", "Cloud Computing", "", "", "SSC/Q8304", "Cloud Infrastructure Analyst", "5.0"),
-    ("OCC_IT_002", "Data Quality Analyst", "IT/ITeS", "Data & Analytics", "", "", "SSC/Q8101", "AI – Data Quality Analyst", "5.0"),
+    ("OCC_IT_001", "Cloud Infrastructure Associate", "IT/ITeS", "Cloud Computing", "", "", "SSC/Q8304", "Cloud Infrastructure Analyst", "6.0"),
+    ("OCC_IT_002", "Data Quality Analyst", "IT/ITeS", "Data & Analytics", "", "", "SSC/Q8101", "AI – Data Quality Analyst", "6.0"),
     ("OCC_IT_003", "Full-Stack Web Developer", "IT/ITeS", "Software Engineering", "2513.0101", "Web Developer", "SSC/Q0503", "Web Developer", "4.0"),
-    ("OCC_MFG_001", "CNC Machine Operator", "Manufacturing", "Precision Machining", "7223.5001", "Machining Technician / CNC Operator", "CSC/Q0115", "CNC Operator Turning", ""),
+    ("OCC_MFG_001", "CNC Machine Operator", "Manufacturing", "Precision Machining", "7223.5001", "Machining Technician / CNC Operator", "CSC/Q0115", "CNC Operator Turning", "4.0"),
     ("OCC_MFG_002", "Industrial Automation Technician", "Manufacturing", "Mechatronics", "7412.0101", "Automation Specialist", "IAS/Q5601", "Industrial Automation Technician", "4.0"),
-    ("OCC_MFG_003", "Electric Vehicle Assembly Technician", "Manufacturing", "Automotive", "8211.1201", "Vehicle Assembly Fitter", "ASC/Q3605", "Electric Vehicle Assembly Technician", "3.5"),
-    ("OCC_LOG_001", "Warehouse Inventory Coordinator", "Logistics", "Warehousing", "4321.0102", "Inventory Clerk", "LSC/Q2108", "Inventory Clerk", "3.0"),
+    ("OCC_MFG_003", "Electric Vehicle Assembly Technician", "Manufacturing", "Automotive", "8211.1201", "Vehicle Assembly Fitter", "ASC/Q3605", "Electric Vehicle Assembly Technician", "4.0"),
+    ("OCC_LOG_001", "Warehouse Inventory Coordinator", "Logistics", "Warehousing", "", "", "LSC/Q2108", "Inventory Clerk", "3.0"),
     ("OCC_LOG_002", "Cold Chain Logistics Supervisor", "Logistics", "Cold Chain", "", "", "LSC/Q8703", "Refrigerated Storage Unit Supervisor", "5.0"),
-    ("OCC_LOG_003", "Fleet Dispatcher", "Logistics", "Fleet Management", "4323.9900", "Transport Clerks, Other", "LSC/Q1118", "Transport Coordinator", "4.0"),
+    ("OCC_LOG_003", "Fleet Dispatcher", "Logistics", "Fleet Management", "", "", "LSC/Q1118", "Transport Coordinator", "4.0"),
 ]
 
 GEOGRAPHIES: List[Tuple[str, str, str, str]] = [

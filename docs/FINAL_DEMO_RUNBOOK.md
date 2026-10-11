@@ -95,7 +95,7 @@ This sequence guides the jury through the end-to-end policy workflow of SkillPul
    - **Key Demand Drivers:** High employer diversity (58 active employers, score 97.2), wage attractiveness index (125.7 pts, score 80.2), and steady demand growth (+8.1% trailing 3-month momentum).
 4. **Demonstrate Official Taxonomy Rigor:**
    - Expand the occupation taxonomy metadata panel.
-   - Point out that **Qualification Pack is `SSC/Q8304`** (*Cloud Infrastructure Analyst*, NSQF Level 5.0, IT-ITeS SSC).
+   - Point out that **Qualification Pack is `SSC/Q8304`** (*Cloud Infrastructure Analyst*, NSQF Level 6.0, IT-ITeS SSC).
    - **Defensible Honesty:** Explain why the specific NCO leaf code is transparently **`null`**: In NCO-2015, code `2522.0100` is verbatim *Database Administrator*, and Unit `2522` contains no specific leaf code for Cloud Infrastructure. In accordance with national data governance principles, broad family codes are not forced as specific leaf codes.
 
 ---
@@ -110,7 +110,7 @@ This sequence guides the jury through the end-to-end policy workflow of SkillPul
    - **Demand Index Score:** **73.1 / 100** vs. **Supply Output Index:** **17.0 / 100**
    - **Relative Mismatch Score:** **+56.1** (Policy Classification: **`Demand Pressure`**)
    - **Diagnostic Insight:** Dharwad's precision manufacturing belt shows high hiring intensity (148 postings, score 83.0) while local ITI/polytechnic certification output lags substantially (3-Month certified throughput: 137 candidates).
-   - **Taxonomy Note:** Mapped to exact NCO-2015 code **`7223.5001`** (*Machining Technician / CNC Operator*) and QP **`CSC/Q0115`** (*CNC Operator Turning*). The NSQF level is recorded as unresolved (`null`) because Version 2.0 (Level 4.0) validity expired on 31 March 2025, while legacy Version 1.0 was Level 3.0.
+   - **Taxonomy Note:** Mapped to exact NCO-2015 code **`7223.5001`** (*Machining Technician / CNC Operator*) and QP **`CSC/Q0115`** (*CNC Operator Turning*, NSQF Level 4.0, Capital Goods SSC).
 3. **Contrast with Supply Pressure (Saturation):**
    - **District:** `KA_BLR_U` (Bengaluru Urban)
    - **Occupation:** `Electric Vehicle Assembly Technician` (`OCC_MFG_003`)
@@ -196,15 +196,15 @@ Refer to this verified mapping table for the nine demo benchmark occupations:
 
 | Occupation ID | Demo Occupation Title | Sector | Vocational Trade | Verified NCO-2015 Code & Title | Verified QP/NOS Code & Title | NSQF Level | Verification Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| `OCC_IT_001` | Cloud Infrastructure Associate | IT/ITeS | Cloud Computing | *None* (Unmapped) | `SSC/Q8304`<br>Cloud Infrastructure Analyst | 5.0 | Broad Family 2522 only; specific leaf unmapped |
-| `OCC_IT_002` | Data Quality Analyst | IT/ITeS | Data & Analytics | *None* (Unmapped) | `SSC/Q8101`<br>AI – Data Quality Analyst | 5.0 | Broad Family 2521 only; 2521.0200 does not exist |
+| `OCC_IT_001` | Cloud Infrastructure Associate | IT/ITeS | Cloud Computing | *None* (Unmapped) | `SSC/Q8304`<br>Cloud Infrastructure Analyst | 6.0 | Broad Family 2522 only; specific leaf unmapped |
+| `OCC_IT_002` | Data Quality Analyst | IT/ITeS | Data & Analytics | *None* (Unmapped) | `SSC/Q8101`<br>AI – Data Quality Analyst | 6.0 | Broad Family 2521 only; 2521.0200 does not exist |
 | `OCC_IT_003` | Full-Stack Web Developer | IT/ITeS | Software Engineering | **2513.0101**<br>Web Developer | `SSC/Q0503`<br>Web Developer | 4.0 | Strong semantic match |
-| `OCC_MFG_001` | CNC Machine Operator | Manufacturing | Precision Machining | **7223.5001**<br>Machining Technician / CNC Operator | `CSC/Q0115`<br>CNC Operator Turning | *Unresolved* | NCO exact match; NSQF unresolved (v2.0 L4 expired 31-Mar-2025; v1.0 L3) |
+| `OCC_MFG_001` | CNC Machine Operator | Manufacturing | Precision Machining | **7223.5001**<br>Machining Technician / CNC Operator | `CSC/Q0115`<br>CNC Operator Turning | 4.0 | NCO exact match; Capital Goods SSC v2.0 |
 | `OCC_MFG_002` | Industrial Automation Technician | Manufacturing | Mechatronics | **7412.0101**<br>Automation Specialist | `IAS/Q5601`<br>Industrial Automation Technician | 4.0 | Verified IASC QP (corrected from invalid Q8004) |
-| `OCC_MFG_003` | Electric Vehicle Assembly Technician | Manufacturing | Automotive | **8211.1201**<br>Vehicle Assembly Fitter | `ASC/Q3605`<br>Electric Vehicle Assembly Technician | 3.5 | NCO semantic proxy; official NQR level 3.5 |
-| `OCC_LOG_001` | Warehouse Inventory Coordinator | Logistics | Warehousing | **4321.0102**<br>Inventory Clerk | `LSC/Q2108`<br>Inventory Clerk | 3.0 | Strong semantic match to NCO 4321.0102 |
+| `OCC_MFG_003` | Electric Vehicle Assembly Technician | Manufacturing | Automotive | **8211.1201**<br>Vehicle Assembly Fitter | `ASC/Q3605`<br>Electric Vehicle Assembly Technician | 4.0 | NCO semantic proxy; ASDC standard Level 4.0 |
+| `OCC_LOG_001` | Warehouse Inventory Coordinator | Logistics | Warehousing | *None* (Unmapped) | `LSC/Q2108`<br>Inventory Clerk | 3.0 | Broad Family 4321 only; specific leaf unmapped |
 | `OCC_LOG_002` | Cold Chain Logistics Supervisor | Logistics | Cold Chain | *None* (Unmapped) | `LSC/Q8703`<br>Refrigerated Storage Unit Supervisor | 5.0 | Broad Family 1324 only; specific leaf unmapped |
-| `OCC_LOG_003` | Fleet Dispatcher | Logistics | Fleet Management | **4323.9900**<br>Transport Clerks, Other | `LSC/Q1118`<br>Transport Coordinator | 4.0 | Residual category match |
+| `OCC_LOG_003` | Fleet Dispatcher | Logistics | Fleet Management | *None* (Unmapped) | `LSC/Q1118`<br>Transport Coordinator | 4.0 | Broad Family 4323 only; specific leaf unmapped |
 
 *Data Governance Principle:* Where official gazetted leaf codes or active qualification approvals do not exist, fields are left `null` rather than fabricating certainty.
 

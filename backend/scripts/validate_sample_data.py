@@ -506,7 +506,7 @@ def main() -> None:
     print(f"  • Cohort Funnel Invariant: Verified (Placements <= Certifications <= Completions <= Enrolments <= Sanctioned Seats)")
     print(f"  • Supply Cohort Semantics: Concluding batch lifecycle tracking with 90-day placement follow-up")
     print(f"  • Synthetic Transparency:  100% observation records explicitly marked is_synthetic=True")
-    print(f"  • Taxonomy Integrity:      Zero fabricated NCO codes (unverified left null)\n")
+    print(f"  • Taxonomy Integrity:      Zero fabricated NCO codes (unverified left null; NSQF levels 3.0 to 6.0)\n")
 
     # 6. Error reporting and exit code
     if errors:

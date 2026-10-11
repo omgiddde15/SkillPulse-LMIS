@@ -57,11 +57,11 @@ Defines occupational entities normalized into standardized industrial and vocati
 | `occupation_title` | String | No | Text | 2 to 128 characters | Canonical, industry-standard title of the occupation. |
 | `sector` | String | No | Text | `IT/ITeS`, `Manufacturing`, `Logistics`, etc. | Broad economic sector classification. |
 | `trade` | String | No | Text | 2 to 64 characters | Sub-specialization, trade cluster, or skill family. |
-| `nco_code` | String | **Yes** | 4- or 8-digit NCO | Regex `^\d{4}(\.?\d{2,4})?$` (e.g., `2522.0100`, `7223.5001`) | **Verified NCO Code**. Directorate General of Employment (DGE) National Classification of Occupations 2015 code. Null if unverified. |
+| `nco_code` | String | **Yes** | 4- or 8-digit NCO | Regex `^\d{4}(\.?\d{2,4})?$` (e.g., `2513.0101`, `7223.5001`) | **Verified NCO Code**. Directorate General of Employment (DGE) National Classification of Occupations 2015 code. Null if unverified or broad-family only. |
 | `nco_title` | String | **Yes** | Text | 2 to 128 characters | Official occupation title as gazetted under the corresponding NCO-2015 code. |
 | `qp_code` | String | **Yes** | Alphanumeric Code | Official QP code (e.g., `SSC/Q8304`, `CSC/Q0115`) | Official Qualification Pack / National Occupational Standard identifier approved by NCVET / Sector Skill Councils. |
 | `qp_title` | String | **Yes** | Text | 2 to 128 characters | Official Qualification Pack title in the National Qualifications Register (NQR). |
-| `nsqf_level` | Float | **Yes** | Numeric Level | $1.0 \le \text{level} \le 10.0$ (e.g., `3.0`, `3.5`, `4.0`, `5.0`, `6.0`) | National Skills Qualifications Framework competency level formally notified in qualification specifications. Null if unverified or unresolved (e.g., expired NQR accreditation validity or multi-version review in transition). |
+| `nsqf_level` | Float | **Yes** | Numeric Level | $1.0 \le \text{level} \le 10.0$ (e.g., `3.0`, `4.0`, `5.0`, `6.0`) | National Skills Qualifications Framework competency level formally notified in qualification specifications. Null if unverified. |
 
 ---
 
