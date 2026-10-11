@@ -1,0 +1,155 @@
+/**
+ * SkillPulse LMIS API Client Module
+ *
+ * Uses relative paths (/api/v1/..., /health) to route through Vite proxy during development.
+ * Strictly adheres to backend schemas without hardcoded fallbacks or simulated data.
+ */
+
+async function request(url, options = {}) {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}: ${res.statusText}`;
+      try {
+        const errorJson = await res.json();
+        if (errorJson && errorJson.detail) {
+          detail = Array.isArray(errorJson.detail)
+            ? errorJson.detail.map(d => d.msg || JSON.stringify(d)).join(', ')
+            : errorJson.detail;
+        }
+      } catch {
+        // Ignore json parse error and keep statusText
+      }
+      throw new Error(detail);
+    }
+
+    return await res.json();
+  } catch (err) {
+    if (err.name === 'TypeError' && err.message.includes('fetch')) {
+      throw new Error('Unable to reach SkillPulse backend server. Please verify FastAPI is running at http://127.0.0.1:8000.');
+    }
+    throw err;
+  }
+}
+
+/**
+ * Health Check Endpoint
+ * @returns {Promise<{ status: string }>}
+ */
+export async function fetchHealth() {
+  return request('/health');
+}
+
+/**
+ * Fetch Demand Index Results
+ * @param {Object} params Query parameters
+ * @param {string} [params.period] Monthly period (YYYY-MM)
+ * @param {string} [params.state_code] State code (KA, MH, TS)
+ * @param {string} [params.district_id] District code
+ * @param {string} [params.sector] Sector name
+ * @param {number} [params.limit] Max items to return
+ * @returns {Promise<Object>}
+ */
+export async function fetchDemandIndex(params = {}) {
+  const query = new URLSearchParams();
+  if (params.period) query.set('period', params.period);
+  if (params.state_code) query.set('state_code', params.state_code);
+  if (params.district_id) query.set('district_id', params.district_id);
+  if (params.sector) query.set('sector', params.sector);
+  if (params.limit !== undefined && params.limit !== null) query.set('limit', params.limit);
+
+  const qs = query.toString();
+  const endpoint = qs ? `/api/v1/demand-index?${qs}` : '/api/v1/demand-index';
+  return request(endpoint);
+}
+
+/**
+ * Fetch Gap Analysis & Relative Mismatch Results
+ * @param {Object} params Query parameters
+ * @param {string} [params.period] Monthly period (YYYY-MM)
+ * @param {string} [params.state_code] State code
+ * @param {string} [params.district_id] District code
+ * @param {string} [params.sector] Sector name
+ * @param {string} [params.classification] Classification filter
+ * @param {number} [params.limit] Max items to return
+ * @returns {Promise<Object>}
+ */
+export async function fetchGapAnalysis(params = {}) {
+  const query = new URLSearchParams();
+  if (params.period) query.set('period', params.period);
+  if (params.state_code) query.set('state_code', params.state_code);
+  if (params.district_id) query.set('district_id', params.district_id);
+  if (params.sector) query.set('sector', params.sector);
+  if (params.classification) query.set('classification', params.classification);
+  if (params.limit !== undefined && params.limit !== null) query.set('limit', params.limit);
+
+  const qs = query.toString();
+  const endpoint = qs ? `/api/v1/gap-analysis?${qs}` : '/api/v1/gap-analysis';
+  return request(endpoint);
+}
+
+/**
+ * Fetch Forecasts (for subsequent tabs / preview)
+ */
+export async function fetchForecasts(params = {}) {
+  const query = new URLSearchParams();
+  if (params.period) query.set('period', params.period);
+  if (params.horizon) query.set('horizon', params.horizon);
+  if (params.state_code) query.set('state_code', params.state_code);
+  if (params.district_id) query.set('district_id', params.district_id);
+  if (params.sector) query.set('sector', params.sector);
+  if (params.limit !== undefined && params.limit !== null) query.set('limit', params.limit);
+
+  const qs = query.toString();
+  const endpoint = qs ? `/api/v1/forecasts?${qs}` : '/api/v1/forecasts';
+  return request(endpoint);
+}
+
+/**
+ * Fetch Early Warning Alerts (for subsequent tabs / preview)
+ */
+export async function fetchAlerts(params = {}) {
+  const query = new URLSearchParams();
+  if (params.period) query.set('period', params.period);
+  if (params.severity) query.set('severity', params.severity);
+  if (params.alert_type) query.set('alert_type', params.alert_type);
+  if (params.horizon) query.set('horizon', params.horizon);
+  if (params.state_code) query.set('state_code', params.state_code);
+  if (params.district_id) query.set('district_id', params.district_id);
+  if (params.sector) query.set('sector', params.sector);
+  if (params.limit !== undefined && params.limit !== null) query.set('limit', params.limit);
+
+  const qs = query.toString();
+  const endpoint = qs ? `/api/v1/alerts?${qs}` : '/api/v1/alerts';
+  return request(endpoint);
+}
+
+/**
+ * Submit Training-Seat Allocation Simulation Scenario
+ * @param {Object} payload Simulation parameters
+ * @param {string} payload.period Base reporting period (YYYY-MM)
+ * @param {number} payload.horizon_months Forecast horizon (3, 6, 12)
+ * @param {string} payload.district_id District identifier
+ * @param {string} payload.occupation_id Occupation identifier
+ * @param {number} payload.proposed_seats_per_cohort Proposed seats per cohort (1-5000)
+ * @param {number} [payload.posting_to_opening_multiplier] Assumed multiplier (k) converting postings to openings (0.5-1.5)
+ * @param {number} [payload.local_availability_factor] Assumed share (alpha) of certified throughput available locally (0.4-1.0)
+ * @returns {Promise<Object>}
+ */
+export async function postSeatAllocation(payload) {
+  return request('/api/v1/simulations/seat-allocation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+

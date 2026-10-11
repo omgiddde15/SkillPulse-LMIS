@@ -1,0 +1,1298 @@
+/**
+ * SkillPulse LMIS — Comprehensive Centralized Bilingual Dictionary (EN / हिन्दी)
+ *
+ * Designed for Indian government, skills development authorities (MSDE, NSDC, NCVET),
+ * and state TVET planners. Uses clear, natural, authoritative Hindi terminology.
+ */
+
+export const translations = {
+  en: {
+    // Brand & Application Shell
+    'app.title': 'Workforce Intelligence & Skill Gap Decision Engine',
+    'app.subtitle': 'Labour Market Information System (LMIS) • Smart India Hackathon 2026',
+    'app.brandName': 'SkillPulse',
+    'app.brandSubtitle': 'LMIS Engine',
+    'app.brandTag': 'Workforce Intelligence • SIH26246',
+    'app.demoEnv': 'DEMO ENVIRONMENT',
+    'app.compactDemoNotice': 'Synthetic Demo Data — Pilot Testing Only',
+    'app.demoBannerText': 'SYNTHETIC DEMO DATA — Generated pilot observations calibrated for decision-support prototyping. Scores are relative indices, not verified headcount shortages.',
+    'app.demoFullDisclaimer': 'SYNTHETIC DEMO DATA — Generated pilot observations calibrated for decision-support prototyping. Scores are relative indices, not verified headcount shortages.',
+    'app.loading': 'Querying SkillPulse LMIS backend for reporting period...',
+    'app.backendOffline': 'Unable to load workforce analytics data from backend service.',
+    'app.refreshError': 'Unable to refresh workforce analytics data from backend.',
+    'app.apiStatus': 'API Status',
+    'app.statusHealthy': 'Backend Online',
+    'app.statusChecking': 'Checking API...',
+    'app.statusOffline': 'Backend Offline',
+    'app.coreModules': 'Core Modules',
+    'app.comingSoon': 'Coming next',
+
+    // Navigation Items
+    'nav.overview': 'Overview',
+    'nav.demand': 'Demand Intelligence',
+    'nav.gap': 'Gap Analysis',
+    'nav.forecasts': 'Forecasts',
+    'nav.alerts': 'Early-Warning Alerts',
+    'nav.simulator': 'Training-Seat Simulator',
+
+    // Common Actions, Buttons & Form Labels
+    'common.reportingPeriod': 'Reporting Period',
+    'common.activePilot': 'Active Pilot',
+    'common.refresh': 'Refresh',
+    'common.refreshing': 'Refreshing...',
+    'common.refreshTooltip': 'Refresh dashboard metrics from backend',
+    'common.state': 'State',
+    'common.district': 'District',
+    'common.sector': 'Sector',
+    'common.trade': 'Trade',
+    'common.occupation': 'Occupation',
+    'common.classification': 'Classification',
+    'common.horizon': 'Forecast Horizon',
+    'common.severity': 'Severity',
+    'common.alertType': 'Alert Type',
+    'common.allStates': 'All States (3)',
+    'common.allDistricts': 'All Districts',
+    'common.allSectors': 'All Sectors (3)',
+    'common.allClassifications': 'All Classifications',
+    'common.allHorizons': 'All Horizons (3, 6, 12M)',
+    'common.allSeverities': 'All Severity Tiers (4)',
+    'common.allAlertTypes': 'All Alert Types',
+    'common.resetFilters': 'Reset Filters',
+    'common.exportCsv': 'Export CSV',
+    'common.exporting': 'Exporting...',
+    'common.inspect': 'Inspect',
+    'common.viewing': 'Viewing',
+    'common.action': 'Action',
+    'common.rank': 'Rank',
+    'common.pts': 'pts',
+    'common.monthsAhead': 'Months Ahead',
+    'common.na': 'N/A',
+    'common.close': 'Close',
+    'common.closeBreakdown': 'Close Breakdown',
+    'common.closeDetail': 'Close Detail',
+    'common.tryAgain': 'Try Again',
+    'common.retry': 'Retry',
+    'common.showingRecords': 'Showing {count} records',
+    'common.showingAlerts': 'Showing {count} active alerts',
+    'common.noData': 'No records match the selected filter criteria.',
+    'table.occupationSector': 'Occupation & Sector',
+    'table.districtState': 'District / State',
+
+    // Classifications & Severities
+    'class.demandPressure': 'Demand Pressure',
+    'class.supplyPressure': 'Supply Pressure',
+    'class.balanced': 'Balanced',
+    'severity.critical': 'Critical',
+    'severity.high': 'High',
+    'severity.medium': 'Medium',
+    'severity.low': 'Low',
+
+    // State & Sector Canonical Labels
+    'state.KA': 'Karnataka',
+    'state.MH': 'Maharashtra',
+    'state.TS': 'Telangana',
+    'sector.it': 'IT/ITeS',
+    'sector.mfg': 'Manufacturing',
+    'sector.log': 'Logistics',
+
+    // Overview Page
+    'overview.cycleCardTitle': 'Reporting Cycle',
+    'overview.monitoredPairs': '{count} District-Occupations Monitored',
+    'overview.connectedLive': 'Connected (Live :8000) • 3 States • 6 Districts',
+    'overview.highestDemandTitle': 'Highest Demand Intensity',
+    'overview.noQualifying': 'No qualifying cases',
+    'overview.noDemandInCycle': 'No demand observations in this cycle',
+    'overview.strongestDemandPressureTitle': 'Strongest Demand Pressure',
+    'overview.demandOutpacesThroughput': '{district}, {state} • Demand outpaces throughput ({count} cases ≥ +15)',
+    'overview.demandThresholdNote': 'Threshold: Score ≥ +15.0',
+    'overview.noDemandPressure': 'No district-occupation exhibits demand pressure in this cycle',
+    'overview.strongestSupplyPressureTitle': 'Strongest Supply Pressure',
+    'overview.throughputOutpacesDemand': '{district}, {state} • Throughput outpaces demand ({count} cases ≤ −15)',
+    'overview.supplyThresholdNote': 'Threshold: Score ≤ −15.0',
+    'overview.noSupplyPressure': 'No district-occupation exhibits supply pressure in this cycle',
+    'overview.tableTitle': 'Relative Demand-Supply Mismatch Rankings',
+    'overview.tableSubtitle': 'Cross-sectional ranking comparing composite demand index against recent 3-month certification output',
+    'overview.filterTop10': 'Top 10 Ranks',
+    'overview.filterDemandPressure': 'Demand Pressure ({count})',
+    'overview.filterSupplyPressure': 'Supply Pressure ({count})',
+    'overview.thRank': 'Rank',
+    'overview.thOccupationSector': 'Occupation & Sector',
+    'overview.thDistrictState': 'District / State',
+    'overview.thDemandIndex': 'Demand Index',
+    'overview.thSupplyIndex': 'Supply Output Index',
+    'overview.thMismatchScore': 'Mismatch Score',
+    'overview.thClassification': 'Classification',
+    'overview.thPrimaryFactor': 'Primary Explanatory Factor',
+    'overview.noMatchingRows': 'No matching mismatch records found for this view.',
+    'overview.defaultFactor': 'Relative mismatch evaluated against cross-sectional baseline.',
+    'overview.methodologyTitle': 'Methodology & Interpretability Disclosure',
+    'overview.methodologySyntheticTitle': 'Synthetic Pilot Observations:',
+    'overview.methodologySyntheticText': 'All metrics displayed originate from synthetic pilot datasets spanning October 2024 through September 2026, calibrated to regional economic profiles across Karnataka, Maharashtra, and Telangana.',
+    'overview.methodologyPercentileTitle': 'Relative Percentile Index:',
+    'overview.methodologyPercentileText': 'The Relative Mismatch Score represents the difference between cross-sectional percentile ranks (Demand Index − Supply Output Index), bounded between −100.0 and +100.0. Scores above +15 indicate relative demand pressure; scores below −15 indicate relative supply pressure. These scores denote relative ranking imbalances, not absolute deficit counts or worker shortages.',
+    'overview.methodologyPlacementTitle': 'Placement Maturity Safeguard:',
+    'overview.methodologyPlacementText': 'Training batches completing within the 90-day tracking window are explicitly marked as pending follow-up and are excluded from placement rate calculations to prevent premature assessment bias.',
+
+    // Demand Intelligence Page
+    'demand.introTitle': 'SkillPulse Demand Intelligence Engine',
+    'demand.introDesc': 'Evaluates multi-source employer hiring intent across 5 explainable components into a cross-sectional percentile composite score (0 to 100). Combines job posting volumes, trailing 3-month growth velocity, vacancy persistence, recruitment employer diversity, and wage attractiveness.',
+    'demand.matchingPairsTitle': 'Matching Pairs',
+    'demand.pairsEvaluated': 'District-Occupation Pairs Evaluated',
+    'demand.periodBaseline': 'Period: {period} • Cross-sectional baseline',
+    'demand.avgDemandScoreTitle': 'Average Demand Score',
+    'demand.cohortMeanScore': 'Filtered Cohort Mean Score',
+    'demand.normalizedRankDist': 'Normalized mid-point rank distribution',
+    'demand.tableTitle': 'Composite Demand Index Rankings',
+    'demand.tableSubtitle': 'Click any row to inspect component breakdown, raw signal metrics, and driver weights.',
+    'demand.thRank': 'Rank',
+    'demand.thOccupationTrade': 'Occupation & Trade',
+    'demand.thSector': 'Sector',
+    'demand.thDistrictState': 'District / State',
+    'demand.thDemandScore': 'Demand Score',
+    'demand.thDataCoverage': 'Data Coverage',
+    'demand.thDrivers': 'Key Explanatory Drivers',
+    'demand.noMatchingPairs': 'No district-occupation pairs match the selected filters.',
+    'demand.standardBaseline': 'Standard baseline',
+    'demand.drawerTitle': 'Component Breakdown: {occupation} ({district}, {state})',
+    'demand.drawerMeta': 'Sector: {sector} • Trade: {trade} • Composite Demand Score: {score}/100 (Rank #{rank})',
+    'demand.c1Name': '1. Online Posting Volume',
+    'demand.c1Weight': 'Weight: 30%',
+    'demand.c1Unit': 'postings',
+    'demand.c1Subtext': 'Contribution: {contrib} pts to composite index.',
+    'demand.c2Name': '2. Demand Growth Velocity',
+    'demand.c2Weight': 'Weight: 25%',
+    'demand.c2Subtext': 'Growth Interpretation: Trailing 3-month average vs preceding 3-month average. A fractional rate of {raw} indicates a {pct}% rate of growth.',
+    'demand.c3Name': '3. Vacancy Persistence',
+    'demand.c3Weight': 'Weight: 15%',
+    'demand.c3Unit': 'pts',
+    'demand.c3Subtext': 'Measures duration job postings remain active before fulfillment.',
+    'demand.c4Name': '4. Employer Diversity',
+    'demand.c4Weight': 'Weight: 15%',
+    'demand.c4Unit': 'employers',
+    'demand.c4Subtext': 'Number of unique distinct hiring employers posting vacancies.',
+    'demand.c5Name': '5. Wage Attractiveness Index',
+    'demand.c5Weight': 'Weight: 15%',
+    'demand.c5Unit': 'index pts',
+    'demand.c5Subtext': 'Offered wages normalized against regional cost-of-living baselines.',
+    'demand.driversHeader': 'Key Explanatory Drivers for this Occupation',
+    'demand.provenanceLabel': 'Data Provenance:',
+    'demand.syntheticPilot': 'Synthetic Pilot Observation',
+    'demand.adminSignal': 'Validated Administrative Signal',
+    'demand.missingSignalsLabel': 'Missing Signals:',
+    'demand.noneComplete': 'None (100% complete)',
+    'demand.methodologyTitle': 'Demand Index Methodology & Assumptions',
+    'demand.methodologyPercentileTitle': 'Cross-Sectional Percentile Index:',
+    'demand.methodologyPercentileText': 'All demand scores are relative percentile ranks (0 to 100) computed across all 54 monitored district-occupation pairs in the current reporting period. Scores indicate relative recruitment intensity, not an absolute number of open jobs.',
+    'demand.methodologyWeightsTitle': 'Prototype Weights:',
+    'demand.methodologyWeightsText': 'Component weights (Posting: 30%, Growth: 25%, Persistence: 15%, Diversity: 15%, Wage: 15%) are prototype policy assumptions designed to prioritize hiring volume and trajectory over spot signals.',
+    'demand.methodologyDemoTitle': 'Synthetic Demo Status:',
+    'demand.methodologyDemoText': 'Historical monthly job postings spanning October 2024 to September 2026 are calibrated synthetic estimates for Smart India Hackathon decision-support prototyping.',
+
+    // Gap Analysis Page
+    'gap.introTitle': 'SkillPulse Relative Demand-Supply Gap Analysis Engine',
+    'gap.introDesc': 'Evaluates cross-sectional relative mismatch scores between the composite Demand Index and TVET certification throughput output index (-100 to +100). Applies prototype +/-15 decision thresholds to classify priority cohorts into Demand Pressure, Balanced, or Supply Pressure, enriched with training funnel metrics and 90-day placement tracking maturity safeguards.',
+    'gap.demandPressureCard': 'Demand Pressure Cohorts',
+    'gap.supplyPressureCard': 'Supply Pressure Cohorts',
+    'gap.balancedCard': 'Balanced Cohorts',
+    'gap.scoreThresholdPos': 'Score ≥ +15.0 pts',
+    'gap.scoreThresholdNeg': 'Score ≤ −15.0 pts',
+    'gap.neutralBand': 'Within ±15.0 neutral band',
+    'gap.tableTitle': 'Relative Gap Analysis & TVET Training Funnel Results',
+    'gap.tableSubtitle': 'Click any row to inspect training capacity, funnel yield attrition, and verified official taxonomy mappings.',
+    'gap.thNcoCode': 'NCO Code',
+    'gap.thDemandIndex': 'Demand Index',
+    'gap.thSupplyOutput': 'Supply Output Index',
+    'gap.thMismatch': 'Mismatch Score',
+    'gap.drawerTitle': 'Diagnostic Deep-Dive: {occupation} ({district}, {state})',
+    'gap.drawerMeta': 'Sector: {sector} • Trade: {trade} • Mismatch Score: {score} pts ({classification})',
+    'gap.section1Title': '1. Mismatch Metrics & Ranking Breakdown',
+    'gap.demandComposite': 'Demand Composite Score',
+    'gap.supplyOutputRank': 'Supply Output Percentile Rank',
+    'gap.relativeMismatchScore': 'Relative Mismatch Score',
+    'gap.demandRankLead': 'Demand rank leads supply throughput by {pts} percentile points across regional cohort.',
+    'gap.supplyRankLead': 'Supply throughput rank leads demand by {pts} percentile points across regional cohort.',
+    'gap.mismatchClassification': 'Mismatch Classification',
+    'gap.primaryDrivers': 'Primary Explanatory Drivers',
+    'gap.section2Title': '2. TVET Cohort Throughput & Capacity Funnel',
+    'gap.certVolume3m': '3-Month Certification Volume',
+    'gap.certVolume6m': '6-Month Certification Volume',
+    'gap.seatUtilization': 'Seat Utilisation Rate',
+    'gap.courseCompletion': 'Course Completion Rate',
+    'gap.assessmentCertification': 'Assessment Certification Rate',
+    'gap.placementRate': 'Placement Rate',
+    'gap.placementStatus': 'Placement Tracking Status',
+    'gap.pendingImmature': 'Pending (90-Day Immature Cohort)',
+    'gap.maturedComplete': 'Matured (Complete)',
+    'gap.sanctionedSeats': 'Sanctioned Seat Capacity',
+    'gap.funnelEnrolments': 'Enrolments',
+    'gap.funnelCompletions': 'Completions',
+    'gap.funnelCertifications': 'Certifications',
+    'gap.funnelPlacements': 'Placements',
+    'gap.totalPairs': 'Total Monitored Pairs',
+    'gap.filteredCases': 'Filtered Cross-Sectional Cases',
+    'gap.demandCardSubtext': 'Employer recruitment outpaces certified output',
+    'gap.supplyCardSubtext': 'Training throughput outpaces current postings',
+    'gap.balancedCardSubtext': 'Within expected equilibrium corridor',
+    'gap.thDemandComposite': 'Demand Score (Composite)',
+    'gap.thSupplyRank': 'Supply Rank (Output)',
+    'gap.indexCoverage': 'Index Coverage',
+    'gap.certifiedCandidates': 'certified candidates',
+    'gap.window': 'Window:',
+    'gap.placementTracking': 'Placement Tracking (90-Day Window)',
+    'gap.maturedCohort': '✓ Matured Cohort ({n} / {d})',
+    'gap.pendingFollowup': '⏳ Pending follow-up (Immature cohort)',
+    'gap.pendingFollowupNote': 'Batches concluded within the last 90 days are in active tracking. Pending status represents ongoing maturation, NOT a 0% placement outcome or data error.',
+    'gap.inputCoverage': 'Input Data Coverage:',
+    'gap.missingSignals': 'Missing Index Signals:',
+    'gap.noneComplete': 'None (Complete index inputs)',
+    'gap.trackingWindow': 'Tracking Window: 90 days',
+    'gap.formula': 'Formula:',
+    'gap.enrolledSanctioned': '{n} enrolled / {d} sanctioned seats',
+    'gap.completedEnrolled': '{n} completed / {d} enrolled',
+    'gap.certifiedCompleted': '{n} certified / {d} completed',
+    'gap.closeDiagnostics': '✕ Close Diagnostics',
+    'gap.section3Title': '3. Taxonomy & Qualification Concordance',
+    'gap.verifiedNcoCode': 'Verified NCO-2015 Code',
+    'gap.officialNcoTitle': 'Official NCO Title',
+    'gap.relevantQpCode': 'Relevant QP/NOS Code',
+    'gap.officialQpTitle': 'Official Qualification Title',
+    'gap.verifiedNsqfLevel': 'Verified NSQF Level',
+    'gap.unmappedBroad': 'Pending / Broad Family Only',
+    'gap.unresolvedLevel': 'Unresolved / Pending Re-Validation',
+    'gap.levelNote': 'Level {level}',
+    'gap.methodologyTitle': 'Gap Analysis Methodology & Governance Disclaimers',
+    'gap.methodologyFormulaTitle': 'Current-Period Mismatch Formula:',
+    'gap.methodologyFormulaText': 'The Relative Mismatch Score is computed as Demand Composite Score (0–100) − Supply Output Percentile Rank (0–100), bounded between −100.0 and +100.0 points. The Demand Composite Score is a weighted multi-signal demand index synthesizing posting volume (30%), demand growth (25%), vacancy persistence (15%), employer diversity (15%), and wage attractiveness (15%). These scores denote relative ranking imbalances across regional pilot series, NOT an absolute shortage or surplus of worker headcounts.',
+    'gap.methodologyDistinctionTitle': 'Distinction from Forecasted Mismatch:',
+    'gap.methodologyDistinctionText': 'Current-period gap analysis combines a multi-signal demand index with trailing certification throughput rank. In contrast, future-horizon forecasts and seat simulations calculate Forecast Postings Rank − Forecast Throughput Rank (pure single-quantity percentile rank difference). Because the two indicators use different formulas and underlying statistical distributions, they should not be compared directly as identical measures.',
+    'gap.methodologyThresholdTitle': 'Prototype Policy Thresholds (±15 Points):',
+    'gap.methodologyThresholdText': 'The +15.0 and −15.0 score thresholds are configurable prototype heuristics for decision support, not empirical or legally binding mandates. They do not establish equivalent real-world severity across current-period and forecasted metrics.',
+    'gap.methodologyPlacementTitle': 'Placement Maturity Guardrail:',
+    'gap.methodologyPlacementText': 'Under NSDC and DGT TVET reporting standards, candidate employment tracking requires a standardized 90-day post-certification follow-up window. Immature cohorts concluding within the last 90 days are strictly excluded from placement rates and remain null to prevent reporting bias.',
+    'gap.methodologySyntheticTitle': 'Synthetic Pilot Baseline:',
+    'gap.methodologySyntheticText': 'All gap analysis metrics are calibrated on synthetic pilot datasets generated for SIH26246 benchmark evaluation. Projections and mismatch scores are decision-support aids and require local stakeholder and employer validation.',
+
+
+    // Forecasts Page
+    'forecasts.introTitle': 'SkillPulse Time-Series Forecasting Engine',
+    'forecasts.introDesc': 'Projects monthly online job postings and certified candidate throughput across 3, 6, and 12-month future horizons using rolling-origin backtested models (Naive, 3-Month Moving Average, Linear Trend). Calculates Projected Relative Mismatch = Forecast Demand Rank (0–100) − Forecast Supply Rank (0–100).',
+    'forecasts.projectedCohortsTitle': 'Projected Cohorts',
+    'forecasts.pairsEvaluated': 'District-Occupation Pairs Evaluated',
+    'forecasts.targetHorizonPeriod': 'Target: {target} (Horizon: {h} Months Ahead)',
+    'forecasts.statusTitle': 'Forecasting Status',
+    'forecasts.validatedSeries': '{valid} Valid Series • {insuf} Insufficient History',
+    'forecasts.statusDesc': 'Minimum 6-month history requirement enforced',
+    'forecasts.activeModelsTitle': 'Active Models Evaluated',
+    'forecasts.modelsList': 'Linear Trend • 3M MA • Naive',
+    'forecasts.modelsDesc': 'Backtested via Rolling-Origin MAE selection',
+    'forecasts.highestDemandTitle': 'Highest Projected Demand',
+    'forecasts.tableTitle': 'Rolling-Origin Workforce Demand & Supply Forecasts',
+    'forecasts.tableSubtitle': 'Click any row to inspect backtesting accuracy, selected models, prediction intervals, and sensitivity scenario analysis.',
+    'forecasts.thBasePeriod': 'Base Period',
+    'forecasts.thTargetPeriod': 'Target Period',
+    'forecasts.thDemandForecast': 'Demand Forecast (Postings)',
+    'forecasts.thSupplyForecast': 'Supply Forecast (Output)',
+    'forecasts.thDemandRank': 'Demand Rank',
+    'forecasts.thSupplyRank': 'Supply Rank',
+    'forecasts.thProjectedMismatch': 'Projected Mismatch',
+    'forecasts.thProjectedClass': 'Projected Classification',
+    'forecasts.thBenchmarkRatio': 'Benchmark Ratio',
+    'forecasts.per100Postings': 'per 100 Postings',
+    'forecasts.drawerTitle': 'Forecast Diagnostics: {occupation} ({district}, {state})',
+    'forecasts.drawerMeta': 'Horizon: {h} Months Ahead • Target Period: {target} • Base: {base}',
+    'forecasts.demandModelHeader': '1. Demand Forecast Diagnostics (Online Job Postings)',
+    'forecasts.supplyModelHeader': '2. Supply Forecast Diagnostics (Certified Throughput)',
+    'forecasts.modelSelected': 'Model Selected:',
+    'forecasts.pointForecast': 'Point Forecast:',
+    'forecasts.predictionInterval': '80% Normal Prediction Interval:',
+    'forecasts.backtestMae': 'Backtest Out-of-Sample MAE:',
+    'forecasts.backtestWape': 'Backtest WAPE:',
+    'forecasts.modelLinearTrend': 'Linear Trend Model',
+    'forecasts.modelMa3': '3-Month Moving Average',
+    'forecasts.modelNaive': 'Last-Observation (Naive)',
+    'forecasts.projectedMismatchHeader': '3. Projected Relative Mismatch & Benchmark Ratio',
+    'forecasts.projectedMismatchScore': 'Projected Relative Mismatch Score:',
+    'forecasts.benchmarkRatioLabel': 'Training-to-Posting Benchmark Ratio:',
+    'forecasts.benchmarkRatioDesc': 'Raw benchmark ratio comparing certified throughput per 100 online postings.',
+    'forecasts.sensitivityHeader': '4. Assumption-Adjusted Pipeline Scenario',
+    'forecasts.multiplierK': 'Posting-to-Opening Multiplier (k):',
+    'forecasts.alphaFactor': 'Local Candidate Availability Factor (alpha):',
+    'forecasts.estimatedOpenings': 'Estimated Job Openings:',
+    'forecasts.effectiveSupply': 'Effective Local Certified Output:',
+    'forecasts.pipelineCoverageRate': 'Scenario Pipeline Coverage Rate:',
+    'forecasts.methodologyTitle': 'Forecasting Methodology, Intervals & Policy Disclaimers',
+
+    // Early-Warning Alerts Page
+    'alerts.introTitle': 'SkillPulse Early-Warning Intelligence & Telemetry Engine',
+    'alerts.introDesc': 'Scans multi-horizon workforce demand projections, training pipeline throughput, and historical trends to trigger explainable, prioritized policy alerts for TVET authorities and workforce planners.',
+    'alerts.criticalCard': 'Critical Severity Alerts',
+    'alerts.persistentCard': 'Persistent Pressures (≥2 Horizons)',
+    'alerts.emergingCard': 'Emerging Bottlenecks',
+    'alerts.guardrailsCard': 'Telemetry & Model Guardrails',
+    'alerts.cardCriticalTitle': 'Critical Severity',
+    'alerts.cardCriticalMeta': 'High-Urgency Decision Signals',
+    'alerts.cardCriticalSub': 'Extreme mismatch (≥30 pts) or structural persistence',
+    'alerts.cardHighTitle': 'High Severity',
+    'alerts.cardHighMeta': 'Standard Imbalance Triggers',
+    'alerts.cardHighSub': 'Crossed ±15 threshold at evaluated horizons',
+    'alerts.cardPersistentTitle': 'Persistent Signals',
+    'alerts.cardPersistentMeta': 'Multi-Horizon Verified (≥2 Horizons)',
+    'alerts.cardPersistentSub': 'Requires same mismatch direction at 3m, 6m, 12m',
+    'alerts.cardQualityTitle': 'Data Quality Warnings',
+    'alerts.cardQualityMeta': 'Telemetry & Model Guardrails',
+    'alerts.cardQualitySubZero': 'Zero data quality or WAPE anomalies',
+    'alerts.cardQualitySubElevated': 'Elevated backtesting error rate',
+    'alerts.tableTitle': 'Active Early-Warning Telemetry Signals',
+    'alerts.tableSubtitle': 'Click any alert row to inspect causal explanations, supporting horizon vectors, and suggested actions.',
+    'alerts.thSeverity': 'Severity',
+    'alerts.thAlertType': 'Alert Type',
+    'alerts.thPersistence': 'Persistence',
+    'alerts.thOccupationSector': 'Occupation & Sector',
+    'alerts.thDistrictState': 'District / State',
+    'alerts.thHorizon': 'Horizon',
+    'alerts.thSummary': 'Supporting Summary',
+    'alerts.noAlerts': 'No early-warning alerts match the selected filter criteria.',
+    'alerts.persistentBadge': 'Persistent (≥2H)',
+    'alerts.singleHorizonBadge': 'Single Horizon',
+    'alerts.persistentCountBadge': '🔁 Persistent ({count} horizons)',
+    'alerts.singleHorizonHBadge': 'Single Horizon ({h}m)',
+    'alerts.mismatchPts': 'Mismatch: {score} pts',
+    'alerts.supportingHorizons': 'Supporting: {horizons}',
+    'alerts.verifiedAnomaly': 'Verified anomaly trigger',
+    'alerts.drawerTitle': 'Alert Diagnostics: {title} ({district}, {state})',
+    'alerts.drawerMeta': 'Severity: {severity} • Horizon: {h}m • Category: {category}',
+    'alerts.persistenceHeader': 'Persistence Evaluation & Horizon Support',
+    'alerts.persistentConfirmed': '✓ Persistent Mismatch Confirmed',
+    'alerts.singleSignalOnly': 'Single-Horizon Signal Only',
+    'alerts.ruleApplied': 'Persistence Rule Applied:',
+    'alerts.singleHorizonNotice': 'This is a single-horizon signal evaluated at the +{h}-month horizon ({target}). Persistence rule requires threshold crossing at two or more supported horizons ({crossed} currently crossed).',
+    'alerts.causalExplanationTitle': 'Causal Explanation',
+    'alerts.thresholdApplied': 'Threshold Applied: ±{val} points',
+    'alerts.suggestedActionTitle': 'Suggested TVET / Policy Planning Action',
+    'alerts.humanLimitationsTitle': 'Human Decision-Support Limitations',
+    'alerts.humanNotice': 'Alerts serve as decision-support signals requiring qualitative human review and field verification. They do NOT constitute automated budget allocations or administrative decrees.',
+    'alerts.methodologyHeader': 'Early-Warning Classification Rules & Governance',
+    'alerts.multiHorizonRuleTitle': 'Multi-Horizon Persistence Rule:',
+    'alerts.multiHorizonRuleText': 'A labor market mismatch is only classified as Persistent when the projected relative mismatch crosses the threshold (≥ +15 for demand pressure, ≤ −15 for supply pressure) in the same direction at two or more of the 3-, 6-, and 12-month forecast horizons. Single-horizon signals are explicitly isolated as non-persistent to prevent premature intervention.',
+    'alerts.placementGuardrailText': 'Alerts strictly omit cohort placement rates when the standardized 90-day post-certification follow-up window remains open. Immature batches are never cited in pressure classifications.',
+    'alerts.typePersistentDemand': 'Persistent Demand Pressure',
+    'alerts.typePersistentSupply': 'Persistent Supply Pressure',
+    'alerts.typeSingleDemand': 'Single-Horizon Demand Pressure',
+    'alerts.typeSingleSupply': 'Single-Horizon Supply Pressure',
+    'alerts.typeAcceleratingDemand': 'Demand Acceleration Warning',
+    'alerts.typeDecliningDemand': 'Demand Decline Warning',
+    'alerts.typeDataQuality': 'Data Quality / History Warning',
+    'alerts.loadingMsg': 'Scanning early-warning triggers and persistence rules across horizons...',
+    'alerts.errorMessage': 'Unable to load Early-Warning Alerts from backend service.',
+    'alerts.multiHorizonDisplay': 'Multi (3m, 6m, 12m)',
+    'alerts.closeDiagnostics': 'Close Diagnostics',
+    'alerts.persistenceRuleAppliedFallback': 'Mismatch crossed threshold in the same direction at >=2 supported horizons (3m, 6m, 12m).',
+    'alerts.alertIdLabel': 'Alert ID:',
+    'alerts.multiHorizonBadge': 'Multi-Horizon Verified (≥2 Horizons)',
+
+    // Training-Seat Simulator Page
+    'simulator.introTitle': 'Training-Seat Allocation Scenario Simulator',
+    'simulator.badge': 'PROTOTYPE POLICY SIMULATOR',
+    'simulator.introDesc': 'Model future TVET and ITI training-capacity adjustments to project certified-candidate output, regional supply ranks, and future skill mismatch. Simulates proportional throughput under the constant-yield pipeline assumption to evaluate Projected Relative Mismatch = Forecast Demand Postings Rank (0–100) − Scenario Supply Throughput Rank (0–100) (range: −100.0 to +100.0 points).',
+    'simulator.parametersHeader': '1. Policy Scenario Parameters',
+    'simulator.parametersDesc': 'Select regional jurisdiction, trade specialisation, base cohort window, and future intake capacity.',
+    'simulator.resetDefaults': '🔄 Reset Defaults',
+    'simulator.trailingCohorts': 'Trailing Cohorts',
+    'simulator.evaluationWindow': 'Evaluation Window',
+    'simulator.geography': 'Geography',
+    'simulator.stateMission': 'State / Mission',
+    'simulator.localMarket': 'Local Market',
+    'simulator.industry': 'Industry',
+    'simulator.curriculum': 'Curriculum',
+    'simulator.occupationTrade': 'Occupation / Trade',
+    'simulator.proposedSeatsLabel': 'Proposed Sanctioned Seats Per Cohort',
+    'simulator.seatsRange': 'Valid: 1 to 5,000 seats',
+    'simulator.basePeriod': 'Base Period',
+    'simulator.targetPeriod': 'Target Period',
+    'simulator.proposedIntake': 'Proposed Intake',
+    'simulator.code': 'Code:',
+    'simulator.clearResults': 'Clear Results',
+    'simulator.simulateBtn': '🚀 Run Seat Simulation',
+    'simulator.simulatingBtn': 'Calculating Pipeline Yield...',
+    'simulator.spinnerMsg': 'Calculating trailing batch capacity, scaling candidate output under constant-yield assumption, and recalibrating cross-sectional supply ranks...',
+    'simulator.metaEvaluated': 'Evaluated Target Horizon: {target} (+{h}m)',
+    'simulator.status': 'STATUS: {status}',
+    'simulator.scalingRatio': 'Constant-Yield Scaling: {ratio}x',
+    'simulator.exportBtn': 'Export Simulation Plan',
+    'simulator.exportPlanTitle': 'Download complete simulation scenario plan as CSV',
+    'simulator.iterativeComparison': 'Iterative Scenario Comparison: Previous test had {prevSeats} seats (Mismatch: {prevMis} pt) → Current run evaluates {currSeats} seats (Mismatch: {currMis} pt).',
+    'simulator.deltaOutput': 'Δ Output: {delta} /mo',
+    'simulator.kpiBatchCapacity': 'Sanctioned Batch Capacity',
+    'simulator.kpiBaselineAvg': 'Baseline Avg: {avg} seats/batch',
+    'simulator.kpiCertifiedOutput': 'Certified Candidate Output',
+    'simulator.kpiBaselineOutput': 'Baseline Output: {base} certified / mo',
+    'simulator.kpiSupplyRank': 'Regional Supply Percentile Rank',
+    'simulator.kpiBaselineRank': 'Baseline Rank: {rank} percentile',
+    'simulator.kpiProjectedMismatch': 'Projected Mismatch (Rank Difference)',
+    'simulator.kpiMismatchSubtext': 'Status: {status} • Baseline: {base} pt',
+    'simulator.boxHistoricalBaseline': '🏛️ Historical Baseline Architecture',
+    'simulator.boxProposedScenario': '🎛️ Proposed Policy Scenario Model',
+    'simulator.thConcludingCohorts': 'Baseline Concluding Cohorts',
+    'simulator.thAvgSanctionedSeats': 'Average Sanctioned Batch Seats',
+    'simulator.thTotalSeatsCalibrated': 'Total Seats in Calibrated Window',
+    'simulator.thRecentMonthlyThroughput': 'Recent Monthly Throughput',
+    'simulator.thForecastDemandPostings': 'Forecast Demand Postings (H{h})',
+    'simulator.thForecastCandidateOutput': 'Forecast Candidate Output (H{h})',
+    'simulator.thBaselineSupplyRank': 'Baseline Regional Supply Rank',
+    'simulator.thBaselineMismatchScore': 'Baseline Relative Mismatch Score',
+    'simulator.thProposedBatchSeats': 'Proposed Sanctioned Batch Seats',
+    'simulator.thSeatCapacityAdjustment': 'Seat Capacity Adjustment',
+    'simulator.thCapacityScalingRatio': 'Pipeline Capacity Scaling Ratio',
+    'simulator.thSimulatedOutput': 'Simulated Monthly Certified Output',
+    'simulator.thOutputShift': 'Output Shift vs Baseline',
+    'simulator.thProjectedSupplyRank': 'Projected Regional Supply Rank',
+    'simulator.thProjectedMismatchScore': 'Projected Relative Mismatch Score',
+    'simulator.thClassificationTransition': 'Classification Transition',
+    'simulator.postingsUnits': '{count} postings (Rank {rank})',
+    'simulator.certifiedPerMo': '{count} certified / mo',
+    'simulator.seatsUnits': '{count} seats',
+    'simulator.percentileUnits': '{count} percentile',
+    'simulator.baselineThroughputSuffix': 'x baseline throughput',
+    'simulator.rankDelta': '({dRank} − {sRank})',
+    'simulator.coverageTitle': 'Assumption-Adjusted Pipeline Scenario',
+    'simulator.coverageBadge': 'POLICY SCENARIO SIMULATION',
+    'simulator.coverageDesc': 'Explore sensitivity of pipeline coverage by adjusting online posting realization (k) and local graduate availability (α). Starting values (1.00, 100%) are neutral illustrative scenario assumptions only, NOT observed or empirical parameters.',
+    'simulator.resetAssumptions': '🔄 Reset Assumptions',
+    'simulator.sliderK': '1. Posting-to-Opening Multiplier (k)',
+    'simulator.sliderKLow': '0.50x (Heavy duplication)',
+    'simulator.sliderKMid': '1.00x (Neutral baseline)',
+    'simulator.sliderKHigh': '1.50x (Unposted hiring)',
+    'simulator.sliderKNote': 'Converts forecast online postings ({postings}) into estimated openings (postings × k = {openings}).',
+    'simulator.sliderAlpha': '2. Local Candidate Availability Share (α)',
+    'simulator.sliderAlphaLow': '40% (High outward mobility)',
+    'simulator.sliderAlphaMid': '70%',
+    'simulator.sliderAlphaHigh': '100% (Full local retention)',
+    'simulator.sliderAlphaNote': 'Scales certified cohort throughput by assumed share entering the local district labour market.',
+    'simulator.covEstOpenings': 'Target Estimated Openings',
+    'simulator.covBaseline': 'Baseline Pipeline Coverage',
+    'simulator.covProposed': 'Proposed Scenario Coverage',
+    'simulator.covShift': 'Scenario Coverage Shift (Δ)',
+    'simulator.covShiftSub': 'Proposed minus baseline coverage',
+    'simulator.covLocalEffPerOpenings': '{eff} local eff / {openings} openings',
+    'simulator.benchmarkRatioHeader': 'Supplementary Descriptive Benchmark: Raw Training-to-Posting Ratio',
+    'simulator.benchmarkRatioSub': 'Standard unadjusted ratio: forecast_supply_throughput / forecast_demand_postings × 100',
+    'simulator.candidatesPer100Postings': 'candidates / 100 postings',
+    'simulator.baselineLabel': 'Baseline:',
+    'simulator.proposedLabel': 'Proposed:',
+    'simulator.coverageCaveat': 'Scenario Methodology Notice: This assumption-adjusted pipeline scenario is an exploratory decision-support simulation. It does NOT represent actual vacancy fulfilment, an empirical shortage measurement, or a prediction of guaranteed employment. Online job postings may be duplicated across portals, renewed, or omit offline and informal enterprise recruitment. Similarly, newly certified candidates may enter jobs later, migrate out of the district, pursue higher qualifications, or not immediately enter the active local workforce.',
+    'simulator.funnelHeader': 'Empirical Cohort Funnel Yield Metrics (Baseline Calibration)',
+    'simulator.funnelDesc': 'Observed historical conversion rates for {occupation} across trailing graduating cohorts in {district}.',
+    'simulator.funnelSeatUtil': '1. Seat Utilization Rate',
+    'simulator.funnelEnrolSanctioned': 'Enrolments / Sanctioned Seats',
+    'simulator.funnelCompletion': '2. Course Completion Rate',
+    'simulator.funnelCompEnrol': 'Completions / Enrolments',
+    'simulator.funnelPass': '3. Assessment Pass Rate',
+    'simulator.funnelCertComp': 'Certifications / Completions',
+    'simulator.funnelYield': '4. Cumulative Pipeline Yield',
+    'simulator.funnelCertSeats': 'Certifications / Sanctioned Seats',
+    'simulator.visualHeader': 'Visual Comparison: Baseline Architecture vs Proposed Scenario',
+    'simulator.visualDesc': 'Side-by-side progression across capacity, throughput, percentile rankings, and relative mismatch scores.',
+    'simulator.legendBaseline': 'Baseline',
+    'simulator.legendProposed': 'Proposed Scenario',
+    'simulator.barSeats': 'Sanctioned Seats Per Cohort (Intake Capacity)',
+    'simulator.barThroughput': 'Monthly Certified Candidate Output (Throughput)',
+    'simulator.barSupplyRank': 'Regional Supply Percentile Rank (Mid-Rank Method)',
+    'simulator.barMismatch': 'Relative Mismatch Score (Demand Rank − Supply Rank)',
+    'simulator.gaugeMaxSupply': '−100 (Max Supply Pressure)',
+    'simulator.gaugeThreshSupply': '−15 (Threshold)',
+    'simulator.gaugeParity': '0 (Parity)',
+    'simulator.gaugeThreshDemand': '+15 (Threshold)',
+    'simulator.gaugeMaxDemand': '+100 (Max Demand Pressure)',
+    'simulator.calloutConstantYield': '📐 Proportional Constant-Yield Assumption',
+    'simulator.calloutLeadTime': '⏳ Pipeline Lead-Time & Headcount Caveat',
+    'simulator.calloutLeadTimeDesc': 'Sanctioned seat adjustments affect future graduating cohorts after the completion of multi-month instructional cycles (e.g. 6–12 months). Adding administrative capacity does NOT immediately inject certified workers into the current labour market.',
+    'simulator.calloutIndexInterp': 'Index Interpretation:',
+    'simulator.calloutMethodology': 'Methodology:',
+    'simulator.calloutThresholds': '⚖️ Prototype Model Thresholds (±15 Points) & Decision Support',
+    'simulator.calloutThresholdsDesc': 'The threshold boundaries (±15 percentile points) demarcating Demand Pressure and Supply Pressure are prototype model calibration heuristics, not statutory or legally binding mandates. They do not establish equivalent real-world severity across current-period gap analysis and forecasted mismatch metrics.',
+    'simulator.calloutSaturation': 'Percentile-Rank Saturation:',
+    'simulator.calloutSaturationDesc': 'Supply rank is capped at the 100th percentile relative to the comparison population for the selected horizon. When a proposed capacity adjustment yields throughput exceeding all other series in the regional cross-section, the supply rank saturates at 100.0, and the projected mismatch score reaches a lower bound of Demand Rank − 100.0. Further seat expansions continue to scale physical candidate throughput linearly under the constant-yield assumption, but may not change the rank-based mismatch score.',
+    'simulator.calloutDistinction': 'Distinction from Current Gap Analysis:',
+    'simulator.calloutDistinctionDesc': 'Seat simulations evaluate future cohort throughput ranks against single-quantity forecast postings ranks. In contrast, current-period Gap Analysis uses a weighted multi-signal demand index (postings, growth, persistence, employer diversity, wages) compared against trailing certification ranks. Planners should not treat the two mismatch indicators as interchangeable.',
+    'simulator.calloutLimitations': 'Operational Limitations:',
+
+    // Error & Loading Fallbacks
+    'error.backendConnection': 'Backend Connection Error',
+    'error.unexpected': 'An unexpected error occurred while communicating with the backend API.',
+    'error.moduleRenderNotice': 'Module Rendering Notice: {module} encountered an unexpected runtime error.',
+    'error.appActive': 'The application dashboard and sidebar navigation remain fully active. You may switch to another module or retry rendering this page.',
+    'error.detail': 'Error Detail:',
+    'error.retryModule': '🔄 Retry {module}',
+  },
+
+  hi: {
+    // Brand & Application Shell
+    'app.title': 'कार्यबल आसूचना एवं कौशल अंतर निर्णय इंजन',
+    'app.subtitle': 'श्रम बाजार सूचना प्रणाली (LMIS) • स्मार्ट इंडिया हैकाथॉन 2026',
+    'app.brandName': 'स्किलपल्स',
+    'app.brandSubtitle': 'श्रम बाजार सूचना प्रणाली (LMIS)',
+    'app.brandTag': 'कार्यबल आसूचना • SIH26246',
+    'app.demoEnv': 'डेमो परिवेश',
+    'app.compactDemoNotice': 'सिंथेटिक डेमो डेटा — परीक्षण हेतु कृत्रिम डेटा',
+    'app.demoBannerText': 'सिंथेटिक डेमो डेटा — परीक्षण हेतु कृत्रिम डेटा',
+    'app.demoFullDisclaimer': 'सिंथेटिक डेमो डेटा — निर्णय-समर्थन प्रोटोटाइप हेतु कैलिब्रेट किए गए प्रायोगिक प्रेक्षण। स्कोर सापेक्ष सूचकांक हैं, प्रत्यक्ष कर्मी कमी नहीं।',
+    'app.loading': 'रिपोर्टिंग अवधि के लिए स्किलपल्स बैकएंड से डेटा प्राप्त किया जा रहा है...',
+    'app.backendOffline': 'बैकएंड सेवा से कार्यबल विश्लेषण डेटा लोड करने में असमर्थ।',
+    'app.refreshError': 'बैकएंड से कार्यबल विश्लेषण डेटा ताज़ा करने में असमर्थ।',
+    'app.apiStatus': 'एपीआई स्थिति',
+    'app.statusHealthy': 'बैकएंड ऑनलाइन',
+    'app.statusChecking': 'जाँच जारी...',
+    'app.statusOffline': 'बैकएंड ऑफलाइन',
+    'app.coreModules': 'प्रमुख मॉड्यूल',
+    'app.comingSoon': 'शीघ्र उपलब्ध',
+
+    // Navigation Items
+    'nav.overview': 'अवलोकन',
+    'nav.demand': 'मांग विश्लेषण',
+    'nav.gap': 'कौशल अंतर विश्लेषण',
+    'nav.forecasts': 'पूर्वानुमान',
+    'nav.alerts': 'पूर्व-चेतावनी अलर्ट',
+    'nav.simulator': 'प्रशिक्षण-सीट सिमुलेटर',
+
+    // Common Actions, Buttons & Form Labels
+    'common.reportingPeriod': 'रिपोर्टिंग अवधि',
+    'common.activePilot': 'सक्रिय पायलट',
+    'common.refresh': 'ताज़ा करें',
+    'common.refreshing': 'ताज़ा हो रहा है...',
+    'common.refreshTooltip': 'बैकएंड से डैशबोर्ड मेट्रिक्स ताज़ा करें',
+    'common.state': 'राज्य',
+    'common.district': 'ज़िला',
+    'common.sector': 'क्षेत्र (सेक्टर)',
+    'common.trade': 'ट्रेड',
+    'common.occupation': 'व्यवसाय',
+    'common.classification': 'वर्गीकरण',
+    'common.horizon': 'पूर्वानुमान क्षितिज',
+    'common.severity': 'गंभीरता',
+    'common.alertType': 'अलर्ट प्रकार',
+    'common.allStates': 'सभी राज्य (3)',
+    'common.allDistricts': 'सभी ज़िले',
+    'common.allSectors': 'सभी क्षेत्र (3)',
+    'common.allClassifications': 'सभी वर्गीकरण',
+    'common.allHorizons': 'सभी क्षितिज (3, 6, 12 माह)',
+    'common.allSeverities': 'सभी गंभीरता स्तर (4)',
+    'common.allAlertTypes': 'सभी अलर्ट प्रकार',
+    'common.resetFilters': 'फ़िल्टर रीसेट करें',
+    'common.exportCsv': 'सीएसवी निर्यात',
+    'common.exporting': 'निर्यात हो रहा है...',
+    'common.inspect': 'जाँचें',
+    'common.viewing': 'समीक्षाधीन',
+    'common.action': 'कार्रवाई',
+    'common.rank': 'रैंक',
+    'common.pts': 'अंक',
+    'common.monthsAhead': 'माह आगे',
+    'common.na': 'अनुपलब्ध',
+    'common.close': 'बंद करें',
+    'common.closeBreakdown': 'विवरण बंद करें',
+    'common.closeDetail': 'विवरण बंद करें',
+    'common.tryAgain': 'पुनः प्रयास करें',
+    'common.retry': 'पुनः प्रयास',
+    'common.showingRecords': '{count} रिकॉर्ड प्रदर्शित',
+    'common.showingAlerts': '{count} सक्रिय अलर्ट प्रदर्शित',
+    'common.noData': 'चयनित फ़िल्टर मानदंडों से कोई रिकॉर्ड मेल नहीं खाता।',
+    'table.occupationSector': 'व्यवसाय एवं क्षेत्र (Occupation & Sector)',
+    'table.districtState': 'ज़िला / राज्य (District / State)',
+
+    // Classifications & Severities
+    'class.demandPressure': 'मांग दबाव (Demand Pressure)',
+    'class.supplyPressure': 'आपूर्ति दबाव (Supply Pressure)',
+    'class.balanced': 'संतुलित (Balanced)',
+    'severity.critical': 'अति-गंभीर (Critical)',
+    'severity.high': 'उच्च (High)',
+    'severity.medium': 'मध्यम (Medium)',
+    'severity.low': 'निम्न (Low)',
+
+    // State & Sector Canonical Labels
+    'state.KA': 'कर्नाटक (KA)',
+    'state.MH': 'महाराष्ट्र (MH)',
+    'state.TS': 'तेलंगाना (TS)',
+    'sector.it': 'आईटी / आईटीईएस (IT/ITeS)',
+    'sector.mfg': 'विनिर्माण (Manufacturing)',
+    'sector.log': 'लॉजिस्टिक्स (Logistics)',
+
+    // Overview Page
+    'overview.cycleCardTitle': 'रिपोर्टिंग चक्र',
+    'overview.monitoredPairs': '{count} ज़िला-व्यवसाय निगरानी में',
+    'overview.connectedLive': 'सक्रिय जुड़ाव (लाइव :8000) • 3 राज्य • 6 ज़िले',
+    'overview.highestDemandTitle': 'उच्चतम मांग तीव्रता',
+    'overview.noQualifying': 'कोई पात्र मामला नहीं',
+    'overview.noDemandInCycle': 'इस चक्र में कोई मांग प्रेक्षण दर्ज नहीं',
+    'overview.strongestDemandPressureTitle': 'सर्वाधिक मांग दबाव',
+    'overview.demandOutpacesThroughput': '{district}, {state} • मांग आपूर्ति से अधिक ({count} मामले ≥ +15)',
+    'overview.demandThresholdNote': 'सीमा: स्कोर ≥ +15.0',
+    'overview.noDemandPressure': 'इस चक्र में किसी भी ज़िला-व्यवसाय में मांग दबाव नहीं है',
+    'overview.strongestSupplyPressureTitle': 'सर्वाधिक आपूर्ति दबाव',
+    'overview.throughputOutpacesDemand': '{district}, {state} • आपूर्ति मांग से अधिक ({count} मामले ≤ −15)',
+    'overview.supplyThresholdNote': 'सीमा: स्कोर ≤ −15.0',
+    'overview.noSupplyPressure': 'इस चक्र में किसी भी ज़िला-व्यवसाय में आपूर्ति दबाव नहीं है',
+    'overview.tableTitle': 'सापेक्ष मांग-आपूर्ति असंतुलन रैंकिंग',
+    'overview.tableSubtitle': 'समग्र मांग सूचकांक की हालिया 3-महीने के प्रमाणीकरण आउटपुट से तुलना करती क्रॉस-सेक्शनल रैंकिंग',
+    'overview.filterTop10': 'शीर्ष 10 रैंक',
+    'overview.filterDemandPressure': 'मांग दबाव ({count})',
+    'overview.filterSupplyPressure': 'आपूर्ति दबाव ({count})',
+    'overview.thRank': 'रैंक',
+    'overview.thOccupationSector': 'व्यवसाय एवं क्षेत्र',
+    'overview.thDistrictState': 'ज़िला / राज्य',
+    'overview.thDemandIndex': 'मांग सूचकांक',
+    'overview.thSupplyIndex': 'आपूर्ति आउटपुट सूचकांक',
+    'overview.thMismatchScore': 'असंतुलन स्कोर',
+    'overview.thClassification': 'वर्गीकरण',
+    'overview.thPrimaryFactor': 'प्राथमिक व्याख्यात्मक कारक',
+    'overview.noMatchingRows': 'इस दृश्य के लिए कोई मेल खाता असंतुलन रिकॉर्ड नहीं मिला।',
+    'overview.defaultFactor': 'क्रॉस-सेक्शनल आधार रेखा के विरुद्ध मूल्यांकित सापेक्ष असंतुलन।',
+    'overview.methodologyTitle': 'पद्धति एवं व्याख्यात्मक प्रकटीकरण',
+    'overview.methodologySyntheticTitle': 'सिंथेटिक प्रायोगिक प्रेक्षण:',
+    'overview.methodologySyntheticText': 'प्रदर्शित सभी मेट्रिक्स अक्टूबर 2024 से सितंबर 2026 तक के सिंथेटिक पायलट डेटासेट पर आधारित हैं, जो कर्नाटक, महाराष्ट्र और तेलंगाना की क्षेत्रीय आर्थिक रूपरेखा के अनुरूप कैलिब्रेट किए गए हैं।',
+    'overview.methodologyPercentileTitle': 'सापेक्ष पर्सेंटाइल सूचकांक:',
+    'overview.methodologyPercentileText': 'सापेक्ष असंतुलन स्कोर क्रॉस-सेक्शनल पर्सेंटाइल रैंकों के बीच अंतर (मांग सूचकांक − आपूर्ति आउटपुट सूचकांक) को दर्शाता है, जो −100.0 और +100.0 के बीच सीमित है। +15 से अधिक स्कोर सापेक्ष मांग दबाव दर्शाते हैं; −15 से कम स्कोर सापेक्ष आपूर्ति दबाव दर्शाते हैं। ये स्कोर सापेक्ष रैंकिंग असंतुलन को इंगित करते हैं, प्रत्यक्ष कामगार कमी या आधिक्य को नहीं।',
+    'overview.methodologyPlacementTitle': 'प्लेसमेंट परिपक्वता सुरक्षा नियम:',
+    'overview.methodologyPlacementText': '90-दिवसीय ट्रैकिंग अवधि के भीतर पूर्ण होने वाले प्रशिक्षण बैचों को स्पष्ट रूप से अनुवर्ती समीक्षा प्रतीक्षारत चिह्नित किया गया है और समयपूर्व मूल्यांकन पूर्वाग्रह से बचने के लिए उन्हें प्लेसमेंट दर गणना से बाहर रखा गया है।',
+
+    // Demand Intelligence Page
+    'demand.introTitle': 'स्किलपल्स मांग विश्लेषण इंजन',
+    'demand.introDesc': '5 व्याख्यात्मक घटकों के माध्यम से बहु-स्रोतीय नियोक्ता भर्ती मंशा का मूल्यांकन कर क्रॉस-सेक्शनल पर्सेंटाइल समग्र स्कोर (0 से 100) तैयार करता है। इसमें जॉब विज्ञापन संख्या, 3-महीने की वृद्धि गति, रिक्ति स्थायित्व, नियोक्ता विविधता और वेतन आकर्षण शामिल हैं।',
+    'demand.matchingPairsTitle': 'मेल खाते युग्म',
+    'demand.pairsEvaluated': 'मूल्यांकित ज़िला-व्यवसाय युग्म',
+    'demand.periodBaseline': 'अवधि: {period} • क्रॉस-सेक्शनल आधार रेखा',
+    'demand.avgDemandScoreTitle': 'औसत मांग स्कोर',
+    'demand.cohortMeanScore': 'फ़िल्टर किए गए समूह का माध्य स्कोर',
+    'demand.normalizedRankDist': 'मानकीकृत मध्य-बिंदु रैंक वितरण',
+    'demand.tableTitle': 'समग्र मांग सूचकांक रैंकिंग',
+    'demand.tableSubtitle': 'घटक विवरण, प्रत्यक्ष सिग्नल मेट्रिक्स और चालक भार देखने के लिए किसी भी पंक्ति पर क्लिक करें।',
+    'demand.thRank': 'रैंक',
+    'demand.thOccupationTrade': 'व्यवसाय एवं ट्रेड',
+    'demand.thSector': 'क्षेत्र',
+    'demand.thDistrictState': 'ज़िला / राज्य',
+    'demand.thDemandScore': 'मांग स्कोर',
+    'demand.thDataCoverage': 'डेटा कवरेज',
+    'demand.thDrivers': 'प्रमुख व्याख्यात्मक चालक',
+    'demand.noMatchingPairs': 'चयनित फ़िल्टर से कोई ज़िला-व्यवसाय युग्म मेल नहीं खाता।',
+    'demand.standardBaseline': 'मानक आधार रेखा',
+    'demand.drawerTitle': 'घटक विवरण: {occupation} ({district}, {state})',
+    'demand.drawerMeta': 'क्षेत्र: {sector} • ट्रेड: {trade} • समग्र मांग स्कोर: {score}/100 (रैंक #{rank})',
+    'demand.c1Name': '1. नौकरी विज्ञापनों की संख्या (Posting Volume)',
+    'demand.c1Weight': 'भार: 30%',
+    'demand.c1Unit': 'विज्ञापन',
+    'demand.c1Subtext': 'योगदान: समग्र सूचकांक में {contrib} अंक।',
+    'demand.c2Name': '2. पिछले 3 महीनों की वृद्धि (3-Month Growth Momentum)',
+    'demand.c2Weight': 'भार: 25%',
+    'demand.c2Subtext': 'वृद्धि व्याख्या: पूर्ववर्ती 3-माह के औसत की तुलना में पिछला 3-माह का औसत। {raw} का आंशिक दर {pct}% की वृद्धि दर्शाता है।',
+    'demand.c3Name': '3. रिक्ति स्थायित्व (Vacancy Persistence)',
+    'demand.c3Weight': 'भार: 15%',
+    'demand.c3Unit': 'अंक',
+    'demand.c3Subtext': 'रिक्ति पूर्ति से पहले विज्ञापनों के सक्रिय रहने की अवधि को मापता है।',
+    'demand.c4Name': '4. भर्ती करने वाले नियोक्ताओं की संख्या (Employer Diversity)',
+    'demand.c4Weight': 'भार: 15%',
+    'demand.c4Unit': 'नियोक्ता',
+    'demand.c4Subtext': 'रिक्तियां पोस्ट करने वाले विशिष्ट नियोक्ताओं की संख्या।',
+    'demand.c5Name': '5. वेतन आकर्षण सूचकांक (Wage Attractiveness)',
+    'demand.c5Weight': 'भार: 15%',
+    'demand.c5Unit': 'सूचकांक',
+    'demand.c5Subtext': 'क्षेत्रीय जीवन-यापन लागत आधार रेखा के विरुद्ध प्रस्तावक वेतन का मानकीकरण।',
+    'demand.driversHeader': 'इस व्यवसाय हेतु प्रमुख व्याख्यात्मक चालक',
+    'demand.provenanceLabel': 'डेटा स्रोत एवं प्रमाणिकता:',
+    'demand.syntheticPilot': 'सिंथेटिक प्रायोगिक प्रेक्षण',
+    'demand.adminSignal': 'सत्यापित प्रशासनिक सिग्नल',
+    'demand.missingSignalsLabel': 'अनुपलब्ध सिग्नल:',
+    'demand.noneComplete': 'कोई नहीं (100% पूर्ण)',
+    'demand.methodologyTitle': 'मांग सूचकांक पद्धति एवं मान्यताएं',
+    'demand.methodologyPercentileTitle': 'क्रॉस-सेक्शनल पर्सेंटाइल सूचकांक:',
+    'demand.methodologyPercentileText': 'सभी मांग स्कोर वर्तमान रिपोर्टिंग अवधि में सभी 54 निगरानी-शुदा ज़िला-व्यवसाय युग्मों में परिकलित सापेक्ष पर्सेंटाइल रैंक (0 से 100) हैं। स्कोर सापेक्ष भर्ती तीव्रता को दर्शाते हैं, खुली नौकरियों की निरपेक्ष संख्या को नहीं।',
+    'demand.methodologyWeightsTitle': 'प्रोटोटाइप भार विभाजन:',
+    'demand.methodologyWeightsText': 'घटक भार (विज्ञापन: 30%, वृद्धि: 25%, स्थायित्व: 15%, विविधता: 15%, वेतन: 15%) प्रोटोटाइप नीतिगत मान्यताएं हैं जो तात्कालिक संकेतों के बजाय भर्ती की मात्रा और प्रवृत्ति को प्राथमिकता देती हैं।',
+    'demand.methodologyDemoTitle': 'सिंथेटिक डेमो स्थिति:',
+    'demand.methodologyDemoText': 'अक्टूबर 2024 से सितंबर 2026 तक के ऐतिहासिक मासिक जॉब विज्ञापन स्मार्ट इंडिया हैकाथॉन निर्णय-समर्थन हेतु कैलिब्रेट किए गए सिंथेटिक अनुमान हैं।',
+
+    // Gap Analysis Page
+    'gap.introTitle': 'स्किलपल्स सापेक्ष मांग-आपूर्ति अंतर विश्लेषण इंजन',
+    'gap.introDesc': 'समग्र मांग सूचकांक और व्यावसायिक प्रमाणीकरण आउटपुट सूचकांक के बीच क्रॉस-सेक्शनल सापेक्ष असंतुलन स्कोर (-100 से +100) का मूल्यांकन करता है। प्राथमिकता समूहों को मांग दबाव, संतुलित या आपूर्ति दबाव में वर्गीकृत करने के लिए +/-15 निर्णय सीमाओं को लागू करता है।',
+    'gap.demandPressureCard': 'मांग दबाव समूह',
+    'gap.supplyPressureCard': 'आपूर्ति दबाव समूह',
+    'gap.balancedCard': 'संतुलित समूह',
+    'gap.scoreThresholdPos': 'स्कोर ≥ +15.0 अंक',
+    'gap.scoreThresholdNeg': 'स्कोर ≤ −15.0 अंक',
+    'gap.neutralBand': '±15.0 तटस्थ सीमा के भीतर',
+    'gap.tableTitle': 'सापेक्ष अंतर विश्लेषण एवं प्रशिक्षण फ़नल परिणाम',
+    'gap.tableSubtitle': 'प्रशिक्षण क्षमता, फ़नल प्राप्ति क्षरण और सत्यापित आधिकारिक वर्गीकरण देखने के लिए किसी भी पंक्ति पर क्लिक करें।',
+    'gap.thNcoCode': 'एनसीओ कोड',
+    'gap.thDemandIndex': 'मांग सूचकांक',
+    'gap.thSupplyOutput': 'आपूर्ति आउटपुट सूचकांक',
+    'gap.thMismatch': 'असंतुलन स्कोर',
+    'gap.drawerTitle': 'गहन नैदानिक समीक्षा: {occupation} ({district}, {state})',
+    'gap.drawerMeta': 'क्षेत्र: {sector} • ट्रेड: {trade} • असंतुलन स्कोर: {score} अंक ({classification})',
+    'gap.section1Title': '1. असंतुलन मेट्रिक्स एवं रैंकिंग विवरण',
+    'gap.demandComposite': 'समग्र मांग स्कोर',
+    'gap.supplyOutputRank': 'आपूर्ति आउटपुट पर्सेंटाइल रैंक',
+    'gap.relativeMismatchScore': 'सापेक्ष असंतुलन स्कोर',
+    'gap.demandRankLead': 'क्षेत्रीय समूह में मांग रैंक आपूर्ति आउटपुट से {pts} पर्सेंटाइल अंक आगे है।',
+    'gap.supplyRankLead': 'क्षेत्रीय समूह में आपूर्ति आउटपुट रैंक मांग से {pts} पर्सेंटाइल अंक आगे है।',
+    'gap.mismatchClassification': 'असंतुलन वर्गीकरण',
+    'gap.primaryDrivers': 'प्राथमिक व्याख्यात्मक चालक',
+    'gap.section2Title': '2. व्यावसायिक प्रशिक्षण आउटपुट एवं क्षमता फ़नल',
+    'gap.certVolume3m': '3-माह प्रमाणीकरण संख्या',
+    'gap.certVolume6m': '6-माह प्रमाणीकरण संख्या',
+    'gap.seatUtilization': 'सीट उपयोगिता दर',
+    'gap.courseCompletion': 'पाठ्यक्रम पूर्णता दर',
+    'gap.assessmentCertification': 'मूल्यांकन प्रमाणीकरण दर',
+    'gap.placementRate': 'रोजगार नियोजन (प्लेसमेंट) दर',
+    'gap.placementStatus': 'प्लेसमेंट ट्रैकिंग स्थिति',
+    'gap.pendingImmature': 'प्रतीक्षारत (90-दिवसीय अपरिपक्व बैच)',
+    'gap.maturedComplete': 'परिपक्व (पूर्ण)',
+    'gap.sanctionedSeats': 'स्वीकृत सीट क्षमता',
+    'gap.funnelEnrolments': 'नामांकन',
+    'gap.funnelCompletions': 'पूर्णता',
+    'gap.funnelCertifications': 'प्रमाणीकरण',
+    'gap.funnelPlacements': 'प्लेसमेंट',
+    'gap.totalPairs': 'कुल निगरानी-शुदा युग्म',
+    'gap.filteredCases': 'फ़िल्टर किए गए क्रॉस-सेक्शनल मामले',
+    'gap.demandCardSubtext': 'नियोक्ता भर्ती प्रमाणित आउटपुट से आगे है',
+    'gap.supplyCardSubtext': 'प्रशिक्षण आउटपुट वर्तमान विज्ञापनों से आगे है',
+    'gap.balancedCardSubtext': 'अपेक्षित संतुलन गलियारे के भीतर',
+    'gap.thDemandComposite': 'मांग स्कोर (समग्र)',
+    'gap.thSupplyRank': 'आपूर्ति रैंक (आउटपुट)',
+    'gap.indexCoverage': 'सूचकांक कवरेज',
+    'gap.certifiedCandidates': 'प्रमाणित उम्मीदवार',
+    'gap.window': 'अवधि:',
+    'gap.placementTracking': 'प्लेसमेंट ट्रैकिंग (90-दिवसीय अवधि)',
+    'gap.maturedCohort': '✓ परिपक्व बैच ({n} / {d})',
+    'gap.pendingFollowup': '⏳ प्रतीक्षारत फ़ॉलो-अप (अपरिपक्व बैच)',
+    'gap.pendingFollowupNote': 'पिछले 90 दिनों के भीतर संपन्न हुए बैच सक्रिय ट्रैकिंग में हैं। लंबित स्थिति चल रही परिपक्वता का प्रतिनिधित्व करती है, 0% प्लेसमेंट परिणाम या डेटा त्रुटि का नहीं।',
+    'gap.inputCoverage': 'इनपुट डेटा कवरेज:',
+    'gap.missingSignals': 'अनुपलब्ध सूचकांक सिग्नल:',
+    'gap.noneComplete': 'कोई नहीं (पूर्ण सूचकांक इनपुट)',
+    'gap.trackingWindow': 'ट्रैकिंग अवधि: 90 दिन',
+    'gap.formula': 'सूत्र:',
+    'gap.enrolledSanctioned': '{n} नामांकित / {d} स्वीकृत सीटें',
+    'gap.completedEnrolled': '{n} पूर्ण / {d} नामांकित',
+    'gap.certifiedCompleted': '{n} प्रमाणित / {d} पूर्ण',
+    'gap.closeDiagnostics': '✕ विश्लेषण बंद करें',
+    'gap.section3Title': '3. वर्गीकरण एवं योग्यता सामंजस्य',
+    'gap.verifiedNcoCode': 'सत्यापित NCO-2015 कोड',
+    'gap.officialNcoTitle': 'आधिकारिक NCO पदनाम',
+    'gap.relevantQpCode': 'प्रासंगिक QP/NOS कोड',
+    'gap.officialQpTitle': 'आधिकारिक योग्यता शीर्षक',
+    'gap.verifiedNsqfLevel': 'सत्यापित NSQF स्तर',
+    'gap.unmappedBroad': 'प्रतीक्षारत / केवल व्यापक परिवार',
+    'gap.unresolvedLevel': 'अनसुलझा / पुनर्मूल्यांकन प्रतीक्षारत',
+    'gap.levelNote': 'स्तर {level}',
+    'gap.methodologyTitle': 'अंतर विश्लेषण पद्धति एवं नीतिगत अस्वीकरण',
+    'gap.methodologyFormulaTitle': 'वर्तमान अवधि असंतुलन सूत्र:',
+    'gap.methodologyFormulaText': 'सापेक्ष असंतुलन स्कोर की गणना समग्र मांग स्कोर (0-100) − आपूर्ति आउटपुट पर्सेंटाइल रैंक (0-100) के रूप में की जाती है, जो -100.0 से +100.0 अंकों के बीच सीमित है। समग्र मांग स्कोर एक भारित बहु-संकेत मांग सूचकांक है जो विज्ञापन मात्रा (30%), मांग वृद्धि (25%), रिक्ति स्थायित्व (15%), नियोक्ता विविधता (15%) और वेतन आकर्षण (15%) को संश्लेषित करता है। ये स्कोर क्षेत्रीय श्रृंखलाओं में सापेक्ष रैंकिंग असंतुलन को दर्शाते हैं, श्रमिकों की निरपेक्ष कमी या अधिशेष को नहीं।',
+    'gap.methodologyDistinctionTitle': 'पूर्वानुमानित असंतुलन से अंतर:',
+    'gap.methodologyDistinctionText': 'वर्तमान अवधि अंतर विश्लेषण बहु-संकेत मांग सूचकांक को पिछले प्रमाणीकरण आउटपुट रैंक के साथ जोड़ता है। इसके विपरीत, भविष्य-क्षितिज पूर्वानुमान और सीट सिमुलेशन पूर्वानुमान विज्ञापन रैंक − पूर्वानुमान आउटपुट रैंक (शुद्ध एकल-मात्रा पर्सेंटाइल रैंक अंतर) की गणना करते हैं। चूंकि दोनों संकेतक अलग-अलग सूत्रों और सांख्यिकीय वितरणों का उपयोग करते हैं, इसलिए उनकी सीधे समान माप के रूप में तुलना नहीं की जानी चाहिए।',
+    'gap.methodologyThresholdTitle': 'प्रोटोटाइप नीतिगत सीमाएं (±15 अंक):',
+    'gap.methodologyThresholdText': '+15.0 और -15.0 स्कोर सीमाएं निर्णय समर्थन के लिए विन्यास योग्य प्रोटोटाइप ह्युरिस्टिक्स हैं, न कि अनुभवजन्य या कानूनी रूप से बाध्यकारी अधिदेश। वे वर्तमान अवधि और पूर्वानुमानित मेट्रिक्स में समकक्ष वास्तविक गंभीरता स्थापित नहीं करते हैं।',
+    'gap.methodologyPlacementTitle': 'प्लेसमेंट परिपक्वता सुरक्षा नियम:',
+    'gap.methodologyPlacementText': 'NSDC और DGT TVET रिपोर्टिंग मानकों के तहत, उम्मीदवार रोजगार ट्रैकिंग के लिए प्रमाणीकरण के बाद मानकीकृत 90-दिवसीय अनुवर्ती विंडो की आवश्यकता होती है। पिछले 90 दिनों के भीतर समाप्त होने वाले अपरिपक्व बैचों को प्लेसमेंट दरों से कड़ाई से बाहर रखा गया है और रिपोर्टिंग पूर्वाग्रह को रोकने के लिए रिक्त रखा गया है।',
+    'gap.methodologySyntheticTitle': 'सिंथेटिक पायलट आधार रेखा:',
+    'gap.methodologySyntheticText': 'सभी अंतर विश्लेषण मेट्रिक्स SIH26246 बेंचमार्क मूल्यांकन के लिए उत्पन्न सिंथेटिक पायलट डेटासेट पर कैलिब्रेट किए गए हैं। अनुमान और असंतुलन स्कोर निर्णय-समर्थन सहायता हैं और स्थानीय हितधारक एवं नियोक्ता सत्यापन की आवश्यकता है।',
+
+
+    // Forecasts Page
+    'forecasts.introTitle': 'स्किलपल्स समय-श्रृंखला पूर्वानुमान इंजन',
+    'forecasts.introDesc': 'रोलिंग-ओरिजिन बैकटेस्टेड मॉडल (Naive, 3-Month Moving Average, Linear Trend) का उपयोग करके 3, 6 और 12-महीने के भविष्य क्षितिज में मासिक जॉब पोस्टिंग और प्रमाणित उम्मीदवार थ्रूपुट का पूर्वानुमान लगाता है। प्रत्याशित सापेक्ष असंतुलन = पूर्वानुमान मांग रैंक (0-100) − पूर्वानुमान आपूर्ति रैंक (0-100)।',
+    'forecasts.projectedCohortsTitle': 'प्रत्याशित समूह',
+    'forecasts.pairsEvaluated': 'मूल्यांकित ज़िला-व्यवसाय युग्म',
+    'forecasts.targetHorizonPeriod': 'लक्ष्य: {target} (क्षितिज: {h} माह आगे)',
+    'forecasts.statusTitle': 'पूर्वानुमान स्थिति',
+    'forecasts.validatedSeries': '{valid} वैध श्रृंखलाएं • {insuf} अपर्याप्त इतिहास',
+    'forecasts.statusDesc': 'न्यूनतम 6-माह इतिहास की अनिवार्यता लागू',
+    'forecasts.activeModelsTitle': 'मूल्यांकित सक्रिय मॉडल',
+    'forecasts.modelsList': 'रैखिक प्रवृत्ति • 3M MA • Naive',
+    'forecasts.modelsDesc': 'रोलिंग-ओरिजिन MAE चयन द्वारा बैकटेस्टेड',
+    'forecasts.highestDemandTitle': 'उच्चतम प्रत्याशित मांग',
+    'forecasts.tableTitle': 'रोलिंग-ओरिजिन कार्यबल मांग एवं आपूर्ति पूर्वानुमान',
+    'forecasts.tableSubtitle': 'बैकटेस्टिंग सटीकता, चयनित मॉडल, प्रेडिक्शन इंटरवल और संवेदनशीलता परिदृश्य देखने के लिए किसी भी पंक्ति पर क्लिक करें।',
+    'forecasts.thBasePeriod': 'आधार अवधि',
+    'forecasts.thTargetPeriod': 'लक्षित अवधि',
+    'forecasts.thDemandForecast': 'मांग पूर्वानुमान (विज्ञापन)',
+    'forecasts.thSupplyForecast': 'आपूर्ति पूर्वानुमान (आउटपुट)',
+    'forecasts.thDemandRank': 'मांग रैंक',
+    'forecasts.thSupplyRank': 'आपूर्ति रैंक',
+    'forecasts.thProjectedMismatch': 'प्रत्याशित असंतुलन',
+    'forecasts.thProjectedClass': 'प्रत्याशित वर्गीकरण',
+    'forecasts.thBenchmarkRatio': 'मानक अनुपात',
+    'forecasts.per100Postings': 'प्रति 100 विज्ञापन',
+    'forecasts.drawerTitle': 'पूर्वानुमान निदान: {occupation} ({district}, {state})',
+    'forecasts.drawerMeta': 'क्षितिज: {h} माह आगे • लक्षित अवधि: {target} • आधार: {base}',
+    'forecasts.demandModelHeader': '1. मांग पूर्वानुमान निदान (ऑनलाइन जॉब विज्ञापन)',
+    'forecasts.supplyModelHeader': '2. आपूर्ति पूर्वानुमान निदान (प्रमाणित आउटपुट)',
+    'forecasts.modelSelected': 'चयनित मॉडल:',
+    'forecasts.pointForecast': 'बिंदु पूर्वानुमान:',
+    'forecasts.predictionInterval': '80% सामान्य प्रेडिक्शन इंटरवल:',
+    'forecasts.backtestMae': 'बैकटेस्ट आउट-ऑफ़-सैंपल MAE:',
+    'forecasts.backtestWape': 'बैकटेस्ट WAPE:',
+    'forecasts.modelLinearTrend': 'रैखिक प्रवृत्ति मॉडल (Linear Trend)',
+    'forecasts.modelMa3': '3-माह गतिमान औसत (Moving Average)',
+    'forecasts.modelNaive': 'अंतिम-प्रेक्षण (Naive)',
+    'forecasts.projectedMismatchHeader': '3. प्रत्याशित सापेक्ष असंतुलन एवं मानक अनुपात',
+    'forecasts.projectedMismatchScore': 'प्रत्याशित सापेक्ष असंतुलन स्कोर:',
+    'forecasts.benchmarkRatioLabel': 'प्रशिक्षण-से-विज्ञापन मानक अनुपात:',
+    'forecasts.benchmarkRatioDesc': 'प्रति 100 ऑनलाइन विज्ञापनों पर प्रमाणित आउटपुट की तुलना करता प्रत्यक्ष प्रशासनिक मानक अनुपात।',
+    'forecasts.sensitivityHeader': '4. मान्यता-समायोजित पाइपलाइन संवेदनशीलता परिदृश्य',
+    'forecasts.multiplierK': 'विज्ञापन-से-रिक्ति मल्टीप्लायर (k):',
+    'forecasts.alphaFactor': 'स्थानीय प्रत्याशी उपलब्धता अनुपात (alpha):',
+    'forecasts.estimatedOpenings': 'अनुमानित कुल रिक्तियां:',
+    'forecasts.effectiveSupply': 'प्रभावी स्थानीय प्रमाणित आउटपुट:',
+    'forecasts.pipelineCoverageRate': 'परिदृश्य पाइपलाइन कवरेज दर:',
+    'forecasts.methodologyTitle': 'पूर्वानुमान पद्धति, इंटरवल्स एवं नीतिगत अस्वीकरण',
+
+    // Early-Warning Alerts Page
+    'alerts.introTitle': 'स्किलपल्स पूर्व-चेतावनी आसूचना एवं टेलीमेट्री इंजन',
+    'alerts.introDesc': 'बहु-क्षितिज कार्यबल मांग अनुमानों, प्रशिक्षण पाइपलाइन आउटपुट और ऐतिहासिक प्रवृत्तियों को स्कैन कर नीति-निर्माताओं हेतु व्याख्यात्मक एवं प्राथमिकता-आधारित अलर्ट जारी करता है।',
+    'alerts.criticalCard': 'अति-गंभीर अलर्ट',
+    'alerts.persistentCard': 'निरंतर दबाव (≥2 क्षितिज)',
+    'alerts.emergingCard': 'उभरती बाधाएं / दबाव',
+    'alerts.guardrailsCard': 'टेलीमेट्री एवं मॉडल सुरक्षा सीमाएं',
+    'alerts.cardCriticalTitle': 'अति-गंभीर (Critical)',
+    'alerts.cardCriticalMeta': 'अत्यधिक तात्कालिक निर्णय संकेत',
+    'alerts.cardCriticalSub': 'अत्यधिक असंतुलन (≥30 अंक) या संरचनात्मक निरंतरता',
+    'alerts.cardHighTitle': 'उच्च गंभीरता (High)',
+    'alerts.cardHighMeta': 'मानक असंतुलन ट्रिगर',
+    'alerts.cardHighSub': 'मूल्यांकित क्षितिजों पर ±15 सीमा रेखा पार',
+    'alerts.cardPersistentTitle': 'निरंतर संकेत (Persistent)',
+    'alerts.cardPersistentMeta': 'बहु-क्षितिज सत्यापित (≥2 क्षितिज)',
+    'alerts.cardPersistentSub': '3m, 6m, 12m पर समान दिशा में असंतुलन आवश्यक',
+    'alerts.cardQualityTitle': 'डेटा गुणवत्ता चेतावनियां',
+    'alerts.cardQualityMeta': 'टेलीमेट्री एवं मॉडल सुरक्षा सीमाएं',
+    'alerts.cardQualitySubZero': 'शून्य डेटा गुणवत्ता या WAPE विसंगतियां',
+    'alerts.cardQualitySubElevated': 'बढ़ी हुई बैकटेस्टिंग त्रुटि दर',
+    'alerts.tableTitle': 'सक्रिय पूर्व-चेतावनी टेलीमेट्री सिग्नल्स',
+    'alerts.tableSubtitle': 'कारण-संबंधी व्याख्या, समर्थक क्षितिज वेक्टर्स और अनुशंसित कदम देखने के लिए किसी भी पंक्ति पर क्लिक करें।',
+    'alerts.thSeverity': 'गंभीरता',
+    'alerts.thAlertType': 'अलर्ट प्रकार',
+    'alerts.thPersistence': 'निरंतरता',
+    'alerts.thOccupationSector': 'व्यवसाय एवं क्षेत्र',
+    'alerts.thDistrictState': 'ज़िला / राज्य',
+    'alerts.thHorizon': 'क्षितिज',
+    'alerts.thSummary': 'समर्थक सारांश',
+    'alerts.noAlerts': 'चयनित फ़िल्टर मानदंडों से कोई पूर्व-चेतावनी अलर्ट मेल नहीं खाता।',
+    'alerts.persistentBadge': 'निरंतर (≥2H)',
+    'alerts.singleHorizonBadge': 'एकल क्षितिज',
+    'alerts.persistentCountBadge': '🔁 निरंतर ({count} क्षितिज)',
+    'alerts.singleHorizonHBadge': 'एकल क्षितिज ({h} माह)',
+    'alerts.mismatchPts': 'असंतुलन: {score} अंक',
+    'alerts.supportingHorizons': 'समर्थक क्षितिज: {horizons}',
+    'alerts.verifiedAnomaly': 'सत्यापित विसंगति ट्रिगर',
+    'alerts.drawerTitle': 'अलर्ट निदान: {title} ({district}, {state})',
+    'alerts.drawerMeta': 'गंभीरता: {severity} • क्षितिज: {h}m • श्रेणी: {category}',
+    'alerts.persistenceHeader': 'निरंतरता मूल्यांकन एवं क्षितिज समर्थन',
+    'alerts.persistentConfirmed': '✓ निरंतर असंतुलन की पुष्टि',
+    'alerts.singleSignalOnly': 'केवल एकल-क्षितिज संकेत',
+    'alerts.ruleApplied': 'लागू निरंतरता नियम:',
+    'alerts.singleHorizonNotice': 'यह +{h}-माह क्षितिज ({target}) पर मूल्यांकित एक एकल-क्षितिज संकेत है। निरंतरता नियम के लिए दो या अधिक समर्थित क्षितिजों पर सीमा पार होना आवश्यक है (वर्तमान में {crossed} पार)।',
+    'alerts.causalExplanationTitle': 'कारण-संबंधी व्याख्या',
+    'alerts.thresholdApplied': 'लागू सीमा: ±{val} अंक',
+    'alerts.suggestedActionTitle': 'सुझाए गए TVET / नीतिगत नियोजन कदम',
+    'alerts.humanLimitationsTitle': 'मानव निर्णय-समर्थन सीमाएं',
+    'alerts.humanNotice': 'अलर्ट निर्णय-समर्थन संकेतों के रूप में कार्य करते हैं जिनके लिए गुणात्मक मानवीय समीक्षा और क्षेत्रीय सत्यापन की आवश्यकता होती है। वे स्वचालित बजट आवंटन या प्रशासनिक आदेश नहीं हैं।',
+    'alerts.methodologyHeader': 'पूर्व-चेतावनी वर्गीकरण नियम एवं शासन सिद्धांत',
+    'alerts.multiHorizonRuleTitle': 'बहु-क्षितिज निरंतरता नियम:',
+    'alerts.multiHorizonRuleText': 'श्रम बाजार असंतुलन को केवल तभी निरंतर के रूप में वर्गीकृत किया जाता है जब प्रत्याशित सापेक्ष असंतुलन 3-, 6- और 12-महीने के पूर्वानुमान क्षितिजों में से दो या अधिक पर समान दिशा में सीमा (मांग दबाव के लिए ≥ +15, आपूर्ति दबाव के लिए ≤ −15) को पार करता है। समयपूर्व हस्तक्षेप को रोकने के लिए एकल-क्षितिज संकेतों को स्पष्ट रूप से गैर-निरंतर के रूप में अलग रखा जाता है।',
+    'alerts.placementGuardrailText': 'जब मानकीकृत 90-दिवसीय प्रमाणन-पश्चात फ़ॉलो-अप विंडो खुली रहती है, तो अलर्ट समूह प्लेसमेंट दरों को कड़ाई से छोड़ देते हैं। अपरिपक्व बैचों को दबाव वर्गीकरण में कभी उद्धृत नहीं किया जाता है।',
+    'alerts.typePersistentDemand': 'निरंतर मांग दबाव (≥2 क्षितिज)',
+    'alerts.typePersistentSupply': 'निरंतर आपूर्ति दबाव (≥2 क्षितिज)',
+    'alerts.typeSingleDemand': 'एकल-क्षितिज मांग दबाव',
+    'alerts.typeSingleSupply': 'एकल-क्षितिज आपूर्ति दबाव',
+    'alerts.typeAcceleratingDemand': 'मांग गति त्वरण चेतावनी',
+    'alerts.typeDecliningDemand': 'मांग गिरावट चेतावनी',
+    'alerts.typeDataQuality': 'डेटा गुणवत्ता / इतिहास चेतावनी',
+    'alerts.loadingMsg': 'पूर्व-चेतावनी ट्रिगर्स और बहु-क्षितिज निरंतरता नियमों की स्कैनिंग जारी है...',
+    'alerts.errorMessage': 'बैकएंड सेवा से पूर्व-चेतावनी अलर्ट लोड करने में असमर्थ।',
+    'alerts.multiHorizonDisplay': 'बहु-क्षितिज (3m, 6m, 12m)',
+    'alerts.closeDiagnostics': 'निदान बंद करें',
+    'alerts.persistenceRuleAppliedFallback': 'असंतुलन ने समर्थित क्षितिजों (3m, 6m, 12m) में से >=2 पर समान दिशा में सीमा पार की।',
+    'alerts.alertIdLabel': 'अलर्ट आईडी:',
+    'alerts.multiHorizonBadge': 'बहु-क्षितिज सत्यापित (≥2 क्षितिज)',
+
+    // Training-Seat Simulator Page
+    'simulator.introTitle': 'प्रशिक्षण-सीट आवंटन परिदृश्य सिमुलेटर',
+    'simulator.badge': 'प्रोटोटाइप नीति सिमुलेटर',
+    'simulator.introDesc': 'प्रमाणित अभ्यर्थी आउटपुट, क्षेत्रीय आपूर्ति रैंक और भविष्य के कौशल असंतुलन का अनुमान लगाने हेतु भविष्य के TVET एवं ITI प्रशिक्षण-क्षमता समायोजन का मॉडल तैयार करता है। आनुपातिक स्थिर-उत्पादन पाइपलाइन मान्यता के तहत प्रत्याशित सापेक्ष असंतुलन = पूर्वानुमान मांग विज्ञापन रैंक (0–100) − परिदृश्य आपूर्ति आउटपुट रैंक (0–100) (सीमा: −100.0 से +100.0 अंक) का अनुकरण करता है।',
+    'simulator.parametersHeader': '1. नीतिगत परिदृश्य पैरामीटर',
+    'simulator.parametersDesc': 'क्षेत्रीय अधिकार क्षेत्र, ट्रेड विशेषज्ञता, आधार बैच विंडो और भविष्य की प्रवेश क्षमता चुनें।',
+    'simulator.resetDefaults': '🔄 डिफ़ॉल्ट पर रीसेट करें',
+    'simulator.trailingCohorts': 'पिछले बैच',
+    'simulator.evaluationWindow': 'मूल्यांकन विंडो',
+    'simulator.geography': 'भूगोल',
+    'simulator.stateMission': 'राज्य / मिशन',
+    'simulator.localMarket': 'स्थानीय बाजार',
+    'simulator.industry': 'उद्योग',
+    'simulator.curriculum': 'पाठ्यक्रम',
+    'simulator.occupationTrade': 'व्यवसाय / ट्रेड',
+    'simulator.proposedSeatsLabel': 'प्रस्तावित स्वीकृत सीटें प्रति बैच',
+    'simulator.seatsRange': 'वैध: 1 से 5,000 सीटें',
+    'simulator.basePeriod': 'आधार अवधि',
+    'simulator.targetPeriod': 'लक्षित अवधि',
+    'simulator.proposedIntake': 'प्रस्तावित प्रवेश',
+    'simulator.code': 'कोड:',
+    'simulator.clearResults': 'परिणाम साफ़ करें',
+    'simulator.simulateBtn': '🚀 सीट सिमुलेशन चलाएं',
+    'simulator.simulatingBtn': 'पाइपलाइन उत्पादन की गणना जारी...',
+    'simulator.spinnerMsg': 'पिछले बैच की क्षमता की गणना, स्थिर-उत्पादन मान्यता के तहत प्रत्याशी आउटपुट का विस्तार, और क्रॉस-सेक्शनल आपूर्ति रैंकों का पुनर्संरचना जारी...',
+    'simulator.metaEvaluated': 'मूल्यांकित लक्षित क्षितिज: {target} (+{h} माह)',
+    'simulator.status': 'स्थिति: {status}',
+    'simulator.scalingRatio': 'स्थिर-उत्पादन स्केलिंग: {ratio}x',
+    'simulator.exportBtn': 'सिमुलेशन योजना निर्यात करें',
+    'simulator.exportPlanTitle': 'पूर्ण सिमुलेशन परिदृश्य योजना को CSV के रूप में डाउनलोड करें',
+    'simulator.iterativeComparison': 'पुनरावृत्ति परिदृश्य तुलना: पिछले परीक्षण में {prevSeats} सीटें थीं (असंतुलन: {prevMis} अंक) → वर्तमान परीक्षण में {currSeats} सीटें हैं (असंतुलन: {currMis} अंक)।',
+    'simulator.deltaOutput': 'Δ आउटपुट: {delta} /माह',
+    'simulator.kpiBatchCapacity': 'स्वीकृत बैच क्षमता',
+    'simulator.kpiBaselineAvg': 'आधारभूत औसत: {avg} सीटें/बैच',
+    'simulator.kpiCertifiedOutput': 'प्रमाणित उम्मीदवार आउटपुट',
+    'simulator.kpiBaselineOutput': 'आधारभूत आउटपुट: {base} प्रमाणित / माह',
+    'simulator.kpiSupplyRank': 'क्षेत्रीय आपूर्ति पर्सेंटाइल रैंक',
+    'simulator.kpiBaselineRank': 'आधारभूत रैंक: {rank} पर्सेंटाइल',
+    'simulator.kpiProjectedMismatch': 'प्रत्याशित असंतुलन (रैंक अंतर)',
+    'simulator.kpiMismatchSubtext': 'स्थिति: {status} • आधार रेखा: {base} अंक',
+    'simulator.boxHistoricalBaseline': '🏛️ ऐतिहासिक आधारभूत संरचना',
+    'simulator.boxProposedScenario': '🎛️ प्रस्तावित नीति परिदृश्य मॉडल',
+    'simulator.thConcludingCohorts': 'आधारभूत समापन बैच',
+    'simulator.thAvgSanctionedSeats': 'औसत स्वीकृत बैच सीटें',
+    'simulator.thTotalSeatsCalibrated': 'कैलिब्रेटेड विंडो में कुल सीटें',
+    'simulator.thRecentMonthlyThroughput': 'हालिया मासिक थ्रूपुट',
+    'simulator.thForecastDemandPostings': 'मांग पूर्वानुमान विज्ञापन (H{h})',
+    'simulator.thForecastCandidateOutput': 'प्रत्याशी आउटपुट पूर्वानुमान (H{h})',
+    'simulator.thBaselineSupplyRank': 'आधारभूत क्षेत्रीय आपूर्ति रैंक',
+    'simulator.thBaselineMismatchScore': 'आधारभूत सापेक्ष असंतुलन स्कोर',
+    'simulator.thProposedBatchSeats': 'प्रस्तावित स्वीकृत बैच सीटें',
+    'simulator.thSeatCapacityAdjustment': 'सीट क्षमता समायोजन',
+    'simulator.thCapacityScalingRatio': 'पाइपलाइन क्षमता स्केलिंग अनुपात',
+    'simulator.thSimulatedOutput': 'अनुकरणित मासिक प्रमाणित आउटपुट',
+    'simulator.thOutputShift': 'आधार रेखा की तुलना में आउटपुट परिवर्तन',
+    'simulator.thProjectedSupplyRank': 'प्रत्याशित क्षेत्रीय आपूर्ति रैंक',
+    'simulator.thProjectedMismatchScore': 'प्रत्याशित सापेक्ष असंतुलन स्कोर',
+    'simulator.thClassificationTransition': 'वर्गीकरण संक्रमण',
+    'simulator.postingsUnits': '{count} विज्ञापन (रैंक {rank})',
+    'simulator.certifiedPerMo': '{count} प्रमाणित / माह',
+    'simulator.seatsUnits': '{count} सीटें',
+    'simulator.percentileUnits': '{count} पर्सेंटाइल',
+    'simulator.baselineThroughputSuffix': 'x आधारभूत थ्रूपुट',
+    'simulator.rankDelta': '({dRank} − {sRank})',
+    'simulator.coverageTitle': 'मान्यता-समायोजित पाइपलाइन परिदृश्य',
+    'simulator.coverageBadge': 'नीति परिदृश्य सिमुलेशन',
+    'simulator.coverageDesc': 'ऑनलाइन विज्ञापन प्राप्ति (k) और स्थानीय स्नातक उपलब्धता (α) को समायोजित करके पाइपलाइन कवरेज की संवेदनशीलता का अन्वेषण करें। प्रारंभिक मान (1.00, 100%) केवल तटस्थ उदाहरणात्मक परिदृश्य मान्यताएं हैं, अनुभवजन्य पैरामीटर नहीं।',
+    'simulator.resetAssumptions': '🔄 मान्यताएं रीसेट करें',
+    'simulator.sliderK': '1. विज्ञापन-से-रिक्ति मल्टीप्लायर (k)',
+    'simulator.sliderKLow': '0.50x (भारी दोहराव)',
+    'simulator.sliderKMid': '1.00x (तटस्थ आधार रेखा)',
+    'simulator.sliderKHigh': '1.50x (अप्रकाशित भर्ती)',
+    'simulator.sliderKNote': 'पूर्वानुमानित ऑनलाइन विज्ञापनों ({postings}) को अनुमानित रिक्तियों में परिवर्तित करता है (विज्ञापन × k = {openings})।',
+    'simulator.sliderAlpha': '2. स्थानीय प्रत्याशी उपलब्धता अनुपात (α)',
+    'simulator.sliderAlphaLow': '40% (उच्च बाह्य गतिशीलता)',
+    'simulator.sliderAlphaMid': '70%',
+    'simulator.sliderAlphaHigh': '100% (पूर्ण स्थानीय प्रतिधारण)',
+    'simulator.sliderAlphaNote': 'स्थानीय ज़िला श्रम बाजार में प्रवेश करने वाले प्रत्याशियों के अनुमानित हिस्से के आधार पर प्रमाणित बैच थ्रूपुट को मापता है।',
+    'simulator.covEstOpenings': 'लक्षित अनुमानित रिक्तियां',
+    'simulator.covBaseline': 'आधारभूत पाइपलाइन कवरेज',
+    'simulator.covProposed': 'प्रस्तावित परिदृश्य कवरेज',
+    'simulator.covShift': 'परिदृश्य कवरेज परिवर्तन (Δ)',
+    'simulator.covShiftSub': 'प्रस्तावित घटाव आधारभूत कवरेज',
+    'simulator.covLocalEffPerOpenings': '{eff} स्थानीय प्रभावी / {openings} रिक्तियां',
+    'simulator.benchmarkRatioHeader': 'पूरक वर्णनात्मक मानक: प्रत्यक्ष प्रशिक्षण-से-विज्ञापन अनुपात',
+    'simulator.benchmarkRatioSub': 'मानक असमायोजित अनुपात: forecast_supply_throughput / forecast_demand_postings × 100',
+    'simulator.candidatesPer100Postings': 'प्रत्याशी / 100 विज्ञापन',
+    'simulator.baselineLabel': 'आधार रेखा:',
+    'simulator.proposedLabel': 'प्रस्तावित:',
+    'simulator.coverageCaveat': 'परिदृश्य पद्धति सूचना: यह मान्यता-समायोजित पाइपलाइन परिदृश्य एक खोजपूर्ण निर्णय-समर्थन सिमुलेशन है। यह वास्तविक रिक्ति पूर्ति, एक अनुभवजन्य कमी माप, या गारंटीकृत रोजगार की भविष्यवाणी का प्रतिनिधित्व नहीं करता है। ऑनलाइन जॉब पोस्टिंग कई पोर्टलों पर दोहराई जा सकती हैं, नवीनीकृत हो सकती हैं, या ऑफलाइन एवं अनौपचारिक भर्ती को छोड़ सकती हैं। इसी तरह, नए प्रमाणित प्रत्याशी बाद में नौकरियों में प्रवेश कर सकते हैं, ज़िले से बाहर जा सकते हैं, उच्च योग्यता प्राप्त कर सकते हैं, या तुरंत सक्रिय स्थानीय कार्यबल में प्रवेश नहीं कर सकते हैं।',
+    'simulator.funnelHeader': 'अनुभवजन्य बैच फ़नल यील्ड मेट्रिक्स (आधारभूत अंशांकन)',
+    'simulator.funnelDesc': '{district} में पिछले स्नातक बैचों में {occupation} के लिए देखे गए ऐतिहासिक रूपांतरण दर।',
+    'simulator.funnelSeatUtil': '1. सीट उपयोगिता दर',
+    'simulator.funnelEnrolSanctioned': 'नामांकन / स्वीकृत सीटें',
+    'simulator.funnelCompletion': '2. पाठ्यक्रम पूर्णता दर',
+    'simulator.funnelCompEnrol': 'पूर्णता / नामांकन',
+    'simulator.funnelPass': '3. मूल्यांकन उत्तीर्ण दर',
+    'simulator.funnelCertComp': 'प्रमाणीकरण / पूर्णता',
+    'simulator.funnelYield': '4. संचयी पाइपलाइन यील्ड',
+    'simulator.funnelCertSeats': 'प्रमाणीकरण / स्वीकृत सीटें',
+    'simulator.visualHeader': 'दृश्य तुलना: आधारभूत संरचना बनाम प्रस्तावित परिदृश्य',
+    'simulator.visualDesc': 'क्षमता, आउटपुट, पर्सेंटाइल रैंकिंग और सापेक्ष असंतुलन स्कोर में क्रमिक तुलना।',
+    'simulator.legendBaseline': 'आधार रेखा',
+    'simulator.legendProposed': 'प्रस्तावित परिदृश्य',
+    'simulator.barSeats': 'स्वीकृत सीटें प्रति बैच (प्रवेश क्षमता)',
+    'simulator.barThroughput': 'मासिक प्रमाणित प्रत्याशी आउटपुट (थ्रूपुट)',
+    'simulator.barSupplyRank': 'क्षेत्रीय आपूर्ति पर्सेंटाइल रैंक (मध्य-रैंक विधि)',
+    'simulator.barMismatch': 'सापेक्ष असंतुलन स्कोर (मांग रैंक − आपूर्ति रैंक)',
+    'simulator.gaugeMaxSupply': '−100 (अधिकतम आपूर्ति दबाव)',
+    'simulator.gaugeThreshSupply': '−15 (सीमा रेखा)',
+    'simulator.gaugeParity': '0 (समानता)',
+    'simulator.gaugeThreshDemand': '+15 (सीमा रेखा)',
+    'simulator.gaugeMaxDemand': '+100 (अधिकतम मांग दबाव)',
+    'simulator.calloutConstantYield': '📐 आनुपातिक स्थिर-उत्पादन मान्यता',
+    'simulator.calloutLeadTime': '⏳ पाइपलाइन लीड-टाइम एवं संख्या चेतावनी',
+    'simulator.calloutLeadTimeDesc': 'स्वीकृत सीट समायोजन बहु-माह निर्देशात्मक चक्रों (उदा. 6-12 महीने) के पूरा होने के बाद भविष्य के स्नातक समूहों को प्रभावित करते हैं। प्रशासनिक क्षमता जोड़ने से वर्तमान श्रम बाजार में तुरंत प्रमाणित कार्यकर्ता शामिल नहीं होते हैं।',
+    'simulator.calloutIndexInterp': 'सूचकांक व्याख्या:',
+    'simulator.calloutMethodology': 'पद्धति:',
+    'simulator.calloutThresholds': '⚖️ प्रोटोटाइप मॉडल सीमाएं (±15 अंक) एवं निर्णय समर्थन',
+    'simulator.calloutThresholdsDesc': 'मांग दबाव और आपूर्ति दबाव को अलग करने वाली सीमा रेखाएं (±15 पर्सेंटाइल अंक) प्रोटोटाइप मॉडल अंशांकन ह्युरिस्टिक्स हैं, वैधानिक या कानूनी रूप से बाध्यकारी आदेश नहीं। वे वर्तमान अवधि के अंतर विश्लेषण और पूर्वानुमानित असंतुलन मेट्रिक्स में समकक्ष वास्तविक गंभीरता स्थापित नहीं करते हैं।',
+    'simulator.calloutSaturation': 'पर्सेंटाइल-रैंक संतृप्ति:',
+    'simulator.calloutSaturationDesc': 'चयनित क्षितिज के लिए तुलनात्मक समूह के सापेक्ष आपूर्ति रैंक 100वें पर्सेंटाइल पर सीमित है। जब कोई प्रस्तावित क्षमता समायोजन क्षेत्रीय क्रॉस-सेक्शन में अन्य सभी श्रृंखलाओं से अधिक थ्रूपुट देता है, तो आपूर्ति रैंक 100.0 पर संतृप्त हो जाती है, और अनुमानित असंतुलन स्कोर मांग रैंक − 100.0 की निचली सीमा तक पहुंच जाता है। आगे सीट विस्तार स्थिर-उत्पादन धारणा के तहत भौतिक प्रत्याशी उत्पादन को रैखिक रूप से बढ़ाता रहता है, लेकिन रैंक-आधारित असंतुलन स्कोर में परिवर्तन नहीं हो सकता है।',
+    'simulator.calloutDistinction': 'वर्तमान अंतर विश्लेषण से भेद:',
+    'simulator.calloutDistinctionDesc': 'सीट सिमुलेशन एकल-मात्रा पूर्वानुमान विज्ञापन रैंकों के विरुद्ध भविष्य के बैच थ्रूपुट रैंकों का मूल्यांकन करते हैं। इसके विपरीत, वर्तमान अवधि का अंतर विश्लेषण पिछले प्रमाणीकरण रैंकों की तुलना में भारित बहु-संकेत मांग सूचकांक (विज्ञापन, वृद्धि, स्थायित्व, नियोक्ता विविधता, वेतन) का उपयोग करता है। योजनाकारों को दोनों असंतुलन संकेतकों को परस्पर विनिमेय नहीं मानना ​​चाहिए।',
+    'simulator.calloutLimitations': 'परिचालन सीमाएं:',
+
+    // Error & Loading Fallbacks
+    'error.backendConnection': 'बैकएंड कनेक्शन त्रुटि',
+    'error.unexpected': 'बैकएंड एपीआई के साथ संचार में अप्रत्याशित त्रुटि उत्पन्न हुई।',
+    'error.moduleRenderNotice': 'मॉड्यूल प्रस्तुति सूचना: {module} में अप्रत्याशित रनटाइम त्रुटि हुई।',
+    'error.appActive': 'डैशबोर्ड और साइडबार नेविगेशन पूरी तरह से सक्रिय हैं। आप किसी अन्य मॉड्यूल पर जा सकते हैं या इस पृष्ठ को पुनः प्रस्तुत करने का प्रयास कर सकते हैं।',
+    'error.detail': 'त्रुटि विवरण:',
+    'error.retryModule': '🔄 पुनः प्रयास ({module})',
+  },
+};
+
+/**
+ * Robust string translation lookup with fallback and parameter interpolation.
+ */
+export function translate(lang, key, paramsOrFallback, maybeParams) {
+  if (!key) return '';
+  const targetLang = lang === 'hi' ? 'hi' : 'en';
+  let text = translations[targetLang]?.[key] ?? translations.en?.[key];
+  let params = null;
+
+  if (typeof paramsOrFallback === 'string') {
+    if (!text) text = paramsOrFallback;
+    if (maybeParams && typeof maybeParams === 'object') params = maybeParams;
+  } else if (paramsOrFallback && typeof paramsOrFallback === 'object') {
+    params = paramsOrFallback;
+  }
+
+  if (!text) {
+    if (typeof key === 'string' && key.includes('.')) {
+      // Graceful degradation: convert namespaced code identifier into human-readable English words
+      const parts = key.split('.');
+      const rawLeaf = parts.slice(1).join(' ') || parts[0];
+      const spaced = rawLeaf
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/[_-]+/g, ' ')
+        .trim();
+      text = spaced ? (spaced.charAt(0).toUpperCase() + spaced.slice(1)) : String(key);
+    } else {
+      text = String(key);
+    }
+  }
+
+  if (params && text) {
+    for (const [k, v] of Object.entries(params)) {
+      text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+    }
+  }
+
+  return text;
+}
+
+/**
+ * Localized district display name helper
+ */
+const DISTRICT_MAP_HI = {
+  'Bengaluru Urban': 'बेंगलुरु शहरी',
+  'KA_BEN': 'बेंगलुरु शहरी',
+  'Dakshina Kannada': 'दक्षिण कन्नड़',
+  'KA_DKN': 'दक्षिण कन्नड़',
+  'Pune': 'पुणे',
+  'MH_PUN': 'पुणे',
+  'Nagpur': 'नागपुर',
+  'MH_NAG': 'नागपुर',
+  'Hyderabad': 'हैदराबाद',
+  'TS_HYD': 'हैदराबाद',
+  'Warangal': 'वारंगल',
+  'TS_WAR': 'वारंगल',
+};
+
+export function getDistrictDisplayName(nameOrId, isHindi, fallback) {
+  if (!nameOrId) return fallback || '';
+  if (!isHindi) {
+    if (nameOrId === 'KA_BEN') return 'Bengaluru Urban';
+    if (nameOrId === 'KA_DKN') return 'Dakshina Kannada';
+    if (nameOrId === 'MH_PUN') return 'Pune';
+    if (nameOrId === 'MH_NAG') return 'Nagpur';
+    if (nameOrId === 'TS_HYD') return 'Hyderabad';
+    if (nameOrId === 'TS_WAR') return 'Warangal';
+    return nameOrId;
+  }
+  return DISTRICT_MAP_HI[nameOrId] || nameOrId;
+}
+
+/**
+ * Localized state display name helper
+ */
+const STATE_MAP_HI = {
+  'KA': 'कर्नाटक (KA)',
+  'Karnataka': 'कर्नाटक (KA)',
+  'MH': 'महाराष्ट्र (MH)',
+  'Maharashtra': 'महाराष्ट्र (MH)',
+  'TS': 'तेलंगाना (TS)',
+  'Telangana': 'तेलंगाना (TS)',
+};
+
+const STATE_MAP_EN = {
+  'KA': 'Karnataka (KA)',
+  'Karnataka': 'Karnataka (KA)',
+  'MH': 'Maharashtra (MH)',
+  'Maharashtra': 'Maharashtra (MH)',
+  'TS': 'Telangana (TS)',
+  'Telangana': 'Telangana (TS)',
+};
+
+export function getStateDisplayName(codeOrName, isHindi) {
+  if (!codeOrName) return '';
+  if (isHindi) return STATE_MAP_HI[codeOrName] || codeOrName;
+  return STATE_MAP_EN[codeOrName] || codeOrName;
+}
+
+/**
+ * Localized sector display name helper
+ */
+const SECTOR_MAP_HI = {
+  'IT/ITeS': 'आईटी / आईटीईएस (IT/ITeS)',
+  'IT-ITeS': 'आईटी / आईटीईएस (IT/ITeS)',
+  'Manufacturing': 'विनिर्माण (Manufacturing)',
+  'Logistics': 'लॉजिस्टिक्स (Logistics)',
+};
+
+export function getSectorDisplayName(sector, isHindi) {
+  if (!sector) return '';
+  if (isHindi) return SECTOR_MAP_HI[sector] || sector;
+  return sector;
+}
+
+/**
+ * Formats a demand driver string (e.g. key_drivers from backend API).
+ * Translates English technical driver descriptions into authoritative Hindi while
+ * preserving scores and numbers.
+ */
+export function formatDemandDriver(driver, isHindi) {
+  if (!driver || !isHindi) return driver;
+  const str = String(driver).trim();
+
+  // 1. Posting volume
+  const postMatch = str.match(/^Posting volume\s*(?:\((\d+)\s*postings,\s*score:\s*([\d.]+)\))?$/i);
+  if (postMatch) {
+    if (postMatch[1] && postMatch[2]) {
+      return `नौकरी विज्ञापनों की संख्या (${postMatch[1]} विज्ञापन, स्कोर: ${postMatch[2]})`;
+    }
+    return 'नौकरी विज्ञापनों की संख्या';
+  }
+
+  // 2. 3-Month growth momentum
+  const growthMatch = str.match(/^3-Month growth momentum\s*(?:\(([-+]?[\d.]+%),\s*score:\s*([\d.]+)\))?$/i);
+  if (growthMatch) {
+    if (growthMatch[1] && growthMatch[2]) {
+      return `पिछले 3 महीनों की वृद्धि (${growthMatch[1]}, स्कोर: ${growthMatch[2]})`;
+    }
+    return 'पिछले 3 महीनों की वृद्धि';
+  }
+
+  // 3. Employer recruitment breadth
+  const empMatch = str.match(/^Employer recruitment breadth\s*(?:\((\d+)\s*employers,\s*score:\s*([\d.]+)\))?$/i);
+  if (empMatch) {
+    if (empMatch[1] && empMatch[2]) {
+      return `भर्ती करने वाले नियोक्ताओं की संख्या (${empMatch[1]} नियोक्ता, स्कोर: ${empMatch[2]})`;
+    }
+    return 'भर्ती करने वाले नियोक्ताओं की संख्या';
+  }
+
+  // 4. Vacancy persistence
+  const persMatch = str.match(/^Vacancy persistence\s*(?:\(([\d.]+)\s*pts,\s*score:\s*([\d.]+)\))?$/i);
+  if (persMatch) {
+    if (persMatch[1] && persMatch[2]) {
+      return `रिक्ति स्थायित्व (${persMatch[1]} अंक, स्कोर: ${persMatch[2]})`;
+    }
+    return 'रिक्ति स्थायित्व';
+  }
+
+  // 5. Wage attractiveness
+  const wageMatch = str.match(/^Wage attractiveness index\s*(?:\(([\d.]+)\s*pts,\s*score:\s*([\d.]+)\))?$/i);
+  if (wageMatch) {
+    if (wageMatch[1] && wageMatch[2]) {
+      return `वेतन आकर्षण सूचकांक (${wageMatch[1]} सूचकांक, स्कोर: ${wageMatch[2]})`;
+    }
+    return 'वेतन आकर्षण सूचकांक';
+  }
+
+  return str;
+}
+
+/**
+ * Formats explanatory factor strings from backend Gap Analysis API
+ */
+export function formatExplanatoryFactor(factor, isHindi) {
+  if (!factor || !isHindi) return factor;
+  const str = String(factor).trim();
+
+  // Top Demand Driver:
+  if (str.startsWith('Top Demand Driver:')) {
+    const rawDriver = str.replace('Top Demand Driver:', '').trim();
+    return `शीर्ष मांग चालक: ${formatDemandDriver(rawDriver, true)}`;
+  }
+
+  // Mismatch Score:
+  const mismatchMatch = str.match(/^Mismatch Score:\s*([+-]?[\d.]+)\s*pts\s*\(([^)]+)\)\.\s*(.*)$/i);
+  if (mismatchMatch) {
+    const [, score, cls, desc] = mismatchMatch;
+    let clsHi = cls;
+    if (cls.toLowerCase().includes('demand')) clsHi = 'मांग दबाव';
+    else if (cls.toLowerCase().includes('supply')) clsHi = 'आपूर्ति दबाव';
+    else if (cls.toLowerCase().includes('balanced')) clsHi = 'संतुलित';
+
+    let descHi = desc;
+    if (desc.includes('Employer hiring intensity exceeds') || desc.includes('demand pressure')) {
+      descHi = 'नियोक्ता भर्ती की तीव्रता हालिया प्रमाणीकरण आउटपुट से अधिक है।';
+    } else if (desc.includes('Recent certification output outpaces') || desc.includes('supply pressure')) {
+      descHi = 'हालिया प्रमाणीकरण आउटपुट स्थानीय भर्ती संकेतों से अधिक है।';
+    } else if (desc.includes('Balanced regional workforce condition') || desc.includes('benchmark corridor')) {
+      descHi = 'मानक गलियारे के भीतर संतुलित क्षेत्रीय कार्यबल स्थिति।';
+    }
+    return `असंतुलन स्कोर: ${score} अंक (${clsHi})। ${descHi}`;
+  }
+
+  // Relative Scores:
+  const relMatch = str.match(/^Relative Scores:\s*Demand Index:\s*([\d.]+)\/100,\s*Supply Output Index:\s*([\d.]+)\/100\.?$/i);
+  if (relMatch) {
+    return `सापेक्ष स्कोर: मांग सूचकांक: ${relMatch[1]}/100, आपूर्ति आउटपुट सूचकांक: ${relMatch[2]}/100.`;
+  }
+
+  // Training Throughput:
+  const thrupMatch = str.match(/^Training Throughput:\s*3-Month certified volume is\s*(\d+)\s*candidates\s*\(6-Month:\s*(.*?)\)\.?$/i);
+  if (thrupMatch) {
+    const [, c3m, c6mRaw] = thrupMatch;
+    let c6mHi = c6mRaw;
+    if (c6mRaw.toLowerCase().includes('insufficient history')) {
+      c6mHi = 'अपर्याप्त इतिहास (<6 माह)';
+    } else {
+      c6mHi = c6mRaw.replace(/candidates/gi, 'उम्मीदवार');
+    }
+    return `प्रशिक्षण आउटपुट: 3-माह प्रमाणित संख्या ${c3m} उम्मीदवार (6-माह: ${c6mHi})।`;
+  }
+
+  // Funnel Efficiency:
+  const funnelMatch = str.match(/^Funnel Efficiency:\s*Utilization:\s*(.*?),\s*Completion:\s*(.*?),\s*Certification:\s*(.*?),\s*Placement:\s*(.*?)\.?$/i);
+  if (funnelMatch) {
+    const [, util, comp, cert, place] = funnelMatch;
+    let placeHi = place;
+    if (place.toLowerCase().includes('pending follow-up') || place.toLowerCase().includes('immature')) {
+      placeHi = 'समीक्षा प्रतीक्षारत (अपरिपक्व)';
+    }
+    return `फ़नल दक्षता: उपयोगिता: ${util}, पूर्णता: ${comp}, प्रमाणीकरण: ${cert}, प्लेसमेंट: ${placeHi}।`;
+  }
+
+  // Data Coverage Advisory:
+  if (str.startsWith('Data Coverage Advisory:')) {
+    return str
+      .replace('Data Coverage Advisory:', 'डेटा कवरेज परामर्श:')
+      .replace('Index input coverage is', 'सूचकांक इनपुट कवरेज:')
+      .replace('due to missing signals:', 'अनुपलब्ध सिग्नलों के कारण:')
+      .replace('The relative mismatch score reflects re-normalized active components;', 'सापेक्ष असंतुलन स्कोर पुन: सामान्यीकृत सक्रिय घटकों को दर्शाता है;')
+      .replace('alert classification', 'अलर्ट वर्गीकरण')
+      .replace('should be treated as preliminary pending full longitudinal history.', 'को पूर्ण ऐतिहासिक डेटा मिलने तक प्रारंभिक माना जाना चाहिए।')
+      .replace('Demand Pressure', 'मांग दबाव')
+      .replace('Supply Pressure', 'आपूर्ति दबाव')
+      .replace('Balanced', 'संतुलित');
+  }
+
+  return str;
+}
