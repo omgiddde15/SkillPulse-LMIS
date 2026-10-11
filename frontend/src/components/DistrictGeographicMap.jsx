@@ -7,11 +7,20 @@ import {
 } from '../i18n/translations';
 
 /**
- * DistrictGeographicMap
- *
- * Interactive Leaflet basemap rendering authentic pilot district centroid locations
- * across Maharashtra, Karnataka, and Telangana with OpenStreetMap tiles.
+ * Directional anchor offsets to prevent any marker or label overlap
+ * especially for geographically adjacent pairs:
+ * - Mumbai Suburban (West) vs. Pune (Southeast)
+ * - Medchal-Malkajgiri (North) vs. Hyderabad (South)
  */
+const DISTRICT_ANCHOR_OFFSETS = {
+  MH_MUM: { labelPos: 'left', offsetX: -110, offsetY: 2 },
+  MH_PUN: { labelPos: 'right', offsetX: 36, offsetY: 8 },
+  TS_MED: { labelPos: 'top', offsetX: -52, offsetY: -30 },
+  TS_HYD: { labelPos: 'bottom', offsetX: -36, offsetY: 34 },
+  KA_DHA: { labelPos: 'left', offsetX: -78, offsetY: 2 },
+  KA_BLR_U: { labelPos: 'right', offsetX: 36, offsetY: 2 },
+};
+
 const formatScore = (val) => (val != null ? Number(val).toFixed(1) : 'N/A');
 const formatMismatch = (val) => {
   if (val == null) return 'N/A';
@@ -59,24 +68,30 @@ export default function DistrictGeographicMap({
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
+  const markersRef = useRef({});
+  const failedTileCountRef = useRef(0);
+
+  const [mapMode, setMapMode] = useState('basemap'); // 'basemap' | 'schematic'
   const [tilesOffline, setTilesOffline] = useState(false);
 
-  // Currently selected district object
+  // Active district metrics object
   const activeDistrict = districts.find((d) => d.id === selectedDistrictId);
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Interactive Basemap
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    if (mapMode !== 'basemap' || !mapContainerRef.current) return;
 
-    // Clean up any stale map instance
+    // Remove any previous map instance
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
     }
 
+    failedTileCountRef.current = 0;
+
     // Centered over South-Central India covering MH, KA, and TS
     const map = L.map(mapContainerRef.current, {
-      center: [16.5, 76.2],
+      center: [16.2, 75.8],
       zoom: 6,
       minZoom: 5,
       maxZoom: 13,
@@ -85,15 +100,29 @@ export default function DistrictGeographicMap({
 
     mapInstanceRef.current = map;
 
-    // OpenStreetMap Tile Layer with explicit attribution
-    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
-    });
+    // Primary: OpenStreetMap standard tiles (Clean, reliable, no API key watermark)
+    const osmLayer = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        subdomains: ['a', 'b', 'c'],
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+      }
+    );
 
     osmLayer.on('tileerror', () => {
-      setTilesOffline(true);
+      failedTileCountRef.current += 1;
+      // If repeated tile failures occur (e.g. offline environment), notify user
+      if (failedTileCountRef.current >= 6) {
+        setTilesOffline(true);
+      }
+    });
+
+    osmLayer.on('load', () => {
+      if (failedTileCountRef.current < 6) {
+        setTilesOffline(false);
+      }
     });
 
     osmLayer.addTo(map);
@@ -102,26 +131,35 @@ export default function DistrictGeographicMap({
     const markersGroup = L.featureGroup().addTo(map);
     markersLayerRef.current = markersGroup;
 
-    // Invalidate size to ensure complete canvas render after mount
-    const resizeTimer = setTimeout(() => {
+    // Use ResizeObserver to ensure Leaflet container size stays accurate
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
+
+    resizeObserver.observe(mapContainerRef.current);
+
+    // Initial resize trigger
+    const timer = setTimeout(() => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
       }
     }, 150);
 
     return () => {
-      clearTimeout(resizeTimer);
+      clearTimeout(timer);
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [mapMode]);
 
-  const markersRef = useRef({});
-
-  // Render Markers once per district dataset / language change
+  // Render Leaflet Markers with Directional Non-Overlapping Labels
   useEffect(() => {
+    if (mapMode !== 'basemap') return;
     const map = mapInstanceRef.current;
     const markersGroup = markersLayerRef.current;
     if (!map || !markersGroup || districts.length === 0) return;
@@ -130,47 +168,55 @@ export default function DistrictGeographicMap({
     markersRef.current = {};
 
     districts.forEach((d) => {
+      const isSelected = selectedDistrictId === d.id;
       const badge = getClassificationBadge(d.classification, isHindi);
       const isDemand = d.classification === 'Demand Pressure';
       const isSupply = d.classification === 'Supply Pressure';
       const pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+      const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 36, offsetY: 4 };
 
-      // Custom DivIcon for clean, responsive vector pins
+      // Custom DivIcon with directional label placement preventing collisions
       const markerHtml = `
-        <div class="pilot-district-marker-container" style="
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          cursor: pointer;
-        ">
+        <div class="pilot-district-marker-anchor" style="position: relative; width: 32px; height: 32px; cursor: pointer;">
+          <!-- Central Pin Bubble -->
           <div style="
             width: 32px;
             height: 32px;
             border-radius: 50%;
             background-color: ${pinColor};
-            border: 2px solid #ffffff;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+            border: ${isSelected ? '3px solid #0d9488' : '2px solid #ffffff'};
+            box-shadow: 0 3px 10px rgba(0,0,0,0.38);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
             font-size: 14px;
             font-weight: 700;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.15s ease;
+            ${isSelected ? 'transform: scale(1.18); z-index: 20;' : ''}
           ">
             ${badge.icon}
           </div>
+
+          <!-- Directional Offset Label Badge (Never Collides) -->
           <div style="
-            margin-top: 3px;
-            background-color: rgba(15, 23, 42, 0.90);
+            position: absolute;
+            left: ${cfg.offsetX}px;
+            top: ${cfg.offsetY}px;
+            background-color: rgba(15, 23, 42, 0.92);
             color: #ffffff;
             font-size: 11px;
             font-weight: 600;
-            padding: 2px 6px;
+            padding: 2px 7px;
             border-radius: 4px;
             white-space: nowrap;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.25);
             pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
           ">
             ${getDistrictDisplayName(d.name, isHindi)}
           </div>
@@ -180,9 +226,9 @@ export default function DistrictGeographicMap({
       const customIcon = L.divIcon({
         html: markerHtml,
         className: 'pilot-district-marker-pin',
-        iconSize: [40, 56],
-        iconAnchor: [20, 24],
-        popupAnchor: [0, -24],
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -18],
       });
 
       const marker = L.marker([d.lat, d.lon], { icon: customIcon });
@@ -192,7 +238,7 @@ export default function DistrictGeographicMap({
         <div style="min-width: 220px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: #1e293b; line-height: 1.4;">
           <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
             <strong style="font-size: 14px; color: #0f172a;">${getDistrictDisplayName(d.name, isHindi)}</strong>
-            <span style="font-size: 11px; color: #64748b; font-weight: 600;">${getStateDisplayName(d.state, isHindi)} (${d.state})</span>
+            <span style="font-size: 11px; color: #64748b; font-weight: 600;">${getStateDisplayName(d.state, isHindi)}</span>
           </div>
           <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: ${badge.color}; background-color: ${badge.bg}; border: 1px solid ${badge.border}; margin-bottom: 8px;">
             <span>${badge.icon}</span>
@@ -238,15 +284,21 @@ export default function DistrictGeographicMap({
       markersRef.current[d.id] = marker;
     });
 
-    // Fit bounds across all pilot district coordinates
+    // Ensure entire latitude span from Bengaluru (12.97°N) to Mumbai (19.08°N) fits comfortably
     if (districts.length > 0) {
-      const latLngs = districts.map((d) => [d.lat, d.lon]);
-      map.fitBounds(L.latLngBounds(latLngs), { padding: [50, 50], maxZoom: 8 });
+      const southWest = L.latLng(12.0, 71.8);
+      const northEast = L.latLng(19.8, 79.5);
+      map.fitBounds(L.latLngBounds(southWest, northEast), {
+        paddingTopLeft: [25, 25],
+        paddingBottomRight: [25, 25],
+        maxZoom: 7,
+      });
     }
-  }, [districts, period, isHindi, onSelectDistrict]);
+  }, [districts, mapMode, period, isHindi, onSelectDistrict, selectedDistrictId]);
 
-  // Synchronize popup with selectedDistrictId
+  // Synchronize Leaflet popup with selectedDistrictId
   useEffect(() => {
+    if (mapMode !== 'basemap') return;
     if (!selectedDistrictId) {
       mapInstanceRef.current?.closePopup();
       return;
@@ -255,7 +307,14 @@ export default function DistrictGeographicMap({
     if (targetMarker && mapInstanceRef.current) {
       targetMarker.openPopup();
     }
-  }, [selectedDistrictId]);
+  }, [selectedDistrictId, mapMode]);
+
+  // Schematic SVG Map Coordinate Projection Helpers
+  // Bounding Box: Lon 71.5°E to 80.5°E (9° span), Lat 12.0°N to 20.5°N (8.5° span)
+  const svgW = 680;
+  const svgH = 480;
+  const projX = (lon) => 50 + ((lon - 71.5) / 9.0) * (svgW - 100);
+  const projY = (lat) => 35 + ((20.5 - lat) / 8.5) * (svgH - 70);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
@@ -264,69 +323,313 @@ export default function DistrictGeographicMap({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--slate-800)', margin: 0 }}>
-              🗺️ {isHindi ? 'पायलट ज़िला भौगोलिक मानचित्र (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot District Geographic Basemap (Karnataka, Maharashtra, Telangana)'}
+              🗺️ {isHindi ? 'पायलट ज़िला भौगोलिक मानचित्र (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot District Geographic Map (Karnataka, Maharashtra, Telangana)'}
             </h3>
             <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid var(--teal-200)', fontWeight: 600 }}>
-              {isHindi ? 'ओपनस्ट्रीटमैप टाइल्स • 6 ज़िला केंद्रक' : 'OpenStreetMap Basemap • 6 District Centroids'}
+              {isHindi ? '6 ज़िला केंद्रक • 3 राज्य' : '6 District Centroids • 3 States'}
             </span>
           </div>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
             {isHindi
-              ? 'आधिकारिक भौगोलिक स्थिति (अक्षांश/देशांतर केंद्रक) पर स्थित 6 पायलट ज़िलों का वास्तविक मानचित्र। मार्कर पर क्लिक करके विवरण देखें और तालिका फ़िल्टर करें।'
-              : 'Interactive geographic basemap showing authentic pilot district coordinates. Click any marker to inspect labour-market metrics and filter rankings.'}
+              ? 'आधिकारिक भौगोलिक केंद्रक (अक्षांश/देशांतर) पर स्थित 6 पायलट ज़िले। सभी मार्कर और लेबल ओवरलैप-रहित संरेखित हैं।'
+              : 'Authentic pilot district locations plotted at official centroid coordinates. Directional labels prevent overlap.'}
           </p>
         </div>
 
-        {/* Legend */}
-        <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: 'var(--slate-700)', backgroundColor: 'var(--slate-50)', padding: '0.35rem 0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ea580c', display: 'inline-block' }} />
-            <span>⚡ {isHindi ? 'मांग दबाव (≥ +15)' : 'Demand Pressure (≥ +15)'}</span>
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#475569', display: 'inline-block' }} />
-            <span>⚖️ {isHindi ? 'संतुलित (±15)' : 'Balanced (±15)'}</span>
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#2563eb', display: 'inline-block' }} />
-            <span>📦 {isHindi ? 'आपूर्ति दबाव (≤ −15)' : 'Supply Pressure (≤ −15)'}</span>
-          </span>
+        {/* Map View Mode Switcher + Legend */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {/* Mode Toggle: Basemap vs Schematic */}
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: mapMode === 'basemap' ? '#ffffff' : 'transparent',
+                color: mapMode === 'basemap' ? 'var(--teal-800)' : 'var(--slate-600)',
+                fontWeight: mapMode === 'basemap' ? 700 : 500,
+                boxShadow: mapMode === 'basemap' ? 'var(--shadow-sm)' : 'none',
+                padding: '0.25rem 0.55rem',
+                fontSize: '0.72rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setMapMode('basemap')}
+            >
+              🌐 {isHindi ? 'इंटरैक्टिव बेसमैप' : 'Interactive Basemap'}
+            </button>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: mapMode === 'schematic' ? '#ffffff' : 'transparent',
+                color: mapMode === 'schematic' ? 'var(--teal-800)' : 'var(--slate-600)',
+                fontWeight: mapMode === 'schematic' ? 700 : 500,
+                boxShadow: mapMode === 'schematic' ? 'var(--shadow-sm)' : 'none',
+                padding: '0.25rem 0.55rem',
+                fontSize: '0.72rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setMapMode('schematic')}
+            >
+              📍 {isHindi ? 'स्थानिक लोकेशन मैप' : 'Schematic Location Map'}
+            </button>
+          </div>
+
+          {/* Classification Legend */}
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: 'var(--slate-700)', backgroundColor: 'var(--slate-50)', padding: '0.3rem 0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ea580c', display: 'inline-block' }} />
+              <span>⚡ {isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#475569', display: 'inline-block' }} />
+              <span>⚖️ {isHindi ? 'संतुलित' : 'Balanced'}</span>
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#2563eb', display: 'inline-block' }} />
+              <span>📦 {isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure'}</span>
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Offline / Tile Fallback Warning if tiles fail */}
-      {tilesOffline && (
+      {/* Offline Alert with Quick Switcher if Basemap tiles fail */}
+      {tilesOffline && mapMode === 'basemap' && (
         <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '0.5rem 0.75rem', fontSize: '0.75rem', color: '#92400e', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <span>
             ⚠️ {isHindi
-              ? 'नेटवर्क टाइल सर्वर अनुपलब्ध है। ज़िला केंद्रक मार्कर और विश्लेषणात्मक डेटा पूरी तरह सक्रिय हैं।'
-              : 'Network map tile server is unavailable. District centroid coordinates and analytics remain fully interactive.'}
+              ? 'नेटवर्क टाइल सर्वर धीमी प्रतिक्रिया दे रहा है। आप नीचे दिए गए बटन से स्थानिक लोकेशन मैप पर स्विच कर सकते हैं।'
+              : 'Network map tile server is slow or unavailable. You can switch to the self-contained Schematic Location Map.'}
           </span>
-          <button
-            type="button"
-            onClick={onSwitchToCharts}
-            style={{ border: 'none', background: 'none', color: '#b45309', fontWeight: 700, cursor: 'pointer', fontSize: '0.75rem', textDecoration: 'underline' }}
-          >
-            {isHindi ? 'तुलनात्मक चार्ट पर वापस जाएं' : 'Switch to Comparison Charts'}
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              type="button"
+              onClick={() => setMapMode('schematic')}
+              style={{ border: 'none', backgroundColor: '#d97706', color: '#ffffff', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.72rem' }}
+            >
+              📍 {isHindi ? 'लोकेशन मैप देखें' : 'View Location Map'}
+            </button>
+            <button
+              type="button"
+              onClick={onSwitchToCharts}
+              style={{ border: 'none', background: 'none', color: '#b45309', fontWeight: 600, cursor: 'pointer', fontSize: '0.72rem', textDecoration: 'underline' }}
+            >
+              {isHindi ? 'तुलनात्मक चार्ट पर जाएं' : 'Comparison Charts'}
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Main Map + Selected Inspector Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: activeDistrict ? '1fr 300px' : '1fr', gap: '1rem', alignItems: 'stretch' }}>
-        {/* Leaflet Map Canvas */}
-        <div
-          ref={mapContainerRef}
-          style={{
-            height: '480px',
-            width: '100%',
-            borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--slate-300)',
-            backgroundColor: '#e2e8f0',
-            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
-            zIndex: 1,
-          }}
-        />
+      {/* Main Map Canvas + Selected Inspector Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: activeDistrict ? '1fr 310px' : '1fr', gap: '1rem', alignItems: 'stretch' }}>
+        {/* VIEW A: Interactive Leaflet Basemap */}
+        {mapMode === 'basemap' && (
+          <div
+            ref={mapContainerRef}
+            style={{
+              height: '520px',
+              width: '100%',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--slate-300)',
+              backgroundColor: '#f1f5f9',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          />
+        )}
+
+        {/* VIEW B: Self-Contained Geographically Proportionate Location Map (Schematic Mode) */}
+        {mapMode === 'schematic' && (
+          <div
+            style={{
+              height: '520px',
+              width: '100%',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--slate-300)',
+              backgroundColor: '#f8fafc',
+              overflow: 'hidden',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* SVG Geographical Location Canvas */}
+            <svg
+              viewBox={`0 0 ${svgW} ${svgH}`}
+              style={{ width: '100%', height: '100%', display: 'block', backgroundColor: '#f1f5f9' }}
+            >
+              <defs>
+                <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+                </pattern>
+                {/* Subtle drop shadow for pins */}
+                <filter id="pinShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.3" />
+                </filter>
+              </defs>
+
+              {/* Background grid */}
+              <rect width={svgW} height={svgH} fill="url(#gridPattern)" />
+
+              {/* Arabian Sea Coastal Indicator on the West */}
+              <path
+                d={`M 0,0 L ${projX(72.7)},0 L ${projX(72.8)},${projY(19.0)} L ${projX(73.5)},${projY(15.5)} L ${projX(74.5)},${svgH} L 0,${svgH} Z`}
+                fill="#e0f2fe"
+                opacity="0.55"
+              />
+              <text x="25" y={svgH - 25} fill="#0284c7" fontSize="11" fontWeight="700" letterSpacing="0.08em" opacity="0.8">
+                ARABIAN SEA
+              </text>
+
+              {/* Geographically Proportionate State Regional Zones (Schematic Location Context) */}
+              {/* Maharashtra Zone (North / Northwest) */}
+              <path
+                d={`M ${projX(72.8)},${projY(19.5)} L ${projX(79.5)},${projY(20.2)} L ${projX(80.2)},${projY(18.5)} L ${projX(76.5)},${projY(17.8)} L ${projX(73.5)},${projY(16.5)} Z`}
+                fill="#f8fafc"
+                stroke="#cbd5e1"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+                opacity="0.8"
+              />
+              <text x={projX(76.0)} y={projY(19.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+                MAHARASHTRA (MH)
+              </text>
+
+              {/* Karnataka Zone (South / Southwest) */}
+              <path
+                d={`M ${projX(73.8)},${projY(16.2)} L ${projX(77.2)},${projY(17.5)} L ${projX(78.2)},${projY(13.5)} L ${projX(76.5)},${projY(12.2)} L ${projX(74.5)},${projY(14.2)} Z`}
+                fill="#f8fafc"
+                stroke="#cbd5e1"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+                opacity="0.8"
+              />
+              <text x={projX(75.8)} y={projY(14.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+                KARNATAKA (KA)
+              </text>
+
+              {/* Telangana Zone (East / Central-East) */}
+              <path
+                d={`M ${projX(77.4)},${projY(18.8)} L ${projX(80.5)},${projY(18.5)} L ${projX(79.8)},${projY(16.2)} L ${projX(77.5)},${projY(16.2)} Z`}
+                fill="#f8fafc"
+                stroke="#cbd5e1"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+                opacity="0.8"
+              />
+              <text x={projX(79.0)} y={projY(17.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+                TELANGANA (TS)
+              </text>
+
+              {/* Latitude / Longitude Grid Markings */}
+              {[14, 16, 18, 20].map((lat) => (
+                <g key={`lat-${lat}`}>
+                  <line x1="45" y1={projY(lat)} x2={svgW - 25} y2={projY(lat)} stroke="#e2e8f0" strokeDasharray="3 3" />
+                  <text x="35" y={projY(lat) + 4} fill="#94a3b8" fontSize="9" textAnchor="end" fontFamily="var(--font-mono)">
+                    {lat}°N
+                  </text>
+                </g>
+              ))}
+              {[73, 75, 77, 79].map((lon) => (
+                <g key={`lon-${lon}`}>
+                  <line x1={projX(lon)} y1="30" x2={projX(lon)} y2={svgH - 30} stroke="#e2e8f0" strokeDasharray="3 3" />
+                  <text x={projX(lon)} y={svgH - 12} fill="#94a3b8" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)">
+                    {lon}°E
+                  </text>
+                </g>
+              ))}
+
+              {/* The Six Verified Pilot District Centroid Pins */}
+              {districts.map((d) => {
+                const px = projX(d.lon);
+                const py = projY(d.lat);
+                const isSelected = selectedDistrictId === d.id;
+                const badge = getClassificationBadge(d.classification, isHindi);
+                const isDemand = d.classification === 'Demand Pressure';
+                const isSupply = d.classification === 'Supply Pressure';
+                const pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+                const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 20, offsetY: 0 };
+
+                // Directional label text anchor & box
+                const labelX = px + cfg.offsetX;
+                const labelY = py + cfg.offsetY;
+
+                return (
+                  <g
+                    key={d.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onSelectDistrict(isSelected ? null : d.id)}
+                  >
+                    {/* Leader Line connecting Pin to Label */}
+                    <line
+                      x1={px}
+                      y1={py}
+                      x2={labelX + 30}
+                      y2={labelY + 8}
+                      stroke="#94a3b8"
+                      strokeWidth="1.5"
+                      strokeDasharray="2 2"
+                    />
+
+                    {/* District Pin Bubble */}
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r={isSelected ? 16 : 14}
+                      fill={pinColor}
+                      stroke={isSelected ? '#0d9488' : '#ffffff'}
+                      strokeWidth={isSelected ? 3 : 2}
+                      filter="url(#pinShadow)"
+                    />
+                    <text
+                      x={px}
+                      y={py + 4}
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize="11"
+                      fontWeight="bold"
+                      pointerEvents="none"
+                    >
+                      {badge.icon}
+                    </text>
+
+                    {/* Directional Non-Overlapping Label Badge */}
+                    <rect
+                      x={labelX - 4}
+                      y={labelY - 5}
+                      width={getDistrictDisplayName(d.name, isHindi).length * 8 + 18}
+                      height="20"
+                      rx="4"
+                      fill="rgba(15, 23, 42, 0.92)"
+                      stroke={isSelected ? '#0d9488' : 'rgba(255,255,255,0.3)'}
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={labelX + 5}
+                      y={labelY + 9}
+                      fill="#ffffff"
+                      fontSize="10.5"
+                      fontWeight="600"
+                      pointerEvents="none"
+                    >
+                      {getDistrictDisplayName(d.name, isHindi)}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Schematic Provenance Notice Strip */}
+            <div style={{ backgroundColor: '#ffffff', borderTop: '1px solid var(--slate-200)', padding: '0.35rem 0.75rem', fontSize: '0.68rem', color: 'var(--slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>
+                📍 {isHindi ? 'स्थानिक क्षेत्रीय लोकेशन मैप (सटीक अक्षांश/देशांतर केंद्रक • आधिकारिक सीमा नहीं)' : 'Schematic Regional Location Map (Geographically Proportionate Centroids • Not an Official Boundary Map)'}
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>12.0°N–20.5°N, 71.5°E–80.5°E</span>
+            </div>
+          </div>
+        )}
 
         {/* Selected District Detail Card (Sidebar) */}
         {activeDistrict && (
@@ -340,7 +643,7 @@ export default function DistrictGeographicMap({
                   📍 {getDistrictDisplayName(activeDistrict.name, isHindi)}
                 </h4>
                 <span style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>
-                  {getStateDisplayName(activeDistrict.state, isHindi)} ({activeDistrict.state}) • ID: {activeDistrict.id}
+                  {getStateDisplayName(activeDistrict.state, isHindi)} • ID: {activeDistrict.id}
                 </span>
               </div>
               <button
@@ -383,7 +686,7 @@ export default function DistrictGeographicMap({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--slate-600)' }}>{isHindi ? 'सापेक्ष असंतुलन स्कोर:' : 'Relative Mismatch:'}</span>
-                <strong style={{ color: getClassificationBadge(activeDistrict.classification).color, fontFamily: 'var(--font-mono)' }}>
+                <strong style={{ color: getClassificationBadge(activeDistrict.classification, isHindi).color, fontFamily: 'var(--font-mono)' }}>
                   {formatMismatch(activeDistrict.mismatch)} pts
                 </strong>
               </div>
@@ -398,7 +701,7 @@ export default function DistrictGeographicMap({
             {/* Filter Active Notice */}
             <div style={{ fontSize: '0.72rem', color: 'var(--teal-800)', backgroundColor: '#f0fdfa', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid #99f6e4', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span>✓</span>
-              <span>{isHindi ? 'नीचे दी गई रैंकिंग तालिका इस ज़िले के लिए फ़िल्टर की गई है।' : 'Rankings table below is filtered to this district.'}</span>
+              <span>{isHindi ? 'नीचे दी गई तालिका इस ज़िले के लिए फ़िल्टर की गई है।' : 'Rankings table below is filtered to this district.'}</span>
             </div>
 
             <button
@@ -421,7 +724,7 @@ export default function DistrictGeographicMap({
         <div>
           {isHindi
             ? 'मानचित्र ओपनस्ट्रीटमैप टाइल्स का उपयोग करता है। मार्कर 6 पायलट ज़िलों (पुणे, मुंबई उपनगर, बेंगलुरु शहरी, धारवाड़, हैदराबाद, मेडचल-मलकाजगिरि) के आधिकारिक केंद्रक निर्देशांकों का प्रतिनिधित्व करते हैं। मनगढ़ंत या अनुमानित सीमाएं खींचने से बचने के लिए ज़िला बहुभुज सीमाएं नहीं बनाई गई हैं। प्रदर्शित असंतुलन स्कोर सापेक्ष क्रॉस-सेक्शनल पर्सेंटाइल अंतर हैं।'
-            : 'Basemap tiles rendered via OpenStreetMap contributors. Markers represent official centroid locations for the six pilot districts across Maharashtra, Karnataka, and Telangana. Individual district boundary polygons are omitted to avoid unverified or approximate GIS geometry. Mismatch scores indicate relative cross-sectional percentile differences, not headcount deficits.'}
+            : 'Basemap rendered via OpenStreetMap contributors. Markers represent official centroid locations for the six pilot districts across Maharashtra, Karnataka, and Telangana. Individual district boundary polygons are omitted to avoid unverified or approximate GIS geometry. Mismatch scores indicate relative cross-sectional percentile differences, not headcount deficits.'}
         </div>
       </div>
     </div>

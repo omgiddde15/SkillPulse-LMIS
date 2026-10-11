@@ -51,7 +51,11 @@ async function runBrowserVerification() {
       const btn = buttons.find(b => b.innerText.includes('Geographic Map') || b.innerText.includes('भौगोलिक मानचित्र'));
       if (btn) btn.click();
     });
-    await new Promise(r => setTimeout(r, 2000)); // Wait for Leaflet to mount and tiles to load
+    await page.evaluate(() => {
+      const el = document.querySelector('.leaflet-container');
+      if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+    await new Promise(r => setTimeout(r, 2500)); // Wait for Leaflet to mount and tiles to load
 
     // Verify Leaflet container and markers
     const mapVerification = await page.evaluate(() => {
@@ -113,8 +117,26 @@ async function runBrowserVerification() {
     console.log('   Sidebar selected district:', marker2Details.sidebarDistrict);
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04_overview_map_marker2_bengaluru.png'), fullPage: false });
 
-    // Step E: Test Language Switch to Hindi
-    console.log('6. Switching language to Hindi...');
+    // Step E: Test Schematic Location Map View
+    console.log('6. Switching to Schematic Location Map mode...');
+    await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const btn = buttons.find(b => b.innerText.includes('Schematic Location Map') || b.innerText.includes('स्थानिक लोकेशन मैप'));
+      if (btn) btn.click();
+    });
+    await new Promise(r => setTimeout(r, 1000));
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08_overview_map_schematic.png'), fullPage: false });
+
+    // Switch back to basemap mode
+    await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const btn = buttons.find(b => b.innerText.includes('Interactive Basemap') || b.innerText.includes('इंटरैक्टिव बेसमैप'));
+      if (btn) btn.click();
+    });
+    await new Promise(r => setTimeout(r, 1000));
+
+    // Step F: Test Language Switch to Hindi
+    console.log('7. Switching language to Hindi...');
     await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll('button'));
       const btn = buttons.find(b => b.innerText.includes('हिन्दी'));
@@ -142,8 +164,8 @@ async function runBrowserVerification() {
     });
     await new Promise(r => setTimeout(r, 800));
 
-    // Step F: Test Forecasts Page & Time-Series Visualization
-    console.log('7. Navigating to Forecasts page...');
+    // Step G: Test Forecasts Page & Time-Series Visualization
+    console.log('8. Navigating to Forecasts page...');
     await page.evaluate(() => {
       const navButtons = Array.from(document.querySelectorAll('.nav-button'));
       const forecastBtn = navButtons.find(b => b.innerText.includes('Forecast') || b.innerText.includes('पूर्वानुमान'));
@@ -162,6 +184,13 @@ async function runBrowserVerification() {
     });
     console.log('   Forecast table first row clicked:', rowClicked);
     await new Promise(r => setTimeout(r, 1500));
+
+    // Scroll forecast timeseries container into view for screenshot
+    await page.evaluate(() => {
+      const drawer = document.querySelector('.forecast-timeseries-container');
+      if (drawer) drawer.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+    await new Promise(r => setTimeout(r, 1000));
 
     // Verify time series chart component
     const timeSeriesVerification = await page.evaluate(() => {
