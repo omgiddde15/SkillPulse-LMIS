@@ -2,9 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import {
   getDistrictDisplayName,
-  getStateDisplayName,
   getSectorDisplayName,
 } from '../i18n/translations';
+import DistrictGeographicMap from './DistrictGeographicMap';
 
 // Master pilot geographies from data/sample/geographies.csv with verified coordinates
 const PILOT_DISTRICTS = [
@@ -30,7 +30,6 @@ export default function DistrictComparisonCharts({
   const [activeSector, setActiveSector] = useState('All Sectors');
   const [sortField, setSortField] = useState('demand'); // 'demand' | 'supply' | 'mismatch'
   const [activeView, setActiveView] = useState('charts'); // 'charts' | 'map'
-  const [hoveredDistrict, setHoveredDistrict] = useState(null);
 
   // Compute aggregated district metrics dynamically from gapData results
   const districtMetrics = useMemo(() => {
@@ -481,150 +480,16 @@ export default function DistrictComparisonCharts({
         </div>
       )}
 
-      {/* VIEW 2: Pilot District Regional Geographic Map & Spatial Matrix */}
+      {/* VIEW 2: Pilot District Geographic Basemap */}
       {activeView === 'map' && (
-        <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--slate-200)', paddingBottom: '0.5rem' }}>
-            <div>
-              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--slate-800)', margin: 0 }}>
-                {t('overview.spatialMatrixTitle', isHindi ? 'पायलट ज़िला भौगोलिक स्थानिक मैट्रिक्स (3 राज्य)' : 'Pilot District Geographic Spatial Matrix (3 States)')}
-              </h3>
-              <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.72rem', color: 'var(--slate-500)' }}>
-                {isHindi
-                  ? 'कर्नाटक, महाराष्ट्र और तेलंगाना के 6 पायलट ज़िलों की आधिकारिक भौगोलिक स्थिति, वर्गीकरण और स्कोर।'
-                  : 'Official geographic coordinates, relative mismatch classifications, and demand-supply scores across pilot districts.'}
-              </p>
-            </div>
-
-            {/* Legend */}
-            <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', color: 'var(--slate-600)', flexWrap: 'wrap' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ea580c', display: 'inline-block' }} />
-                <span>⚡ {isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#64748b', display: 'inline-block' }} />
-                <span>⚖️ {isHindi ? 'संतुलित' : 'Balanced'}</span>
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#2563eb', display: 'inline-block' }} />
-                <span>📦 {isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure'}</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Spatial State Clusters Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-            {['MH', 'KA', 'TS'].map((stateCode) => {
-              const stateDistricts = districtMetrics.filter((d) => d.state === stateCode);
-
-              return (
-                <div
-                  key={stateCode}
-                  style={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid var(--slate-200)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '0.85rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.4rem' }}>
-                    <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--slate-800)' }}>
-                      🏛️ {getStateDisplayName(stateCode, isHindi)} ({stateCode})
-                    </span>
-                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontWeight: 600 }}>
-                      {stateDistricts.length} {isHindi ? 'पायलट ज़िले' : 'pilot districts'}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                    {stateDistricts.map((d) => {
-                      const badge = getClassificationBadge(d.classification);
-                      const isSelected = selectedDistrictId === d.id;
-                      const isHovered = hoveredDistrict?.id === d.id;
-
-                      return (
-                        <div
-                          key={d.id}
-                          style={{
-                            padding: '0.65rem 0.75rem',
-                            borderRadius: 'var(--radius-sm)',
-                            backgroundColor: isSelected ? '#ccfbf1' : isHovered ? '#f8fafc' : 'var(--slate-50)',
-                            border: `1px solid ${isSelected ? 'var(--teal-600)' : badge.border}`,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                          }}
-                          onClick={() => onSelectDistrict(isSelected ? null : d.id)}
-                          onMouseEnter={() => setHoveredDistrict(d)}
-                          onMouseLeave={() => setHoveredDistrict(null)}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
-                            <div>
-                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--slate-900)' }}>
-                                📍 {getDistrictDisplayName(d.name, isHindi)}
-                              </div>
-                              <div style={{ fontSize: '0.66rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
-                                {d.lat.toFixed(2)}° N, {d.lon.toFixed(2)}° E • ID: {d.id}
-                              </div>
-                            </div>
-                            <span
-                              style={{
-                                fontSize: '0.68rem',
-                                fontWeight: 700,
-                                color: badge.color,
-                                backgroundColor: badge.bg,
-                                border: `1px solid ${badge.border}`,
-                                padding: '0.1rem 0.4rem',
-                                borderRadius: '4px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.2rem',
-                              }}
-                            >
-                              <span>{badge.icon}</span>
-                              <span>{badge.label}</span>
-                            </span>
-                          </div>
-
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.25rem', fontSize: '0.68rem', marginTop: '0.35rem', borderTop: '1px solid rgba(0,0,0,0.04)', paddingTop: '0.35rem' }}>
-                            <div>
-                              <span style={{ color: 'var(--slate-500)', display: 'block' }}>{isHindi ? 'मांग सूचकांक' : 'Demand'}</span>
-                              <strong style={{ color: 'var(--teal-800)', fontFamily: 'var(--font-mono)' }}>{formatScore(d.avgDemand)}</strong>
-                            </div>
-                            <div>
-                              <span style={{ color: 'var(--slate-500)', display: 'block' }}>{isHindi ? 'आपूर्ति आउटपुट' : 'Supply'}</span>
-                              <strong style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>{formatScore(d.avgSupply)}</strong>
-                            </div>
-                            <div>
-                              <span style={{ color: 'var(--slate-500)', display: 'block' }}>{isHindi ? 'असंतुलन' : 'Mismatch'}</span>
-                              <strong style={{ color: badge.color, fontFamily: 'var(--font-mono)' }}>{formatMismatch(d.mismatch)}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* District Boundary Provenance and Transparency Disclosure */}
-          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '0.75rem 1rem', fontSize: '0.72rem', color: '#92400e', lineHeight: 1.5 }}>
-            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.2rem' }}>
-              <span>ℹ️</span>
-              <span>{isHindi ? 'भौगोलिक सीमा एवं डेटा निष्ठा सूचना:' : 'Geographic Boundary & Data Provenance Notice:'}</span>
-            </div>
-            <div>
-              {isHindi
-                ? 'आधिकारिक सर्वे ऑफ इंडिया ज़िला सीमा आकार-फ़ाइलें (विशेषकर 2016 के बाद तेलंगाना पुनर्गठन में बनी मेडचल-मलकाजगिरि सीमा) बहु-मेगाबाइट भारी जीआईएस फ़ाइलों की आवश्यकता रखती हैं। स्मार्ट इंडिया हैकाथॉन में नकली या मनगढ़ंत सीमा रेखाएं खींचने से बचने के सख्त नियम के अनुपालन में, यह प्रणाली आधिकारिक निर्देशांकों और सटीक विश्लेषणात्मक तुलना चार्टों के आधार पर वास्तविक डेटा प्रस्तुत करती है। प्रदर्शित असंतुलन स्कोर सापेक्ष पर्सेंटाइल अंतर हैं, न कि बेरोजगारों की संख्या।'
-                : 'Official Survey of India district boundary shapefiles (notably post-2016 bifurcated districts such as Medchal-Malkajgiri created in late 2016 from Ranga Reddy) require multi-megabyte GIS shapefiles. In strict compliance with national finale evaluation requirements prohibiting fabricated or approximate boundary geometries, this system visualizes authentic regional spatial coordinates alongside verified cross-sectional comparison charts. Mismatch scores denote relative ranking percentiles, never counts of unemployed individuals or missing candidate headcounts.'}
-            </div>
-          </div>
-        </div>
+        <DistrictGeographicMap
+          districts={districtMetrics}
+          selectedDistrictId={selectedDistrictId}
+          onSelectDistrict={onSelectDistrict}
+          period={period}
+          isHindi={isHindi}
+          onSwitchToCharts={() => setActiveView('charts')}
+        />
       )}
     </section>
   );
