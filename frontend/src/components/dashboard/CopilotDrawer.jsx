@@ -27,8 +27,8 @@ const INQUIRIES = [
   {
     id: 'bengaluru_logistics',
     icon: '🎛️',
-    labelEn: 'What seat allocation is recommended for Bengaluru Urban Logistics?',
-    labelHi: 'बेंगलुरु शहरी लॉजिस्टिक्स के लिए क्या सीट आवंटन अनुशंसित है?',
+    labelEn: 'What seat planning scenario can be evaluated for Bengaluru Urban Logistics?',
+    labelHi: 'बेंगलुरु शहरी लॉजिस्टिक्स के लिए किस सीट योजना परिदृश्य का मूल्यांकन किया जा सकता है?',
   },
   {
     id: 'forecast_comparison',
@@ -84,7 +84,7 @@ export default function CopilotDrawer({
         body: isHindi
           ? `रिपोर्टिंग चक्र ${period} में, ${getDistrictDisplayName(highestPressure.district_name, isHindi)} में ${highestPressure.occupation_title} का मांग सूचकांक ${highestPressure.demand_index_score.toFixed(1)}/100 है, जबकि प्रमाणीकरण आपूर्ति केवल ${highestPressure.supply_output_index.toFixed(1)}/100 है। सापेक्ष असंतुलन +${highestPressure.relative_mismatch_score.toFixed(1)} अंक है। यह श्रेणी स्थानीय कार्यबल की उच्च मांग और सीमित टीवीईटी प्रमाणन को दर्शाती है।`
           : `In reporting cycle ${period}, ${highestPressure.occupation_title} in ${highestPressure.district_name} (${highestPressure.state_code}) registers a composite demand index of ${highestPressure.demand_index_score.toFixed(1)}/100 against a certification throughput output rank of ${highestPressure.supply_output_index.toFixed(1)}/100, resulting in a peak relative mismatch of +${highestPressure.relative_mismatch_score.toFixed(1)} points. Local industrial hiring volume and vacancy persistence substantially exceed trainee graduation rates.`,
-        actionLabel: isHindi ? 'परिदृश्य स्टूडियो में समाधान का अनुकरण करें' : 'Simulate Reallocation in Scenario Studio',
+        actionLabel: isHindi ? 'परिदृश्य स्टूडियो में सिमुलेशन का मूल्यांकन करें' : 'Simulate Planning Scenario in Scenario Studio',
         onAction: () => {
           onNavigateWithContext?.('simulator', {
             district: highestPressure.district_id,
@@ -137,13 +137,13 @@ export default function CopilotDrawer({
     if (selectedInquiryId === 'bengaluru_logistics') {
       return {
         title: isHindi
-          ? 'बेंगलुरु शहरी लॉजिस्टिक्स सीट आवंटन सिफारिश'
-          : 'Bengaluru Urban Logistics Seat Allocation Plan',
-        badge: 'SCENARIO STUDIO RECOMMENDATION',
+          ? 'बेंगलुरु शहरी लॉजिस्टिक्स सीट योजना परिदृश्य'
+          : 'Bengaluru Urban Logistics Seat Planning Scenario',
+        badge: 'SCENARIO STUDIO PLANNING EVALUATION',
         badgeColor: '#2563eb',
         body: isHindi
-          ? `वेयरहाउस इन्वेंटरी समन्वयक (OCC_LOG_001) के लिए वर्तमान आधार 80 सीटें/बैच (55.3 प्रमाणित/माह) है। परिदृश्य स्टूडियो में सीटों को 100 (+25%) या 180 (+125%) तक बढ़ाने से प्रमाणित थ्रूपुट क्रमशः 69.1 या 124.4/माह तक बढ़ जाता है, जिससे असंतुलन +15.1 से घटकर संतुलित या पर्याप्त आपूर्ति गलियारे में आ जाता है।`
-          : `For Warehouse Inventory Coordinator (OCC_LOG_001) in Bengaluru Urban, the baseline is 80 seats per cohort yielding 55.3 certified graduates/month. Scaling sanctioned seats to 100 (+25%) lifts throughput to 69.1/mo (Supply Rank 77.4). Expanding to 180 seats (+125%) delivers 124.4/mo (Supply Rank 100.0), shifting the projected 6-month mismatch from +15.1 pts into an ample supply position (-39.6 pts).`,
+          ? `वेयरहाउस इन्वेंटरी समन्वयक (OCC_LOG_001) के लिए वर्तमान आधार 80 सीटें/बैच (55.3 प्रमाणित/माह) है। परिदृश्य स्टूडियो में सीटों को 100 (+25%) या 180 (+125%) तक बढ़ाने का मूल्यांकन करने से प्रमाणित थ्रूपुट क्रमशः 69.1 या 124.4/माह तक बढ़ जाता है, जिससे अनुमानित 6-माह का असंतुलन +15.1 से घटकर संतुलित या पर्याप्त आपूर्ति स्थिति में आ जाता है (ध्यान दें: यह एक खोजपूर्ण नियोजन परिदृश्य है, स्वीकृत आवंटन नहीं)।`
+          : `For Warehouse Inventory Coordinator (OCC_LOG_001) in Bengaluru Urban, the baseline is 80 seats per cohort yielding 55.3 certified graduates/month. Evaluating exploratory scenarios in Scenario Studio—such as scaling sanctioned seats to 100 (+25%, yielding 69.1/mo) or 180 (+125%, delivering 124.4/mo)—shifts the projected 6-month mismatch from +15.1 pts into an ample supply rank position (-39.6 pts). (Note: Proposed seat adjustments represent exploratory planning scenarios evaluated against facility capacity, not approved or binding quotas).`,
         actionLabel: isHindi ? 'परिदृश्य स्टूडियो में परीक्षण करें' : 'Open in Scenario Studio',
         onAction: () => {
           onNavigateWithContext?.('simulator', {

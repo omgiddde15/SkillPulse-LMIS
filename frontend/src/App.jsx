@@ -181,7 +181,7 @@ export default function App() {
         const [demandRes, gapRes, alertsRes] = await Promise.all([
           fetchDemandIndex({ period, limit: 100 }),
           fetchGapAnalysis({ period, limit: 100 }),
-          fetchAlerts({ period, limit: 100 }),
+          fetchAlerts({ period, limit: 500 }),
         ]);
 
         if (ignore) return;
@@ -221,7 +221,7 @@ export default function App() {
       const [demandRes, gapRes, alertsRes] = await Promise.all([
         fetchDemandIndex({ period, limit: 100 }),
         fetchGapAnalysis({ period, limit: 100 }),
-        fetchAlerts({ period, limit: 100 }),
+        fetchAlerts({ period, limit: 500 }),
       ]);
 
       setDemandData(demandRes);
@@ -249,7 +249,7 @@ export default function App() {
       const [demandRes, gapRes, alertsRes] = await Promise.all([
         fetchDemandIndex({ period, limit: 100 }),
         fetchGapAnalysis({ period, limit: 100 }),
-        fetchAlerts({ period, limit: 100 }),
+        fetchAlerts({ period, limit: 500 }),
       ]);
 
       setDemandData(demandRes);

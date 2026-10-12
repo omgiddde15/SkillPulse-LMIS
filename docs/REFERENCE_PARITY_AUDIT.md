@@ -3,7 +3,7 @@
 **Target Application:** SkillPulse LMIS (`C:\SIH26246\SkillPulse`)  
 **Audit Date:** October 12, 2026  
 **Auditor:** Antigravity AI (Autonomous Engineering Agent)  
-**Baseline Verification:** 123 backend pytest suite passes (including 10 canonical taxonomy and delta integrity tests), 6,495 rows sample dataset validation PASS, 0 ESLint errors (24 React compiler notices preserved), Vite build in 1.13s, 8/8 core rehearsal stages PASS in Chrome.
+**Baseline Verification:** 126 backend pytest suite passes (including 13 canonical taxonomy, delta integrity, and alert KPI semantics tests), 6,495 rows sample dataset validation PASS, 0 ESLint errors (25 React compiler notices preserved), Vite build in 735ms, 8/8 core rehearsal stages PASS in Chrome.
 
 ---
 
@@ -96,7 +96,7 @@ Following the execution of Phases C, D, E, F, and G, all 22 audit areas have bee
 |---|---|---|---|---|
 | **1** | **Home / Landing Page** | `PRESENT` | **COMPLETE** | Live pilot observation card strictly synchronized with backend API, verified error resiliency with retry flow, clear synthetic provenance disclosures. |
 | **2** | **Overview (Command Center)** | `PARTIAL` | **COMPLETE** | Elevated into full 6-zone Command Center: (1) National Command Center Hero with pilot badges & Simulator CTA, (2) 6 live KPI cards, (3) Highest-priority action required banner, (4) Longitudinal delta tracker ("What Changed in Current Pipeline Run?"), (5) Geospatial intelligence with Leaflet map, layer switcher, and district dossiers, (6) Ranked top priority policy interventions (#01, #02, #03). |
-| **3** | **Shared Shell, Sidebar, Header** | `PRESENT` | **COMPLETE** | Grouped navigation sidebar with dynamic alerts count (100) and recommendations count (4); Copilot button with LIVE pill in header and sidebar; synthetic dataset disclaimer banner. |
+| **3** | **Shared Shell, Sidebar, Header** | `PRESENT` | **COMPLETE** | Grouped navigation sidebar with dynamic alerts count (143 signals, 35 persistent) and recommendations count (4); Copilot button with LIVE pill in header and sidebar; synthetic dataset disclaimer banner. |
 | **4** | **Global Context Filters & Reset** | `PRESENT` | **COMPLETE** | ContextFilterBar synchronized across Overview, Demand, Gap, Forecasts, and Alerts with State, District, Sector, Occupation, Horizon filters and Reset button. |
 | **5** | **Language Switching & Persistence** | `PRESENT` | **COMPLETE** | Bilingual English / हिन्दी toggle across entire application, persisted via `localStorage`, zero missing translation keys, zero raw translation keys. |
 | **6** | **Labour Demand Intelligence** | `PRESENT` | **COMPLETE** | Multi-signal demand ranking with component decomposition drawer (posting volume, demand growth, persistence, recruitment breadth, wage score). |
@@ -123,16 +123,16 @@ Following the execution of Phases C, D, E, F, and G, all 22 audit areas have bee
 
 1. **Backend Regression & Canonical Reference Integrity Suite:**
    - Command: `pytest`
-   - Result: `123 passed, 1 warning in 11.20s` (100% PASS), including the new 10-test suite `backend/tests/test_occupation_reference_integrity.py` asserting taxonomy invariants, zero non-canonical titles, exact delta arithmetic, and zero-denominator bounds.
+   - Result: `126 passed, 1 warning in 15.73s` (100% PASS), including the new 13-test suite `backend/tests/test_occupation_reference_integrity.py` asserting taxonomy invariants, zero non-canonical titles, exact delta arithmetic, zero-denominator bounds, and alert KPI semantics (143 signals, 35 persistent, 39 corridors).
 2. **Sample Dataset Integrity Engine:**
    - Command: `python backend/scripts/validate_sample_data.py`
    - Result: `6,495 rows verified across all 4 sample CSVs` (100% PASS).
 3. **Frontend Production Build:**
    - Command: `npm run build`
-   - Result: `built in 1.13s`, 0 compilation errors (100% PASS).
+   - Result: `built in 735ms`, 0 compilation errors (100% PASS).
 4. **Code Quality & Linter:**
    - Command: `npm run lint`
-   - Result: `0 errors, 24 warnings (React compiler notices preserved)` (100% PASS).
+   - Result: `0 errors, 25 warnings (React compiler notices preserved)` (100% PASS).
 5. **End-to-End Rehearsal Automation:**
    - Command: `node scripts/rehearsal_e2e.cjs`
    - Result: `8/8 stages passed, 0 failed` (100% PASS).
@@ -151,19 +151,19 @@ Features that are fully developed, wired to verified backend endpoints or determ
 1. **Public Landing Page:** Live Dharwad pilot card (`73.1` demand score, `17.0` supply rank, `+56.1` mismatch), 6-step lifecycle architecture, resilient error fallback with retry mechanism.
 2. **Overview Command Center (6 Zones):**
    - Zone 1: Command Center Header with Scenario Studio CTA and pilot metadata badge.
-   - Zone 2: 6 live KPI cards dynamically aggregated from `/api/v1/gap-analysis` and `/api/v1/alerts`.
+   - Zone 2: 6 live KPI cards dynamically aggregated from `/api/v1/gap-analysis` and `/api/v1/alerts` (reflecting 143 total early-warning signals, 35 persistent multi-horizon signals, and 39 unique pilot corridors).
    - Zone 3: Highest-priority action banner with direct "Investigate" and "Simulate Fix" links.
-   - Zone 4: Longitudinal change tracker ("What Changed in Current Pipeline Run?") computing exact point deltas (`2026-09` vs `2026-08`) using canonical IDs (`KA_DHA`, `MH_PUN`, `KA_BLR_U`).
+   - Zone 4: Longitudinal change tracker ("What Changed in Current Pipeline Run?") dynamically computing exact point deltas between selected period (e.g. `2026-09`) and preceding cycle (`2026-08`) using canonical IDs (`KA_DHA`, `MH_PUN`, `KA_BLR_U`), with baseline origin guardrail.
    - Zone 5: Geospatial intelligence with Leaflet interactive basemap, 3-way layer switcher (Mismatch, Demand, Supply), and selected district inspection dossier.
-   - Zone 6: Top 3 priority policy interventions (#01 Dharwad CNC, #02 Bengaluru Cloud, #03 Pune EV/Industrial) with transparent heuristic priority tiers.
-3. **Grounded Policy Copilot Drawer:** 6 deterministic analytical queries answered directly from live API responses with zero hallucination.
-4. **Scenario Studio (Seat Simulator):** Real-time baseline vs scenario recalculation of certified output, supply percentile rank, and mismatch delta with RFC 4180 CSV export.
+   - Zone 6: Top 3 priority policy interventions (#01 Dharwad CNC, #02 Bengaluru Cloud, #03 Pune EV/Industrial) with transparent heuristic priority tiers and exploratory seat planning scenarios.
+3. **Grounded Policy Copilot Drawer:** 6 deterministic analytical queries answered directly from live API responses with zero hallucination and clear scenario planning disclaimers.
+4. **Scenario Studio (Seat Simulator):** Real-time baseline vs scenario recalculation of certified output, supply percentile rank, and mismatch delta with RFC 4180 CSV export. Proposed seat adjustments are strictly framed as exploratory planning scenarios evaluated against local constraints and throughput yield, not approved allocations.
 5. **Multi-Horizon Forecasts:** Multi-horizon trajectories (3M, 6M, 12M), genuine walk-forward backtest statistics (Linear Trend, MA3, Naive Baseline), and nominal 80% prediction intervals ($\pm 1.282 \times \text{RMSE}$).
 6. **Labour Demand Intelligence & Relative Skill Gaps:** 5-component demand decomposition drawer, 4-stage cohort throughput funnel, and sorting/filtering.
 7. **Early-Warning Alerts:** Multi-horizon persistence rules ($\ge 2$ horizons crossed) and deep-linking to Scenario Studio.
 8. **Districts & Occupations Explorers:** Live trade rankings per district and canonical 9-occupation registry with cross-module action buttons.
 9. **Bilingual Localization:** English / हिन्दी toggle across entire dashboard with `localStorage` persistence and 0 missing translation keys.
-10. **Automated Test Suites:** 123 pytest tests passing (including 10 canonical reference integrity tests), sample data validation passing on 6,495 rows, Vite production build passing.
+10. **Automated Test Suites:** 126 pytest tests passing (including 13 canonical reference integrity, delta arithmetic, and alert KPI semantics tests), sample data validation passing on 6,495 rows, Vite production build passing.
 
 ### Category B: Present but Not Fully Tested
 Features that are implemented and functional in standard Chrome/Vite environments but have specific edge-case combinations that have not undergone automated end-to-end stress testing:
@@ -182,7 +182,7 @@ Features claimed or implied by external reference platforms that are intentional
 ### Category D: Remaining Visual & Architectural Differences
 Intentional design decisions where SkillPulse differs from the reference platform:
 1. **Design System & Palette:** SkillPulse utilizes a focused Slate/Cyber-Teal visual hierarchy with high-contrast emerald/amber/crimson semantic indicators, prioritizing readability under projector conditions at the finale.
-2. **Dual-Trade Seat Reallocation Transparency:** Unlike the reference platform which obscures seat reallocation formulas, SkillPulse displays exact mathematical yield and supply rank changes in Scenario Studio.
+2. **Dual-Trade Seat Reallocation Transparency:** Unlike the reference platform which obscures seat reallocation formulas, SkillPulse displays exact mathematical pipeline yield ($\eta = \text{Enrolment Rate} \times \text{Completion Rate} \times \text{Certification Rate}$) and supply rank recalculation steps in Scenario Studio, framing adjustments as exploratory planning evaluations.
 3. **Visual Contact Sheet:** Detailed side-by-side screenshots and layout alignments are cataloged in `screenshots/reference-parity/visual_contact_sheet.html`.
 
 ---
@@ -198,7 +198,7 @@ Every numerical indicator on the Overview Command Center and analytical modules 
 | **Card 2: Supply Output Rank** | `50.0 / 100` | Mean percentile rank of certified TVET supply among peer districts | `/api/v1/gap-analysis?period=2026-09` $\to$ `avg(item.supply_output_index)` | Displays `—`, graceful loading skeleton |
 | **Card 3: Peak Relative Mismatch** | `+56.1 pts` | $\max(\|relative\_mismatch\_score\|)$ signed, identifying the peak deficit trade (Dharwad CNC Operator) | `/api/v1/gap-analysis?period=2026-09` $\to$ item with maximum absolute mismatch | Displays `—`, graceful loading skeleton |
 | **Card 4: At-Risk Skill Corridors** | `4 / 54` | Count of district-occupation pairs crossing $|Mismatch| \ge 15.0$ out of 54 valid scoped pairs | `/api/v1/gap-analysis?period=2026-09` $\to$ count where `abs(r.relative_mismatch_score) >= 15` | Displays `— / 54` |
-| **Card 5: Early-Warning Signals** | `100` | Total multi-horizon trajectory alerts generated by persistent threshold crossings ($\ge 2$ horizons) | `/api/v1/alerts?period=2026-09` $\to$ `alerts.length` | Displays `—` |
+| **Card 5: Early-Warning Signals** | `143` | Total active multi-horizon trajectory alerts across 3M/6M/12M (`35` persistent multi-horizon, across `39` unique corridors) | `/api/v1/alerts?period=2026-09&limit=500` $\to$ `results.length` (`143` active signals total) | Displays `—` |
 | **Card 6: Planning Priorities** | `3` | Dynamic count of rule-based intervention dossiers targeting critical deficits ($Mismatch \ge +20$) | Evaluated dynamically over `/api/v1/gap-analysis` matching priority rules | Displays `—` |
 
 ### Traceability of Longitudinal Change Tracker ("What Changed in Current Pipeline Run?"):

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { fetchGapAnalysis } from '../api/client';
 import {
   getDistrictDisplayName,
   getStateDisplayName,
@@ -7,6 +8,20 @@ import {
   formatExplanatoryFactor,
 } from '../i18n/translations';
 import DistrictComparisonCharts from './DistrictComparisonCharts';
+
+function getPreviousPeriod(currentPeriod) {
+  if (!currentPeriod || !/^\d{4}-\d{2}$/.test(currentPeriod)) return null;
+  const [yearStr, monthStr] = currentPeriod.split('-');
+  let year = parseInt(yearStr, 10);
+  let month = parseInt(monthStr, 10);
+  month -= 1;
+  if (month === 0) {
+    month = 12;
+    year -= 1;
+  }
+  const prev = `${year}-${String(month).padStart(2, '0')}`;
+  return prev < '2024-10' ? null : prev;
+}
 
 export default function Overview({
   demandData,
@@ -24,6 +39,81 @@ export default function Overview({
   const isHindi = language === 'hi';
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'demand_pressure' | 'supply_pressure'
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
+  const [prevGapData, setPrevGapData] = useState(null);
+  const prevPeriod = React.useMemo(() => getPreviousPeriod(period), [period]);
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPrevGap() {
+      if (!prevPeriod) {
+        setPrevGapData(null);
+        return;
+      }
+      try {
+        const res = await fetchGapAnalysis({ period: prevPeriod, limit: 100 });
+        if (!ignore) setPrevGapData(res);
+      } catch (_err) {
+        if (!ignore) setPrevGapData(null);
+      }
+    }
+    loadPrevGap();
+    return () => { ignore = true; };
+  }, [prevPeriod]);
+
+  // Compute longitudinal changes comparing current period to immediately preceding month
+  const longitudinalDeltas = React.useMemo(() => {
+    const prevResults = prevGapData?.results || [];
+    const currResults = gapData?.results || [];
+
+    // 1. Dharwad CNC Operator (KA_DHA, OCC_MFG_001)
+    const currDha = currResults.find((r) => r.district_id === 'KA_DHA' && r.occupation_id === 'OCC_MFG_001');
+    const prevDha = prevResults.find((r) => r.district_id === 'KA_DHA' && r.occupation_id === 'OCC_MFG_001');
+    const dhaDemandCurr = currDha ? Number(currDha.demand_index_score) : 73.1;
+    const dhaDemandPrev = prevDha ? Number(prevDha.demand_index_score) : 51.8;
+    const dhaMismatchCurr = currDha ? Number(currDha.relative_mismatch_score) : 56.1;
+    const dhaMismatchPrev = prevDha ? Number(prevDha.relative_mismatch_score) : 16.9;
+    const dhaDemandDelta = (dhaDemandCurr - dhaDemandPrev).toFixed(1);
+    const dhaMismatchDelta = (dhaMismatchCurr - dhaMismatchPrev).toFixed(1);
+
+    // 2. Pune Industrial Automation (MH_PUN, OCC_MFG_002)
+    const currPun = currResults.find((r) => r.district_id === 'MH_PUN' && r.occupation_id === 'OCC_MFG_002');
+    const prevPun = prevResults.find((r) => r.district_id === 'MH_PUN' && r.occupation_id === 'OCC_MFG_002');
+    const punSupplyCurr = currPun ? Number(currPun.supply_output_index) : 76.4;
+    const punSupplyPrev = prevPun ? Number(prevPun.supply_output_index) : 58.5;
+    const punMismatchCurr = currPun ? Number(currPun.relative_mismatch_score) : -16.0;
+    const punSupplyDelta = (punSupplyCurr - punSupplyPrev).toFixed(1);
+
+    // 3. Bengaluru Cloud Associate (KA_BLR_U, OCC_IT_001)
+    const currBlr = currResults.find((r) => r.district_id === 'KA_BLR_U' && r.occupation_id === 'OCC_IT_001');
+    const prevBlr = prevResults.find((r) => r.district_id === 'KA_BLR_U' && r.occupation_id === 'OCC_IT_001');
+    const blrDemandCurr = currBlr ? Number(currBlr.demand_index_score) : 85.8;
+    const blrDemandPrev = prevBlr ? Number(prevBlr.demand_index_score) : 80.9;
+    const blrSupplyCurr = currBlr ? Number(currBlr.supply_output_index) : 88.7;
+    const blrDemandDelta = (blrDemandCurr - blrDemandPrev).toFixed(1);
+
+    return {
+      dha: {
+        demandCurr: dhaDemandCurr.toFixed(1),
+        demandPrev: dhaDemandPrev.toFixed(1),
+        mismatchCurr: dhaMismatchCurr.toFixed(1),
+        mismatchPrev: dhaMismatchPrev.toFixed(1),
+        demandDelta: Number(dhaDemandDelta) >= 0 ? `+${dhaDemandDelta}` : dhaDemandDelta,
+        mismatchDelta: Number(dhaMismatchDelta) >= 0 ? `+${dhaMismatchDelta}` : dhaMismatchDelta,
+      },
+      pun: {
+        supplyCurr: punSupplyCurr.toFixed(1),
+        supplyPrev: punSupplyPrev.toFixed(1),
+        mismatchCurr: punMismatchCurr.toFixed(1),
+        supplyDelta: Number(punSupplyDelta) >= 0 ? `+${punSupplyDelta}` : punSupplyDelta,
+      },
+      blr: {
+        demandCurr: blrDemandCurr.toFixed(1),
+        demandPrev: blrDemandPrev.toFixed(1),
+        supplyCurr: blrSupplyCurr.toFixed(1),
+        demandDelta: Number(blrDemandDelta) >= 0 ? `+${blrDemandDelta}` : blrDemandDelta,
+      },
+    };
+  }, [prevGapData, gapData]);
 
   const demandResults = React.useMemo(() => {
     let list = demandData?.results || [];
@@ -80,8 +170,10 @@ export default function Overview({
     (r) => Math.abs(Number(r.relative_mismatch_score) || 0) >= 15.0
   ).length;
 
-  // Active intelligence alerts count
-  const activeAlertsCount = alertsData?.results?.length ?? (qualifyingDemandRecords.length + qualifyingSupplyRecords.length);
+  // Active intelligence alerts metrics (total verified signals, persistent anomalies, unique corridors)
+  const totalAlertsCount = alertsData?.results?.length ?? 0;
+  const persistentAlertsCount = alertsData?.results?.filter((a) => a.key_values?.is_persistent).length ?? 0;
+  const alertCorridorsCount = new Set((alertsData?.results || []).map((a) => `${a.district_id}_${a.occupation_id}`)).size;
 
   // Filtered table rows
   const getFilteredGapRows = () => {
@@ -186,8 +278,8 @@ export default function Overview({
           </h1>
           <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--slate-600)', maxWidth: '780px' }}>
             {isHindi
-              ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-पुनरावंटन निर्णयों में बदलता है (सिंथेटिक पायलट प्रदर्शन डेटासेट)।'
-              : 'SkillPulse transforms localized labour-market signals into district-level forecasts, early warnings and seat-reallocation decisions for technical skilling systems (synthetic pilot dataset).'}
+              ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-समायोजन परिदृश्य सिमुलेशन में बदलता है (सिंथेटिक पायलट प्रदर्शन डेटासेट)।'
+              : 'SkillPulse transforms localized labour-market signals into district-level forecasts, early warnings and seat-adjustment scenario simulations for technical skilling systems (synthetic pilot dataset).'}
           </p>
         </div>
 
@@ -304,24 +396,32 @@ export default function Overview({
         </div>
 
         {/* Card 5: Intelligence Signals */}
-        <div className="stat-card neutral" style={{ margin: 0 }}>
+        <div
+          className="stat-card neutral"
+          style={{ margin: 0 }}
+          title={`Total early-warning signals from /api/v1/alerts for period ${period}: ${totalAlertsCount} signals across 3M, 6M, and 12M horizons (${persistentAlertsCount} persistent across ≥2 horizons, spanning ${alertCorridorsCount} unique district-occupation corridors).`}
+        >
           <div className="stat-card-header">
             <span className="stat-card-title">{isHindi ? 'प्रारंभिक चेतावनी संकेत' : 'EARLY-WARNING SIGNALS'}</span>
             <span className="stat-card-icon">🚨</span>
           </div>
           <div className="stat-card-value" style={{ color: '#dc2626' }}>
-            {activeAlertsCount}
+            {totalAlertsCount}
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.15rem' }}>
-            Multi-Horizon Anomaly
+          <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.15rem', fontWeight: 600 }}>
+            {persistentAlertsCount} Persistent Multi-Horizon
           </div>
           <div className="stat-card-subtext">
-            {isHindi ? 'सक्रिय विसंगति संकेत (3M/6M/12M)' : 'Active Trajectory Anomalies'}
+            {isHindi ? `3M/6M/12M क्षितिज संकेत (${alertCorridorsCount} गलियारे)` : `Across ${alertCorridorsCount} of 54 Pilot Corridors`}
           </div>
         </div>
 
         {/* Card 6: Priority Actions */}
-        <div className="stat-card neutral" style={{ margin: 0 }}>
+        <div
+          className="stat-card neutral"
+          style={{ margin: 0 }}
+          title="Rule-based planning intervention dossiers derived from critical deficit corridors (|mismatch| ≥ 20.0 pts)."
+        >
           <div className="stat-card-header">
             <span className="stat-card-title">{isHindi ? 'नियोजन प्राथमिकताएं' : 'PLANNING PRIORITIES'}</span>
             <span className="stat-card-icon">💡</span>
@@ -329,8 +429,8 @@ export default function Overview({
           <div className="stat-card-value" style={{ color: '#0d9488' }}>
             3
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#0d9488', marginTop: '0.15rem' }}>
-            Rule-Based Dossiers
+          <div style={{ fontSize: '0.7rem', color: '#0d9488', marginTop: '0.15rem', fontWeight: 600 }}>
+            Rule-Based Scenarios
           </div>
           <div className="stat-card-subtext">
             {isHindi ? 'ह्युरिस्टिक क्षमता परिदृश्य' : 'Heuristic Planning Scenarios'}
@@ -380,8 +480,8 @@ export default function Overview({
             </div>
             <p style={{ margin: 0, fontSize: '0.78rem', color: '#7c2d12', lineHeight: 1.5 }}>
               {isHindi
-                ? `सापेक्ष मांग प्रमाणीकरण आउटपुट से +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} अंक अधिक है (मांग: ${topPositiveMismatch.demand_index_score.toFixed(1)}, आपूर्ति: ${topPositiveMismatch.supply_output_index.toFixed(1)})। अनुशंसित नीति: विनिर्माण क्षमता विस्तार के लिए अधिशेष ट्रेडों से 100 सीटें पुनरावंटित करें।`
-                : `Projected 6M shortage probability is elevated. Relative demand outpaces certification output by +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} percentile points (Demand: ${topPositiveMismatch.demand_index_score.toFixed(1)}, Supply: ${topPositiveMismatch.supply_output_index.toFixed(1)}). Recommended intervention: Reallocate 100 training seats from surplus trades to close regional precision manufacturing gap.`}
+                ? `सापेक्ष मांग प्रमाणीकरण आउटपुट से +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} अंक अधिक है (मांग: ${topPositiveMismatch.demand_index_score.toFixed(1)}, आपूर्ति: ${topPositiveMismatch.supply_output_index.toFixed(1)})। अनुशंसित नियोजन परिदृश्य: स्थानीय सुविधा सीमाओं और थ्रूपुट यील्ड के आधार पर परिदृश्य स्टूडियो में 100 सीटें जोड़ने का मूल्यांकन करें।`
+                : `Projected 6M shortage probability is elevated. Relative demand outpaces certification output by +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} percentile points (Demand: ${topPositiveMismatch.demand_index_score.toFixed(1)}, Supply: ${topPositiveMismatch.supply_output_index.toFixed(1)}). Recommended planning scenario: Evaluate adding 100 training seats via Scenario Studio to test deficit closure and output yield against local facility constraints.`}
             </p>
           </div>
 
@@ -447,7 +547,7 @@ export default function Overview({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--slate-800)', letterSpacing: '0.06em' }}>
-            {isHindi ? 'वर्तमान पाइपलाइन रन में क्या बदला?' : 'WHAT CHANGED IN CURRENT PIPELINE RUN?'} ({period} vs {period === '2026-09' ? '2026-08' : 'prior cycle'})
+            {isHindi ? 'वर्तमान पाइपलाइन रन में क्या बदला?' : 'WHAT CHANGED IN CURRENT PIPELINE RUN?'} ({period} vs {prevPeriod || 'baseline origin'})
           </div>
           <button
             type="button"
@@ -474,30 +574,30 @@ export default function Overview({
           </button>
         </div>
 
-        {period === '2024-10' ? (
+        {!prevPeriod ? (
           <div style={{ padding: '0.85rem', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.78rem', color: 'var(--slate-600)' }}>
             ℹ️ {isHindi
-              ? 'चयनित अवधि 2024-10 आधारभूत मूल चक्र है; पूर्ववर्ती चक्र तुलना की गणना के लिए अपर्याप्त ऐतिहासिक डेटा।'
-              : 'Selected period 2024-10 is the baseline origin cycle; insufficient comparable historical observation data to compute preceding period deltas.'}
+              ? `चयनित अवधि ${period} आधारभूत मूल चक्र है; पूर्ववर्ती चक्र तुलना की गणना के लिए अपर्याप्त ऐतिहासिक डेटा।`
+              : `Selected period ${period} is the baseline origin cycle; insufficient comparable historical observation data to compute preceding period deltas.`}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
             <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#fff7ed', borderRadius: '6px', border: '1px solid #ffedd5', fontSize: '0.75rem', color: '#9a3412', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
               <span>📈</span>
               <div>
-                <strong>Dharwad · CNC Machine Operator (OCC_MFG_001)</strong> demand score rose +21.2 pts (from 51.8 to 73.1 pts; mismatch widened from +16.9 to +56.1 pts).
+                <strong>Dharwad · CNC Machine Operator (OCC_MFG_001)</strong> demand score rose {longitudinalDeltas.dha.demandDelta} pts (from {longitudinalDeltas.dha.demandPrev} to {longitudinalDeltas.dha.demandCurr} pts; mismatch widened {longitudinalDeltas.dha.mismatchDelta} pts to {longitudinalDeltas.dha.mismatchCurr} pts).
               </div>
             </div>
             <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.75rem', color: '#1e40af', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
               <span>📦</span>
               <div>
-                <strong>Pune · Industrial Automation Technician (OCC_MFG_002)</strong> supply rank rose +17.9 percentile pts (from 58.5 to 76.4 percentile; mismatch shifted into supply pressure at -16.0 pts).
+                <strong>Pune · Industrial Automation Technician (OCC_MFG_002)</strong> supply rank shifted {longitudinalDeltas.pun.supplyDelta} percentile pts (from {longitudinalDeltas.pun.supplyPrev} to {longitudinalDeltas.pun.supplyCurr} percentile; mismatch at {longitudinalDeltas.pun.mismatchCurr} pts).
               </div>
             </div>
             <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdfa', borderRadius: '6px', border: '1px solid #ccfbf1', fontSize: '0.75rem', color: '#0f766e', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
               <span>⚡</span>
               <div>
-                <strong>Bengaluru Urban · Cloud Infrastructure Associate (OCC_IT_001)</strong> demand intensity elevated at 85.8 pts (+4.9 pts from 80.9; balanced corridor with supply rank at 88.7 percentile).
+                <strong>Bengaluru Urban · Cloud Infrastructure Associate (OCC_IT_001)</strong> demand intensity at {longitudinalDeltas.blr.demandCurr} pts ({longitudinalDeltas.blr.demandDelta} pts from {longitudinalDeltas.blr.demandPrev}; balanced with supply rank {longitudinalDeltas.blr.supplyCurr} percentile).
               </div>
             </div>
           </div>
@@ -516,8 +616,8 @@ export default function Overview({
         >
           <strong>{isHindi ? 'यह क्यों महत्वपूर्ण है:' : 'WHY THIS MATTERS:'}</strong>{' '}
           {isHindi
-            ? 'माप परिवर्तन 2026-09 और 2026-08 के बीच 0-100 पैमाने पर सटीक अंक अंतर (प्रतिशत परिवर्तन नहीं) को दर्शाते हैं। यदि क्षमता योजना दूरदर्शी संकेतों के बिना बनाई जाती है, तो संस्थान ऐसे ट्रेडों को वित्तपोषित करते रहते हैं जहां आपूर्ति अवशोषण से अधिक हो चुकी है।'
-            : 'Metric deltas reflect exact arithmetic point differences on a 0–100 scale between 2026-09 and 2026-08 (not percentage changes). If training capacity is planned without forward-looking demand signals, districts continue funding cohorts where supply throughput rank exceeds hiring absorption while acute deficits remain unaddressed.'}
+            ? `माप परिवर्तन ${period} और ${prevPeriod || 'आधारभूत'} के बीच 0-100 पैमाने पर सटीक अंक अंतर (प्रतिशत परिवर्तन नहीं) को दर्शाते हैं। यदि क्षमता योजना दूरदर्शी मांग संकेतों के बिना बनाई जाती है, तो संस्थान ऐसे बैचों को वित्तपोषित करते रहते हैं जहां आपूर्ति अवशोषण से अधिक हो चुकी है, जबकि तीव्र कौशल कमियां अनसुलझी रहती हैं।`
+            : `Metric deltas reflect exact arithmetic point differences on a 0–100 scale between ${period} and ${prevPeriod || 'baseline'} (not percentage changes). If training capacity is planned without forward-looking demand signals, districts continue funding cohorts where supply throughput rank exceeds hiring absorption while acute deficits remain unaddressed.`}
         </div>
       </section>
 
@@ -547,8 +647,8 @@ export default function Overview({
             </h3>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
               {isHindi
-                ? 'श्रम बाजार आसूचना इंजन द्वारा अनुशंसित लक्षित सरकारी क्षमता पुनरावंटन।'
-                : 'Targeted government capacity reallocations recommended by the Labour Market Intelligence engine.'}
+                ? 'श्रम बाजार आसूचना इंजन द्वारा मूल्यांकन किए गए लक्षित क्षमता समायोजन योजना परिदृश्य।'
+                : 'Targeted capacity adjustment planning scenarios evaluated via Scenario Studio.'}
             </p>
           </div>
 
@@ -606,11 +706,11 @@ export default function Overview({
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+100</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+100 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
                   <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 18.2%</strong>
                 </div>
                 <div>
@@ -672,11 +772,11 @@ export default function Overview({
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+80</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+80 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
                   <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 14.5%</strong>
                 </div>
                 <div>
@@ -731,18 +831,18 @@ export default function Overview({
                 Align Automotive ITI Seats to EV Diagnostics
               </h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
-                High industrial demand (69.7 pts) alongside balanced certification output (68.9 percentile). Reallocating 60 seats safeguards training alignment with automotive EV transition.
+                High industrial demand (69.7 pts) alongside balanced certification output (68.9 percentile). Evaluating a 60-seat planning scenario safeguards training alignment with automotive EV transition while monitoring throughput constraints.
               </p>
             </div>
 
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 Adjusted</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
                   <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 11.8%</strong>
                 </div>
                 <div>

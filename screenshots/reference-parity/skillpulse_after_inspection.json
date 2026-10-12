@@ -69,7 +69,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -80,7 +80,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "03_demand": {
     "url": "http://localhost:3000/demand",
@@ -112,7 +112,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -123,7 +123,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "04_gaps": {
     "url": "http://localhost:3000/gaps",
@@ -155,7 +155,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -166,7 +166,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "05_forecasts": {
     "url": "http://localhost:3000/forecasts",
@@ -198,7 +198,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -209,7 +209,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "06_alerts": {
     "url": "http://localhost:3000/alerts",
@@ -241,7 +241,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -252,7 +252,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "07_recommendations": {
     "url": "http://localhost:3000/recommendations",
@@ -263,7 +263,7 @@
       "Evidence-Based Policy Interventions"
     ],
     "h3": [
-      "Top Priority Capacity Reallocation Recommendations (Ranked)",
+      "Top Priority Capacity Planning Scenarios (Ranked)",
       "CNC Machine Operator",
       "Fleet Dispatcher",
       "Electric Vehicle Assembly Technician",
@@ -287,7 +287,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -298,7 +298,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "08_scenarios": {
     "url": "http://localhost:3000/scenarios",
@@ -331,7 +331,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -342,7 +342,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "09_districts": {
     "url": "http://localhost:3000/districts",
@@ -368,7 +368,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -379,7 +379,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "10_occupations": {
     "url": "http://localhost:3000/occupations",
@@ -403,7 +403,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -414,7 +414,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "11_qualifications": {
     "url": "http://localhost:3000/qualifications",
@@ -448,7 +448,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -459,7 +459,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "12_data_health": {
     "url": "http://localhost:3000/data-health",
@@ -486,7 +486,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -497,7 +497,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "13_api": {
     "url": "http://localhost:3000/api",
@@ -524,7 +524,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -535,7 +535,7 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   },
   "14_settings": {
     "url": "http://localhost:3000/settings",
@@ -564,7 +564,7 @@
       "📈\nDemand Intelligence",
       "🔮\nForecasts",
       "⚖️\nSkill Gaps",
-      "🚨\nEarly-Warning Alerts\n100",
+      "🚨\nEarly-Warning Alerts\n143",
       "💡\nRecommendations\n4",
       "🎛️\nScenario Studio\nSTUDIO",
       "🗺️\nDistricts",
@@ -575,6 +575,6 @@
       "⚙️\nSettings",
       "Ask Skill Copilot"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n143\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
   }
 }

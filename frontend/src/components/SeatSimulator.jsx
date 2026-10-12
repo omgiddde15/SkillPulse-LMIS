@@ -1341,10 +1341,20 @@ export default function SeatSimulator({
             {/* Methodology & Assumptions */}
             <div className="callout-box" style={{ borderLeftColor: 'var(--teal-600)' }}>
               <h4>{t('simulator.calloutConstantYield')}</h4>
-              <p style={{ marginBottom: '0.5rem' }}>
+              <p style={{ marginBottom: '0.5rem', lineHeight: 1.5 }}>
                 {currentScenario.assumptions}
               </p>
-              <p style={{ fontSize: '0.74rem', color: 'var(--slate-500)' }}>
+              <div style={{ backgroundColor: '#f0fdfa', border: '1px solid #ccfbf1', borderRadius: '6px', padding: '0.6rem 0.75rem', marginBottom: '0.6rem', fontSize: '0.73rem', color: '#0f766e', fontFamily: 'var(--font-mono)', lineHeight: 1.5 }}>
+                <div style={{ fontWeight: 800, marginBottom: '0.25rem', color: '#0d9488' }}>
+                  📐 REAL SIMULATOR CALCULATION EQUATIONS:
+                </div>
+                <div>1. Baseline Intake: S_baseline = Avg Sanctioned Seats across trailing 3 concluding cohorts</div>
+                <div>2. Pipeline Funnel Yield: &eta; = Enrolment Rate &times; Completion Rate &times; Certification Rate</div>
+                <div>3. Scaled Throughput: Scenario Output = Baseline Output &times; (Proposed Seats / S_baseline)</div>
+                <div>4. Supply Percentile Rank: Cross-sectional rank recalculated across all 54 pilot series</div>
+                <div>5. Projected Mismatch = Baseline Demand Rank (0–100) &minus; Scenario Supply Rank (0–100)</div>
+              </div>
+              <p style={{ fontSize: '0.74rem', color: 'var(--slate-500)', margin: 0 }}>
                 <strong>{t('simulator.calloutMethodology')}</strong> {currentScenario.methodology}
               </p>
             </div>

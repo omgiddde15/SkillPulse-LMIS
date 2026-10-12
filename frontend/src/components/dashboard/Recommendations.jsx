@@ -59,7 +59,7 @@ const TOP_RANKED_INTERVENTIONS = [
     shortfallClosed: '▼ 11.8% closed',
     titleEn: 'Align Automotive ITI Cohorts to EV Diagnostics Hub',
     titleHi: 'ऑटोमोटिव आईटीआई बैचों को ईवी डायग्नोस्टिक्स हब के साथ संरेखित करें',
-    summaryEn: 'High industrial manufacturing demand (69.7 pts) alongside balanced certification output (68.9 percentile). Reallocating 60 seats safeguards training alignment with automotive EV transition.',
+    summaryEn: 'High industrial manufacturing demand (69.7 pts) alongside balanced certification output (68.9 percentile). Evaluating a 60-seat planning scenario safeguards training alignment with automotive EV transition while monitoring throughput constraints.',
     summaryHi: 'पुणे विनिर्माण में उच्च औद्योगिक मांग (69.7 अंक) और संतुलित प्रमाणीकरण आउटपुट (68.9 पर्सेंटाइल)। 60 सीटों को पुनर्संतुलित करने से ईवी परिवर्तन के साथ तालमेल बना रहता है।',
   },
   {
@@ -144,17 +144,17 @@ export default function Recommendations({
       if (isDemandPressure) {
         policyCategory = 'expand';
         priority = mismatch >= 40 ? 'critical' : 'high';
-        titleEn = 'Sanction Capacity Expansion & Fast-Track TVET Batches';
-        titleHi = 'प्रशिक्षण क्षमता विस्तार स्वीकृत करें एवं त्वरित बैच प्रारंभ करें';
-        actionEn = `Employer hiring intensity significantly outpaces certified throughput (+${mismatch.toFixed(1)} pts). Reallocate donor seats from low-demand trades or add evening cohorts to close the projected shortfall.`;
-        actionHi = `नियोक्ता भर्ती की तीव्रता प्रमाणित आउटपुट से काफी अधिक है (+${mismatch.toFixed(1)} अंक)। अधिशेष ट्रेडों से सीटें पुनरावंटित करें या अनुमानित कमी को पूरा करने के लिए अतिरिक्त बैच शुरू करें।`;
+        titleEn = 'Evaluate Capacity Expansion & Fast-Track TVET Batches';
+        titleHi = 'प्रशिक्षण क्षमता विस्तार एवं त्वरित बैच परिदृश्यों का मूल्यांकन करें';
+        actionEn = `Employer hiring intensity significantly outpaces certified throughput (+${mismatch.toFixed(1)} pts). Evaluate seat adjustment planning scenarios in Scenario Studio (such as additional intake or evening cohorts) against certified throughput yield and facility constraints to address the projected shortfall.`;
+        actionHi = `नियोक्ता भर्ती की तीव्रता प्रमाणित आउटपुट से काफी अधिक है (+${mismatch.toFixed(1)} अंक)। प्रमाणित थ्रूपुट यील्ड और संस्थागत सीमाओं के विरुद्ध परिदृश्य स्टूडियो में सीट विस्तार परिदृश्यों का मूल्यांकन करें।`;
       } else if (isSupplyPressure) {
         policyCategory = 'reallocate';
         priority = mismatch <= -40 ? 'high' : 'medium';
-        titleEn = 'Consolidate Intake & Reallocate Seats to Deficit Trades';
-        titleHi = 'प्रवेश स्तर संतुलित करें एवं सीटों को मांग वाले ट्रेडों में स्थानांतरित करें';
-        actionEn = `Certified candidate throughput exceeds local hiring absorption (${mismatch.toFixed(1)} pts). Reallocate underutilized sanctioned seats to regional high-demand occupations to safeguard employment outcomes.`;
-        actionHi = `प्रमाणित उम्मीदवार आउटपुट स्थानीय भर्ती अवशोषण से अधिक है (${mismatch.toFixed(1)} अंक)। रोजगार परिणामों को सुरक्षित करने के लिए कम उपयोग की गई सीटों को उच्च मांग वाले व्यवसायों में स्थानांतरित करें।`;
+        titleEn = 'Evaluate Intake Adjustment & Planning Scenarios';
+        titleHi = 'प्रवेश समायोजन एवं योजना परिदृश्यों का मूल्यांकन करें';
+        actionEn = `Certified candidate throughput ranks higher than local demand indicators (${mismatch.toFixed(1)} pts). Evaluate this corridor as a candidate planning scenario in Scenario Studio to assess local employer absorption and facility constraints before considering seat adjustments.`;
+        actionHi = `प्रमाणित उम्मीदवार आउटपुट स्थानीय मांग संकेतकों से अधिक है (${mismatch.toFixed(1)} अंक)। सीट समायोजन पर विचार करने से पहले स्थानीय नियोक्ता अवशोषण और सुविधाओं का आकलन करने के लिए परिदृश्य स्टूडियो में इसका मूल्यांकन करें।`;
       }
 
       return {
@@ -203,7 +203,7 @@ export default function Recommendations({
             <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--slate-600)', maxWidth: '720px' }}>
               {t(
                 'recommendations.subtitle',
-                'Targeted seat reallocation and curriculum adjustments derived directly from current alert and gap signals.'
+                'Targeted capacity planning scenarios and curriculum adjustments derived directly from current alert and gap signals.'
               )}
             </p>
           </div>
@@ -232,12 +232,12 @@ export default function Recommendations({
       <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ marginBottom: '1rem' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.2rem 0' }}>
-            {isHindi ? 'शीर्ष प्राथमिकता क्षमता पुनरावंटन सिफारिशें (रैंक अनुसार)' : 'Top Priority Capacity Reallocation Recommendations (Ranked)'}
+            {isHindi ? 'शीर्ष प्राथमिकता क्षमता योजना परिदृश्य (रैंक अनुसार)' : 'Top Priority Capacity Planning Scenarios (Ranked)'}
           </h3>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
             {isHindi
-              ? 'हेयूरिस्टिक असंतुलन नियमों और पायलट डेटा सिमुलेशन के आधार पर अनुशंसित सीट समायोजन।'
-              : 'Deterministic heuristic policy recommendations backed by live gap scores and seat non-depletion constraints.'}
+              ? 'हेयूरिस्टिक असंतुलन नियमों और पायलट डेटा सिमुलेशन के आधार पर प्रस्तावित योजना परिदृश्य। प्रस्तावित संख्याएं परिदृश्य स्टूडियो में मूल्यांकन के लिए हैं, स्वीकृत आवंटन नहीं।'
+              : 'Deterministic heuristic planning scenarios backed by live gap scores and seat non-depletion constraints. Proposed seat adjustments represent exploratory planning scenarios for evaluation in Scenario Studio, not approved or binding allocations.'}
           </p>
         </div>
 
@@ -278,11 +278,11 @@ export default function Recommendations({
               <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                   <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
-                    <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+{item.seats}</strong>
+                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
+                    <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+{item.seats} (Scenario)</strong>
                   </div>
                   <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
                     <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>{item.shortfallClosed}</strong>
                   </div>
                   <div>
