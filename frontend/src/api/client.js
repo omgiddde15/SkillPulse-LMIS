@@ -48,6 +48,14 @@ export async function fetchHealth() {
 }
 
 /**
+ * Fetch Reference Metadata & Taxonomy
+ * @returns {Promise<Object>}
+ */
+export async function fetchMetadata() {
+  return request('/api/v1/metadata');
+}
+
+/**
  * Fetch Demand Index Results
  * @param {Object} params Query parameters
  * @param {string} [params.period] Monthly period (YYYY-MM)

@@ -385,3 +385,312 @@ export function exportSimulationPlanCsv({
 
   triggerCsvDownload(finalFilename, csvContent);
 }
+
+/**
+ * Exporter for composite demand index records.
+ */
+export function exportDemandIndexCsv(records = [], period = '2026-09', isHindi = false) {
+  const filename = `skillpulse-demand-index-${period}.csv`;
+  const columns = isHindi
+    ? [
+        { key: 'district_name', label: 'ज़िला (District)' },
+        { key: 'district_id', label: 'ज़िला कोड (District ID)' },
+        { key: 'state_code', label: 'राज्य कोड (State)' },
+        { key: 'occupation_title', label: 'व्यवसाय (Occupation)' },
+        { key: 'occupation_id', label: 'व्यवसाय कोड (Occupation ID)' },
+        { key: 'sector', label: 'क्षेत्र (Sector)' },
+        { key: 'demand_index', label: 'मांग समग्र स्कोर (Demand Index)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'posting_volume', label: 'रिक्ति मात्रा (Posting Volume)' },
+        { key: 'demand_growth_rate', label: 'मांग वृद्धि दर (Growth Rate)', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+        { key: 'vacancy_persistence_rate', label: 'रिक्ति निरंतरता (Persistence)', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+        { key: 'employer_diversity_index', label: 'नियोक्ता विविधता (Diversity)', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+        { key: 'wage_attractiveness_index', label: 'वेतन आकर्षण (Wage Index)', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+      ]
+    : [
+        { key: 'district_name', label: 'District Name' },
+        { key: 'district_id', label: 'District ID' },
+        { key: 'state_code', label: 'State' },
+        { key: 'occupation_title', label: 'Occupation Title' },
+        { key: 'occupation_id', label: 'Occupation ID' },
+        { key: 'sector', label: 'Sector' },
+        { key: 'demand_index', label: 'Demand Composite Index', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'posting_volume', label: 'Posting Volume' },
+        { key: 'demand_growth_rate', label: 'Demand Growth Rate', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+        { key: 'vacancy_persistence_rate', label: 'Vacancy Persistence Rate', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+        { key: 'employer_diversity_index', label: 'Employer Diversity Index', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+        { key: 'wage_attractiveness_index', label: 'Wage Attractiveness Index', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+      ];
+
+  const title = isHindi
+    ? 'स्किलपल्स (SkillPulse LMIS) — श्रम मांग सूचकांक निर्यात'
+    : 'SkillPulse LMIS — Labour Demand Index Export';
+
+  const metadata = {
+    'Data Provenance': isHindi
+      ? 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)'
+      : 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
+    'Reporting Period': period,
+    'Export Timestamp': new Date().toISOString(),
+    'Total Records': String(records.length),
+  };
+
+  const disclaimers = isHindi
+    ? [
+        'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी मांग मेट्रिक्स सिंथेटिक पायलट अवलोकनों पर आधारित हैं।',
+        'मांग समग्र स्कोर (0-100) पांच भारित घटकों से बना है: पोस्टिंग मात्रा (30%), मांग वृद्धि (25%), रिक्ति निरंतरता (15%), नियोक्ता विविधता (15%), वेतन आकर्षण (15%)।',
+      ]
+    : [
+        'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All demand metrics are computed on synthetic pilot observations.',
+        'Demand Composite Score (0-100) synthesizes posting volume (30%), demand growth (25%), vacancy persistence (15%), employer diversity (15%), and wage attractiveness (15%).',
+      ];
+
+  const formattedRows = records.map((r) => ({
+    district_name: r.district_name,
+    district_id: r.district_id,
+    state_code: r.state_code,
+    occupation_title: r.occupation_title,
+    occupation_id: r.occupation_id,
+    sector: r.sector,
+    demand_index: r.composite_score ?? r.demand_index,
+    posting_volume: r.components?.posting_volume?.raw_value ?? r.posting_volume,
+    demand_growth_rate: r.components?.demand_growth?.raw_value != null ? (r.components.demand_growth.raw_value * 100).toFixed(1) : (r.demand_growth_rate ?? ''),
+    vacancy_persistence_rate: r.components?.vacancy_persistence?.raw_value ?? r.vacancy_persistence_rate,
+    employer_diversity_index: r.components?.employer_diversity?.raw_value ?? r.employer_diversity_index,
+    wage_attractiveness_index: r.components?.wage_attractiveness?.raw_value ?? r.wage_attractiveness_index,
+  }));
+
+  exportTableToCsv({ filename, columns, rows: formattedRows, title, metadata, disclaimers });
+}
+
+/**
+ * Exporter for gap analysis records.
+ */
+export function exportGapAnalysisCsv(records = [], period = '2026-09', isHindi = false) {
+  const filename = `skillpulse-gap-analysis-${period}.csv`;
+  const columns = isHindi
+    ? [
+        { key: 'district_name', label: 'ज़िला (District)' },
+        { key: 'district_id', label: 'ज़िला कोड (District ID)' },
+        { key: 'state_code', label: 'राज्य (State)' },
+        { key: 'occupation_title', label: 'व्यवसाय (Occupation)' },
+        { key: 'occupation_id', label: 'व्यवसाय कोड (Occupation ID)' },
+        { key: 'sector', label: 'क्षेत्र (Sector)' },
+        { key: 'demand_index', label: 'मांग सूचकांक (Demand Index)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'supply_index', label: 'आपूर्ति सूचकांक (Supply Index)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'relative_mismatch', label: 'सापेक्ष असंतुलन (Relative Mismatch)', format: (v) => (v != null ? (Number(v) > 0 ? `+${Number(v).toFixed(1)}` : Number(v).toFixed(1)) : '') },
+        { key: 'mismatch_classification', label: 'वर्गीकरण (Classification)' },
+      ]
+    : [
+        { key: 'district_name', label: 'District' },
+        { key: 'district_id', label: 'District ID' },
+        { key: 'state_code', label: 'State' },
+        { key: 'occupation_title', label: 'Occupation' },
+        { key: 'occupation_id', label: 'Occupation ID' },
+        { key: 'sector', label: 'Sector' },
+        { key: 'demand_index', label: 'Demand Index', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'supply_index', label: 'Supply Index', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'relative_mismatch', label: 'Relative Mismatch', format: (v) => (v != null ? (Number(v) > 0 ? `+${Number(v).toFixed(1)}` : Number(v).toFixed(1)) : '') },
+        { key: 'mismatch_classification', label: 'Classification' },
+      ];
+
+  const title = isHindi
+    ? 'स्किलपल्स (SkillPulse LMIS) — सापेक्ष मांग-आपूर्ति अंतर विश्लेषण निर्यात'
+    : 'SkillPulse LMIS — Relative Demand-Supply Gap Analysis Export';
+
+  const metadata = {
+    'Data Provenance': isHindi
+      ? 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)'
+      : 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
+    'Reporting Period': period,
+    'Export Timestamp': new Date().toISOString(),
+    'Total Records': String(records.length),
+  };
+
+  const disclaimers = isHindi
+    ? [
+        'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी अंतर विश्लेषण मेट्रिक्स सिंथेटिक पायलट अवलोकनों पर आधारित हैं।',
+        'सापेक्ष असंतुलन सूत्र: मांग समग्र स्कोर (0-100) - आपूर्ति आउटपुट परसेंटाइल रैंक (0-100)। सीमा: -100 से +100 अंक।',
+        'प्रोटोटाइप नीति सीमाएं: स्कोर सीमाएं प्रोटोटाइप ह्युरिस्टिक सीमाएं (±15) हैं, न कि अनुभवजन्य रूप से कैलिब्रेट किए गए नीति नियम।',
+      ]
+    : [
+        'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All gap analysis metrics are computed on synthetic pilot observations.',
+        'Current-Period Mismatch Formula: Demand Composite Score (0-100) - Supply Output Percentile Rank (0-100). Range: -100 to +100 points.',
+        'Prototype Decision Thresholds: Alerts and classifications operate on prototype heuristic thresholds (±15), not empirically calibrated policy rules.',
+      ];
+
+  const formattedRows = records.map((r) => ({
+    district_name: r.district_name,
+    district_id: r.district_id,
+    state_code: r.state_code,
+    occupation_title: r.occupation_title,
+    occupation_id: r.occupation_id,
+    sector: r.sector,
+    demand_index: r.demand_index_score ?? r.demand_index,
+    supply_index: r.supply_output_index ?? r.supply_index,
+    relative_mismatch: r.relative_mismatch_score ?? r.relative_mismatch,
+    mismatch_classification: r.classification ?? r.mismatch_classification,
+  }));
+
+  exportTableToCsv({ filename, columns, rows: formattedRows, title, metadata, disclaimers });
+}
+
+/**
+ * Exporter for multi-horizon forecast series.
+ */
+export function exportForecastsCsv(records = [], period = '2026-09', horizon = 3, isHindi = false) {
+  const filename = `skillpulse-forecasts-${period}-H${horizon}.csv`;
+  const columns = isHindi
+    ? [
+        { key: 'district_name', label: 'ज़िला (District)' },
+        { key: 'district_id', label: 'ज़िला कोड (District ID)' },
+        { key: 'state_code', label: 'राज्य (State)' },
+        { key: 'occupation_title', label: 'व्यवसाय (Occupation)' },
+        { key: 'occupation_id', label: 'व्यवसाय कोड (Occupation ID)' },
+        { key: 'sector', label: 'क्षेत्र (Sector)' },
+        { key: 'metric', label: 'मीट्रिक (Metric)' },
+        { key: 'horizon_months', label: 'क्षितिज (Horizon Months)' },
+        { key: 'target_period', label: 'लक्ष्य अवधि (Target Period)' },
+        { key: 'forecast_value', label: 'पूर्वानुमान मान (Forecast Value)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'interval_lower_80', label: 'निचली सीमा 80% (Lower 80%)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'interval_upper_80', label: 'ऊपरी सीमा 80% (Upper 80%)', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'selected_model', label: 'मॉडल (Model)' },
+        { key: 'model_mae', label: 'मॉडल MAE', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+        { key: 'model_wape', label: 'मॉडल WAPE (%)', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+      ]
+    : [
+        { key: 'district_name', label: 'District' },
+        { key: 'district_id', label: 'District ID' },
+        { key: 'state_code', label: 'State' },
+        { key: 'occupation_title', label: 'Occupation' },
+        { key: 'occupation_id', label: 'Occupation ID' },
+        { key: 'sector', label: 'Sector' },
+        { key: 'metric', label: 'Metric' },
+        { key: 'horizon_months', label: 'Horizon Months' },
+        { key: 'target_period', label: 'Target Period' },
+        { key: 'forecast_value', label: 'Forecast Value', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'interval_lower_80', label: '80% Lower Bound', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'interval_upper_80', label: '80% Upper Bound', format: (v) => (v != null ? Number(v).toFixed(1) : '') },
+        { key: 'selected_model', label: 'Selected Model' },
+        { key: 'model_mae', label: 'Model MAE', format: (v) => (v != null ? Number(v).toFixed(2) : '') },
+        { key: 'model_wape', label: 'Model WAPE (%)', format: (v) => (v != null ? `${Number(v).toFixed(1)}%` : '') },
+      ];
+
+  const title = isHindi
+    ? 'स्किलपल्स (SkillPulse LMIS) — समय-श्रृंखला मांग एवं आपूर्ति पूर्वानुमान निर्यात'
+    : 'SkillPulse LMIS — Time-Series Workforce Demand & Supply Forecasts Export';
+
+  const metadata = {
+    'Data Provenance': isHindi
+      ? 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)'
+      : 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
+    'Reporting Period': period,
+    'Horizon Months': String(horizon),
+    'Export Timestamp': new Date().toISOString(),
+    'Total Records': String(records.length),
+  };
+
+  const disclaimers = isHindi
+    ? [
+        'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी पूर्वानुमान सिंथेटिक पायलट अवलोकनों पर आधारित हैं।',
+        'लागू पूर्वानुमान मॉडल: केवल सरल एवं पारदर्शी मॉडल लागू हैं (Naive, 3-Month Moving Average, Linear Trend)। कोई अप्रमाणित ब्लैक-बॉक्स या गैर-लागू मॉडल नहीं हैं।',
+        '80% भविष्यवाणी अंतराल: अंतराल मॉडल के ऐतिहासिक अवशिष्टों पर आधारित सांख्यिकीय अनिश्चितता को दर्शाता है, गारंटी नहीं।',
+      ]
+    : [
+        'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All forecasts are computed on synthetic pilot observations.',
+        'Implemented Forecasting Models: Only transparent, baseline models are implemented (Naive, 3-Month Moving Average, Linear Trend). No unverified ensemble models.',
+        '80% Prediction Interval: Intervals represent empirical uncertainty based on historical walk-forward residuals, not a guaranteed range.',
+      ];
+
+  const formattedRows = records.map((r) => ({
+    district_name: r.district_name,
+    district_id: r.district_id,
+    state_code: r.state_code,
+    occupation_title: r.occupation_title,
+    occupation_id: r.occupation_id,
+    sector: r.sector,
+    metric: r.demand_forecast?.quantity || r.metric || 'online_job_postings',
+    horizon_months: r.horizon_months ?? horizon,
+    target_period: r.target_period,
+    forecast_value: r.demand_forecast?.point_forecast ?? r.forecast_value,
+    interval_lower_80: r.demand_forecast?.prediction_interval_lower ?? r.interval_lower_80,
+    interval_upper_80: r.demand_forecast?.prediction_interval_upper ?? r.interval_upper_80,
+    selected_model: r.demand_forecast?.model_selected ?? r.selected_model,
+    model_mae: r.demand_forecast?.backtest_mae ?? r.model_mae,
+    model_wape: r.demand_forecast?.backtest_wape != null ? (r.demand_forecast.backtest_wape * 100).toFixed(1) : (r.model_wape ?? ''),
+  }));
+
+  exportTableToCsv({ filename, columns, rows: formattedRows, title, metadata, disclaimers });
+}
+
+/**
+ * Exporter for early warning alert indicators.
+ */
+export function exportEarlyWarningAlertsCsv(alerts = [], period = '2026-09', isHindi = false) {
+  const filename = `skillpulse-alerts-${period}.csv`;
+  const columns = isHindi
+    ? [
+        { key: 'alert_id', label: 'अलर्ट आईडी (Alert ID)' },
+        { key: 'district_name', label: 'ज़िला (District)' },
+        { key: 'district_id', label: 'ज़िला कोड (District ID)' },
+        { key: 'occupation_title', label: 'व्यवसाय (Occupation)' },
+        { key: 'occupation_id', label: 'व्यवसाय कोड (Occupation ID)' },
+        { key: 'sector', label: 'क्षेत्र (Sector)' },
+        { key: 'alert_type', label: 'अलर्ट प्रकार (Alert Type)' },
+        { key: 'severity', label: 'गंभीरता (Severity)' },
+        { key: 'primary_driver', label: 'प्राथमिक चालक (Primary Driver)' },
+        { key: 'lead_time_months', label: 'अग्रिम समय माह (Lead Time)' },
+        { key: 'recommended_action', label: 'अनुशंसित कार्रवाई (Recommended Action)' },
+      ]
+    : [
+        { key: 'alert_id', label: 'Alert ID' },
+        { key: 'district_name', label: 'District' },
+        { key: 'district_id', label: 'District ID' },
+        { key: 'occupation_title', label: 'Occupation' },
+        { key: 'occupation_id', label: 'Occupation ID' },
+        { key: 'sector', label: 'Sector' },
+        { key: 'alert_type', label: 'Alert Type' },
+        { key: 'severity', label: 'Severity' },
+        { key: 'primary_driver', label: 'Primary Driver' },
+        { key: 'lead_time_months', label: 'Lead Time (Months)' },
+        { key: 'recommended_action', label: 'Recommended Action' },
+      ];
+
+  const title = isHindi
+    ? 'स्किलपल्स (SkillPulse LMIS) — प्रारंभिक चेतावनी अलर्ट निर्यात'
+    : 'SkillPulse LMIS — Early Warning Alerts Export';
+
+  const metadata = {
+    'Data Provenance': isHindi
+      ? 'SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)'
+      : 'Synthetic demonstration dataset for SIH26246 (not official statistics)',
+    'Reporting Period': period,
+    'Export Timestamp': new Date().toISOString(),
+    'Total Alerts': String(alerts.length),
+  };
+
+  const disclaimers = isHindi
+    ? [
+        'डेटा स्रोत: SIH26246 के लिए सिंथेटिक प्रदर्शन डेटासेट (आधिकारिक आंकड़े नहीं)। सभी अलर्ट सिंथेटिक पायलट अवलोकनों पर आधारित हैं।',
+        'प्रोटोटाइप निर्णय सीमाएं: अलर्ट प्रोटोटाइप ह्युरिस्टिक सीमाओं (±15) पर आधारित हैं, न कि अनुभवजन्य रूप से कैलिब्रेट किए गए नीति नियमों पर।',
+      ]
+    : [
+        'Data Provenance: Synthetic demonstration dataset for SIH26246 (not official statistics). All alert indicators are computed on synthetic pilot observations.',
+        'Prototype Decision Thresholds: Alerts operate on prototype heuristic thresholds (±15), not empirically calibrated policy rules.',
+      ];
+
+  const formattedRows = alerts.map((a) => ({
+    alert_id: a.alert_id,
+    district_name: a.district_name,
+    district_id: a.district_id,
+    occupation_title: a.occupation_title,
+    occupation_id: a.occupation_id,
+    sector: a.sector,
+    alert_type: a.alert_type,
+    severity: a.severity,
+    primary_driver: a.key_values?.projected_mismatch_score != null ? `Mismatch: ${a.key_values.projected_mismatch_score > 0 ? '+' : ''}${a.key_values.projected_mismatch_score}` : (a.primary_driver || ''),
+    lead_time_months: a.horizon_months ?? a.lead_time_months,
+    recommended_action: a.suggested_action ?? a.recommended_action,
+  }));
+
+  exportTableToCsv({ filename, columns, rows: formattedRows, title, metadata, disclaimers });
+}

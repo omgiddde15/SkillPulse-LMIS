@@ -27,13 +27,99 @@ export const translations = {
     'app.coreModules': 'Core Modules',
     'app.comingSoon': 'Coming next',
 
-    // Navigation Items
+    // Navigation Items & Grouped Structure
+    'nav.group.intelligence': 'INTELLIGENCE',
+    'nav.group.action': 'ACTION',
+    'nav.group.explore': 'EXPLORE',
+    'nav.group.system': 'SYSTEM',
     'nav.overview': 'Overview',
     'nav.demand': 'Demand Intelligence',
-    'nav.gap': 'Gap Analysis',
+    'nav.gap': 'Skill Gaps',
     'nav.forecasts': 'Forecasts',
     'nav.alerts': 'Early-Warning Alerts',
-    'nav.simulator': 'Training-Seat Simulator',
+    'nav.recommendations': 'Recommendations',
+    'nav.simulator': 'Scenario Studio',
+    'nav.districts': 'Districts',
+    'nav.occupations': 'Occupations',
+    'nav.qualifications': 'Qualifications',
+    'nav.dataHealth': 'Data & Model Health',
+    'nav.apiExports': 'API & Exports',
+    'nav.settings': 'Settings',
+    'nav.home': 'SkillPulse Home',
+    'nav.openDashboard': 'Open Dashboard',
+
+    // Landing Page Content
+    'landing.heroTag': 'SIH 2026 · Problem Statement SIH26246 · MSDE',
+    'landing.heroHeadlineStart': 'Forecast Skill Gaps. ',
+    'landing.heroHeadlineEnd': 'Guide Training Decisions.',
+    'landing.heroSubtitle': 'SkillPulse analyses employer demand signals, TVET training throughput, relative skill gaps, multi-horizon forecasts, and training-capacity scenarios for regional workforce planning.',
+    'landing.cta.openDashboard': 'Open Dashboard',
+    'landing.cta.exploreForecasts': 'Explore Forecasts',
+    'landing.cta.trySimulator': 'Try Seat Simulator',
+    'landing.preview.badge': 'Live Pilot Demonstration',
+    'landing.preview.title': 'Regional Demand & Supply Imbalance Tracker',
+    'landing.preview.desc': 'Interactive evaluation across 6 pilot districts and 9 benchmark occupations.',
+    'landing.kpi.monitoredPairs': '54 Series',
+    'landing.kpi.monitoredPairsLabel': 'District-Occupations Tracked',
+    'landing.kpi.districts': '6 Districts',
+    'landing.kpi.districtsLabel': 'Karnataka, Maharashtra, Telangana',
+    'landing.kpi.horizons': '3, 6, 12 Months',
+    'landing.kpi.horizonsLabel': 'Backtested Forecast Horizons',
+    'landing.kpi.history': '24 Months',
+    'landing.kpi.historyLabel': 'Monthly Longitudinal Data',
+    'landing.methodology.tag': 'METHODOLOGY CYCLE',
+    'landing.methodology.title': 'From Demand Signals to Actionable Policy',
+    'landing.methodology.subtitle': 'Transparent 5-stage explainable intelligence pipeline connecting real signals to TVET capacity decisions.',
+    'landing.step1.title': 'Demand Signals',
+    'landing.step1.desc': 'Ingests job postings, recruitment growth, vacancy persistence, and employer hiring breadth.',
+    'landing.step2.title': 'Demand Index',
+    'landing.step2.desc': 'Computes explainable percentile rankings (0–100) with dynamic weight re-normalization.',
+    'landing.step3.title': 'Supply Comparison',
+    'landing.step3.desc': 'Tracks certified TVET throughput and conversion funnels to evaluate effective labor supply.',
+    'landing.step4.title': 'Forecasts & Alerts',
+    'landing.step4.desc': 'Projects demand via rolling-origin backtests and generates ±15 heuristic mismatch alerts.',
+    'landing.step5.title': 'Scenario Studio',
+    'landing.step5.desc': 'Simulates seat transfers with donor non-depletion constraints safeguarding existing trades.',
+    'landing.capabilities.tag': 'CORE CAPABILITIES',
+    'landing.capabilities.title': 'Integrated Decision Support Modules',
+    'landing.cap1.title': 'Labour Demand Intelligence',
+    'landing.cap1.desc': 'Multi-signal demand scoring and driver attribution across pilot districts.',
+    'landing.cap2.title': 'District & Skill-Gap Analysis',
+    'landing.cap2.desc': 'Relative mismatch rankings centered on zero, distinguishing demand and supply pressure.',
+    'landing.cap3.title': 'Multi-Horizon Forecasting',
+    'landing.cap3.desc': 'Deterministic backtested projections with 80% empirical prediction intervals.',
+    'landing.cap4.title': 'Early-Warning Alerts',
+    'landing.cap4.desc': 'Automated 4-tier severity alerts for emerging shortages and persistent supply gluts.',
+    'landing.cap5.title': 'District Geographic Map',
+    'landing.cap5.desc': 'Interactive Leaflet basemap and SVG schematic location map with non-overlapping labels.',
+    'landing.cap6.title': 'Training-Seat Simulator',
+    'landing.cap6.desc': 'What-if capacity sandbox comparing baseline throughput vs proposed cohort adjustments.',
+    'landing.governance.tag': 'DATA PROVENANCE & GOVERNANCE',
+    'landing.governance.title': 'Rigorous Methodology & Transparent Synthetic Pilot',
+    'landing.gov1.title': 'Synthetic Demonstration Data',
+    'landing.gov1.desc': 'All observations are synthetic demonstration data for SIH26246 (not official census statistics).',
+    'landing.gov2.title': 'Rolling-Origin Backtesting',
+    'landing.gov2.desc': 'Out-of-sample models evaluated without future look-ahead data leakage.',
+    'landing.gov3.title': 'Donor Non-Depletion',
+    'landing.gov3.desc': 'Mathematical checks prevent donor training trades from slipping into severe deficits.',
+    'landing.ctaSection.title': 'Ready to Explore India’s Workforce Pulse?',
+    'landing.ctaSection.desc': 'Experience explainable workforce intelligence, demand forecasts, and training capacity simulations.',
+
+    // Explorer Modules Headers
+    'districts.title': 'Pilot Districts Intelligence',
+    'districts.subtitle': 'Spatial workforce mismatch and geographic distribution across Karnataka, Maharashtra, and Telangana.',
+    'occupations.title': 'Occupational Taxonomy & Registry',
+    'occupations.subtitle': 'Standardised 9 pilot occupations mapped to National Classification of Occupations (NCO) and Qualification Packs (QP).',
+    'qualifications.title': 'TVET Qualifications & NSQF Alignment',
+    'qualifications.subtitle': 'National Skills Qualification Framework (NSQF) levels, Qualification Packs (QP), and awarding bodies.',
+    'recommendations.title': 'Evidence-Based Policy Interventions',
+    'recommendations.subtitle': 'Targeted seat reallocation and curriculum adjustments derived directly from current alert and gap signals.',
+    'dataHealth.title': 'Data Governance & Model Health',
+    'dataHealth.subtitle': 'Audit trails, multi-source ingestion integrity, backtesting error rates, and funnel invariants.',
+    'apiExports.title': 'Developer API & CSV Data Exports',
+    'apiExports.subtitle': 'RESTful query endpoints, integration schemas, and transparent data exports with synthetic disclosures.',
+    'settings.title': 'Platform & Preferences Settings',
+    'settings.subtitle': 'Localization preferences, reporting period configuration, and system parameters.',
 
     // Common Actions, Buttons & Form Labels
     'common.reportingPeriod': 'Reporting Period',
@@ -566,13 +652,99 @@ export const translations = {
     'app.coreModules': 'प्रमुख मॉड्यूल',
     'app.comingSoon': 'शीघ्र उपलब्ध',
 
-    // Navigation Items
+    // Navigation Items & Grouped Structure
+    'nav.group.intelligence': 'इंटेलिजेंस',
+    'nav.group.action': 'कार्यवाही',
+    'nav.group.explore': 'अन्वेषण',
+    'nav.group.system': 'सिस्टम',
     'nav.overview': 'अवलोकन',
     'nav.demand': 'मांग विश्लेषण',
-    'nav.gap': 'कौशल अंतर विश्लेषण',
+    'nav.gap': 'कौशल अंतर',
     'nav.forecasts': 'पूर्वानुमान',
     'nav.alerts': 'पूर्व-चेतावनी अलर्ट',
-    'nav.simulator': 'प्रशिक्षण-सीट सिमुलेटर',
+    'nav.recommendations': 'सिफारिशें',
+    'nav.simulator': 'परिदृश्य स्टूडियो',
+    'nav.districts': 'ज़िले',
+    'nav.occupations': 'व्यवसाय',
+    'nav.qualifications': 'योग्यताएं',
+    'nav.dataHealth': 'डेटा एवं मॉडल स्वास्थ्य',
+    'nav.apiExports': 'एपीआई एवं निर्यात',
+    'nav.settings': 'सेटिंग्स',
+    'nav.home': 'स्किलपल्स होम',
+    'nav.openDashboard': 'डैशबोर्ड खोलें',
+
+    // Landing Page Content
+    'landing.heroTag': 'SIH 2026 · समस्या विवरण SIH26246 · MSDE',
+    'landing.heroHeadlineStart': 'कौशल अंतर का पूर्वानुमान लगाएं। ',
+    'landing.heroHeadlineEnd': 'प्रशिक्षण निर्णयों का मार्गदर्शन करें।',
+    'landing.heroSubtitle': 'स्किलपल्स क्षेत्रीय कार्यबल योजना के लिए नियोक्ता मांग संकेतों, टीवीईटी प्रशिक्षण आउटपुट, सापेक्ष कौशल अंतरालों, बहु-अवधि पूर्वानुमानों और प्रशिक्षण-क्षमता परिदृश्यों का विश्लेषण करता है।',
+    'landing.cta.openDashboard': 'डैशबोर्ड खोलें',
+    'landing.cta.exploreForecasts': 'पूर्वानुमान देखें',
+    'landing.cta.trySimulator': 'सीट सिमुलेटर आज़माएं',
+    'landing.preview.badge': 'लाइव पायलट प्रदर्शन',
+    'landing.preview.title': 'क्षेत्रीय मांग एवं आपूर्ति असंतुलन ट्रैकर',
+    'landing.preview.desc': '6 पायलट ज़िलों और 9 मानक व्यवसायों में परस्पर मूल्यांकन।',
+    'landing.kpi.monitoredPairs': '54 श्रृंखलाएं',
+    'landing.kpi.monitoredPairsLabel': 'ट्रैक किए गए ज़िला-व्यवसाय',
+    'landing.kpi.districts': '6 ज़िले',
+    'landing.kpi.districtsLabel': 'कर्नाटक, महाराष्ट्र, तेलंगाना',
+    'landing.kpi.horizons': '3, 6, 12 माह',
+    'landing.kpi.horizonsLabel': 'परीक्षित पूर्वानुमान क्षितिज',
+    'landing.kpi.history': '24 माह',
+    'landing.kpi.historyLabel': 'मासिक अनुदैर्ध्य डेटा',
+    'landing.methodology.tag': 'पद्धति चक्र',
+    'landing.methodology.title': 'मांग संकेतों से नीतिगत कार्यवाही तक',
+    'landing.methodology.subtitle': 'वास्तविक संकेतों को टीवीईटी क्षमता निर्णयों से जोड़ने वाली पारदर्शी 5-चरणीय बुद्धिमत्ता पाइपलाइन।',
+    'landing.step1.title': 'मांग संकेत',
+    'landing.step1.desc': 'नौकरी रिक्तियों, भर्ती वृद्धि, रिक्ति स्थायित्व और नियोक्ता विस्तार को एकत्र करता है।',
+    'landing.step2.title': 'मांग सूचकांक',
+    'landing.step2.desc': 'गतिशील भार पुनर्सामान्यीकरण के साथ पारदर्शी पर्सेंटाइल रैंकिंग (0-100) की गणना करता है।',
+    'landing.step3.title': 'आपूर्ति तुलना',
+    'landing.step3.desc': 'प्रभावी कार्यबल आपूर्ति का मूल्यांकन करने के लिए प्रमाणित टीवीईटी आउटपुट को ट्रैक करता है।',
+    'landing.step4.title': 'पूर्वानुमान एवं अलर्ट',
+    'landing.step4.desc': 'रोलिंग-ओरिजिन परीक्षणों से मांग का पूर्वानुमान और ±15 हेयूरिस्टिक असंतुलन अलर्ट उत्पन्न करता है।',
+    'landing.step5.title': 'परिदृश्य स्टूडियो',
+    'landing.step5.desc': 'मौजूदा ट्रेडों की सुरक्षा के लिए गैर-क्षरण प्रतिबंधों के साथ सीट पुनर्वितरण का अनुकरण करता है।',
+    'landing.capabilities.tag': 'प्रमुख क्षमताएं',
+    'landing.capabilities.title': 'एकीकृत निर्णय समर्थन मॉड्यूल',
+    'landing.cap1.title': 'श्रम मांग विश्लेषण',
+    'landing.cap1.desc': 'पायलट ज़िलों में बहु-संकेत मांग स्कोरिंग और कारक विश्लेषण।',
+    'landing.cap2.title': 'ज़िला एवं कौशल अंतर विश्लेषण',
+    'landing.cap2.desc': 'शून्य पर केंद्रित सापेक्ष असंतुलन रैंकिंग, मांग और आपूर्ति दबाव में अंतर।',
+    'landing.cap3.title': 'बहु-अवधि पूर्वानुमान',
+    'landing.cap3.desc': '80% भविष्यवाणी अंतरालों के साथ वस्तुनिष्ठ बैकटेस्टेड प्रक्षेपण।',
+    'landing.cap4.title': 'पूर्व-चेतावनी अलर्ट',
+    'landing.cap4.desc': 'उभरती कमियों और अत्यधिक आपूर्ति के लिए 4-स्तरीय स्वचालित अलर्ट।',
+    'landing.cap5.title': 'ज़िला भौगोलिक मानचित्र',
+    'landing.cap5.desc': 'ओवरलैप-रहित लेबल के साथ इंटरैक्टिव लीफलेट बेसमैप और एसवीजी स्केमैटिक मैप।',
+    'landing.cap6.title': 'प्रशिक्षण-सीट सिमुलेटर',
+    'landing.cap6.desc': 'प्रस्तावित समायोजन के साथ बेसलाइन आउटपुट की तुलना करने वाला सैंडबॉक्स।',
+    'landing.governance.tag': 'डेटा स्रोत एवं शासन',
+    'landing.governance.title': 'कठोर पद्धति एवं पारदर्शी सिंथेटिक पायलट',
+    'landing.gov1.title': 'सिंथेटिक प्रदर्शन डेटा',
+    'landing.gov1.desc': 'सभी अवलोकन SIH26246 के लिए सिंथेटिक प्रदर्शन डेटा हैं (आधिकारिक आंकड़े नहीं)।',
+    'landing.gov2.title': 'रोलिंग-ओरिजिन सत्यापन',
+    'landing.gov2.desc': 'भविष्य के डेटा रिसाव के बिना ऐतिहासिक डेटा पर परखे गए मॉडल।',
+    'landing.gov3.title': 'दाता गैर-क्षरण',
+    'landing.gov3.desc': 'गणितीय जांच दाता प्रशिक्षण ट्रेडों को गंभीर घाटे में जाने से रोकती है।',
+    'landing.ctaSection.title': 'क्या आप भारत के कार्यबल पल्स का पता लगाने के लिए तैयार हैं?',
+    'landing.ctaSection.desc': 'व्याख्या योग्य कार्यबल विश्लेषण, मांग पूर्वानुमान और क्षमता सिमुलेशन का अनुभव करें।',
+
+    // Explorer Modules Headers
+    'districts.title': 'पायलट ज़िला विश्लेषण',
+    'districts.subtitle': 'कर्नाटक, महाराष्ट्र और तेलंगाना में स्थानिक कार्यबल असंतुलन एवं भौगोलिक वितरण।',
+    'occupations.title': 'व्यावसायिक वर्गीकरण एवं पंजी',
+    'occupations.subtitle': 'राष्ट्रीय व्यवसाय वर्गीकरण (NCO) और योग्यता पैक (QP) से मैप किए गए 9 मानक पायलट व्यवसाय।',
+    'qualifications.title': 'टीवीईटी योग्यताएं एवं एनएसक्यूएफ संरेखण',
+    'qualifications.subtitle': 'राष्ट्रीय कौशल योग्यता ढांचा (NSQF) स्तर, योग्यता पैक (QP) और प्रमाणन निकाय।',
+    'recommendations.title': 'साक्ष्य-आधारित नीतिगत सिफारिशें',
+    'recommendations.subtitle': 'वर्तमान अलर्ट और असंतुलन सिग्नलों से सीधे व्युत्पन्न लक्षित सीट पुनर्वितरण और पाठ्यक्रम समायोजन।',
+    'dataHealth.title': 'डेटा प्रशासन एवं मॉडल स्वास्थ्य',
+    'dataHealth.subtitle': 'ऑडिट ट्रेल्स, बहु-स्रोत डेटा अखंडता, बैकटेस्टिंग त्रुटि दरें और फ़नल इनवेरिएंट्स।',
+    'apiExports.title': 'डेवलपर एपीआई एवं सीएसवी डेटा निर्यात',
+    'apiExports.subtitle': 'RESTful क्वेरी एंडपॉइंट्स, एकीकरण स्कीमा और पारदर्शी सिंथेटिक प्रकटीकरण के साथ सीएसवी निर्यात।',
+    'settings.title': 'प्लेटफ़ॉर्म एवं प्राथमिकताएं सेटिंग्स',
+    'settings.subtitle': 'स्थानीयकरण प्राथमिकताएं, रिपोर्टिंग अवधि विन्यास और सिस्टम पैरामीटर।',
 
     // Common Actions, Buttons & Form Labels
     'common.reportingPeriod': 'रिपोर्टिंग अवधि',
@@ -1130,31 +1302,89 @@ export function translate(lang, key, paramsOrFallback, maybeParams) {
  */
 const DISTRICT_MAP_HI = {
   'Bengaluru Urban': 'बेंगलुरु शहरी',
+  'KA_BLR_U': 'बेंगलुरु शहरी',
   'KA_BEN': 'बेंगलुरु शहरी',
+  'Dharwad': 'धारवाड़',
+  'KA_DHA': 'धारवाड़',
   'Dakshina Kannada': 'दक्षिण कन्नड़',
   'KA_DKN': 'दक्षिण कन्नड़',
   'Pune': 'पुणे',
   'MH_PUN': 'पुणे',
+  'Mumbai Suburban': 'मुंबई उपनगर',
+  'MH_MUM': 'मुंबई उपनगर',
   'Nagpur': 'नागपुर',
   'MH_NAG': 'नागपुर',
   'Hyderabad': 'हैदराबाद',
   'TS_HYD': 'हैदराबाद',
+  'Medchal-Malkajgiri': 'मेदचल-मलकाजगिरि',
+  'TS_MED': 'मेदचल-मलकाजगिरि',
   'Warangal': 'वारंगल',
   'TS_WAR': 'वारंगल',
+};
+
+const DISTRICT_MAP_EN = {
+  'KA_BLR_U': 'Bengaluru Urban',
+  'KA_BEN': 'Bengaluru Urban',
+  'KA_DHA': 'Dharwad',
+  'KA_DKN': 'Dakshina Kannada',
+  'MH_PUN': 'Pune',
+  'MH_MUM': 'Mumbai Suburban',
+  'MH_NAG': 'Nagpur',
+  'TS_HYD': 'Hyderabad',
+  'TS_MED': 'Medchal-Malkajgiri',
+  'TS_WAR': 'Warangal',
 };
 
 export function getDistrictDisplayName(nameOrId, isHindi, fallback) {
   if (!nameOrId) return fallback || '';
   if (!isHindi) {
-    if (nameOrId === 'KA_BEN') return 'Bengaluru Urban';
-    if (nameOrId === 'KA_DKN') return 'Dakshina Kannada';
-    if (nameOrId === 'MH_PUN') return 'Pune';
-    if (nameOrId === 'MH_NAG') return 'Nagpur';
-    if (nameOrId === 'TS_HYD') return 'Hyderabad';
-    if (nameOrId === 'TS_WAR') return 'Warangal';
-    return nameOrId;
+    return DISTRICT_MAP_EN[nameOrId] || nameOrId;
   }
   return DISTRICT_MAP_HI[nameOrId] || nameOrId;
+}
+
+/**
+ * Localized occupation display name helper
+ */
+const OCCUPATION_MAP_HI = {
+  'OCC_IT_001': 'क्लाउड इंफ्रास्ट्रक्चर एसोसिएट',
+  'Cloud Infrastructure Associate': 'क्लाउड इंफ्रास्ट्रक्चर एसोसिएट',
+  'OCC_IT_002': 'डेटा क्वालिटी एनालिस्ट',
+  'Data Quality Analyst': 'डेटा क्वालिटी एनालिस्ट',
+  'OCC_IT_003': 'फुल-स्टैक वेब डेवलपर',
+  'Full-Stack Web Developer': 'फुल-स्टैक वेब डेवलपर',
+  'OCC_MFG_001': 'सीएनसी मशीन ऑपरेटर',
+  'CNC Machine Operator': 'सीएनसी मशीन ऑपरेटर',
+  'OCC_MFG_002': 'इंडस्ट्रियल ऑटोमेशन तकनीशियन',
+  'Industrial Automation Technician': 'इंडस्ट्रियल ऑटोमेशन तकनीशियन',
+  'OCC_MFG_003': 'इलेक्ट्रिक वाहन असेंबली तकनीशियन',
+  'Electric Vehicle Assembly Technician': 'इलेक्ट्रिक वाहन असेंबली तकनीशियन',
+  'OCC_LOG_001': 'वेयरहाउस इन्वेंटरी समन्वयक',
+  'Warehouse Inventory Coordinator': 'वेयरहाउस इन्वेंटरी समन्वयक',
+  'OCC_LOG_002': 'कोल्ड चेन लॉजिस्टिक्स सुपरवाइजर',
+  'Cold Chain Logistics Supervisor': 'कोल्ड चेन लॉजिस्टिक्स सुपरवाइजर',
+  'OCC_LOG_003': 'फ्लीट डिस्पैचर',
+  'Fleet Dispatcher': 'फ्लीट डिस्पैचर',
+};
+
+const OCCUPATION_MAP_EN = {
+  'OCC_IT_001': 'Cloud Infrastructure Associate',
+  'OCC_IT_002': 'Data Quality Analyst',
+  'OCC_IT_003': 'Full-Stack Web Developer',
+  'OCC_MFG_001': 'CNC Machine Operator',
+  'OCC_MFG_002': 'Industrial Automation Technician',
+  'OCC_MFG_003': 'Electric Vehicle Assembly Technician',
+  'OCC_LOG_001': 'Warehouse Inventory Coordinator',
+  'OCC_LOG_002': 'Cold Chain Logistics Supervisor',
+  'OCC_LOG_003': 'Fleet Dispatcher',
+};
+
+export function getOccupationDisplayName(idOrTitle, isHindi, fallback) {
+  if (!idOrTitle) return fallback || '';
+  if (isHindi) {
+    return OCCUPATION_MAP_HI[idOrTitle] || fallback || idOrTitle;
+  }
+  return OCCUPATION_MAP_EN[idOrTitle] || fallback || idOrTitle;
 }
 
 /**
