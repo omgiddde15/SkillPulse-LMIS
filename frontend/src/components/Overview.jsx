@@ -155,7 +155,7 @@ export default function Overview({
                 color: '#ffffff',
               }}
             >
-              NATIONAL INTELLIGENCE DASHBOARD
+              LABOUR MARKET INTELLIGENCE PILOT — SYNTHETIC DATA
             </span>
             <span
               style={{
@@ -169,7 +169,7 @@ export default function Overview({
                 border: '1px solid #99f6e4',
               }}
             >
-              SYNTHETIC PILOT (SIH26246)
+              SIH26246 BENCHMARK PILOT
             </span>
             <span
               style={{
@@ -182,12 +182,12 @@ export default function Overview({
             </span>
           </div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.25rem 0' }}>
-            {isHindi ? 'राष्ट्रीय कौशल आसूचना कमांड सेंटर' : 'National Intelligence Command Center'}
+            {isHindi ? 'कौशलपल्स श्रम आसूचना पायलट कमांड सेंटर' : 'SkillPulse LMIS — Pilot Intelligence Command Center'}
           </h1>
           <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--slate-600)', maxWidth: '780px' }}>
             {isHindi
-              ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-पुनरावंटन निर्णयों में बदलता है।'
-              : 'SkillPulse transforms regional labour-market signals into district-level forecasts, early warnings and seat-reallocation decisions for technical skilling systems.'}
+              ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-पुनरावंटन निर्णयों में बदलता है (सिंथेटिक पायलट प्रदर्शन डेटासेट)।'
+              : 'SkillPulse transforms localized labour-market signals into district-level forecasts, early warnings and seat-reallocation decisions for technical skilling systems (synthetic pilot dataset).'}
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function Overview({
         {/* Card 1: Regional Demand Index */}
         <div className="stat-card" style={{ margin: 0 }}>
           <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'मांग तीव्रता सूचकांक' : 'DEMAND INTENSITY'}</span>
+            <span className="stat-card-title">{isHindi ? 'औसत मांग स्कोर' : 'AVERAGE DEMAND SCORE'}</span>
             <span className="stat-card-icon">🔥</span>
           </div>
           <div className="stat-card-value">
@@ -242,17 +242,17 @@ export default function Overview({
             <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}>/100</span>
           </div>
           <div style={{ fontSize: '0.7rem', color: '#0f766e', fontWeight: 600, marginTop: '0.15rem' }}>
-            +18.5% 6M Growth
+            Multi-Signal Composite
           </div>
           <div className="stat-card-subtext">
-            {isHindi ? 'पायलट मांग तीव्रता (रिक्ति भारित)' : 'Scope Avg Vacancy Intensity'}
+            {isHindi ? 'पायलट औसत मांग स्कोर (0–100)' : 'Pilot Scope Avg Demand Score (0–100)'}
           </div>
         </div>
 
-        {/* Card 2: Effective Supply Output */}
+        {/* Card 2: Supply Output Rank */}
         <div className="stat-card neutral" style={{ margin: 0 }}>
           <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'प्रभावी आपूर्ति आउटपुट' : 'EFFECTIVE SUPPLY'}</span>
+            <span className="stat-card-title">{isHindi ? 'प्रशिक्षण आपूर्ति रैंक' : 'SUPPLY OUTPUT RANK'}</span>
             <span className="stat-card-icon">🎓</span>
           </div>
           <div className="stat-card-value">
@@ -263,7 +263,7 @@ export default function Overview({
             Percentile Rank
           </div>
           <div className="stat-card-subtext">
-            {isHindi ? 'प्रमाणित एवं सक्रिय टीवीईटी पूल' : 'Certified & Active Pool'}
+            {isHindi ? '3-माह प्रमाणीकरण थ्रूपुट पर्सेंटाइल' : 'Trailing 3M Certification Rank'}
           </div>
         </div>
 
@@ -296,7 +296,7 @@ export default function Overview({
             <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}> / {gapResults.length}</span>
           </div>
           <div style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '0.15rem' }}>
-            High Imbalance
+            Threshold Crossing
           </div>
           <div className="stat-card-subtext">
             {isHindi ? '|असंतुलन स्कोर| ≥ 15 अंक' : '|Mismatch Score| ≥ 15 pts'}
@@ -306,34 +306,34 @@ export default function Overview({
         {/* Card 5: Intelligence Signals */}
         <div className="stat-card neutral" style={{ margin: 0 }}>
           <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'आसूचना संकेत' : 'INTELLIGENCE SIGNALS'}</span>
+            <span className="stat-card-title">{isHindi ? 'प्रारंभिक चेतावनी संकेत' : 'EARLY-WARNING SIGNALS'}</span>
             <span className="stat-card-icon">🚨</span>
           </div>
           <div className="stat-card-value" style={{ color: '#dc2626' }}>
             {activeAlertsCount}
           </div>
           <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.15rem' }}>
-            Alert Engine
+            Multi-Horizon Anomaly
           </div>
           <div className="stat-card-subtext">
-            {isHindi ? 'सक्रिय पूर्व-चेतावनी संकेत' : 'Active Anomaly Signals'}
+            {isHindi ? 'सक्रिय विसंगति संकेत (3M/6M/12M)' : 'Active Trajectory Anomalies'}
           </div>
         </div>
 
         {/* Card 6: Priority Actions */}
         <div className="stat-card neutral" style={{ margin: 0 }}>
           <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'प्राथमिकता नीतियां' : 'PRIORITY ACTIONS'}</span>
+            <span className="stat-card-title">{isHindi ? 'नियोजन प्राथमिकताएं' : 'PLANNING PRIORITIES'}</span>
             <span className="stat-card-icon">💡</span>
           </div>
           <div className="stat-card-value" style={{ color: '#0d9488' }}>
             3
           </div>
           <div style={{ fontSize: '0.7rem', color: '#0d9488', marginTop: '0.15rem' }}>
-            Ranked Interventions
+            Rule-Based Dossiers
           </div>
           <div className="stat-card-subtext">
-            {isHindi ? 'समीक्षा हेतु तैयार सिफारिशें' : 'Pending Capacity Review'}
+            {isHindi ? 'ह्युरिस्टिक क्षमता परिदृश्य' : 'Heuristic Planning Scenarios'}
           </div>
         </div>
       </section>
@@ -474,26 +474,34 @@ export default function Overview({
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#fff7ed', borderRadius: '6px', border: '1px solid #ffedd5', fontSize: '0.75rem', color: '#9a3412', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-            <span>📈</span>
-            <div>
-              <strong>Dharwad CNC Machine Operator</strong> demand index rose +18.5 pts (acute manufacturing shortage persists; vacancy persistence high).
+        {period === '2024-10' ? (
+          <div style={{ padding: '0.85rem', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.78rem', color: 'var(--slate-600)' }}>
+            ℹ️ {isHindi
+              ? 'चयनित अवधि 2024-10 आधारभूत मूल चक्र है; पूर्ववर्ती चक्र तुलना की गणना के लिए अपर्याप्त ऐतिहासिक डेटा।'
+              : 'Selected period 2024-10 is the baseline origin cycle; insufficient comparable historical observation data to compute preceding period deltas.'}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#fff7ed', borderRadius: '6px', border: '1px solid #ffedd5', fontSize: '0.75rem', color: '#9a3412', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+              <span>📈</span>
+              <div>
+                <strong>Dharwad · CNC Machine Operator (OCC_MFG_001)</strong> demand score rose +21.2 pts (from 51.8 to 73.1 pts; mismatch widened from +16.9 to +56.1 pts).
+              </div>
+            </div>
+            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.75rem', color: '#1e40af', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+              <span>📦</span>
+              <div>
+                <strong>Pune · Industrial Automation Technician (OCC_MFG_002)</strong> supply rank rose +17.9 percentile pts (from 58.5 to 76.4 percentile; mismatch shifted into supply pressure at -16.0 pts).
+              </div>
+            </div>
+            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdfa', borderRadius: '6px', border: '1px solid #ccfbf1', fontSize: '0.75rem', color: '#0f766e', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+              <span>⚡</span>
+              <div>
+                <strong>Bengaluru Urban · Cloud Infrastructure Associate (OCC_IT_001)</strong> demand intensity elevated at 85.8 pts (+4.9 pts from 80.9; balanced corridor with supply rank at 88.7 percentile).
+              </div>
             </div>
           </div>
-          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.75rem', color: '#1e40af', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-            <span>📦</span>
-            <div>
-              <strong>Pune Automotive Welding</strong> throughput softened -10.0% relative to hiring absorption (physical capacity surplus in legacy welding).
-            </div>
-          </div>
-          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdfa', borderRadius: '6px', border: '1px solid #ccfbf1', fontSize: '0.75rem', color: '#0f766e', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-            <span>⚡</span>
-            <div>
-              <strong>Bengaluru Urban Cloud Infrastructure</strong> demand intensity elevated at 88.0 pts (+27.3 pts imbalance across tech corridors).
-            </div>
-          </div>
-        </div>
+        )}
 
         <div
           style={{
@@ -508,8 +516,8 @@ export default function Overview({
         >
           <strong>{isHindi ? 'यह क्यों महत्वपूर्ण है:' : 'WHY THIS MATTERS:'}</strong>{' '}
           {isHindi
-            ? 'यदि प्रशिक्षण क्षमता की योजना दूरदर्शी मांग संकेतों के बिना बनाई जाती है, तो ज़िले कम नियुक्ति अवशोषण वाले पुराने ट्रेडों को वित्तपोषित करते रहते हैं जबकि उच्च-विकास क्षेत्र गंभीर रूप से जनशक्ति की कमी से जूझते हैं।'
-            : 'If training capacity is planned without forward-looking demand signals, districts continue funding legacy trades with low hiring absorption while high-growth sectors remain critically understaffed.'}
+            ? 'माप परिवर्तन 2026-09 और 2026-08 के बीच 0-100 पैमाने पर सटीक अंक अंतर (प्रतिशत परिवर्तन नहीं) को दर्शाते हैं। यदि क्षमता योजना दूरदर्शी संकेतों के बिना बनाई जाती है, तो संस्थान ऐसे ट्रेडों को वित्तपोषित करते रहते हैं जहां आपूर्ति अवशोषण से अधिक हो चुकी है।'
+            : 'Metric deltas reflect exact arithmetic point differences on a 0–100 scale between 2026-09 and 2026-08 (not percentage changes). If training capacity is planned without forward-looking demand signals, districts continue funding cohorts where supply throughput rank exceeds hiring absorption while acute deficits remain unaddressed.'}
         </div>
       </section>
 
@@ -584,14 +592,14 @@ export default function Overview({
                   #01 · DHARWAD, KARNATAKA
                 </span>
                 <span style={{ fontSize: '0.68rem', backgroundColor: '#fff7ed', color: '#c2410c', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                  Confidence: 84%
+                  Priority Tier 1 (Deficit #1)
                 </span>
               </div>
               <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
-                Redirect 100 Training Seats to CNC Machine Operator
+                Simulate 100 Seats for CNC Machine Operator
               </h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
-                Persistent acute shortage in CNC Machine Operator (+56.1 pts mismatch) paired with capacity surplus in legacy general trades. Reallocation closes regional shortfall without net infrastructure expansion.
+                Acute relative mismatch (+56.1 pts) where demand score (73.1 pts) exceeds recent certification throughput (17.0 percentile). Scenario Studio evaluates adjusting 100 cohort seats to address regional machining deficit.
               </p>
             </div>
 
@@ -650,14 +658,14 @@ export default function Overview({
                   #02 · BENGALURU URBAN, KARNATAKA
                 </span>
                 <span style={{ fontSize: '0.68rem', backgroundColor: '#f0fdfa', color: '#0f766e', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                  Confidence: 82%
+                  Priority Tier 2 (Tech Growth)
                 </span>
               </div>
               <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
-                Expand Cloud & High-Tech Infrastructure Batches
+                Sustain High-Tech Intake for Cloud Infrastructure
               </h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
-                Rapid IT/ITeS cloud migration demand outpacing regional TVET cert throughput (+27.3 pts imbalance). Sanctioning evening cohort seats directly addresses employer vacancy pressure.
+                High-volume tech corridor with elevated demand score (85.8 pts) and strong certification throughput (88.7 percentile). Sustaining intake prevents future cohort deficits under enterprise hiring velocity.
               </p>
             </div>
 
@@ -716,14 +724,14 @@ export default function Overview({
                   #03 · PUNE, MAHARASHTRA
                 </span>
                 <span style={{ fontSize: '0.68rem', backgroundColor: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                  Confidence: 79%
+                  Priority Tier 3 (EV Transition)
                 </span>
               </div>
               <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
-                Rebalance Automotive ITI Seats to EV Diagnostics
+                Align Automotive ITI Seats to EV Diagnostics
               </h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
-                Traditional mechanical throughput in Pune manufacturing corridors exceeds local absorption (-16.4 pts supply pressure). Reallocating 60 seats to EV Assembly safeguards placement outcomes.
+                High industrial demand (69.7 pts) alongside balanced certification output (68.9 percentile). Reallocating 60 seats safeguards training alignment with automotive EV transition.
               </p>
             </div>
 
@@ -731,7 +739,7 @@ export default function Overview({
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
                   <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 Reallocated</strong>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 Adjusted</strong>
                 </div>
                 <div>
                   <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>

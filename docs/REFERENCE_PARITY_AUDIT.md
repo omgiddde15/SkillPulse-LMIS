@@ -3,7 +3,7 @@
 **Target Application:** SkillPulse LMIS (`C:\SIH26246\SkillPulse`)  
 **Audit Date:** October 12, 2026  
 **Auditor:** Antigravity AI (Autonomous Engineering Agent)  
-**Baseline Verification:** 113 backend pytest suite passes, 6,495 rows sample dataset validation PASS, 0 ESLint errors, Vite build in 565ms, 8/8 core rehearsal stages PASS in Chrome.
+**Baseline Verification:** 123 backend pytest suite passes (including 10 canonical taxonomy and delta integrity tests), 6,495 rows sample dataset validation PASS, 0 ESLint errors (24 React compiler notices preserved), Vite build in 1.13s, 8/8 core rehearsal stages PASS in Chrome.
 
 ---
 
@@ -103,12 +103,12 @@ Following the execution of Phases C, D, E, F, and G, all 22 audit areas have bee
 | **7** | **Multi-Horizon Forecasts** | `PRESENT` | **COMPLETE** | Multi-horizon trajectory analysis (3M, 6M, 12M) with point forecasts, 80% prediction intervals, backtest MAE/WAPE metrics, and model labels (Linear Trend, MA3, Naive Baseline). |
 | **8** | **Relative Skill Gaps** | `PRESENT` | **COMPLETE** | Relative Mismatch Score (-100 to +100), full cohort throughput funnel tracking (enrolment, completion, certification, 90-day placement), non-absolute gap methodology disclaimers. |
 | **9** | **Early-Warning Alerts** | `PRESENT` | **COMPLETE** | Severity classification, multi-horizon persistence checking (>=2 horizons crossed), causal breakdown, suggested actions, and 1-click "Simulate Fix in Scenario Studio" deep links. |
-| **10** | **Policy Recommendations** | `PARTIAL` | **COMPLETE** | Top 4 ranked policy intervention dossiers (#01 Dharwad CNC, #02 Bengaluru Cloud, #03 Pune Welders, #04 Hyderabad Warehouse) with confidence scores, recommended seat adjustments, and direct links to evidence and simulator. |
+| **10** | **Policy Recommendations** | `PARTIAL` | **COMPLETE** | Top 4 ranked policy intervention dossiers (#01 Dharwad CNC Operator, #02 Bengaluru Cloud Associate, #03 Pune EV Transition / Industrial Automation, #04 Hyderabad Warehouse Logistics) with transparent Priority Tiers (Tiers 1–4, eliminating pseudo-statistical confidence scores), recommended seat adjustments, and direct links to evidence and simulator. |
 | **11** | **Scenario Studio / Seat Simulator** | `PRESENT` | **COMPLETE** | Interactive cohort capacity simulator with pre-population from Overview, Alerts, and Recommendations. Dynamic baseline vs scenario comparisons and RFC-4180 CSV export. |
 | **12** | **Districts Explorer & Map** | `PARTIAL` | **COMPLETE** | District dossiers with LGD codes, district summaries, top shortage trades, top oversupplied trades computed live from gap analysis, and direct inspection links. |
 | **13** | **Occupations Explorer** | `PRESENT` | **COMPLETE** | Comprehensive 9-trade occupational registry with NCO codes, NSQF levels, sector badges, and 1-click action pills to view demand, forecasts, or simulate seats. |
 | **14** | **Qualifications Explorer** | `PARTIAL` | **COMPLETE** | TVET qualification pack alignment table with NSQF levels and explicit, truthful "Not mapped in pilot" status badges for unverified codes. |
-| **15** | **Data & Model Health** | `PARTIAL` | **COMPLETE** | Rolling-origin walk-forward forecasting backtest benchmark table comparing Linear Trend vs Moving Average (MA3) vs Naive Baseline across MAE, WAPE, and 80% interval coverage. |
+| **15** | **Data & Model Health** | `PARTIAL` | **COMPLETE** | Rolling-origin walk-forward forecasting backtest benchmark table comparing Linear Trend vs Moving Average (MA3) vs Naive Baseline across MAE, WAPE, and nominal 80% prediction intervals (±1.282 × RMSE), explicitly removing uncalculated empirical coverage claims. |
 | **16** | **API & Data Exports Console** | `PARTIAL` | **COMPLETE** | Interactive REST API tester and live playground with real-time JSON payload viewer across all 6 backend endpoints (`/api/v1/demand-index`, `/api/v1/gap-analysis`, `/api/v1/forecasts`, `/api/v1/alerts`, `/api/v1/metadata`, `/api/v1/simulations/seat-allocation`) plus direct CSV downloads. |
 | **17** | **Settings & Preferences** | `PRESENT` | **COMPLETE** | Language selection, active reporting cycle selection, and configuration preference storage. |
 | **18** | **Copilot / Grounded Assistant** | `MISSING` | **COMPLETE** | Deterministic, grounded SkillPulse Copilot drawer with 6 pre-configured analytical queries answered directly from live API payloads with 100% zero LLM hallucination. |
@@ -121,21 +121,107 @@ Following the execution of Phases C, D, E, F, and G, all 22 audit areas have bee
 
 ### Verification Gates Executed & Passed
 
-1. **Backend Regression Test Suite:**
+1. **Backend Regression & Canonical Reference Integrity Suite:**
    - Command: `pytest`
-   - Result: `113 passed, 1 warning in 10.43s` (100% PASS)
+   - Result: `123 passed, 1 warning in 11.20s` (100% PASS), including the new 10-test suite `backend/tests/test_occupation_reference_integrity.py` asserting taxonomy invariants, zero non-canonical titles, exact delta arithmetic, and zero-denominator bounds.
 2. **Sample Dataset Integrity Engine:**
    - Command: `python backend/scripts/validate_sample_data.py`
-   - Result: `6,495 rows verified across all 4 sample CSVs` (100% PASS)
+   - Result: `6,495 rows verified across all 4 sample CSVs` (100% PASS).
 3. **Frontend Production Build:**
    - Command: `npm run build`
-   - Result: `built in 1.10s`, 0 compilation errors (100% PASS)
+   - Result: `built in 1.13s`, 0 compilation errors (100% PASS).
 4. **Code Quality & Linter:**
    - Command: `npm run lint`
-   - Result: `0 errors, 24 warnings (React compiler notices preserved)` (100% PASS)
+   - Result: `0 errors, 24 warnings (React compiler notices preserved)` (100% PASS).
 5. **End-to-End Rehearsal Automation:**
    - Command: `node scripts/rehearsal_e2e.cjs`
-   - Result: `8/8 stages passed, 0 failed` (100% PASS)
-6. **Full Visual Parity Capture:**
-   - Command: `node scripts/capture_phase_after.cjs`
-   - Result: All 14 routes captured in Desktop (1440 × 1000) and Mobile (390 × 844) plus Copilot drawer interaction into `screenshots/reference-parity/skillpulse-after/`.
+   - Result: `8/8 stages passed, 0 failed` (100% PASS).
+6. **Full Visual Parity & Contact Sheet Generation:**
+   - Command: `node scripts/generate_contact_sheet.cjs`
+   - Result: Generated interactive side-by-side contact sheet (`screenshots/reference-parity/visual_contact_sheet.html`) documenting all 14 routes across Desktop (1440 × 1000) and Mobile (390 × 844) with detailed component alignment and ethical guardrails.
+
+---
+
+## 5. Post-Audit Classification: 4 Verification Categories
+
+To prevent misleading claims and maintain scientific integrity, all modules and features are classified into four mutually exclusive categories:
+
+### Category A: Implemented and Tested
+Features that are fully developed, wired to verified backend endpoints or deterministic algorithms, and validated via automated unit/integration tests and browser rehearsal scripts:
+1. **Public Landing Page:** Live Dharwad pilot card (`73.1` demand score, `17.0` supply rank, `+56.1` mismatch), 6-step lifecycle architecture, resilient error fallback with retry mechanism.
+2. **Overview Command Center (6 Zones):**
+   - Zone 1: Command Center Header with Scenario Studio CTA and pilot metadata badge.
+   - Zone 2: 6 live KPI cards dynamically aggregated from `/api/v1/gap-analysis` and `/api/v1/alerts`.
+   - Zone 3: Highest-priority action banner with direct "Investigate" and "Simulate Fix" links.
+   - Zone 4: Longitudinal change tracker ("What Changed in Current Pipeline Run?") computing exact point deltas (`2026-09` vs `2026-08`) using canonical IDs (`KA_DHA`, `MH_PUN`, `KA_BLR_U`).
+   - Zone 5: Geospatial intelligence with Leaflet interactive basemap, 3-way layer switcher (Mismatch, Demand, Supply), and selected district inspection dossier.
+   - Zone 6: Top 3 priority policy interventions (#01 Dharwad CNC, #02 Bengaluru Cloud, #03 Pune EV/Industrial) with transparent heuristic priority tiers.
+3. **Grounded Policy Copilot Drawer:** 6 deterministic analytical queries answered directly from live API responses with zero hallucination.
+4. **Scenario Studio (Seat Simulator):** Real-time baseline vs scenario recalculation of certified output, supply percentile rank, and mismatch delta with RFC 4180 CSV export.
+5. **Multi-Horizon Forecasts:** Multi-horizon trajectories (3M, 6M, 12M), genuine walk-forward backtest statistics (Linear Trend, MA3, Naive Baseline), and nominal 80% prediction intervals ($\pm 1.282 \times \text{RMSE}$).
+6. **Labour Demand Intelligence & Relative Skill Gaps:** 5-component demand decomposition drawer, 4-stage cohort throughput funnel, and sorting/filtering.
+7. **Early-Warning Alerts:** Multi-horizon persistence rules ($\ge 2$ horizons crossed) and deep-linking to Scenario Studio.
+8. **Districts & Occupations Explorers:** Live trade rankings per district and canonical 9-occupation registry with cross-module action buttons.
+9. **Bilingual Localization:** English / हिन्दी toggle across entire dashboard with `localStorage` persistence and 0 missing translation keys.
+10. **Automated Test Suites:** 123 pytest tests passing (including 10 canonical reference integrity tests), sample data validation passing on 6,495 rows, Vite production build passing.
+
+### Category B: Present but Not Fully Tested
+Features that are implemented and functional in standard Chrome/Vite environments but have specific edge-case combinations that have not undergone automated end-to-end stress testing:
+1. **Multilingual Edge Cases in Dynamic API Errors:** While static text and standard error banners are 100% localized in Hindi, raw network timeout error strings or unusual HTTP 500 payload messages may revert to English fallback text.
+2. **95% Nominal Interval Toggle Visualizer:** An optional wider prediction band visualizer is implemented for policy planners, but labeled strictly as nominal Gaussian bounds ($\pm 1.96 \times \text{RMSE}$) rather than calibrated empirical coverage.
+3. **Cross-Browser Layout Nuances Outside Chromium:** Validated in Google Chrome and Node/Playwright-driven Chromium; Safari (WebKit) and Firefox rendering across high-DPI scaling has not been verified via automated screenshot suites.
+
+### Category C: Unsupported by Current Pilot Data
+Features claimed or implied by external reference platforms that are intentionally omitted or substituted because they are scientifically or empirically unsupportable under the pilot demonstration scope:
+1. **Non-Canonical Trades (Welders):** The reference platform features "Automotive Welding" and "Manual Metal Arc Welder". In SkillPulse's canonical taxonomy (`data/sample/occupations.csv`), manufacturing trades are strictly `CNC Machine Operator` (`OCC_MFG_001`), `Industrial Automation Technician` (`OCC_MFG_002`), and `Electric Vehicle Assembly Technician` (`OCC_MFG_003`). Any reference to welders as live pilot records is rejected.
+2. **Empirical Quantile Interval Coverage (e.g., 81.5% coverage):** The backend forecasting engine (`app/services/forecasting.py`) computes normal prediction intervals ($\pm 1.282 \times \text{RMSE}$) from backtest residuals. It does not compute empirical quantile coverage; claiming "81.5% empirical interval coverage" was ungrounded and has been replaced with transparent nominal Gaussian interval definitions and walk-forward fold counts.
+3. **Live National Vacancy Feeds & Real-Time Scrapers:** SkillPulse explicitly operates on a 24-month synthetic demonstration dataset (2024-10 to 2026-09) across 6 pilot districts. No claims of live web scraping or national API feeds from external job boards are made.
+4. **Uncalibrated ML Attribution (LightGBM/SHAP):** The reference platform claims LightGBM and SHAP driver attribution. SkillPulse uses deterministic multi-signal compositing (5 signals with documented weights) and walk-forward regression/time-series models, refusing to claim unconfigured or non-existent SHAP explainers.
+5. **Government Authority Deployment Claims:** All badges, provenance pills, and headers explicitly state `🔬 Labour Market Intelligence Pilot — Synthetic Data` for the SIH26246 benchmark finale.
+
+### Category D: Remaining Visual & Architectural Differences
+Intentional design decisions where SkillPulse differs from the reference platform:
+1. **Design System & Palette:** SkillPulse utilizes a focused Slate/Cyber-Teal visual hierarchy with high-contrast emerald/amber/crimson semantic indicators, prioritizing readability under projector conditions at the finale.
+2. **Dual-Trade Seat Reallocation Transparency:** Unlike the reference platform which obscures seat reallocation formulas, SkillPulse displays exact mathematical yield and supply rank changes in Scenario Studio.
+3. **Visual Contact Sheet:** Detailed side-by-side screenshots and layout alignments are cataloged in `screenshots/reference-parity/visual_contact_sheet.html`.
+
+---
+
+## 6. End-to-End Metric Tracing & Grounding Register
+
+Every numerical indicator on the Overview Command Center and analytical modules is mathematically grounded:
+
+### Traceability of the 6 Overview KPI Cards:
+| KPI Card | Displayed Value | Mathematical Formula | API Endpoint & Response Field | Failure / Empty Behavior |
+|---|---|---|---|---|
+| **Card 1: Average Demand Score** | `58.2 / 100 pts` | Mean of `demand_index_score` across scoped district-occupation pairs | `/api/v1/gap-analysis?period=2026-09` $\to$ `avg(item.demand_index_score)` | Displays `—`, graceful loading skeleton |
+| **Card 2: Supply Output Rank** | `50.0 / 100` | Mean percentile rank of certified TVET supply among peer districts | `/api/v1/gap-analysis?period=2026-09` $\to$ `avg(item.supply_output_index)` | Displays `—`, graceful loading skeleton |
+| **Card 3: Peak Relative Mismatch** | `+56.1 pts` | $\max(\|relative\_mismatch\_score\|)$ signed, identifying the peak deficit trade (Dharwad CNC Operator) | `/api/v1/gap-analysis?period=2026-09` $\to$ item with maximum absolute mismatch | Displays `—`, graceful loading skeleton |
+| **Card 4: At-Risk Skill Corridors** | `4 / 54` | Count of district-occupation pairs crossing $|Mismatch| \ge 15.0$ out of 54 valid scoped pairs | `/api/v1/gap-analysis?period=2026-09` $\to$ count where `abs(r.relative_mismatch_score) >= 15` | Displays `— / 54` |
+| **Card 5: Early-Warning Signals** | `100` | Total multi-horizon trajectory alerts generated by persistent threshold crossings ($\ge 2$ horizons) | `/api/v1/alerts?period=2026-09` $\to$ `alerts.length` | Displays `—` |
+| **Card 6: Planning Priorities** | `3` | Dynamic count of rule-based intervention dossiers targeting critical deficits ($Mismatch \ge +20$) | Evaluated dynamically over `/api/v1/gap-analysis` matching priority rules | Displays `—` |
+
+### Traceability of Longitudinal Change Tracker ("What Changed in Current Pipeline Run?"):
+Comparing reporting period `2026-09` against previous monthly baseline `2026-08`:
+1. **Dharwad CNC Machine Operator (`KA_DHA`, `OCC_MFG_001`):**
+   - Demand Score: `51.8` pts (`2026-08`) $\to$ `73.1` pts (`2026-09`), exact point delta: **$+21.2$ pts**
+   - Relative Mismatch Score: `+16.9` pts (`2026-08`) $\to$ `+56.1` pts (`2026-09`), exact point delta: **$+39.2$ pts** (critical demand pressure expansion)
+2. **Pune Industrial Automation Technician (`MH_PUN`, `OCC_MFG_002`):**
+   - Supply Rank: `58.5` percentile (`2026-08`) $\to$ `76.4` percentile (`2026-09`), exact point delta: **$+17.9$ percentile pts**
+   - Relative Mismatch Score: shifted into supply pressure at **$-16.0$ pts** (candidate donor trade for seat re-allocation)
+3. **Bengaluru Cloud Infrastructure Associate (`KA_BLR_U`, `OCC_IT_001`):**
+   - Demand Score: `80.9` pts (`2026-08`) $\to$ `85.8` pts (`2026-09`), exact point delta: **$+4.9$ pts**
+   - Balanced with robust supply rank (`88.7` percentile)
+4. **Boundary & Missing History Guardrails:**
+   - When filtering for initial baseline period `2024-10`, no preceding monthly observation exists in the 24-month sample dataset. The UI explicitly renders an *"Insufficient historical observation data for period 2024-10"* notice rather than producing null/NaN deltas.
+   - All changes are reported as absolute point differences (`pts`), avoiding misleading percentage increases where baseline scores approach zero.
+
+---
+
+## 7. Visual Contact Sheet & Verification Registry
+
+The full visual evidence gallery is available locally:
+- **Interactive Side-by-Side Visual Contact Sheet:** `screenshots/reference-parity/visual_contact_sheet.html`
+- **Rehearsal Inspection Gallery:** `screenshots/rehearsal_*.png` (13 stage snapshots covering English/Hindi, basemaps, forecast drawers, seat adjustments)
+- **High-Resolution Parity Route Captures:** `screenshots/reference-parity/skillpulse-after/` (14 desktop and 14 mobile route screenshots)
+

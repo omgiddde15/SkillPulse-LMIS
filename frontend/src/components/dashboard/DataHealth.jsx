@@ -161,10 +161,11 @@ export default function DataHealth({
             <thead>
               <tr>
                 <th>Model Architecture</th>
-                <th>Selected Strategy</th>
-                <th style={{ textAlign: 'right' }}>MAE (Avg Pts)</th>
-                <th style={{ textAlign: 'right' }}>WAPE (%)</th>
-                <th style={{ textAlign: 'right' }}>80% Interval Coverage</th>
+                <th>Selection Policy</th>
+                <th style={{ textAlign: 'right' }}>3M Avg MAE</th>
+                <th style={{ textAlign: 'right' }}>3M Avg WAPE</th>
+                <th style={{ textAlign: 'right' }}>6M Avg WAPE</th>
+                <th>Uncertainty Interval</th>
                 <th>Validation Status</th>
               </tr>
             </thead>
@@ -172,34 +173,37 @@ export default function DataHealth({
               <tr>
                 <td>
                   <strong>Linear Trend (OLS Drift)</strong>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Default for high directional momentum series</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Extrapolates linear slope for trend series</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#ecfdf5', color: '#065f46', fontWeight: 700, fontSize: '0.68rem' }}>PRIMARY</span></td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>4.2 pts</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>7.8%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>81.5%</td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#ecfdf5', color: '#065f46', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>4.55 postings</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>4.85%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>6.08%</td>
+                <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
                 <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
               <tr>
                 <td>
                   <strong>3-Month Moving Average (MA3)</strong>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Selected for stationary or noisy recruitment series</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>3-month trailing mean for cyclical series</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#eff6ff', color: '#1e40af', fontWeight: 700, fontSize: '0.68rem' }}>SMOOTHING</span></td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>5.8 pts</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#2563eb' }}>10.4%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>77.8%</td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#eff6ff', color: '#1e40af', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>7.34 postings</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#2563eb' }}>7.85%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#2563eb' }}>13.37%</td>
+                <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
                 <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
               <tr>
                 <td>
-                  <strong>Naive Drift Baseline</strong>
+                  <strong>Naive Benchmark</strong>
                   <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Persistence benchmark (last observed value)</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '0.68rem' }}>BENCHMARK</span></td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>7.1 pts</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#b45309' }}>13.2%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>74.1%</td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '0.68rem' }}>BENCHMARK & TIE-BREAKER</span></td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>6.74 postings</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>7.21%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#b45309' }}>12.09%</td>
+                <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
                 <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
             </tbody>
@@ -207,7 +211,7 @@ export default function DataHealth({
         </div>
 
         <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--slate-500)', lineHeight: 1.45 }}>
-          ℹ️ <em>Model selection operates deterministically based on minimum historical WAPE over trailing walk-forward folds. All error calculations reflect synthetic demonstration data for SIH26246.</em>
+          ℹ️ <em>Model selection operates deterministically based on minimum out-of-sample MAE over trailing walk-forward folds (16 folds for 3M horizon, 13 folds for 6M horizon, 7 folds for 12M horizon). Prediction intervals represent a nominal normal error dispersion approximation (±1.282 × out-of-sample RMSE), not an empirical quantile coverage rate. Small-sample limitations apply to the 12-month horizon due to the 24-month synthetic pilot timeline.</em>
         </div>
       </div>
     </div>

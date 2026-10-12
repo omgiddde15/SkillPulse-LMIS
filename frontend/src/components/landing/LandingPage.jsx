@@ -235,9 +235,9 @@ export default function LandingPage({
           {/* Left Hero Pitch */}
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.85rem', borderRadius: '100px', backgroundColor: 'rgba(13, 148, 136, 0.12)', border: '1px solid rgba(13, 148, 136, 0.35)', marginBottom: '1.25rem' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 700, color: '#2dd4bf' }}>01 / SIH 2026</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 700, color: '#2dd4bf' }}>SIH26246 PILOT</span>
               <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-              <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>Problem Statement SIH26246 (MSDE)</span>
+              <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>Labour Market Intelligence Pilot — Synthetic Data</span>
               <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', color: backendHealth?.status === 'healthy' ? '#34d399' : '#f59e0b', fontWeight: 600 }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: backendHealth?.status === 'healthy' ? '#10b981' : '#f59e0b' }} />

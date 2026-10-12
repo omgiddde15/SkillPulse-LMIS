@@ -100,7 +100,7 @@ export default function Header({
           title={isHindi ? 'सिंथेटिक प्रदर्शन डेटा셋 (SIH26246) — आधिकारिक जनगणना आंकड़े नहीं' : 'Synthetic demonstration dataset (SIH26246) — not official census statistics'}
         >
           <span>🔬</span>
-          <span>{isHindi ? 'सिंथेटिक डेमो डेटा' : 'SYNTHETIC DEMO DATA'}</span>
+          <span>{isHindi ? 'श्रम आसूचना पायलट — सिंथेटिक डेटा' : 'Labour Market Intelligence Pilot — Synthetic Data'}</span>
         </div>
       </div>
 

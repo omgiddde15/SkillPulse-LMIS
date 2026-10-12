@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SkillPulse vs KaushalPulse — Reference-Parity Visual Contact Sheet</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --teal: #14b8a6;
+      --teal-dark: #0f766e;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(180deg, #020617 0%, var(--bg) 100%);
+      padding: 2.5rem 2rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0 0 1.25rem 0;
+      max-width: 900px;
+    }
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .meta-pill {
+      background: rgba(20, 184, 166, 0.1);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      color: var(--teal);
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .route-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .route-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .route-header h2 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.35rem;
+      color: #ffffff;
+    }
+    .route-paths {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-info {
+      background: rgba(20, 184, 166, 0.15);
+      color: var(--teal);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+    .notes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .note-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.85rem;
+    }
+    .note-match { border-left: 4px solid var(--emerald); }
+    .note-diff { border-left: 4px solid var(--amber); }
+    .note-box strong { display: block; margin-bottom: 0.25rem; color: #ffffff; }
+    .note-box p { margin: 0; color: #cbd5e1; }
+    h3 {
+      font-size: 1rem;
+      color: var(--teal);
+      margin: 1.5rem 0 0.75rem 0;
+      border-top: 1px dashed var(--border);
+      padding-top: 1.25rem;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .mobile-grid {
+      grid-template-columns: 390px 390px;
+      justify-content: start;
+    }
+    .screenshot-pane {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pane-header {
+      background: #0f172a;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .screenshot-pane img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>
+        <span>🔍</span>
+        <span>SkillPulse LMIS — Reference-Parity Visual Contact Sheet</span>
+      </h1>
+      <p class="subtitle">
+        Systematic side-by-side visual comparison between Reference Platform (KaushalPulse) and SkillPulse LMIS (SIH26246). 
+        Evaluates 14 core routes in Desktop (1440 × 1000) and Mobile (390 × 844) viewports with verified empirical grounding and synthetic transparency.
+      </p>
+      <div class="meta-strip">
+        <span class="meta-pill">BRANCH: feature/intelligence-platform-upgrade</span>
+        <span class="meta-pill">SUITE: 123 Pytest PASS</span>
+        <span class="meta-pill">DATASET: 6,495 Rows Validated</span>
+        <span class="meta-pill">REHEARSAL: 8/8 Stages PASS</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+      <section class="route-card" id="01_home">
+        <div class="route-header">
+          <div>
+            <h2>Home / Landing Page</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /</span> &bull; 
+              <span><strong>SkillPulse:</strong> /</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Honest Pilot Disclosure)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Hero title, 6 capability cards, 5-stage lifecycle cycle, live pilot observation card loaded from API.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse explicitly badges "Labour Market Intelligence Pilot — Synthetic Data", whereas reference claims live national vacancy feeds without synthetic disclosures.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/01_home_desktop.png" alt="Reference Home / Landing Page Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/01_home_desktop.png" alt="SkillPulse Home / Landing Page Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/01_home_mobile.png" alt="Reference Home / Landing Page Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/01_home_mobile.png" alt="SkillPulse Home / Landing Page Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="02_overview">
+        <div class="route-header">
+          <div>
+            <h2>Overview (Command Center)</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /overview</span> &bull; 
+              <span><strong>SkillPulse:</strong> /overview</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (6 Command Center Zones)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>6 KPI cards, Action Required banner, Longitudinal Deltas ("What Changed?"), Leaflet map with layer switcher, Ranked interventions (#01-#03).</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse uses authentic pilot IDs (Dharwad CNC, Pune Industrial Automation, Bengaluru Cloud Associate), exact arithmetic point deltas, and nominal 80% intervals. Reference uses mock LightGBM attributions and Pune welders.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/02_overview_desktop.png" alt="Reference Overview (Command Center) Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/02_overview_desktop.png" alt="SkillPulse Overview (Command Center) Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/02_overview_mobile.png" alt="Reference Overview (Command Center) Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/02_overview_mobile.png" alt="SkillPulse Overview (Command Center) Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="02b_copilot_drawer_open">
+        <div class="route-header">
+          <div>
+            <h2>Overview + Grounded Copilot Drawer</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /overview</span> &bull; 
+              <span><strong>SkillPulse:</strong> /overview</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            Parity Achieved (Deterministic Grounding)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Sliding copilot drawer with sample inquiries and action deep-links.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse copilot answers are strictly derived from live API responses with zero LLM hallucination.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/02_overview_desktop.png" alt="Reference Overview + Grounded Copilot Drawer Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/02b_copilot_drawer_open_desktop.png" alt="SkillPulse Overview + Grounded Copilot Drawer Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/02_overview_mobile.png" alt="Reference Overview + Grounded Copilot Drawer Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/02b_copilot_drawer_open_mobile.png" alt="SkillPulse Overview + Grounded Copilot Drawer Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="03_demand">
+        <div class="route-header">
+          <div>
+            <h2>Demand Intelligence</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /intelligence</span> &bull; 
+              <span><strong>SkillPulse:</strong> /demand</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Multi-signal decomposition table (Posting Volume, Growth, Persistence, Breadth, Wage Attractiveness) with drawer inspection.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Matches reference structure while preserving empirical multi-signal weights and synthetic pilot scope.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/03_demand_desktop.png" alt="Reference Demand Intelligence Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/03_demand_desktop.png" alt="SkillPulse Demand Intelligence Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/03_demand_mobile.png" alt="Reference Demand Intelligence Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/03_demand_mobile.png" alt="SkillPulse Demand Intelligence Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="04_gaps">
+        <div class="route-header">
+          <div>
+            <h2>Skill Gaps & Cohort Funnel</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /gaps</span> &bull; 
+              <span><strong>SkillPulse:</strong> /gaps</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Relative mismatch score ranking (-100 to +100), cohort throughput funnel, explanatory factors, RFC-4180 CSV export.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Includes clear methodology banner explaining that mismatch score is a cross-sectional percentile difference, not a headcount worker deficit.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/04_gaps_desktop.png" alt="Reference Skill Gaps & Cohort Funnel Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/04_gaps_desktop.png" alt="SkillPulse Skill Gaps & Cohort Funnel Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/04_gaps_mobile.png" alt="Reference Skill Gaps & Cohort Funnel Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/04_gaps_mobile.png" alt="SkillPulse Skill Gaps & Cohort Funnel Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="05_forecasts">
+        <div class="route-header">
+          <div>
+            <h2>Multi-Horizon Forecasts</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /forecasts</span> &bull; 
+              <span><strong>SkillPulse:</strong> /forecasts</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Honest Baseline Models)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>3M, 6M, 12M horizon cycling, point forecasts, prediction intervals, MAE, WAPE metrics, diagnostics drawer.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse uses backtested Linear Trend, MA3, and Naive Baseline with nominal 80% intervals (±1.282×RMSE). Reference claims unverified 95% intervals and LightGBM.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/05_forecasts_desktop.png" alt="Reference Multi-Horizon Forecasts Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/05_forecasts_desktop.png" alt="SkillPulse Multi-Horizon Forecasts Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/05_forecasts_mobile.png" alt="Reference Multi-Horizon Forecasts Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/05_forecasts_mobile.png" alt="SkillPulse Multi-Horizon Forecasts Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="06_alerts">
+        <div class="route-header">
+          <div>
+            <h2>Early-Warning Alerts</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /alerts</span> &bull; 
+              <span><strong>SkillPulse:</strong> /alerts</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Severity badges (Critical, High, Medium, Low), multi-horizon persistence rule, causal factors, suggested policy actions, and 1-click "Simulate Fix" action.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>All 100 alerts generated deterministically from backend /api/v1/alerts endpoint.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/06_alerts_desktop.png" alt="Reference Early-Warning Alerts Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/06_alerts_desktop.png" alt="SkillPulse Early-Warning Alerts Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/06_alerts_mobile.png" alt="Reference Early-Warning Alerts Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/06_alerts_mobile.png" alt="SkillPulse Early-Warning Alerts Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="07_recommendations">
+        <div class="route-header">
+          <div>
+            <h2>Policy Recommendations</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /recommendations</span> &bull; 
+              <span><strong>SkillPulse:</strong> /recommendations</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Rule-Based Priorities)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Ranked policy intervention cards (#01 to #04) with proposed seat adjustments, shortfall closed estimates, and direct Simulator deep-links.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse labels ranking as "Rule-Based Planning Priority" instead of decorative statistical confidence percentages.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/07_recommendations_desktop.png" alt="Reference Policy Recommendations Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/07_recommendations_desktop.png" alt="SkillPulse Policy Recommendations Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/07_recommendations_mobile.png" alt="Reference Policy Recommendations Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/07_recommendations_mobile.png" alt="SkillPulse Policy Recommendations Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="08_scenarios">
+        <div class="route-header">
+          <div>
+            <h2>Scenario Studio / Seat Simulator</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /scenarios</span> &bull; 
+              <span><strong>SkillPulse:</strong> /scenarios</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Constant-Yield Pipeline)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Cohort capacity slider, baseline vs scenario throughput comparison, impact cards, mismatch reduction banner, and CSV export.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>SkillPulse explicitly discloses constant-yield assumptions and 90-day post-certification follow-up guardrails.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/08_scenarios_desktop.png" alt="Reference Scenario Studio / Seat Simulator Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/08_scenarios_desktop.png" alt="SkillPulse Scenario Studio / Seat Simulator Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/08_scenarios_mobile.png" alt="Reference Scenario Studio / Seat Simulator Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/08_scenarios_mobile.png" alt="SkillPulse Scenario Studio / Seat Simulator Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="09_districts">
+        <div class="route-header">
+          <div>
+            <h2>Districts Explorer & Map</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /districts</span> &bull; 
+              <span><strong>SkillPulse:</strong> /districts</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>District dossiers for all 6 pilot districts across KA, MH, TS with top shortage and oversupplied trades computed live from gap analysis.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Strictly constrained to the 6 pilot districts in geographies.csv.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/09_districts_desktop.png" alt="Reference Districts Explorer & Map Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/09_districts_desktop.png" alt="SkillPulse Districts Explorer & Map Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/09_districts_mobile.png" alt="Reference Districts Explorer & Map Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/09_districts_mobile.png" alt="SkillPulse Districts Explorer & Map Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="10_occupations">
+        <div class="route-header">
+          <div>
+            <h2>Occupations Explorer</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /occupations</span> &bull; 
+              <span><strong>SkillPulse:</strong> /occupations</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>9 canonical occupations across IT/ITeS, Manufacturing, Logistics with NCO codes, NSQF levels, and action links to demand, forecasts, and simulator.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>100% canonical taxonomy integrity without unmapped external occupations.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/10_occupations_desktop.png" alt="Reference Occupations Explorer Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/10_occupations_desktop.png" alt="SkillPulse Occupations Explorer Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/10_occupations_mobile.png" alt="Reference Occupations Explorer Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/10_occupations_mobile.png" alt="SkillPulse Occupations Explorer Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="11_qualifications">
+        <div class="route-header">
+          <div>
+            <h2>Qualifications Explorer</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /qualifications</span> &bull; 
+              <span><strong>SkillPulse:</strong> /qualifications</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>TVET Qualification Pack registry with NSQF levels and sector skill council alignment.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Unmapped qualification codes are truthfully labeled "Not mapped in pilot" rather than fabricated.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/11_qualifications_desktop.png" alt="Reference Qualifications Explorer Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/11_qualifications_desktop.png" alt="SkillPulse Qualifications Explorer Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/11_qualifications_mobile.png" alt="Reference Qualifications Explorer Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/11_qualifications_mobile.png" alt="SkillPulse Qualifications Explorer Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="12_data_health">
+        <div class="route-header">
+          <div>
+            <h2>Data & Model Health</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /data-health</span> &bull; 
+              <span><strong>SkillPulse:</strong> /data-health</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Real Backtest Residuals)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Data provenance cards, dataset verification counters, rolling-origin walk-forward error matrix across Linear Trend, MA3, and Naive.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Displays genuine backtest MAE/WAPE metrics across 54 monitored series; clarifies nominal 80% interval uncertainty formula.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/12_data_health_desktop.png" alt="Reference Data & Model Health Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/12_data_health_desktop.png" alt="SkillPulse Data & Model Health Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/12_data_health_mobile.png" alt="Reference Data & Model Health Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/12_data_health_mobile.png" alt="SkillPulse Data & Model Health Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="13_api">
+        <div class="route-header">
+          <div>
+            <h2>API & Exports Playground</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /api</span> &bull; 
+              <span><strong>SkillPulse:</strong> /api</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity (Interactive Playground)
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Live interactive REST API playground with "Test Endpoint" button and JSON payload viewer across all 6 backend endpoints plus CSV downloads.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Directly tests local running FastAPI backend at http://127.0.0.1:8000.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/13_api_desktop.png" alt="Reference API & Exports Playground Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/13_api_desktop.png" alt="SkillPulse API & Exports Playground Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/13_api_mobile.png" alt="Reference API & Exports Playground Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/13_api_mobile.png" alt="SkillPulse API & Exports Playground Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+      <section class="route-card" id="14_settings">
+        <div class="route-header">
+          <div>
+            <h2>Settings & Preferences</h2>
+            <div class="route-paths">
+              <span><strong>Reference:</strong> /settings</span> &bull; 
+              <span><strong>SkillPulse:</strong> /settings</span>
+            </div>
+          </div>
+          <span class="badge badge-success">
+            High Parity
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div class="note-box note-match">
+            <strong>✓ Parity & Alignment:</strong>
+            <p>Bilingual language localization toggle (EN/हिन्दी), active reporting cycle selector, preference storage in localStorage.</p>
+          </div>
+          <div class="note-box note-diff">
+            <strong>⚖️ Methodological Distinction / Intentional Guardrail:</strong>
+            <p>Clean, fully functional controls without dummy disconnected toggle buttons.</p>
+          </div>
+        </div>
+
+        <h3>Desktop Viewport (1440 × 1000)</h3>
+        <div class="comparison-grid">
+          <div class="screenshot-pane">
+            <div class="pane-header">Reference (KaushalPulse)</div>
+            <img src="reference/14_settings_desktop.png" alt="Reference Settings & Preferences Desktop" loading="lazy" />
+          </div>
+          <div class="screenshot-pane">
+            <div class="pane-header">SkillPulse After (SIH26246)</div>
+            <img src="skillpulse-after/14_settings_desktop.png" alt="SkillPulse Settings & Preferences Desktop" loading="lazy" />
+          </div>
+        </div>
+
+        <h3>Mobile Viewport (390 × 844)</h3>
+        <div class="comparison-grid mobile-grid">
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">Reference (Mobile)</div>
+            <img src="reference/14_settings_mobile.png" alt="Reference Settings & Preferences Mobile" loading="lazy" />
+          </div>
+          <div class="screenshot-pane mobile-pane">
+            <div class="pane-header">SkillPulse After (Mobile)</div>
+            <img src="skillpulse-after/14_settings_mobile.png" alt="SkillPulse Settings & Preferences Mobile" loading="lazy" />
+          </div>
+        </div>
+      </section>
+    
+  </main>
+</body>
+</html>

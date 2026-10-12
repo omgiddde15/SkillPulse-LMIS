@@ -20,13 +20,13 @@ const TOP_RANKED_INTERVENTIONS = [
     occupationId: 'OCC_MFG_001',
     occupationTitle: 'CNC Machine Operator',
     sector: 'Manufacturing',
-    confidence: '84%',
+    tierLabel: 'Priority Tier 1 (Deficit #1)',
     seats: 100,
     shortfallClosed: '▼ 18.2% closed',
-    titleEn: 'Redirect 100 Training Seats from Surplus Trades to CNC Machine Operator',
-    titleHi: 'अधिशेष ट्रेडों से 100 प्रशिक्षण सीटें सीएनसी मशीन ऑपरेटर में पुनरावंटित करें',
-    summaryEn: 'Persistent acute shortage in CNC Machine Operator (+56.1 pts mismatch) paired with physical capacity surplus in legacy welding trades. Reallocation directly closes regional shortfall without new capital expenditure.',
-    summaryHi: 'सीएनसी मशीन ऑपरेटर में निरंतर तीव्र कमी (+56.1 अंक असंतुलन) और पारंपरिक वेल्डिंग में क्षमता अधिशेष। पुनरावंटन बिना किसी नए पूंजीगत व्यय के क्षेत्रीय कमी को पूरा करता है।',
+    titleEn: 'Simulate 100 Seats for CNC Machine Operator',
+    titleHi: 'सीएनसी मशीन ऑपरेटर के लिए 100 सीटों का अनुकरण करें',
+    summaryEn: 'Persistent acute shortage in CNC Machine Operator (+56.1 pts relative mismatch) where demand score (73.1 pts) exceeds recent certification throughput (17.0 percentile). Scenario Studio evaluates adjusting 100 cohort seats to address regional precision machining deficit.',
+    summaryHi: 'सीएनसी मशीन ऑपरेटर में निरंतर तीव्र कमी (+56.1 अंक सापेक्ष असंतुलन) जहां मांग सूचकांक (73.1 अंक) प्रमाणीकरण थ्रूपुट (17.0 पर्सेंटाइल) से अधिक है। परिदृश्य स्टूडियो 100 सीटों के समायोजन का मूल्यांकन करता है।',
   },
   {
     rank: '#02',
@@ -37,13 +37,13 @@ const TOP_RANKED_INTERVENTIONS = [
     occupationId: 'OCC_IT_001',
     occupationTitle: 'Cloud Infrastructure Associate',
     sector: 'IT/ITeS',
-    confidence: '82%',
+    tierLabel: 'Priority Tier 2 (Tech Growth)',
     seats: 80,
     shortfallClosed: '▼ 14.5% closed',
-    titleEn: 'Accelerate Cloud & High-Tech Technician Intake in State ITIs',
-    titleHi: 'सरकारी आईटीआई में क्लाउड एवं हाई-टेक तकनीशियन प्रवेश में तेजी लाएं',
-    summaryEn: 'Rapid IT/ITeS cloud infrastructure demand outpaces trainee graduation (+27.3 pts imbalance). Sanctioning evening cohort seats directly addresses enterprise recruitment velocity.',
-    summaryHi: 'आईटी/आईटीईएस क्लाउड इन्फ्रास्ट्रक्चर की तीव्र मांग स्नातक आउटपुट से अधिक है (+27.3 अंक)। शाम के बैच की सीटें स्वीकृत करने से भर्ती गति को सीधा समर्थन मिलता है।',
+    titleEn: 'Sustain High-Tech Intake for Cloud Infrastructure Associate',
+    titleHi: 'क्लाउड इंफ्रास्ट्रक्चर एसोसिएट के लिए हाई-टेक प्रवेश बनाए रखें',
+    summaryEn: 'High-volume tech corridor with elevated demand score (85.8 pts) and strong certification throughput (88.7 percentile). Sustaining intake prevents future cohort deficits under enterprise hiring velocity.',
+    summaryHi: 'आईटी/आईटीईएस क्लाउड इन्फ्रास्ट्रक्चर की उच्च मांग (85.8 अंक) और मजबूत प्रमाणीकरण थ्रूपुट (88.7 पर्सेंटाइल)। प्रवेश बनाए रखने से भविष्य की कमी को रोका जा सकता है।',
   },
   {
     rank: '#03',
@@ -54,13 +54,13 @@ const TOP_RANKED_INTERVENTIONS = [
     occupationId: 'OCC_MFG_003',
     occupationTitle: 'Electric Vehicle Assembly Technician',
     sector: 'Manufacturing',
-    confidence: '79%',
+    tierLabel: 'Priority Tier 3 (EV Transition)',
     seats: 60,
     shortfallClosed: '▼ 11.8% closed',
-    titleEn: 'Rebalance Automotive Manufacturing Cohorts to EV Diagnostics Hub',
-    titleHi: 'ऑटोमोटिव विनिर्माण बैचों को ईवी डायग्नोस्टिक्स हब में पुनर्संतुलित करें',
-    summaryEn: 'Traditional mechanical throughput in Pune manufacturing corridors exceeds local hiring absorption (-16.4 pts supply pressure). Reallocating 60 seats to EV Assembly safeguards placement outcomes.',
-    summaryHi: 'पुणे विनिर्माण गलियारों में पारंपरिक मैकेनिकल थ्रूपुट स्थानीय अवशोषण से अधिक है (-16.4 अंक)। 60 सीटों को ईवी असेंबली में स्थानांतरित करने से प्लेसमेंट परिणाम सुरक्षित रहते हैं।',
+    titleEn: 'Align Automotive ITI Cohorts to EV Diagnostics Hub',
+    titleHi: 'ऑटोमोटिव आईटीआई बैचों को ईवी डायग्नोस्टिक्स हब के साथ संरेखित करें',
+    summaryEn: 'High industrial manufacturing demand (69.7 pts) alongside balanced certification output (68.9 percentile). Reallocating 60 seats safeguards training alignment with automotive EV transition.',
+    summaryHi: 'पुणे विनिर्माण में उच्च औद्योगिक मांग (69.7 अंक) और संतुलित प्रमाणीकरण आउटपुट (68.9 पर्सेंटाइल)। 60 सीटों को पुनर्संतुलित करने से ईवी परिवर्तन के साथ तालमेल बना रहता है।',
   },
   {
     rank: '#04',
@@ -71,7 +71,7 @@ const TOP_RANKED_INTERVENTIONS = [
     occupationId: 'OCC_LOG_002',
     occupationTitle: 'Cold Chain Logistics Supervisor',
     sector: 'Logistics',
-    confidence: '76%',
+    tierLabel: 'Priority Tier 4 (Pharma Cluster)',
     seats: 50,
     shortfallClosed: '▼ 9.4% closed',
     titleEn: 'Expand Pharma Cold-Chain Logistics TVET Certification Tracks',
@@ -264,7 +264,7 @@ export default function Recommendations({
                     {item.rank} · {item.districtName.toUpperCase()}, {item.stateName.toUpperCase()}
                   </span>
                   <span style={{ fontSize: '0.68rem', backgroundColor: '#f0fdfa', color: '#0f766e', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                    Confidence: {item.confidence}
+                    {item.tierLabel}
                   </span>
                 </div>
                 <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>

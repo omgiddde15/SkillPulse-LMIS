@@ -34,14 +34,14 @@
       "🎛️ Scenario Studio",
       "⚡ API & Exports"
     ],
-    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE • SIH26246\n📊 Overview\n🔮 Forecasts\n🎛️ Scenario Studio\n⚡ API & Exports\nEN\nहिन्दी\nOpen Dashboard\n→\n01 / SIH 2026\n•\nProblem Statement SIH26246 (MSDE)\n•\nAPI Online\nForecast Skill Gaps. Guide Training Decisions.\n\nSkillPulse analyses employer demand signals, TVET training throu"
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE • SIH26246\n📊 Overview\n🔮 Forecasts\n🎛️ Scenario Studio\n⚡ API & Exports\nEN\nहिन्दी\nOpen Dashboard\n→\nSIH26246 PILOT\n•\nLabour Market Intelligence Pilot — Synthetic Data\n•\nAPI Online\nForecast Skill Gaps. Guide Training Decisions.\n\nSkillPulse analyses employer demand signals, TV"
   },
   "02_overview": {
     "url": "http://localhost:3000/overview",
     "status": "OK",
     "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
     "h1": [
-      "National Intelligence Command Center"
+      "SkillPulse LMIS — Pilot Intelligence Command Center"
     ],
     "h2": [
       "District-Wise Workforce Comparison Pack",
@@ -58,9 +58,9 @@
       "Backend Online",
       "Backend Online",
       "Backend Online",
-      "DEMAND INTENSITY\n🔥\n50.0/100\n+18.5% 6M Growth\nScope Avg Vacancy Intensity",
-      "DEMAND INTENSITY\n🔥",
-      "DEMAND INTENSITY",
+      "AVERAGE DEMAND SCORE\n🔥\n50.0/100\nMulti-Signal Composite\nPilot Scope Avg Demand S",
+      "AVERAGE DEMAND SCORE\n🔥",
+      "AVERAGE DEMAND SCORE",
       "50.0/100"
     ],
     "navButtons": [
