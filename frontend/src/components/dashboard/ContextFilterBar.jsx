@@ -70,14 +70,16 @@ export default function ContextFilterBar({
 
   return (
     <div
-      className="context-filter-bar"
+      className="context-filter-bar glass-strong"
       style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid var(--slate-200)',
-        borderRadius: 'var(--radius-md)',
-        padding: '0.85rem 1rem',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '14px',
+        padding: '0.85rem 1.15rem',
         marginBottom: '1.25rem',
-        boxShadow: 'var(--shadow-sm)',
+        boxShadow: '0 14px 44px rgba(0, 0, 0, 0.45)',
       }}
     >
       <div
@@ -88,16 +90,16 @@ export default function ContextFilterBar({
           flexWrap: 'wrap',
           gap: '0.75rem',
           marginBottom: '0.65rem',
-          borderBottom: '1px solid var(--slate-100)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           paddingBottom: '0.5rem',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '0.9rem' }}>🎛️</span>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--slate-800)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
             {isHindi ? 'संदर्भ फ़िल्टर' : 'Context Filters'}
           </span>
-          <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)' }}>
+          <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
             ({isHindi ? 'पायलट कार्यबल स्कोप' : 'Pilot Workforce Scope'})
           </span>
         </div>
@@ -107,17 +109,26 @@ export default function ContextFilterBar({
             type="button"
             onClick={onReset}
             style={{
-              border: '1px solid var(--slate-300)',
-              backgroundColor: 'var(--slate-50)',
-              color: 'var(--slate-700)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              color: '#cbd5e1',
               fontSize: '0.72rem',
               fontWeight: 600,
               padding: '0.25rem 0.65rem',
-              borderRadius: '4px',
+              borderRadius: '6px',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.35rem',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              e.currentTarget.style.color = '#ffffff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.color = '#cbd5e1';
             }}
           >
             <span>↺</span>
@@ -138,7 +149,7 @@ export default function ContextFilterBar({
         <div>
           <label
             htmlFor="filter-state"
-            style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+            style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
           >
             {t('common.state', 'State')}
           </label>
@@ -157,18 +168,19 @@ export default function ContextFilterBar({
             }}
             style={{
               width: '100%',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
+              padding: '0.45rem 0.65rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               fontSize: '0.78rem',
-              backgroundColor: 'var(--slate-50)',
-              color: 'var(--slate-800)',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              color: '#f8fafc',
               fontWeight: 500,
+              outline: 'none',
             }}
           >
-            <option value="">{t('common.allStates', 'All States (3)')}</option>
+            <option value="" style={{ background: '#0f172a', color: '#ffffff' }}>{t('common.allStates', 'All States (3)')}</option>
             {PILOT_STATES.map((s) => (
-              <option key={s.code} value={s.code}>
+              <option key={s.code} value={s.code} style={{ background: '#0f172a', color: '#ffffff' }}>
                 {getStateDisplayName(s.code, isHindi)}
               </option>
             ))}
@@ -179,9 +191,9 @@ export default function ContextFilterBar({
         <div>
           <label
             htmlFor="filter-district"
-            style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+            style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
           >
-            {t('common.district', 'District')}
+            {t('common.district', 'District (LGD)')}
           </label>
           <select
             id="filter-district"
@@ -189,18 +201,19 @@ export default function ContextFilterBar({
             onChange={(e) => onDistrictChange(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
+              padding: '0.45rem 0.65rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               fontSize: '0.78rem',
-              backgroundColor: 'var(--slate-50)',
-              color: 'var(--slate-800)',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              color: '#f8fafc',
               fontWeight: 500,
+              outline: 'none',
             }}
           >
-            <option value="">{t('common.allDistricts', 'All Districts (6)')}</option>
+            <option value="" style={{ background: '#0f172a', color: '#ffffff' }}>{t('common.allDistricts', 'All Districts (6)')}</option>
             {filteredDistricts.map((d) => (
-              <option key={d.id} value={d.id}>
+              <option key={d.id} value={d.id} style={{ background: '#0f172a', color: '#ffffff' }}>
                 {getDistrictDisplayName(d.name, isHindi)} ({d.state})
               </option>
             ))}
@@ -211,7 +224,7 @@ export default function ContextFilterBar({
         <div>
           <label
             htmlFor="filter-sector"
-            style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+            style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
           >
             {t('common.sector', 'Sector')}
           </label>
@@ -230,18 +243,19 @@ export default function ContextFilterBar({
             }}
             style={{
               width: '100%',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
+              padding: '0.45rem 0.65rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               fontSize: '0.78rem',
-              backgroundColor: 'var(--slate-50)',
-              color: 'var(--slate-800)',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              color: '#f8fafc',
               fontWeight: 500,
+              outline: 'none',
             }}
           >
-            <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
+            <option value="" style={{ background: '#0f172a', color: '#ffffff' }}>{t('common.allSectors', 'All Sectors (3)')}</option>
             {PILOT_SECTORS.map((s) => (
-              <option key={s} value={s}>
+              <option key={s} value={s} style={{ background: '#0f172a', color: '#ffffff' }}>
                 {getSectorDisplayName(s, isHindi)}
               </option>
             ))}
@@ -253,9 +267,9 @@ export default function ContextFilterBar({
           <div>
             <label
               htmlFor="filter-occupation"
-              style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+              style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
-              {t('common.occupation', 'Occupation')}
+              {t('common.occupation', 'Occupation (NCO)')}
             </label>
             <select
               id="filter-occupation"
@@ -263,18 +277,19 @@ export default function ContextFilterBar({
               onChange={(e) => onOccupationChange(e.target.value)}
               style={{
                 width: '100%',
-                padding: '0.4rem 0.6rem',
-                borderRadius: '6px',
-                border: '1px solid var(--slate-300)',
+                padding: '0.45rem 0.65rem',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
                 fontSize: '0.78rem',
-                backgroundColor: 'var(--slate-50)',
-                color: 'var(--slate-800)',
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                color: '#f8fafc',
                 fontWeight: 500,
+                outline: 'none',
               }}
             >
-              <option value="">{isHindi ? 'सभी व्यवसाय (9)' : 'All Occupations (9)'}</option>
+              <option value="" style={{ background: '#0f172a', color: '#ffffff' }}>{isHindi ? 'सभी व्यवसाय (9)' : 'All Occupations (9)'}</option>
               {filteredOccupations.map((o) => (
-                <option key={o.id} value={o.id}>
+                <option key={o.id} value={o.id} style={{ background: '#0f172a', color: '#ffffff' }}>
                   {getOccupationDisplayName(o.title, isHindi)}
                 </option>
               ))}
@@ -286,17 +301,17 @@ export default function ContextFilterBar({
         {showHorizon && (
           <div>
             <label
-              style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+              style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
               {t('common.horizon', 'Forecast Horizon')}
             </label>
             <div
               style={{
                 display: 'flex',
-                backgroundColor: 'var(--slate-100)',
-                borderRadius: '6px',
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                borderRadius: '8px',
                 padding: '2px',
-                border: '1px solid var(--slate-300)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
               }}
             >
               {[3, 6, 12].map((h) => (
@@ -307,12 +322,12 @@ export default function ContextFilterBar({
                   style={{
                     flex: 1,
                     border: 'none',
-                    backgroundColor: horizonFilter === h ? '#0d9488' : 'transparent',
-                    color: horizonFilter === h ? '#ffffff' : 'var(--slate-600)',
+                    backgroundColor: horizonFilter === h ? '#6366f1' : 'transparent',
+                    color: horizonFilter === h ? '#ffffff' : '#94a3b8',
                     fontSize: '0.72rem',
                     fontWeight: 700,
-                    padding: '0.3rem 0',
-                    borderRadius: '4px',
+                    padding: '0.35rem 0',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     transition: 'all 0.15s',
                   }}

@@ -50,12 +50,12 @@ export const translations = {
 
     // Landing Page Content
     'landing.heroTag': 'SIH 2026 · Problem Statement SIH26246 · MSDE',
-    'landing.heroHeadlineStart': 'Forecast Skill Gaps. ',
-    'landing.heroHeadlineEnd': 'Guide Training Decisions.',
+    'landing.heroHeadlineStart': 'FORECAST THE SKILL GAP. ',
+    'landing.heroHeadlineEnd': 'FUND THE FIX.',
     'landing.heroSubtitle': 'SkillPulse analyses employer demand signals, TVET training throughput, relative skill gaps, multi-horizon forecasts, and training-capacity scenarios for regional workforce planning.',
     'landing.cta.openDashboard': 'Open Dashboard',
     'landing.cta.exploreForecasts': 'Explore Forecasts',
-    'landing.cta.trySimulator': 'Try Seat Simulator',
+    'landing.cta.trySimulator': 'Try Scenario Studio',
     'landing.preview.badge': 'Live Pilot Demonstration',
     'landing.preview.title': 'Regional Demand & Supply Imbalance Tracker',
     'landing.preview.desc': 'Interactive evaluation across 6 pilot districts and 9 benchmark occupations.',

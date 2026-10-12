@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-12T18:21:11.858Z",
+  "timestamp": "2026-10-12T20:33:25.035Z",
   "stages": {
     "Stage A": {
       "name": "Landing Page Live Pilot Observation Card",
@@ -13,7 +13,7 @@
       "hasMismatch": true,
       "hasUnavailable": false,
       "hasLoading": false,
-      "cardSnippet": "PILOT OBSERVATION • CYCLE 2026-09\nCNC Machine Operator\nDharwad, Karnataka (KA) • Precision Machining\n⚡\nDemand Pressure\nDEMAND INDEX\n73.1\n0–100 percentile\nSUPPLY OUTPUT\n17.0\n0–100 percentile\nMISMATCH\n+56.1\nDemand > Supply\n24M Longitudinal Trajectory + 80% Prediction Interval\nLinear Trend Model\nProtot"
+      "cardSnippet": "DHARWAD · CNC MACHINE OPERATOR · 2026-09 · 6M\nCNC Machine Operator\nDharwad, Karnataka (KA) • Precision Machining\n⚠️\nSevere Shortfall\nDEMAND\n73.1\n0–100 percentile\nEFFECTIVE SUPPLY\n17.0\n0–100 percentile\nSHORTFALL\n+56.1\nDemand > Supply\n📈 88% 6M shortage probability\nGap +56.1/100\nCalculated from 24-mo "
     },
     "Stage B": {
       "name": "District Map with 6 Markers, Pune & Bengaluru Popups",

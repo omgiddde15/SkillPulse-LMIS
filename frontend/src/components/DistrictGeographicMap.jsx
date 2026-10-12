@@ -349,17 +349,17 @@ export default function DistrictGeographicMap({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
       {/* Top Map Header & Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--slate-200)', paddingBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.75rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--slate-800)', margin: 0 }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
               🗺️ {isHindi ? 'पायलट ज़िला भौगोलिक मानचित्र (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot District Geographic Map (Karnataka, Maharashtra, Telangana)'}
             </h3>
-            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid var(--teal-200)', fontWeight: 600 }}>
+            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: 'rgba(13, 148, 136, 0.15)', color: '#2dd4bf', border: '1px solid rgba(13, 148, 136, 0.35)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
               {isHindi ? '6 ज़िला केंद्रक • 3 राज्य' : '6 District Centroids • 3 States'}
             </span>
           </div>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
             {isHindi
               ? 'आधिकारिक भौगोलिक केंद्रक (अक्षांश/देशांतर) पर स्थित 6 पायलट ज़िले। सभी मार्कर और लेबल ओवरलैप-रहित संरेखित हैं।'
               : 'Authentic pilot district locations plotted at official centroid coordinates. Directional labels prevent overlap.'}
@@ -369,21 +369,20 @@ export default function DistrictGeographicMap({
         {/* Map View Mode Switcher + Intelligence Layer + Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           {/* Intelligence Layer Switcher */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--slate-500)', padding: '0.2rem 0.35rem', alignSelf: 'center' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#94a3b8', padding: '0.2rem 0.35rem', alignSelf: 'center' }}>
               LAYER:
             </span>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'shortage' ? '#ffffff' : 'transparent',
-                color: intelligenceLayer === 'shortage' ? '#ea580c' : 'var(--slate-600)',
+                backgroundColor: intelligenceLayer === 'shortage' ? 'rgba(234, 88, 12, 0.25)' : 'transparent',
+                color: intelligenceLayer === 'shortage' ? '#fb923c' : '#94a3b8',
                 fontWeight: intelligenceLayer === 'shortage' ? 700 : 500,
-                boxShadow: intelligenceLayer === 'shortage' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
               }}
               onClick={() => setIntelligenceLayer('shortage')}
@@ -394,13 +393,12 @@ export default function DistrictGeographicMap({
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'demand' ? '#ffffff' : 'transparent',
-                color: intelligenceLayer === 'demand' ? 'var(--teal-800)' : 'var(--slate-600)',
+                backgroundColor: intelligenceLayer === 'demand' ? 'rgba(13, 148, 136, 0.25)' : 'transparent',
+                color: intelligenceLayer === 'demand' ? '#2dd4bf' : '#94a3b8',
                 fontWeight: intelligenceLayer === 'demand' ? 700 : 500,
-                boxShadow: intelligenceLayer === 'demand' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
               }}
               onClick={() => setIntelligenceLayer('demand')}
@@ -411,13 +409,12 @@ export default function DistrictGeographicMap({
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'supply' ? '#ffffff' : 'transparent',
-                color: intelligenceLayer === 'supply' ? '#2563eb' : 'var(--slate-600)',
+                backgroundColor: intelligenceLayer === 'supply' ? 'rgba(59, 130, 246, 0.25)' : 'transparent',
+                color: intelligenceLayer === 'supply' ? '#93c5fd' : '#94a3b8',
                 fontWeight: intelligenceLayer === 'supply' ? 700 : 500,
-                boxShadow: intelligenceLayer === 'supply' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
               }}
               onClick={() => setIntelligenceLayer('supply')}
@@ -427,18 +424,17 @@ export default function DistrictGeographicMap({
           </div>
 
           {/* Mode Toggle: Basemap vs Schematic */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: mapMode === 'basemap' ? '#ffffff' : 'transparent',
-                color: mapMode === 'basemap' ? 'var(--teal-800)' : 'var(--slate-600)',
+                backgroundColor: mapMode === 'basemap' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+                color: mapMode === 'basemap' ? '#ffffff' : '#94a3b8',
                 fontWeight: mapMode === 'basemap' ? 700 : 500,
-                boxShadow: mapMode === 'basemap' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
               }}
               onClick={() => setMapMode('basemap')}
@@ -449,13 +445,12 @@ export default function DistrictGeographicMap({
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: mapMode === 'schematic' ? '#ffffff' : 'transparent',
-                color: mapMode === 'schematic' ? 'var(--teal-800)' : 'var(--slate-600)',
+                backgroundColor: mapMode === 'schematic' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+                color: mapMode === 'schematic' ? '#ffffff' : '#94a3b8',
                 fontWeight: mapMode === 'schematic' ? 700 : 500,
-                boxShadow: mapMode === 'schematic' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
               }}
               onClick={() => setMapMode('schematic')}
@@ -465,17 +460,17 @@ export default function DistrictGeographicMap({
           </div>
 
           {/* Classification Legend */}
-          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: 'var(--slate-700)', backgroundColor: 'var(--slate-50)', padding: '0.3rem 0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: '#cbd5e1', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '0.3rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ea580c', display: 'inline-block' }} />
               <span>⚡ {isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#475569', display: 'inline-block' }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#64748b', display: 'inline-block' }} />
               <span>⚖️ {isHindi ? 'संतुलित' : 'Balanced'}</span>
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#2563eb', display: 'inline-block' }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6', display: 'inline-block' }} />
               <span>📦 {isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure'}</span>
             </span>
           </div>

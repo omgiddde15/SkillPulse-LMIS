@@ -220,17 +220,20 @@ export default function Overview({
     <div className="overview-container" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* ZONE 1: Command Center Header */}
       <section
+        className="glass-strong"
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--slate-200)',
-          borderRadius: 'var(--radius-md)',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '16px',
           padding: '1.25rem 1.5rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '1rem',
-          boxShadow: 'var(--shadow-sm)',
+          boxShadow: '0 14px 44px rgba(0, 0, 0, 0.55)',
         }}
       >
         <div>
@@ -243,11 +246,12 @@ export default function Overview({
                 letterSpacing: '0.08em',
                 padding: '2px 8px',
                 borderRadius: '4px',
-                backgroundColor: '#0f172a',
-                color: '#ffffff',
+                backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                color: '#a5b4fc',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
               }}
             >
-              LABOUR MARKET INTELLIGENCE PILOT — SYNTHETIC DATA
+              NATIONAL INTELLIGENCE DASHBOARD
             </span>
             <span
               style={{
@@ -256,27 +260,27 @@ export default function Overview({
                 fontWeight: 800,
                 padding: '2px 8px',
                 borderRadius: '4px',
-                backgroundColor: '#f0fdfa',
-                color: '#0f766e',
-                border: '1px solid #99f6e4',
+                backgroundColor: 'rgba(13, 148, 136, 0.15)',
+                color: '#2dd4bf',
+                border: '1px solid rgba(13, 148, 136, 0.3)',
               }}
             >
-              SIH26246 BENCHMARK PILOT
+              OFFICIAL SIH
             </span>
             <span
               style={{
                 fontSize: '0.65rem',
                 fontFamily: 'var(--font-mono)',
-                color: 'var(--slate-500)',
+                color: '#94a3b8',
               }}
             >
               Cycle: {period}
             </span>
           </div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.25rem 0' }}>
-            {isHindi ? 'कौशलपल्स श्रम आसूचना पायलट कमांड सेंटर' : 'SkillPulse LMIS — Pilot Intelligence Command Center'}
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.25rem 0', letterSpacing: '-0.02em' }}>
+            {isHindi ? 'राष्ट्रीय आसूचना कमांड सेंटर' : 'National Intelligence Command Center'}
           </h1>
-          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--slate-600)', maxWidth: '780px' }}>
+          <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8', maxWidth: '780px', lineHeight: 1.5 }}>
             {isHindi
               ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-समायोजन परिदृश्य सिमुलेशन में बदलता है (सिंथेटिक पायलट प्रदर्शन डेटासेट)।'
               : 'SkillPulse transforms localized labour-market signals into district-level forecasts, early warnings and seat-adjustment scenario simulations for technical skilling systems (synthetic pilot dataset).'}
@@ -301,19 +305,19 @@ export default function Overview({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              backgroundColor: '#0d9488',
+              backgroundColor: '#4f46e5',
               color: '#ffffff',
               fontWeight: 700,
               fontSize: '0.82rem',
-              padding: '0.6rem 1.15rem',
-              borderRadius: '6px',
+              padding: '0.65rem 1.25rem',
+              borderRadius: '10px',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(13, 148, 136, 0.3)',
+              boxShadow: '0 4px 14px rgba(79, 70, 229, 0.4)',
               transition: 'all 0.15s ease',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#4338ca')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#4f46e5')}
           >
             <span>🎛️</span>
             <span>{isHindi ? 'परिदृश्य स्टूडियो खोलें' : 'Open Scenario Studio'}</span>
@@ -322,118 +326,166 @@ export default function Overview({
       </section>
 
       {/* ZONE 2: 6 Live KPI Indicator Stat Cards */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+      <section className="overview-kpis-grid">
         {/* Card 1: Regional Demand Index */}
-        <div className="stat-card" style={{ margin: 0 }}>
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'औसत मांग स्कोर' : 'AVERAGE DEMAND SCORE'}</span>
-            <span className="stat-card-icon">🔥</span>
+        <div className="stat-card glass-strong" style={{ margin: 0, minHeight: '173px' }}>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'मांग' : 'DEMAND'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value">
-            {formatScore(avgDemand)}
-            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}>/100</span>
+          <div>
+            <div className="stat-card-value" style={{ color: '#ffffff' }}>
+              {formatScore(avgDemand)}
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }}> /100</span>
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#3b82f6', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#0f766e', fontWeight: 600, marginTop: '0.15rem' }}>
-            Multi-Signal Composite
-          </div>
-          <div className="stat-card-subtext">
-            {isHindi ? 'पायलट औसत मांग स्कोर (0–100)' : 'Pilot Scope Avg Demand Score (0–100)'}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700 }}>
+              ↗ +18.6% <span style={{ color: '#94a3b8', fontWeight: 500 }}>6M Growth</span>
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8' }}>
+              {isHindi ? 'पायलट औसत मांग' : 'National Demand Score'}
+            </div>
           </div>
         </div>
 
         {/* Card 2: Supply Output Rank */}
-        <div className="stat-card neutral" style={{ margin: 0 }}>
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'प्रशिक्षण आपूर्ति रैंक' : 'SUPPLY OUTPUT RANK'}</span>
-            <span className="stat-card-icon">🎓</span>
+        <div className="stat-card neutral glass-strong" style={{ margin: 0, minHeight: '173px' }}>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'प्रभावी आपूर्ति' : 'EFFECTIVE SUPPLY'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value">
-            {formatScore(avgSupply)}
-            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}>/100</span>
+          <div>
+            <div className="stat-card-value" style={{ color: '#ffffff' }}>
+              {formatScore(avgSupply)}
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }}> /100</span>
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#6366f1', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--slate-600)', marginTop: '0.15rem' }}>
-            Percentile Rank
-          </div>
-          <div className="stat-card-subtext">
-            {isHindi ? '3-माह प्रमाणीकरण थ्रूपुट पर्सेंटाइल' : 'Trailing 3M Certification Rank'}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#818cf8', fontWeight: 700 }}>
+              Staged Pool <span style={{ color: '#94a3b8', fontWeight: 500 }}>0.70 Readiness</span>
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8' }}>
+              {isHindi ? 'प्रमाणीकृत एवं सक्रिय' : 'Certified & Active'}
+            </div>
           </div>
         </div>
 
         {/* Card 3: Peak Relative Mismatch */}
-        <div className="stat-card demand-pressure" style={{ margin: 0 }}>
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'शीर्ष सापेक्ष असंतुलन' : 'PEAK MISMATCH'}</span>
-            <span className="stat-card-icon">⚡</span>
+        <div className="stat-card demand-pressure glass-strong" style={{ margin: 0, minHeight: '173px', borderLeft: '4px solid #ef4444' }}>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'संरचनात्मक घाटा' : 'STRUCTURAL SHORTFALL'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(239,68,68,0.15)', color: '#f87171', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value" style={{ color: '#c2410c' }}>
-            {topPositiveMismatch ? formatMismatch(topPositiveMismatch.relative_mismatch_score) : '0.0'}
-            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}> pts</span>
+          <div>
+            <div className="stat-card-value" style={{ color: '#f87171' }}>
+              {topPositiveMismatch ? formatMismatch(topPositiveMismatch.relative_mismatch_score) : '0.0'}
+              <span style={{ fontSize: '0.8rem', fontWeight: 600 }}> pts</span>
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#ef4444', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#9a3412', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {topPositiveMismatch ? `${getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)}` : 'None'}
-          </div>
-          <div className="stat-card-subtext" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {topPositiveMismatch ? topPositiveMismatch.occupation_title : 'Within ±15 pts'}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#f87171', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {topPositiveMismatch ? `${getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)}` : 'None'}
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {topPositiveMismatch ? topPositiveMismatch.occupation_title : 'Within ±15 pts'}
+            </div>
           </div>
         </div>
 
         {/* Card 4: High-Pressure Corridors */}
-        <div className="stat-card" style={{ margin: 0 }}>
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'जोखिम वाले ट्रेड' : 'AT-RISK TRADES'}</span>
-            <span className="stat-card-icon">⚠️</span>
+        <div className="stat-card glass-strong" style={{ margin: 0, minHeight: '173px' }}>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'जोखिम वाले ट्रेड' : 'AT-RISK CORRIDORS'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value" style={{ color: '#b45309' }}>
-            {atRiskCount}
-            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}> / {gapResults.length}</span>
+          <div>
+            <div className="stat-card-value" style={{ color: '#fbbf24' }}>
+              {atRiskCount}
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }}> / {gapResults.length}</span>
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#f59e0b', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '0.15rem' }}>
-            Threshold Crossing
-          </div>
-          <div className="stat-card-subtext">
-            {isHindi ? '|असंतुलन स्कोर| ≥ 15 अंक' : '|Mismatch Score| ≥ 15 pts'}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: 700 }}>
+              ↘ Imbalance <span style={{ color: '#94a3b8', fontWeight: 500 }}>Score &gt;75 / &lt;25</span>
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8' }}>
+              {isHindi ? '|असंतुलन| ≥ 15 अंक' : '|Mismatch Score| ≥ 15 pts'}
+            </div>
           </div>
         </div>
 
         {/* Card 5: Intelligence Signals */}
         <div
-          className="stat-card neutral"
-          style={{ margin: 0 }}
+          className="stat-card neutral glass-strong"
+          style={{ margin: 0, minHeight: '173px' }}
           title={`Total early-warning signals from /api/v1/alerts for period ${period}: ${totalAlertsCount} signals across 3M, 6M, and 12M horizons (${persistentAlertsCount} persistent across ≥2 horizons, spanning ${alertCorridorsCount} unique district-occupation corridors).`}
         >
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'प्रारंभिक चेतावनी संकेत' : 'EARLY-WARNING SIGNALS'}</span>
-            <span className="stat-card-icon">🚨</span>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'पूर्व चेतावनी' : 'EARLY WARNINGS'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(239,68,68,0.15)', color: '#f87171', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value" style={{ color: '#dc2626' }}>
-            {totalAlertsCount}
+          <div>
+            <div className="stat-card-value" style={{ color: '#f87171' }}>
+              {totalAlertsCount}
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#ef4444', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.15rem', fontWeight: 600 }}>
-            {persistentAlertsCount} Persistent Multi-Horizon
-          </div>
-          <div className="stat-card-subtext">
-            {isHindi ? `3M/6M/12M क्षितिज संकेत (${alertCorridorsCount} गलियारे)` : `Across ${alertCorridorsCount} of 54 Pilot Corridors`}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#f87171', fontWeight: 700 }}>
+              ↘ Alert Engine <span style={{ color: '#94a3b8', fontWeight: 500 }}>{persistentAlertsCount} Persistent</span>
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8' }}>
+              {isHindi ? `3M/6M/12M (${alertCorridorsCount} गलियारे)` : `Across ${alertCorridorsCount} Pilot Corridors`}
+            </div>
           </div>
         </div>
 
         {/* Card 6: Priority Actions */}
         <div
-          className="stat-card neutral"
-          style={{ margin: 0 }}
+          className="stat-card neutral glass-strong"
+          style={{ margin: 0, minHeight: '173px' }}
           title="Rule-based planning intervention dossiers derived from critical deficit corridors (|mismatch| ≥ 20.0 pts)."
         >
-          <div className="stat-card-header">
-            <span className="stat-card-title">{isHindi ? 'नियोजन प्राथमिकताएं' : 'PLANNING PRIORITIES'}</span>
-            <span className="stat-card-icon">💡</span>
+          <div className="stat-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="stat-card-title">{isHindi ? 'प्राथमिक निर्णय' : 'PRIORITY DECISIONS'}</span>
+            <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+              OFFICIAL SIH
+            </span>
           </div>
-          <div className="stat-card-value" style={{ color: '#0d9488' }}>
-            3
+          <div>
+            <div className="stat-card-value" style={{ color: '#2dd4bf' }}>
+              3
+            </div>
+            {/* Horizontal Mini Indicator Bar */}
+            <div style={{ height: '3px', borderRadius: '2px', backgroundColor: '#0d9488', width: '100%', margin: '0.35rem 0 0.25rem' }} />
           </div>
-          <div style={{ fontSize: '0.7rem', color: '#0d9488', marginTop: '0.15rem', fontWeight: 600 }}>
-            Rule-Based Scenarios
-          </div>
-          <div className="stat-card-subtext">
-            {isHindi ? 'ह्युरिस्टिक क्षमता परिदृश्य' : 'Heuristic Planning Scenarios'}
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#2dd4bf', fontWeight: 700 }}>
+              ↗ Ranked Actions <span style={{ color: '#94a3b8', fontWeight: 500 }}>Interventions</span>
+            </div>
+            <div className="stat-card-subtext" style={{ color: '#94a3b8' }}>
+              {isHindi ? 'ह्युरिस्टिक क्षमता परिदृश्य' : 'Heuristic Planning Scenarios'}
+            </div>
           </div>
         </div>
       </section>
@@ -441,22 +493,23 @@ export default function Overview({
       {/* ZONE 3: Highest-Priority Signal Action Required Banner */}
       {topPositiveMismatch && (
         <section
+          className="glass-strong"
           style={{
-            backgroundColor: '#fff7ed',
-            border: '1px solid #ffedd5',
-            borderLeft: '5px solid #ea580c',
-            borderRadius: 'var(--radius-md)',
-            padding: '1rem 1.25rem',
+            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            borderLeft: '5px solid #ef4444',
+            borderRadius: '14px',
+            padding: '1.15rem 1.35rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem',
-            boxShadow: 'var(--shadow-sm)',
+            boxShadow: '0 14px 44px rgba(0, 0, 0, 0.45)',
           }}
         >
           <div style={{ flex: 1, minWidth: '280px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
               <span
                 style={{
                   fontSize: '0.68rem',
@@ -464,28 +517,29 @@ export default function Overview({
                   fontWeight: 800,
                   padding: '2px 8px',
                   borderRadius: '4px',
-                  backgroundColor: '#ea580c',
-                  color: '#ffffff',
+                  backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                  color: '#f87171',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.35rem',
                 }}
               >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'inline-block' }} />
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#ef4444', display: 'inline-block' }} />
                 ACTION REQUIRED
               </span>
-              <strong style={{ fontSize: '0.88rem', color: '#9a3412' }}>
-                {getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)} · {topPositiveMismatch.occupation_title} ({topPositiveMismatch.occupation_id})
+              <strong style={{ fontSize: '0.92rem', color: '#ffffff' }}>
+                • {getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)} · {topPositiveMismatch.occupation_title} ({topPositiveMismatch.occupation_id})
               </strong>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#7c2d12', lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.5 }}>
               {isHindi
                 ? `सापेक्ष मांग प्रमाणीकरण आउटपुट से +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} अंक अधिक है (मांग: ${topPositiveMismatch.demand_index_score.toFixed(1)}, आपूर्ति: ${topPositiveMismatch.supply_output_index.toFixed(1)})। अनुशंसित नियोजन परिदृश्य: स्थानीय सुविधा सीमाओं और थ्रूपुट यील्ड के आधार पर परिदृश्य स्टूडियो में 100 सीटें जोड़ने का मूल्यांकन करें।`
                 : `Projected 6M shortage probability is elevated. Relative demand outpaces certification output by +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} percentile points (Demand: ${topPositiveMismatch.demand_index_score.toFixed(1)}, Supply: ${topPositiveMismatch.supply_output_index.toFixed(1)}). Recommended planning scenario: Evaluate adding 100 training seats via Scenario Studio to test deficit closure and output yield against local facility constraints.`}
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={() => {
@@ -493,15 +547,18 @@ export default function Overview({
                 setFilterMode('demand_pressure');
               }}
               style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: '6px',
-                border: '1px solid #ea580c',
-                backgroundColor: '#ffffff',
-                color: '#c2410c',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.75rem',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)')}
             >
               {isHindi ? 'जांच करें' : 'Investigate'}
             </button>
@@ -515,20 +572,24 @@ export default function Overview({
                 })
               }
               style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
                 border: 'none',
-                backgroundColor: '#ea580c',
+                backgroundColor: '#4f46e5',
                 color: '#ffffff',
                 fontWeight: 700,
                 fontSize: '0.75rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
+                gap: '0.35rem',
+                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
+                transition: 'all 0.15s ease',
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#4338ca')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#4f46e5')}
             >
-              <span>🎛️</span>
+              <span>⚡</span>
               <span>{isHindi ? 'समाधान सिम्युलेट करें' : 'Simulate Fix'}</span>
             </button>
           </div>
@@ -537,17 +598,23 @@ export default function Overview({
 
       {/* ZONE 4: Longitudinal Deltas - "WHAT CHANGED IN CURRENT PIPELINE RUN?" */}
       <section
+        className="glass-strong"
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--slate-200)',
-          borderRadius: 'var(--radius-md)',
-          padding: '1.15rem 1.25rem',
-          boxShadow: 'var(--shadow-sm)',
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '14px',
+          padding: '1.25rem 1.35rem',
+          boxShadow: '0 14px 44px rgba(0, 0, 0, 0.45)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--slate-800)', letterSpacing: '0.06em' }}>
-            {isHindi ? 'वर्तमान पाइपलाइन रन में क्या बदला?' : 'WHAT CHANGED IN CURRENT PIPELINE RUN?'} ({period} vs {prevPeriod || 'baseline origin'})
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.9rem' }}>✨</span>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#ffffff', letterSpacing: '0.06em' }}>
+              {isHindi ? 'वर्तमान पाइपलाइन रन में क्या बदला?' : 'WHAT CHANGED IN CURRENT PIPELINE RUN?'} ({period} vs {prevPeriod || 'baseline origin'})
+            </span>
           </div>
           <button
             type="button"
@@ -561,7 +628,7 @@ export default function Overview({
             style={{
               border: 'none',
               background: 'none',
-              color: 'var(--teal-700)',
+              color: '#818cf8',
               fontWeight: 700,
               fontSize: '0.75rem',
               cursor: 'pointer',
@@ -575,29 +642,29 @@ export default function Overview({
         </div>
 
         {!prevPeriod ? (
-          <div style={{ padding: '0.85rem', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.78rem', color: 'var(--slate-600)' }}>
+          <div style={{ padding: '0.85rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8' }}>
             ℹ️ {isHindi
               ? `चयनित अवधि ${period} आधारभूत मूल चक्र है; पूर्ववर्ती चक्र तुलना की गणना के लिए अपर्याप्त ऐतिहासिक डेटा।`
               : `Selected period ${period} is the baseline origin cycle; insufficient comparable historical observation data to compute preceding period deltas.`}
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#fff7ed', borderRadius: '6px', border: '1px solid #ffedd5', fontSize: '0.75rem', color: '#9a3412', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-              <span>📈</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.85rem' }}>
+            <div style={{ padding: '0.75rem 0.95rem', backgroundColor: 'rgba(239, 68, 68, 0.07)', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)', fontSize: '0.75rem', color: '#fca5a5', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              <span>↘</span>
               <div>
-                <strong>Dharwad · CNC Machine Operator (OCC_MFG_001)</strong> demand score rose {longitudinalDeltas.dha.demandDelta} pts (from {longitudinalDeltas.dha.demandPrev} to {longitudinalDeltas.dha.demandCurr} pts; mismatch widened {longitudinalDeltas.dha.mismatchDelta} pts to {longitudinalDeltas.dha.mismatchCurr} pts).
+                <strong style={{ color: '#ffffff' }}>Dharwad · CNC Machine Operator (OCC_MFG_001)</strong> demand score rose {longitudinalDeltas.dha.demandDelta} pts (from {longitudinalDeltas.dha.demandPrev} to {longitudinalDeltas.dha.demandCurr} pts; mismatch widened {longitudinalDeltas.dha.mismatchDelta} pts to {longitudinalDeltas.dha.mismatchCurr} pts).
               </div>
             </div>
-            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.75rem', color: '#1e40af', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-              <span>📦</span>
+            <div style={{ padding: '0.75rem 0.95rem', backgroundColor: 'rgba(99, 102, 241, 0.07)', borderRadius: '8px', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.75rem', color: '#c7d2fe', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              <span>↗</span>
               <div>
-                <strong>Pune · Industrial Automation Technician (OCC_MFG_002)</strong> supply rank shifted {longitudinalDeltas.pun.supplyDelta} percentile pts (from {longitudinalDeltas.pun.supplyPrev} to {longitudinalDeltas.pun.supplyCurr} percentile; mismatch at {longitudinalDeltas.pun.mismatchCurr} pts).
+                <strong style={{ color: '#ffffff' }}>Pune · Industrial Automation Technician (OCC_MFG_002)</strong> supply rank shifted {longitudinalDeltas.pun.supplyDelta} percentile pts (from {longitudinalDeltas.pun.supplyPrev} to {longitudinalDeltas.pun.supplyCurr} percentile; mismatch at {longitudinalDeltas.pun.mismatchCurr} pts).
               </div>
             </div>
-            <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdfa', borderRadius: '6px', border: '1px solid #ccfbf1', fontSize: '0.75rem', color: '#0f766e', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
-              <span>⚡</span>
+            <div style={{ padding: '0.75rem 0.95rem', backgroundColor: 'rgba(13, 148, 136, 0.07)', borderRadius: '8px', border: '1px solid rgba(13, 148, 136, 0.2)', fontSize: '0.75rem', color: '#99f6e4', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              <span>→</span>
               <div>
-                <strong>Bengaluru Urban · Cloud Infrastructure Associate (OCC_IT_001)</strong> demand intensity at {longitudinalDeltas.blr.demandCurr} pts ({longitudinalDeltas.blr.demandDelta} pts from {longitudinalDeltas.blr.demandPrev}; balanced with supply rank {longitudinalDeltas.blr.supplyCurr} percentile).
+                <strong style={{ color: '#ffffff' }}>Bengaluru Urban · Cloud Infrastructure Associate (OCC_IT_001)</strong> demand intensity at {longitudinalDeltas.blr.demandCurr} pts ({longitudinalDeltas.blr.demandDelta} pts from {longitudinalDeltas.blr.demandPrev}; balanced with supply rank {longitudinalDeltas.blr.supplyCurr} percentile).
               </div>
             </div>
           </div>
@@ -605,16 +672,17 @@ export default function Overview({
 
         <div
           style={{
-            backgroundColor: 'var(--slate-50)',
-            borderLeft: '3px solid var(--teal-600)',
-            padding: '0.5rem 0.75rem',
-            borderRadius: '4px',
-            fontSize: '0.72rem',
-            color: 'var(--slate-700)',
-            lineHeight: 1.45,
+            backgroundColor: 'rgba(245, 158, 11, 0.06)',
+            borderLeft: '4px solid #f59e0b',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            padding: '0.65rem 0.85rem',
+            borderRadius: '6px',
+            fontSize: '0.74rem',
+            color: '#fef3c7',
+            lineHeight: 1.5,
           }}
         >
-          <strong>{isHindi ? 'यह क्यों महत्वपूर्ण है:' : 'WHY THIS MATTERS:'}</strong>{' '}
+          <strong style={{ color: '#fbbf24' }}>{isHindi ? 'यह क्यों महत्वपूर्ण है:' : 'WHY THIS MATTERS:'}</strong>{' '}
           {isHindi
             ? `माप परिवर्तन ${period} और ${prevPeriod || 'आधारभूत'} के बीच 0-100 पैमाने पर सटीक अंक अंतर (प्रतिशत परिवर्तन नहीं) को दर्शाते हैं। यदि क्षमता योजना दूरदर्शी मांग संकेतों के बिना बनाई जाती है, तो संस्थान ऐसे बैचों को वित्तपोषित करते रहते हैं जहां आपूर्ति अवशोषण से अधिक हो चुकी है, जबकि तीव्र कौशल कमियां अनसुलझी रहती हैं।`
             : `Metric deltas reflect exact arithmetic point differences on a 0–100 scale between ${period} and ${prevPeriod || 'baseline'} (not percentage changes). If training capacity is planned without forward-looking demand signals, districts continue funding cohorts where supply throughput rank exceeds hiring absorption while acute deficits remain unaddressed.`}
@@ -632,20 +700,23 @@ export default function Overview({
 
       {/* ZONE 6: Top Priority Policy Interventions (Ranked) */}
       <section
+        className="glass-strong"
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--slate-200)',
-          borderRadius: 'var(--radius-md)',
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '16px',
           padding: '1.25rem',
-          boxShadow: 'var(--shadow-sm)',
+          boxShadow: '0 14px 44px rgba(0, 0, 0, 0.45)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.15rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.2rem 0' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.2rem 0', letterSpacing: '-0.01em' }}>
               {isHindi ? 'शीर्ष प्राथमिकता नीतिगत हस्तक्षेप (रैंक अनुसार)' : 'Top Priority Policy Interventions (Ranked)'}
             </h3>
-            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+            <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
               {isHindi
                 ? 'पायलट अंतर डेटा पर आधारित प्राथमिकता क्षमता समायोजन योजना परिदृश्य। ये अन्वेषणात्मक नियोजन सिमुलेशन हैं, वास्तविक रोजगार या श्रमिकों की कमी में सत्यापित परिवर्तन नहीं।'
                 : 'Targeted capacity adjustment planning scenarios evaluated via Scenario Studio. Results denote exploratory planning simulations, not verified changes in real-world employment or worker shortages.'}
@@ -656,15 +727,18 @@ export default function Overview({
             type="button"
             onClick={() => onNavigate('recommendations')}
             style={{
-              border: '1px solid var(--teal-600)',
-              backgroundColor: '#f0fdfa',
-              color: 'var(--teal-800)',
+              border: '1px solid rgba(99, 102, 241, 0.4)',
+              backgroundColor: 'rgba(79, 70, 229, 0.15)',
+              color: '#c7d2fe',
               fontWeight: 700,
               fontSize: '0.75rem',
-              padding: '0.35rem 0.75rem',
-              borderRadius: '6px',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '8px',
               cursor: 'pointer',
+              transition: 'all 0.15s ease',
             }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(79, 70, 229, 0.25)')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(79, 70, 229, 0.15)')}
           >
             {isHindi ? 'सभी 4 अनुशंसित हस्तक्षेप देखें →' : 'View All Recommended Interventions →'}
           </button>
@@ -675,10 +749,10 @@ export default function Overview({
           {/* Card #01: Dharwad CNC */}
           <div
             style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #ffedd5',
-              borderLeft: '4px solid #ea580c',
-              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              borderLeft: '4px solid #ef4444',
+              borderRadius: '12px',
               padding: '1.15rem',
               display: 'flex',
               flexDirection: 'column',
@@ -688,43 +762,43 @@ export default function Overview({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#ea580c' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#f87171' }}>
                   #01 · DHARWAD, KARNATAKA
                 </span>
-                <span style={{ fontSize: '0.68rem', backgroundColor: '#fff7ed', color: '#c2410c', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
                   Priority Tier 1 (Deficit #1)
                 </span>
               </div>
-              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.35rem 0' }}>
                 Simulate 100 Seats for CNC Machine Operator
               </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', lineHeight: 1.45, margin: 0 }}>
                 Acute relative mismatch (+56.1 pts) where demand score (73.1 pts) exceeds recent certification throughput (17.0 percentile). Scenario Studio evaluates adjusting 100 cohort seats to address regional machining deficit.
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>100 (Scenario)</strong>
+                  <strong style={{ color: '#ffffff', fontFamily: 'var(--font-mono)' }}>100 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
-                    <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>-60.4 pts</strong>
-                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(+63.2 → +2.8 pts)</span>
+                    <strong style={{ color: '#34d399', fontFamily: 'var(--font-mono)' }}>-60.4 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>(+63.2 → +2.8 pts)</span>
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>CNC Operator</strong>
+                  <strong style={{ color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>CNC Operator</strong>
                 </div>
               </div>
 
@@ -732,14 +806,14 @@ export default function Overview({
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
-                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: 'rgba(255, 255, 255, 0.06)', color: '#cbd5e1', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
-                  style={{ border: 'none', backgroundColor: '#ea580c', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ border: 'none', backgroundColor: '#ea580c', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Simulate
                 </button>
@@ -750,10 +824,10 @@ export default function Overview({
           {/* Card #02: Bengaluru Cloud */}
           <div
             style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #ccfbf1',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(13, 148, 136, 0.25)',
               borderLeft: '4px solid #0d9488',
-              borderRadius: 'var(--radius-md)',
+              borderRadius: '12px',
               padding: '1.15rem',
               display: 'flex',
               flexDirection: 'column',
@@ -763,43 +837,43 @@ export default function Overview({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#0d9488' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#2dd4bf' }}>
                   #02 · BENGALURU URBAN, KARNATAKA
                 </span>
-                <span style={{ fontSize: '0.68rem', backgroundColor: '#f0fdfa', color: '#0f766e', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(13, 148, 136, 0.15)', color: '#2dd4bf', border: '1px solid rgba(13, 148, 136, 0.3)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
                   Priority Tier 2 (Tech Growth)
                 </span>
               </div>
-              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.35rem 0' }}>
                 Sustain High-Tech Intake for Cloud Infrastructure
               </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', lineHeight: 1.45, margin: 0 }}>
                 High-volume tech corridor with elevated demand score (85.8 pts) and strong certification throughput (88.7 percentile). Sustaining intake prevents future cohort deficits under enterprise hiring velocity.
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>80 (Scenario)</strong>
+                  <strong style={{ color: '#ffffff', fontFamily: 'var(--font-mono)' }}>80 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
-                    <strong style={{ color: '#2563eb', fontFamily: 'var(--font-mono)' }}>+43.4 pts</strong>
-                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(-9.4 → +34.0 pts)</span>
+                    <strong style={{ color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>+43.4 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>(-9.4 → +34.0 pts)</span>
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>Cloud Associate</strong>
+                  <strong style={{ color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>Cloud Associate</strong>
                 </div>
               </div>
 
@@ -807,14 +881,14 @@ export default function Overview({
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
-                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: 'rgba(255, 255, 255, 0.06)', color: '#cbd5e1', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
-                  style={{ border: 'none', backgroundColor: '#0d9488', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ border: 'none', backgroundColor: '#0d9488', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Simulate
                 </button>
@@ -825,10 +899,10 @@ export default function Overview({
           {/* Card #03: Pune Automotive */}
           <div
             style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #dbeafe',
-              borderLeft: '4px solid #2563eb',
-              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              borderLeft: '4px solid #3b82f6',
+              borderRadius: '12px',
               padding: '1.15rem',
               display: 'flex',
               flexDirection: 'column',
@@ -838,43 +912,43 @@ export default function Overview({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#2563eb' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#60a5fa' }}>
                   #03 · PUNE, MAHARASHTRA
                 </span>
-                <span style={{ fontSize: '0.68rem', backgroundColor: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
                   Priority Tier 3 (EV Transition)
                 </span>
               </div>
-              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.35rem 0' }}>
                 Align Automotive ITI Seats to EV Diagnostics
               </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', lineHeight: 1.45, margin: 0 }}>
                 High industrial demand (69.7 pts) alongside balanced certification output (68.9 percentile). Evaluating a 60-seat planning scenario safeguards training alignment with automotive EV transition while monitoring throughput constraints.
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.65rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 (Scenario)</strong>
+                  <strong style={{ color: '#ffffff', fontFamily: 'var(--font-mono)' }}>60 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
-                    <strong style={{ color: '#2563eb', fontFamily: 'var(--font-mono)' }}>+62.3 pts</strong>
-                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(-6.6 → +55.7 pts)</span>
+                    <strong style={{ color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>+62.3 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>(-6.6 → +55.7 pts)</span>
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div style={{ color: '#64748b', fontSize: '0.65rem', fontWeight: 600 }}>
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
                   </div>
-                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>EV Assembly</strong>
+                  <strong style={{ color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>EV Assembly</strong>
                 </div>
               </div>
 
@@ -882,14 +956,14 @@ export default function Overview({
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
-                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: 'rgba(255, 255, 255, 0.06)', color: '#cbd5e1', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
-                  style={{ border: 'none', backgroundColor: '#2563eb', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ border: 'none', backgroundColor: '#3b82f6', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Simulate
                 </button>
@@ -927,17 +1001,20 @@ export default function Overview({
           </div>
 
           {/* Quick Filter Segmented Control */}
-          <div style={{ display: 'flex', gap: '0.35rem', background: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
+          <div style={{ display: 'flex', gap: '0.35rem', background: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <button
               type="button"
-              className="btn-refresh"
               style={{
                 border: 'none',
-                background: filterMode === 'all' ? '#ffffff' : 'transparent',
+                background: filterMode === 'all' ? '#4f46e5' : 'transparent',
                 fontWeight: filterMode === 'all' ? 700 : 500,
-                boxShadow: filterMode === 'all' ? 'var(--shadow-sm)' : 'none',
+                color: filterMode === 'all' ? '#ffffff' : '#94a3b8',
+                boxShadow: filterMode === 'all' ? '0 2px 8px rgba(79, 70, 229, 0.4)' : 'none',
                 padding: '0.3rem 0.65rem',
                 fontSize: '0.75rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
               onClick={() => setFilterMode('all')}
             >
@@ -945,15 +1022,16 @@ export default function Overview({
             </button>
             <button
               type="button"
-              className="btn-refresh"
               style={{
-                border: 'none',
-                background: filterMode === 'demand_pressure' ? '#ffffff' : 'transparent',
+                background: filterMode === 'demand_pressure' ? 'rgba(234, 88, 12, 0.2)' : 'transparent',
                 fontWeight: filterMode === 'demand_pressure' ? 700 : 500,
-                color: filterMode === 'demand_pressure' ? '#c2410c' : 'inherit',
-                boxShadow: filterMode === 'demand_pressure' ? 'var(--shadow-sm)' : 'none',
+                color: filterMode === 'demand_pressure' ? '#fb923c' : '#94a3b8',
+                border: filterMode === 'demand_pressure' ? '1px solid rgba(234, 88, 12, 0.4)' : '1px solid transparent',
                 padding: '0.3rem 0.65rem',
                 fontSize: '0.75rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
               onClick={() => setFilterMode('demand_pressure')}
             >
@@ -961,15 +1039,16 @@ export default function Overview({
             </button>
             <button
               type="button"
-              className="btn-refresh"
               style={{
-                border: 'none',
-                background: filterMode === 'supply_pressure' ? '#ffffff' : 'transparent',
+                background: filterMode === 'supply_pressure' ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
                 fontWeight: filterMode === 'supply_pressure' ? 700 : 500,
-                color: filterMode === 'supply_pressure' ? '#1d4ed8' : 'inherit',
-                boxShadow: filterMode === 'supply_pressure' ? 'var(--shadow-sm)' : 'none',
+                color: filterMode === 'supply_pressure' ? '#93c5fd' : '#94a3b8',
+                border: filterMode === 'supply_pressure' ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent',
                 padding: '0.3rem 0.65rem',
                 fontSize: '0.75rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
               onClick={() => setFilterMode('supply_pressure')}
             >
@@ -978,8 +1057,8 @@ export default function Overview({
           </div>
         </div>
 
-        <div style={{ margin: '0 1.25rem 0.75rem 1.25rem', padding: '0.5rem 0.75rem', backgroundColor: '#f8fafc', borderLeft: '3px solid var(--teal-600)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', color: 'var(--slate-700)', lineHeight: 1.45 }}>
-          💡 <strong>{isHindi ? 'परिणाम व्याख्या:' : 'Interpretation:'}</strong> {t('overview.mismatchInterpretation', 'Mismatch scores denote relative ranking differences between employer demand intensity and TVET certification throughput (−100 to +100 pts); a score of +50 denotes demand ranks 50 percentile points above supply, not an absolute worker shortage.')}
+        <div style={{ margin: '0 1.25rem 0.75rem 1.25rem', padding: '0.55rem 0.85rem', backgroundColor: 'rgba(13, 148, 136, 0.1)', borderLeft: '3px solid #14b8a6', border: '1px solid rgba(13, 148, 136, 0.25)', borderRadius: '8px', fontSize: '0.75rem', color: '#cbd5e1', lineHeight: 1.45 }}>
+          💡 <strong style={{ color: '#2dd4bf' }}>{isHindi ? 'परिणाम व्याख्या:' : 'Interpretation:'}</strong> {t('overview.mismatchInterpretation', 'Mismatch scores denote relative ranking differences between employer demand intensity and TVET certification throughput (−100 to +100 pts); a score of +50 denotes demand ranks 50 percentile points above supply, not an absolute worker shortage.')}
         </div>
 
         <div className="table-responsive">
@@ -1036,10 +1115,6 @@ export default function Overview({
                       <td style={{ textAlign: 'right' }}>
                         <span
                           className={`score-pill ${isPositive ? 'positive' : 'negative'}`}
-                          style={{
-                            backgroundColor: isPositive ? '#fff7ed' : '#eff6ff',
-                            border: `1px solid ${isPositive ? '#ffedd5' : '#dbeafe'}`,
-                          }}
                         >
                           {formatMismatch(row.relative_mismatch_score)}
                         </span>

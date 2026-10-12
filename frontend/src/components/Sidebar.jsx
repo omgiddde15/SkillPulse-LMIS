@@ -67,20 +67,43 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="app-sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+    <aside className="app-sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', backgroundColor: '#090a0c', borderRight: '1px solid rgba(255, 255, 255, 0.08)' }}>
       {/* Brand & Home Navigation */}
-      <div className="sidebar-header" style={{ padding: '1rem', borderBottom: '1px solid var(--navy-800)' }}>
+      <div className="sidebar-header" style={{ padding: '1.15rem 1rem 0.85rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
         <div
           className="brand-emblem"
           onClick={() => onSelectTab('overview')}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
         >
-          <div className="brand-icon" style={{ background: 'linear-gradient(135deg, #0d9488 0%, #2563eb 100%)' }}>
+          <div
+            className="brand-icon"
+            style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #0d9488 0%, #2563eb 100%)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: '15px',
+              boxShadow: '0 4px 12px rgba(13, 148, 136, 0.35)',
+              flexShrink: 0,
+            }}
+          >
             SP
           </div>
           <div>
-            <div className="brand-title" style={{ fontSize: '1.05rem', fontWeight: 800 }}>SkillPulse</div>
-            <div className="brand-subtitle">{t('app.brandSubtitle', 'LMIS Engine')}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                SkillPulse
+              </span>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
+            </div>
+            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+              LABOUR MARKET INTELLIGENCE
+            </div>
           </div>
         </div>
 
@@ -92,12 +115,12 @@ export default function Sidebar({
             marginTop: '0.85rem',
             width: '100%',
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '6px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '8px',
             color: '#94a3b8',
             fontSize: '0.72rem',
             fontWeight: 600,
-            padding: '0.35rem 0.6rem',
+            padding: '0.35rem 0.65rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -117,7 +140,7 @@ export default function Sidebar({
             <span>←</span>
             <span>{t('nav.home', 'SkillPulse Home')}</span>
           </span>
-          <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', opacity: 0.7 }}>PUBLIC</span>
+          <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', opacity: 0.7, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.06)' }}>PUBLIC</span>
         </button>
       </div>
 
@@ -241,20 +264,21 @@ export default function Sidebar({
             onClick={onOpenCopilot}
             style={{
               width: '100%',
-              padding: '0.35rem 0.5rem',
-              backgroundColor: '#0d9488',
+              padding: '0.45rem 0.6rem',
+              backgroundColor: '#4f46e5',
               color: '#ffffff',
               border: 'none',
-              borderRadius: '5px',
-              fontSize: '0.72rem',
+              borderRadius: '8px',
+              fontSize: '0.74rem',
               fontWeight: 700,
               cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
               transition: 'background-color 0.15s ease',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#4338ca')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#4f46e5')}
           >
-            {isHindi ? 'कोपायलट से पूछें' : 'Ask Skill Copilot'}
+            {isHindi ? '✨ कोपायलट से पूछें' : '✨ Ask Skill Copilot'}
           </button>
         </div>
       )}
