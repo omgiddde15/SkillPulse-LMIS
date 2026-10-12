@@ -49,8 +49,10 @@ export default function Sidebar({
   activeTab,
   onSelectTab,
   backendHealth = { status: 'healthy' },
+  onOpenCopilot,
+  alertsCount,
 }) {
-  const { t } = useLanguage();
+  const { t, isHindi } = useLanguage();
 
   const getStatusClass = () => {
     if (backendHealth.status === 'healthy') return 'online';
@@ -145,6 +147,7 @@ export default function Sidebar({
                   <li key={item.id} className="nav-item">
                     <button
                       type="button"
+                      data-tab={item.id}
                       className={`nav-button ${isActive ? 'active' : ''}`}
                       onClick={() => onSelectTab(item.id)}
                       style={{
@@ -183,7 +186,7 @@ export default function Sidebar({
                             border: `1px solid ${item.id === 'alerts' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(13, 148, 136, 0.35)'}`,
                           }}
                         >
-                          {item.badge}
+                          {item.id === 'alerts' && alertsCount != null ? alertsCount : item.badge}
                         </span>
                       )}
 
@@ -210,6 +213,51 @@ export default function Sidebar({
           </div>
         ))}
       </nav>
+
+      {/* Grounded Copilot Drawer Trigger Box */}
+      {onOpenCopilot && (
+        <div
+          style={{
+            margin: '0.5rem 0.75rem',
+            padding: '0.75rem',
+            background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%)',
+            border: '1px solid rgba(13, 148, 136, 0.35)',
+            borderRadius: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span>✨</span> {isHindi ? 'स्किल कोपायलट' : 'SkillPulse Copilot'}
+            </span>
+            <span style={{ fontSize: '0.6rem', padding: '1px 5px', borderRadius: '4px', background: 'rgba(13, 148, 136, 0.4)', color: '#2dd4bf', fontWeight: 700 }}>
+              Grounded
+            </span>
+          </div>
+          <p style={{ fontSize: '0.68rem', color: '#94a3b8', margin: '0 0 0.5rem 0', lineHeight: 1.35 }}>
+            {isHindi ? 'वर्तमान एपीआई डेटा पर आधारित द्विभाषी नीति सहायक।' : 'Bilingual policy & forecast assistant grounded on live API.'}
+          </p>
+          <button
+            type="button"
+            onClick={onOpenCopilot}
+            style={{
+              width: '100%',
+              padding: '0.35rem 0.5rem',
+              backgroundColor: '#0d9488',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '5px',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
+          >
+            {isHindi ? 'कोपायलट से पूछें' : 'Ask Skill Copilot'}
+          </button>
+        </div>
+      )}
 
       {/* Sidebar Footer with API Status */}
       <div className="sidebar-footer" style={{ padding: '0.75rem 1rem', borderTop: '1px solid var(--navy-800)' }}>

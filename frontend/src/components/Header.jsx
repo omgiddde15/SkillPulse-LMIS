@@ -23,6 +23,7 @@ export default function Header({
   onPeriodChange,
   onRefresh,
   onNavigateHome,
+  onOpenCopilot,
   isRefreshing,
   backendHealth,
 }) {
@@ -154,6 +155,35 @@ export default function Header({
             हिन्दी
           </button>
         </div>
+
+        {/* Grounded Copilot Drawer Trigger */}
+        {onOpenCopilot && (
+          <button
+            type="button"
+            onClick={onOpenCopilot}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.3rem 0.65rem',
+              borderRadius: '6px',
+              border: '1px solid #0d9488',
+              backgroundColor: '#f0fdfa',
+              color: '#0f766e',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            title={isHindi ? 'ग्राउंडेड कोपायलट खोलें' : 'Open Grounded Copilot Drawer'}
+          >
+            <span>✨</span>
+            <span>{isHindi ? 'कोपायलट' : 'Copilot'}</span>
+            <span style={{ fontSize: '0.6rem', padding: '1px 5px', borderRadius: '10px', backgroundColor: '#0d9488', color: '#ffffff', fontWeight: 800 }}>
+              LIVE
+            </span>
+          </button>
+        )}
 
         {/* Refresh Action */}
         <button

@@ -1,0 +1,33 @@
+{
+  "scenarioA_available": {
+    "found": true,
+    "hasUnavailableMsg": false,
+    "hasLoadingMsg": false,
+    "hasDemand73_1": true,
+    "hasSupply17_0": true,
+    "hasMismatch56_1": true,
+    "hasCNC": true,
+    "hasDharwad": true,
+    "rawSnippet": "PILOT OBSERVATION • CYCLE 2026-09\nCNC Machine Operator\nDharwad, Karnataka (KA) • Precision Machining\n⚡\nDemand Pressure\nDEMAND INDEX\n73.1\n0–100 percentile\nSUPPLY OUTPUT\n17.0\n0–100 percentile\nMISMATCH\n+"
+  },
+  "scenarioB_unavailable": {
+    "found": true,
+    "hasUnavailableMsg": true,
+    "hasRetryButton": true,
+    "hasDemand73_1": false,
+    "hasSupply17_0": false,
+    "hasMismatch56_1": false,
+    "hasDemand84_2": false,
+    "hasSupply28_1": false,
+    "containsAnyFabricatedNumbers": false,
+    "cardText": "⚠️\nPilot metrics unavailable\nLive pilot observation data is currently unavailable from the API service.\n↺\nRetry"
+  },
+  "scenarioC_retryRestored": {
+    "found": true,
+    "hasUnavailableMsg": false,
+    "hasDemand73_1": true,
+    "hasSupply17_0": true,
+    "hasMismatch56_1": true,
+    "hasCNC": true
+  }
+}

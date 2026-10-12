@@ -28,17 +28,48 @@ const DISTRICTS = [
 
 const CANONICAL_SECTORS = ['IT/ITeS', 'Manufacturing', 'Logistics'];
 
-export default function Forecasts({ period = '2026-09', onPeriodChange }) {
+export default function Forecasts({
+  period = '2026-09',
+  onPeriodChange,
+  stateFilter,
+  districtFilter,
+  sectorFilter,
+  occupationFilter,
+  horizonFilter,
+  onStateChange,
+  onDistrictChange,
+  onSectorChange,
+  _onOccupationChange,
+  onHorizonChange,
+  onResetFilters,
+}) {
   const { t, isHindi } = useLanguage();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Filters
-  const [selectedHorizon, setSelectedHorizon] = useState(3);
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedSector, setSelectedSector] = useState('');
+  const [selectedHorizon, setSelectedHorizon] = useState(horizonFilter ? Number(horizonFilter) : 3);
+  const [selectedState, setSelectedState] = useState(stateFilter || '');
+  const [selectedDistrict, setSelectedDistrict] = useState(districtFilter || '');
+  const [selectedSector, setSelectedSector] = useState(sectorFilter || '');
+
+  // Sync external filters from ContextFilterBar
+  useEffect(() => {
+    if (horizonFilter !== undefined) setSelectedHorizon(Number(horizonFilter));
+  }, [horizonFilter]);
+
+  useEffect(() => {
+    if (stateFilter !== undefined) setSelectedState(stateFilter);
+  }, [stateFilter]);
+
+  useEffect(() => {
+    if (districtFilter !== undefined) setSelectedDistrict(districtFilter);
+  }, [districtFilter]);
+
+  useEffect(() => {
+    if (sectorFilter !== undefined) setSelectedSector(sectorFilter);
+  }, [sectorFilter]);
 
   // Selected row for Detail Drawer
   const [selectedRowId, setSelectedRowId] = useState(null);
@@ -117,9 +148,13 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
   const handleStateChange = (e) => {
     const newState = e.target.value;
     setSelectedState(newState);
+    onStateChange?.(newState);
     if (newState && selectedDistrict) {
       const match = DISTRICTS.find((d) => d.id === selectedDistrict && d.state === newState);
-      if (!match) setSelectedDistrict('');
+      if (!match) {
+        setSelectedDistrict('');
+        onDistrictChange?.('');
+      }
     }
   };
 
@@ -128,6 +163,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
     setSelectedState('');
     setSelectedDistrict('');
     setSelectedSector('');
+    onResetFilters?.();
   };
 
   const filteredDistricts = useMemo(() => {
@@ -146,10 +182,14 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
     return CANONICAL_SECTORS;
   }, [data]);
 
-  // Client-side sorting
+  // Client-side sorting and occupation filtering
   const sortedResults = useMemo(() => {
     if (!data?.results) return [];
-    return [...data.results].sort((a, b) => {
+    let list = [...data.results];
+    if (occupationFilter) {
+      list = list.filter((r) => r.occupation_id === occupationFilter);
+    }
+    return list.sort((a, b) => {
       let aVal;
       let bVal;
 
@@ -183,7 +223,19 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
       bVal = bVal === null || bVal === undefined ? -999999 : Number(bVal);
       return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  }, [data, sortField, sortDirection]);
+  }, [data, occupationFilter, sortField, sortDirection]);
+
+  // Keep selected row synchronized with filtered results
+  useEffect(() => {
+    if (sortedResults.length > 0) {
+      const exists = sortedResults.some((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId);
+      if (!exists) {
+        setSelectedRowId(`${sortedResults[0].district_id}-${sortedResults[0].occupation_id}`);
+      }
+    } else {
+      setSelectedRowId(null);
+    }
+  }, [sortedResults, selectedRowId]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -342,13 +394,13 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
   }, [sortedResults, period, selectedHorizon, selectedState, selectedDistrict, selectedSector, sortField, sortDirection, isHindi]);
 
   const selectedItem = useMemo(() => {
-    if (!selectedRowId || !data?.results) return null;
-    return data.results.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
-  }, [data, selectedRowId]);
+    if (!selectedRowId || sortedResults.length === 0) return null;
+    return sortedResults.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
+  }, [sortedResults, selectedRowId]);
 
   // Summary Metrics
   const summaryMetrics = useMemo(() => {
-    const list = data?.results || [];
+    const list = sortedResults;
     const validCount = list.filter((r) => r.demand_forecast?.status === 'valid' && r.supply_forecast?.status === 'valid').length;
     const insufficientCount = list.length - validCount;
 
@@ -367,7 +419,7 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
       insufficientCount,
       highestDemandItem,
     };
-  }, [data]);
+  }, [sortedResults]);
 
   const formatMismatch = (val) => {
     if (val === null || val === undefined) return 'N/A';
@@ -534,7 +586,11 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
             id="forecast-horizon"
             className="filter-select"
             value={selectedHorizon}
-            onChange={(e) => setSelectedHorizon(Number(e.target.value))}
+            onChange={(e) => {
+              const h = Number(e.target.value);
+              setSelectedHorizon(h);
+              onHorizonChange?.(h);
+            }}
           >
             <option value={3}>{isHindi ? '3 माह आगे (अल्पकालिक)' : '3 Months Ahead (Short-Term)'}</option>
             <option value={6}>{isHindi ? '6 माह आगे (मध्यकालिक)' : '6 Months Ahead (Medium-Term)'}</option>
@@ -563,7 +619,10 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
             id="forecast-district"
             className="filter-select"
             value={selectedDistrict}
-            onChange={(e) => setSelectedDistrict(e.target.value)}
+            onChange={(e) => {
+              setSelectedDistrict(e.target.value);
+              onDistrictChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allDistricts', 'All Districts')} ({filteredDistricts.length})</option>
             {filteredDistricts.map((d) => (
@@ -578,7 +637,10 @@ export default function Forecasts({ period = '2026-09', onPeriodChange }) {
             id="forecast-sector"
             className="filter-select"
             value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
+            onChange={(e) => {
+              setSelectedSector(e.target.value);
+              onSectorChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allSectors', 'All Sectors (3)')} ({sectorOptions.length})</option>
             {sectorOptions.map((sec) => (

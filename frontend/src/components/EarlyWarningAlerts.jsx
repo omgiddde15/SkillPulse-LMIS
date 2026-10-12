@@ -38,19 +38,51 @@ const SEVERITY_LEVELS = [
   { id: 'low', label: 'Low' },
 ];
 
-export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange }) {
+export default function EarlyWarningAlerts({
+  period = '2026-09',
+  onPeriodChange,
+  stateFilter,
+  districtFilter,
+  sectorFilter,
+  occupationFilter,
+  horizonFilter,
+  onStateChange,
+  onDistrictChange,
+  onSectorChange,
+  _onOccupationChange,
+  onHorizonChange,
+  onResetFilters,
+  onNavigateToSimulator = () => {},
+}) {
   const { t, isHindi } = useLanguage();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Filters
-  const [selectedHorizon, setSelectedHorizon] = useState('');
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedSector, setSelectedSector] = useState('');
+  const [selectedHorizon, setSelectedHorizon] = useState(horizonFilter ? String(horizonFilter) : '');
+  const [selectedState, setSelectedState] = useState(stateFilter || '');
+  const [selectedDistrict, setSelectedDistrict] = useState(districtFilter || '');
+  const [selectedSector, setSelectedSector] = useState(sectorFilter || '');
   const [selectedType, setSelectedType] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('');
+
+  // Sync external filters from ContextFilterBar
+  useEffect(() => {
+    if (horizonFilter !== undefined) setSelectedHorizon(horizonFilter ? String(horizonFilter) : '');
+  }, [horizonFilter]);
+
+  useEffect(() => {
+    if (stateFilter !== undefined) setSelectedState(stateFilter);
+  }, [stateFilter]);
+
+  useEffect(() => {
+    if (districtFilter !== undefined) setSelectedDistrict(districtFilter);
+  }, [districtFilter]);
+
+  useEffect(() => {
+    if (sectorFilter !== undefined) setSelectedSector(sectorFilter);
+  }, [sectorFilter]);
 
   // Selected alert for Detail Drawer
   const [selectedAlertId, setSelectedAlertId] = useState(null);
@@ -131,9 +163,13 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
   const handleStateChange = (e) => {
     const newState = e.target.value;
     setSelectedState(newState);
+    onStateChange?.(newState);
     if (newState && selectedDistrict) {
       const match = DISTRICTS.find((d) => d.id === selectedDistrict && d.state === newState);
-      if (!match) setSelectedDistrict('');
+      if (!match) {
+        setSelectedDistrict('');
+        onDistrictChange?.('');
+      }
     }
   };
 
@@ -144,6 +180,7 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
     setSelectedSector('');
     setSelectedType('');
     setSelectedSeverity('');
+    onResetFilters?.();
   };
 
   const filteredDistricts = useMemo(() => {
@@ -162,13 +199,18 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
     return CANONICAL_SECTORS;
   }, [data]);
 
-  // Client-side sorting
+  // Client-side sorting and occupation filtering
   const sortedAlerts = useMemo(() => {
     if (!data?.results) return [];
 
+    let list = [...data.results];
+    if (occupationFilter) {
+      list = list.filter((a) => a.occupation_id === occupationFilter);
+    }
+
     const severityWeight = { critical: 1, high: 2, medium: 3, low: 4 };
 
-    return [...data.results].sort((a, b) => {
+    return list.sort((a, b) => {
       let aVal = a[sortField];
       let bVal = b[sortField];
 
@@ -194,7 +236,19 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
       bVal = Number(bVal) || 0;
       return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  }, [data, sortField, sortDirection]);
+  }, [data, occupationFilter, sortField, sortDirection]);
+
+  // Keep selected alert synchronized with filtered results
+  useEffect(() => {
+    if (sortedAlerts.length > 0) {
+      const exists = sortedAlerts.some((a) => a.alert_id === selectedAlertId);
+      if (!exists) {
+        setSelectedAlertId(sortedAlerts[0].alert_id);
+      }
+    } else {
+      setSelectedAlertId(null);
+    }
+  }, [sortedAlerts, selectedAlertId]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -206,13 +260,13 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
   };
 
   const selectedItem = useMemo(() => {
-    if (!selectedAlertId || !data?.results) return null;
-    return data.results.find((a) => a.alert_id === selectedAlertId) || null;
-  }, [data, selectedAlertId]);
+    if (!selectedAlertId || sortedAlerts.length === 0) return null;
+    return sortedAlerts.find((a) => a.alert_id === selectedAlertId) || null;
+  }, [sortedAlerts, selectedAlertId]);
 
   // Dynamic summary metrics calculated strictly from currently matching results
   const summaryMetrics = useMemo(() => {
-    const list = data?.results || [];
+    const list = sortedAlerts;
     const criticalCount = list.filter((a) => a.severity === 'critical').length;
     const highCount = list.filter((a) => a.severity === 'high').length;
     const qualityCount = list.filter((a) => a.alert_type === 'data_quality_warning').length;
@@ -225,7 +279,7 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
       qualityCount,
       persistentCount,
     };
-  }, [data]);
+  }, [sortedAlerts]);
 
   const getStateDisplayName = (s) => {
     if (!isHindi) return `${s.name} (${s.code})`;
@@ -310,7 +364,10 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
             id="alert-horizon"
             className="filter-select"
             value={selectedHorizon}
-            onChange={(e) => setSelectedHorizon(e.target.value)}
+            onChange={(e) => {
+              setSelectedHorizon(e.target.value);
+              onHorizonChange?.(e.target.value ? Number(e.target.value) : 3);
+            }}
           >
             <option value="">{t('common.allHorizons', 'All Horizons')}</option>
             <option value="3">3 {isHindi ? 'माह' : 'Months'}</option>
@@ -370,7 +427,10 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
             id="alert-district"
             className="filter-select"
             value={selectedDistrict}
-            onChange={(e) => setSelectedDistrict(e.target.value)}
+            onChange={(e) => {
+              setSelectedDistrict(e.target.value);
+              onDistrictChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allDistricts', 'All Districts')} ({filteredDistricts.length})</option>
             {filteredDistricts.map((d) => (
@@ -385,7 +445,10 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
             id="alert-sector"
             className="filter-select"
             value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
+            onChange={(e) => {
+              setSelectedSector(e.target.value);
+              onSectorChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allSectors', 'All Sectors')} ({sectorOptions.length})</option>
             {sectorOptions.map((sec) => (
@@ -683,11 +746,35 @@ export default function EarlyWarningAlerts({ period = '2026-09', onPeriodChange 
 
                 {/* 3. Suggested Policy / Planning Action */}
                 <div style={{ background: '#f0fdf4', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #bbf7d0', boxShadow: 'var(--shadow-sm)' }}>
-                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#166534', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span>🎯</span>
-                    <span>{t('alerts.suggestedActionTitle', 'Suggested TVET / Policy Planning Action')}</span>
-                  </h4>
-                  <p style={{ fontSize: '0.85rem', color: '#14532d', lineHeight: 1.6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#166534', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span>🎯</span>
+                      <span>{t('alerts.suggestedActionTitle', 'Suggested TVET / Policy Planning Action')}</span>
+                    </h4>
+                    {onNavigateToSimulator && (
+                      <button
+                        type="button"
+                        onClick={() => onNavigateToSimulator(selectedItem.district_id, selectedItem.occupation_id, selectedItem.horizon_months)}
+                        style={{
+                          backgroundColor: '#0d9488',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '0.35rem 0.75rem',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        <span>🎛️</span>
+                        <span>{isHindi ? 'परिदृश्य स्टूडियो में समाधान सिम्युलेट करें' : 'Simulate Fix in Scenario Studio'}</span>
+                      </button>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: '#14532d', lineHeight: 1.6, margin: 0 }}>
                     {selectedItem.suggested_action}
                   </p>
                 </div>

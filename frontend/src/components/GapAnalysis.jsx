@@ -28,18 +28,42 @@ const DISTRICTS = [
 
 const SECTORS = ['IT/ITeS', 'Logistics', 'Manufacturing'];
 
-export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
+export default function GapAnalysis({
+  period = '2026-09',
+  onPeriodChange,
+  stateFilter,
+  districtFilter,
+  sectorFilter,
+  occupationFilter,
+  onStateChange,
+  onDistrictChange,
+  onSectorChange,
+  _onOccupationChange,
+  onResetFilters,
+}) {
   const { t, isHindi } = useLanguage();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
-
   // Filters
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedSector, setSelectedSector] = useState('');
+  const [selectedState, setSelectedState] = useState(stateFilter || '');
+  const [selectedDistrict, setSelectedDistrict] = useState(districtFilter || '');
+  const [selectedSector, setSelectedSector] = useState(sectorFilter || '');
   const [selectedClassification, setSelectedClassification] = useState('');
+
+  // Sync external filters from ContextFilterBar
+  useEffect(() => {
+    if (stateFilter !== undefined) setSelectedState(stateFilter);
+  }, [stateFilter]);
+
+  useEffect(() => {
+    if (districtFilter !== undefined) setSelectedDistrict(districtFilter);
+  }, [districtFilter]);
+
+  useEffect(() => {
+    if (sectorFilter !== undefined) setSelectedSector(sectorFilter);
+  }, [sectorFilter]);
 
   // Selected row for Detail View
   const [selectedRowId, setSelectedRowId] = useState(null);
@@ -116,9 +140,13 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
   const handleStateChange = (e) => {
     const newState = e.target.value;
     setSelectedState(newState);
+    onStateChange?.(newState);
     if (newState && selectedDistrict) {
       const match = DISTRICTS.find((d) => d.id === selectedDistrict && d.state === newState);
-      if (!match) setSelectedDistrict('');
+      if (!match) {
+        setSelectedDistrict('');
+        onDistrictChange?.('');
+      }
     }
   };
 
@@ -127,6 +155,7 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
     setSelectedDistrict('');
     setSelectedSector('');
     setSelectedClassification('');
+    onResetFilters?.();
   };
 
   const filteredDistricts = useMemo(() => {
@@ -134,10 +163,14 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
     return DISTRICTS.filter((d) => d.state === selectedState);
   }, [selectedState]);
 
-  // Client-side sorting
+  // Client-side sorting and occupation filtering
   const sortedResults = useMemo(() => {
     if (!data?.results) return [];
-    return [...data.results].sort((a, b) => {
+    let list = [...data.results];
+    if (occupationFilter) {
+      list = list.filter((r) => r.occupation_id === occupationFilter);
+    }
+    return list.sort((a, b) => {
       let aVal = a[sortField];
       let bVal = b[sortField];
 
@@ -151,7 +184,19 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
       bVal = Number(bVal) || 0;
       return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  }, [data, sortField, sortDirection]);
+  }, [data, occupationFilter, sortField, sortDirection]);
+
+  // Keep selected row synchronized with filtered results
+  useEffect(() => {
+    if (sortedResults.length > 0) {
+      const exists = sortedResults.some((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId);
+      if (!exists) {
+        setSelectedRowId(`${sortedResults[0].district_id}-${sortedResults[0].occupation_id}`);
+      }
+    } else {
+      setSelectedRowId(null);
+    }
+  }, [sortedResults, selectedRowId]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -286,13 +331,13 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
   }, [sortedResults, period, selectedState, selectedDistrict, selectedSector, selectedClassification, sortField, sortDirection, isHindi]);
 
   const selectedItem = useMemo(() => {
-    if (!selectedRowId || !data?.results) return null;
-    return data.results.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
-  }, [data, selectedRowId]);
+    if (!selectedRowId || sortedResults.length === 0) return null;
+    return sortedResults.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
+  }, [sortedResults, selectedRowId]);
 
   // Summary Metrics
   const summaryMetrics = useMemo(() => {
-    const list = data?.results || [];
+    const list = sortedResults;
     const demandCount = list.filter((r) => r.classification === 'Demand Pressure' || r.relative_mismatch_score >= 15.0).length;
     const supplyCount = list.filter((r) => r.classification === 'Supply Pressure' || r.relative_mismatch_score <= -15.0).length;
     const balancedCount = list.filter(
@@ -305,7 +350,7 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
       supplyCount,
       balancedCount,
     };
-  }, [data]);
+  }, [sortedResults]);
 
   const getClassificationBadgeClass = (classification) => {
     if (classification === 'Demand Pressure') return 'demand-pressure';
@@ -368,7 +413,10 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
             id="gap-district"
             className="filter-select"
             value={selectedDistrict}
-            onChange={(e) => setSelectedDistrict(e.target.value)}
+            onChange={(e) => {
+              setSelectedDistrict(e.target.value);
+              onDistrictChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allDistricts')} ({filteredDistricts.length})</option>
             {filteredDistricts.map((d) => (
@@ -383,7 +431,10 @@ export default function GapAnalysis({ period = '2026-09', onPeriodChange }) {
             id="gap-sector"
             className="filter-select"
             value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
+            onChange={(e) => {
+              setSelectedSector(e.target.value);
+              onSectorChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allSectors')}</option>
             {SECTORS.map((sec) => (

@@ -51,18 +51,63 @@ function calculateTargetPeriod(basePeriod, horizonMonths) {
   return `${year}-${String(month).padStart(2, '0')}`;
 }
 
-export default function SeatSimulator({ period = '2026-09', onPeriodChange }) {
+export default function SeatSimulator({
+  period = '2026-09',
+  onPeriodChange,
+  initialDistrict,
+  initialOccupation,
+  initialHorizon,
+}) {
   const { t, isHindi } = useLanguage();
 
   // Form State
   const [basePeriod, setBasePeriod] = useState(period);
   const [prevPeriodProp, setPrevPeriodProp] = useState(period);
-  const [horizonMonths, setHorizonMonths] = useState(3);
-  const [selectedState, setSelectedState] = useState('KA');
-  const [selectedDistrict, setSelectedDistrict] = useState('KA_BLR_U');
-  const [selectedSector, setSelectedSector] = useState('IT/ITeS');
-  const [selectedOccupation, setSelectedOccupation] = useState('OCC_IT_001');
+  const [horizonMonths, setHorizonMonths] = useState(initialHorizon ? Number(initialHorizon) : 3);
+  const [selectedState, setSelectedState] = useState(() => {
+    if (initialDistrict) {
+      const match = DISTRICTS.find((d) => d.id === initialDistrict);
+      if (match) return match.state;
+    }
+    return 'KA';
+  });
+  const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict || 'KA_BLR_U');
+  const [selectedSector, setSelectedSector] = useState(() => {
+    if (initialOccupation) {
+      const match = OCCUPATIONS.find((o) => o.id === initialOccupation);
+      if (match) return match.sector;
+    }
+    return 'IT/ITeS';
+  });
+  const [selectedOccupation, setSelectedOccupation] = useState(initialOccupation || 'OCC_IT_001');
   const [proposedSeats, setProposedSeats] = useState(150);
+
+  // Synchronize when initial props change externally
+  useEffect(() => {
+    if (initialDistrict) {
+      const match = DISTRICTS.find((d) => d.id === initialDistrict);
+      if (match) {
+        setSelectedState(match.state);
+        setSelectedDistrict(initialDistrict);
+      }
+    }
+  }, [initialDistrict]);
+
+  useEffect(() => {
+    if (initialOccupation) {
+      const match = OCCUPATIONS.find((o) => o.id === initialOccupation);
+      if (match) {
+        setSelectedSector(match.sector);
+        setSelectedOccupation(initialOccupation);
+      }
+    }
+  }, [initialOccupation]);
+
+  useEffect(() => {
+    if (initialHorizon) {
+      setHorizonMonths(Number(initialHorizon));
+    }
+  }, [initialHorizon]);
 
   // Localization display helpers
   const getStateDisplayName = (s) => {

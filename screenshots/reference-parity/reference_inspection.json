@@ -1,0 +1,500 @@
+{
+  "01_home": {
+    "url": "https://kaushalpulse.vercel.app/",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "FORECAST THE SKILL GAP. FUND THE FIX."
+    ],
+    "h2": [
+      "FROM DATA SIGNALS TO POLICY ACTION",
+      "CORE ANALYTICAL CAPABILITIES",
+      "Methodological Rigor & Data Governance",
+      "READY TO EXPLORE INDIA'S SKILL PULSE?"
+    ],
+    "h3": [
+      "Intelligence",
+      "Forecast",
+      "Gap",
+      "Explain",
+      "Act",
+      "Simulate",
+      "Multi-Horizon Predictive Trajectories",
+      "Interactive Policy Sandbox",
+      "Official SIH Dataset",
+      "Walk-Forward Validation"
+    ],
+    "hasCopilot": false,
+    "kpis": [],
+    "navButtons": [
+      "Overview",
+      "Scenario Studio",
+      "API & Exports"
+    ]
+  },
+  "02_overview": {
+    "url": "https://kaushalpulse.vercel.app/overview",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "National Intelligence Command Center"
+    ],
+    "h2": [
+      "National Labour Market Geospatial Intelligence",
+      "Top Priority Policy Interventions (Ranked)"
+    ],
+    "h3": [
+      "Gorakhpur",
+      "Redirect 97 Training Seats from Retail to Solar PV (Strict Default)",
+      "Establish EV Powertrain Diagnostics Hub in Pune ITIs"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "03_demand": {
+    "url": "https://kaushalpulse.vercel.app/intelligence",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Labour Market Demand Intelligence"
+    ],
+    "h2": [
+      "Solar PV Installer — Geographic Demand Distribution",
+      "Comprehensive Occupational Demand Table"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "04_gaps": {
+    "url": "https://kaushalpulse.vercel.app/gaps",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Skill Gap & Shortage Intelligence"
+    ],
+    "h2": [
+      "Selected Trade Gap Diagnostics: Solar PV Installer",
+      "Why this score? — Driver Decomposition & Attribution: Solar PV Installer (7126.0101)",
+      "National Gap Severity Registry"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "05_forecasts": {
+    "url": "https://kaushalpulse.vercel.app/forecasts",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Demand & Supply Forecast"
+    ],
+    "h2": [
+      "Forecast Trajectory: Solar PV Installer (7126.0101)"
+    ],
+    "h3": [
+      "LightGBM Regressor",
+      "Seasonal Naive Benchmark",
+      "Prediction Intervals (80% & 95%)"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "06_alerts": {
+    "url": "https://kaushalpulse.vercel.app/alerts",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Early Warning Command Center"
+    ],
+    "h2": [],
+    "h3": [
+      "Persistent Severe Shortage: Solar PV Installer in Gorakhpur",
+      "Emerging Shortage: Drone Maintenance Technician in Rajkot",
+      "Capacity Inefficiency: Retail Sales Associate in Gorakhpur",
+      "Skill Obsolescence Risk: Sewing Machine Operator in Chhatrapati Sambhajinagar",
+      "Capacity Inefficiency: Data Entry Operator in Gorakhpur"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "07_recommendations": {
+    "url": "https://kaushalpulse.vercel.app/recommendations",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Recommended Policy Interventions"
+    ],
+    "h2": [
+      "Redirect 97 Training Seats from Retail to Solar PV (Strict Default)",
+      "Establish EV Powertrain Diagnostics Hub in Pune ITIs",
+      "Launch Indic AI Annotation Hub in Lucknow Satellite Centers",
+      "Deploy Agricultural Drone Maintenance Cohort in Varanasi"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "08_scenarios": {
+    "url": "https://kaushalpulse.vercel.app/scenarios",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Scenario Studio"
+    ],
+    "h2": [
+      "Intervention Controls",
+      "Solar PV Installer (7126.0101)",
+      "Retail Sales Associate (5223.0101)"
+    ],
+    "h3": [
+      "Donor Safety vs. Target Deficit Closure Trade-off"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "09_districts": {
+    "url": "https://kaushalpulse.vercel.app/districts",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "District Labour Market Intelligence"
+    ],
+    "h2": [
+      "District Intelligence Directory"
+    ],
+    "h3": [
+      "Gorakhpur",
+      "Lucknow",
+      "Varanasi",
+      "Gautam Buddha Nagar"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "10_occupations": {
+    "url": "https://kaushalpulse.vercel.app/occupations",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Occupational Standard & Trade Directory"
+    ],
+    "h2": [
+      "Standardized Occupations & Trades"
+    ],
+    "h3": [
+      "Solar PV Installer",
+      "Retail Sales Associate",
+      "EV Service Technician",
+      "AI/ML Data Annotation Specialist",
+      "CNC Machine Operator",
+      "Drone Maintenance Technician",
+      "Community Health Assistant",
+      "Smart Meter Installation Technician",
+      "Industrial Automation Specialist",
+      "Tele-Sales Executive"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "11_qualifications": {
+    "url": "https://kaushalpulse.vercel.app/qualifications",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Qualification & NSQF Intelligence"
+    ],
+    "h2": [
+      "Active Qualification Packs & Alignment Coverage"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "12_data_health": {
+    "url": "https://kaushalpulse.vercel.app/data-health",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Data & Model Health Governance"
+    ],
+    "h2": [
+      "Model Benchmark Metrics & Baseline Comparison",
+      "Rolling-Origin Walk-Forward Backtest (6 Origins × Horizons 3M / 6M / 12M)",
+      "Ingested Data Sources & Provenance Registry"
+    ],
+    "h3": [
+      "Tri-Model Ensemble Blend (Production: LGB + Theta + ETS)",
+      "Theta Decomposition Method",
+      "LightGBM Lagged Regressor",
+      "ETS (Holt-Winters Baseline)",
+      "Seasonal Naive Lag-12 Benchmark"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "13_api": {
+    "url": "https://kaushalpulse.vercel.app/api",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "API & Data Exports Console"
+    ],
+    "h2": [
+      "Interactive Labour Intelligence API Explorer"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  },
+  "14_settings": {
+    "url": "https://kaushalpulse.vercel.app/settings",
+    "status": "OK",
+    "title": "KaushalYuva — AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine | MSDE",
+    "h1": [
+      "Settings & Engine Configuration"
+    ],
+    "h2": [],
+    "h3": [
+      "Offline Hackathon Demo Mode",
+      "Bilingual Language Localization",
+      "Model Hyperparameters & Staged Pipeline Factors"
+    ],
+    "hasCopilot": true,
+    "kpis": [],
+    "navButtons": [
+      "KY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE",
+      "Overview",
+      "Labour Intelligence",
+      "Forecasts",
+      "Skill Gaps",
+      "Early Warnings\n35",
+      "Recommendations\n4",
+      "Scenario Studio\nSTUDIO",
+      "Districts",
+      "Occupations",
+      "Qualifications",
+      "Data & Model Health",
+      "API & Exports",
+      "Settings",
+      "Ask Kaushal Copilot",
+      "KaushalYuva Home"
+    ]
+  }
+}

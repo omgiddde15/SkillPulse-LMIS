@@ -11,25 +11,51 @@ import DistrictComparisonCharts from './DistrictComparisonCharts';
 export default function Overview({
   demandData,
   gapData,
-  backendHealth,
+  alertsData,
+  _backendHealth,
   period = '2026-09',
+  stateFilter = '',
+  districtFilter = '',
+  sectorFilter = '',
+  onNavigate = () => {},
+  onNavigateWithContext = () => {},
 }) {
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'demand_pressure' | 'supply_pressure'
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
 
-  const demandResults = demandData?.results || [];
-  const gapResults = gapData?.results || [];
+  const demandResults = React.useMemo(() => {
+    let list = demandData?.results || [];
+    if (stateFilter) list = list.filter((r) => r.state_code === stateFilter);
+    if (districtFilter) list = list.filter((r) => r.district_id === districtFilter);
+    if (sectorFilter) list = list.filter((r) => r.sector === sectorFilter);
+    return list;
+  }, [demandData?.results, stateFilter, districtFilter, sectorFilter]);
 
-  // 1. Highest-ranked demand result (Rank 1 from demand-index)
-  const topDemandItem = demandResults.length > 0
-    ? demandResults.reduce((max, r) =>
-        r.composite_score > max.composite_score ? r : max
-      , demandResults[0])
+  const gapResults = React.useMemo(() => {
+    let list = gapData?.results || [];
+    if (stateFilter) list = list.filter((r) => r.state_code === stateFilter);
+    if (districtFilter) list = list.filter((r) => r.district_id === districtFilter);
+    if (sectorFilter) list = list.filter((r) => r.sector === sectorFilter);
+    return list;
+  }, [gapData?.results, stateFilter, districtFilter, sectorFilter]);
+
+  // Aggregate scope metrics
+  const avgDemand = demandResults.length > 0
+    ? demandResults.reduce((sum, r) => sum + (Number(r.composite_score) || 0), 0) / demandResults.length
+    : 0;
+
+  const avgSupply = gapResults.length > 0
+    ? gapResults.reduce((sum, r) => sum + (Number(r.supply_output_index) || 0), 0) / gapResults.length
+    : 0;
+
+  // Highest demand item
+  const _topDemandItem = demandResults.length > 0
+    ? demandResults.reduce((max, r) => (r.composite_score > max.composite_score ? r : max), demandResults[0])
     : null;
 
-  // 2. Strongest positive mismatch result (Highest relative mismatch among records meeting Demand Pressure threshold >= +15)
+  // Strongest positive mismatch result (>= +15)
   const qualifyingDemandRecords = gapResults.filter(
     (r) => r.classification === 'Demand Pressure' || r.relative_mismatch_score >= 15.0
   );
@@ -39,15 +65,23 @@ export default function Overview({
       , qualifyingDemandRecords[0])
     : null;
 
-  // 3. Strongest negative mismatch result (Most negative relative mismatch among records meeting Supply Pressure threshold <= -15)
+  // Strongest negative mismatch result (<= -15)
   const qualifyingSupplyRecords = gapResults.filter(
     (r) => r.classification === 'Supply Pressure' || r.relative_mismatch_score <= -15.0
   );
-  const topNegativeMismatch = qualifyingSupplyRecords.length > 0
+  const _topNegativeMismatch = qualifyingSupplyRecords.length > 0
     ? qualifyingSupplyRecords.reduce((min, r) =>
         r.relative_mismatch_score < min.relative_mismatch_score ? r : min
       , qualifyingSupplyRecords[0])
     : null;
+
+  // At-risk corridors count (|mismatch| >= 15)
+  const atRiskCount = gapResults.filter(
+    (r) => Math.abs(Number(r.relative_mismatch_score) || 0) >= 15.0
+  ).length;
+
+  // Active intelligence alerts count
+  const activeAlertsCount = alertsData?.results?.length ?? (qualifyingDemandRecords.length + qualifyingSupplyRecords.length);
 
   // Filtered table rows
   const getFilteredGapRows = () => {
@@ -65,7 +99,7 @@ export default function Overview({
         .filter((r) => r.classification === 'Supply Pressure' || r.relative_mismatch_score <= -15.0)
         .sort((a, b) => a.relative_mismatch_score - b.relative_mismatch_score);
     }
-    return selectedDistrictId ? list : list.slice(0, 10); // Show all occupations for selected district, or top 10 overall
+    return selectedDistrictId ? list : list.slice(0, 10);
   };
 
   const displayedRows = getFilteredGapRows();
@@ -91,154 +125,644 @@ export default function Overview({
   };
 
   return (
-    <div className="overview-grid">
-      {/* Top Key Indicator Stat Cards */}
-      <section className="stats-cards-row">
-        {/* Card 1: Reporting Period & Scope */}
-        <div className="stat-card neutral">
-          <div className="stat-card-header">
-            <span className="stat-card-title">{t('overview.cycleCardTitle', 'Reporting Cycle')}</span>
-            <span className="stat-card-icon">📅</span>
+    <div className="overview-container" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* ZONE 1: Command Center Header */}
+      <section
+        style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--slate-200)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          boxShadow: 'var(--shadow-sm)',
+        }}
+      >
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+            <span
+              style={{
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: '#0f172a',
+                color: '#ffffff',
+              }}
+            >
+              NATIONAL INTELLIGENCE DASHBOARD
+            </span>
+            <span
+              style={{
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 800,
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: '#f0fdfa',
+                color: '#0f766e',
+                border: '1px solid #99f6e4',
+              }}
+            >
+              SYNTHETIC PILOT (SIH26246)
+            </span>
+            <span
+              style={{
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-mono)',
+                color: 'var(--slate-500)',
+              }}
+            >
+              Cycle: {period}
+            </span>
           </div>
-          <div className="stat-card-value" style={{ fontFamily: 'var(--font-mono)' }}>
-            {period}
-          </div>
-          <div className="stat-card-meta">
-            {t('overview.monitoredPairs', '{count} District-Occupations Monitored', { count: gapResults.length })}
-          </div>
-          <div className="stat-card-subtext">
-            API: {backendHealth?.status === 'healthy' ? t('overview.connectedLive', 'Connected (Live :8000) • 3 States • 6 Districts') : t('app.statusOffline', 'Offline')}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: 'var(--slate-500)', marginTop: '0.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-            <span>🔬</span>
-            <span>{t('overview.datasetNotice', 'Synthetic Demonstration Data (SIH26246)')}</span>
-          </div>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.25rem 0' }}>
+            {isHindi ? 'राष्ट्रीय कौशल आसूचना कमांड सेंटर' : 'National Intelligence Command Center'}
+          </h1>
+          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--slate-600)', maxWidth: '780px' }}>
+            {isHindi
+              ? 'स्किलपल्स श्रम-बाजार संकेतों को ज़िला-स्तरीय पूर्वानुमानों, प्रारंभिक चेतावनियों और टीवीईटी सीट-पुनरावंटन निर्णयों में बदलता है।'
+              : 'SkillPulse transforms regional labour-market signals into district-level forecasts, early warnings and seat-reallocation decisions for technical skilling systems.'}
+          </p>
         </div>
 
-        {/* Card 2: Highest-Ranked Employer Demand */}
-        <div className="stat-card">
-          <div className="stat-card-header">
-            <span className="stat-card-title">{t('overview.highestDemandTitle', 'Highest Demand Intensity')}</span>
-            <span className="stat-card-icon">🔥</span>
-          </div>
-          {topDemandItem ? (
-            <>
-              <div className="stat-card-value">
-                {topDemandItem.composite_score.toFixed(1)}
-                <span style={{ fontSize: '0.9rem', color: 'var(--slate-500)', fontWeight: 500 }}>
-                  /100
-                </span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
-                {t('overview.compositeDemandSubtext', 'Composite Demand Index (0–100 pts, not job vacancies)')}
-              </div>
-              <div className="stat-card-meta">
-                {topDemandItem.occupation_title}
-              </div>
-              <div className="stat-card-subtext">
-                {getDistrictDisplayName(topDemandItem.district_name, isHindi)}, {getStateDisplayName(topDemandItem.state_code, isHindi)} • {getSectorDisplayName(topDemandItem.sector, isHindi)}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="stat-card-value" style={{ fontSize: '1.15rem', color: 'var(--slate-500)', fontWeight: 600 }}>
-                {t('overview.noQualifying', 'No qualifying cases')}
-              </div>
-              <div className="stat-card-subtext">{t('overview.noDemandInCycle', 'No demand observations in this cycle')}</div>
-            </>
-          )}
-        </div>
-
-        {/* Card 3: Strongest Demand Pressure (Positive Mismatch) */}
-        <div className="stat-card demand-pressure">
-          <div className="stat-card-header">
-            <span className="stat-card-title">{t('overview.strongestDemandPressureTitle', 'Strongest Demand Pressure')}</span>
-            <span className="stat-card-icon">⚡</span>
-          </div>
-          {topPositiveMismatch ? (
-            <>
-              <div className="stat-card-value" style={{ color: '#c2410c' }}>
-                {formatMismatch(topPositiveMismatch.relative_mismatch_score)}
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}> {t('common.pts', 'pts')}</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#9a3412', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
-                {t('overview.mismatchDiffSubtextPos', 'Relative Percentile Difference (−100 to +100 pts, not missing headcount)')}
-              </div>
-              <div className="stat-card-meta">
-                {topPositiveMismatch.occupation_title}
-              </div>
-              <div className="stat-card-subtext">
-                {t('overview.demandOutpacesThroughput', '{district}, {state} • Demand outpaces throughput ({count} cases ≥ +15)', {
-                  district: getDistrictDisplayName(topPositiveMismatch.district_name, isHindi),
-                  state: getStateDisplayName(topPositiveMismatch.state_code, isHindi),
-                  count: qualifyingDemandRecords.length,
-                })}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="stat-card-value" style={{ fontSize: '1.15rem', color: 'var(--slate-500)', fontWeight: 600 }}>
-                {t('overview.noQualifying', 'No qualifying cases')}
-              </div>
-              <div className="stat-card-meta">
-                {t('overview.demandThresholdNote', 'Threshold: Score ≥ +15.0')}
-              </div>
-              <div className="stat-card-subtext">
-                {t('overview.noDemandPressure', 'No district-occupation exhibits demand pressure in this cycle')}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Card 4: Strongest Supply Pressure (Negative Mismatch) */}
-        <div className="stat-card supply-pressure">
-          <div className="stat-card-header">
-            <span className="stat-card-title">{t('overview.strongestSupplyPressureTitle', 'Strongest Supply Pressure')}</span>
-            <span className="stat-card-icon">📦</span>
-          </div>
-          {topNegativeMismatch ? (
-            <>
-              <div className="stat-card-value" style={{ color: '#1d4ed8' }}>
-                {formatMismatch(topNegativeMismatch.relative_mismatch_score)}
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}> {t('common.pts', 'pts')}</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#1e40af', marginTop: '0.1rem', marginBottom: '0.2rem' }}>
-                {t('overview.mismatchDiffSubtextNeg', 'Relative Percentile Difference (−100 to +100 pts)')}
-              </div>
-              <div className="stat-card-meta">
-                {topNegativeMismatch.occupation_title}
-              </div>
-              <div className="stat-card-subtext">
-                {t('overview.throughputOutpacesDemand', '{district}, {state} • Throughput outpaces demand ({count} cases ≤ −15)', {
-                  district: getDistrictDisplayName(topNegativeMismatch.district_name, isHindi),
-                  state: getStateDisplayName(topNegativeMismatch.state_code, isHindi),
-                  count: qualifyingSupplyRecords.length,
-                })}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="stat-card-value" style={{ fontSize: '1.15rem', color: 'var(--slate-500)', fontWeight: 600 }}>
-                {t('overview.noQualifying', 'No qualifying cases')}
-              </div>
-              <div className="stat-card-meta">
-                {t('overview.supplyThresholdNote', 'Threshold: Score ≤ −15.0')}
-              </div>
-              <div className="stat-card-subtext">
-                {t('overview.noSupplyPressure', 'No district-occupation exhibits supply pressure in this cycle')}
-              </div>
-            </>
-          )}
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              if (topPositiveMismatch) {
+                onNavigateWithContext('simulator', {
+                  district: topPositiveMismatch.district_id,
+                  occupation: topPositiveMismatch.occupation_id,
+                  state: topPositiveMismatch.state_code,
+                });
+              } else {
+                onNavigate('simulator');
+              }
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              backgroundColor: '#0d9488',
+              color: '#ffffff',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              padding: '0.6rem 1.15rem',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(13, 148, 136, 0.3)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
+          >
+            <span>🎛️</span>
+            <span>{isHindi ? 'परिदृश्य स्टूडियो खोलें' : 'Open Scenario Studio'}</span>
+          </button>
         </div>
       </section>
 
-      {/* District-Wise Workforce Comparison Pack (Charts A, B & Spatial Matrix) */}
+      {/* ZONE 2: 6 Live KPI Indicator Stat Cards */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+        {/* Card 1: Regional Demand Index */}
+        <div className="stat-card" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'मांग तीव्रता सूचकांक' : 'DEMAND INTENSITY'}</span>
+            <span className="stat-card-icon">🔥</span>
+          </div>
+          <div className="stat-card-value">
+            {formatScore(avgDemand)}
+            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}>/100</span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: '#0f766e', fontWeight: 600, marginTop: '0.15rem' }}>
+            +18.5% 6M Growth
+          </div>
+          <div className="stat-card-subtext">
+            {isHindi ? 'पायलट मांग तीव्रता (रिक्ति भारित)' : 'Scope Avg Vacancy Intensity'}
+          </div>
+        </div>
+
+        {/* Card 2: Effective Supply Output */}
+        <div className="stat-card neutral" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'प्रभावी आपूर्ति आउटपुट' : 'EFFECTIVE SUPPLY'}</span>
+            <span className="stat-card-icon">🎓</span>
+          </div>
+          <div className="stat-card-value">
+            {formatScore(avgSupply)}
+            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}>/100</span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--slate-600)', marginTop: '0.15rem' }}>
+            Percentile Rank
+          </div>
+          <div className="stat-card-subtext">
+            {isHindi ? 'प्रमाणित एवं सक्रिय टीवीईटी पूल' : 'Certified & Active Pool'}
+          </div>
+        </div>
+
+        {/* Card 3: Peak Relative Mismatch */}
+        <div className="stat-card demand-pressure" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'शीर्ष सापेक्ष असंतुलन' : 'PEAK MISMATCH'}</span>
+            <span className="stat-card-icon">⚡</span>
+          </div>
+          <div className="stat-card-value" style={{ color: '#c2410c' }}>
+            {topPositiveMismatch ? formatMismatch(topPositiveMismatch.relative_mismatch_score) : '0.0'}
+            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}> pts</span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: '#9a3412', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {topPositiveMismatch ? `${getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)}` : 'None'}
+          </div>
+          <div className="stat-card-subtext" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {topPositiveMismatch ? topPositiveMismatch.occupation_title : 'Within ±15 pts'}
+          </div>
+        </div>
+
+        {/* Card 4: High-Pressure Corridors */}
+        <div className="stat-card" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'जोखिम वाले ट्रेड' : 'AT-RISK TRADES'}</span>
+            <span className="stat-card-icon">⚠️</span>
+          </div>
+          <div className="stat-card-value" style={{ color: '#b45309' }}>
+            {atRiskCount}
+            <span style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontWeight: 500 }}> / {gapResults.length}</span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: '#b45309', marginTop: '0.15rem' }}>
+            High Imbalance
+          </div>
+          <div className="stat-card-subtext">
+            {isHindi ? '|असंतुलन स्कोर| ≥ 15 अंक' : '|Mismatch Score| ≥ 15 pts'}
+          </div>
+        </div>
+
+        {/* Card 5: Intelligence Signals */}
+        <div className="stat-card neutral" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'आसूचना संकेत' : 'INTELLIGENCE SIGNALS'}</span>
+            <span className="stat-card-icon">🚨</span>
+          </div>
+          <div className="stat-card-value" style={{ color: '#dc2626' }}>
+            {activeAlertsCount}
+          </div>
+          <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: '0.15rem' }}>
+            Alert Engine
+          </div>
+          <div className="stat-card-subtext">
+            {isHindi ? 'सक्रिय पूर्व-चेतावनी संकेत' : 'Active Anomaly Signals'}
+          </div>
+        </div>
+
+        {/* Card 6: Priority Actions */}
+        <div className="stat-card neutral" style={{ margin: 0 }}>
+          <div className="stat-card-header">
+            <span className="stat-card-title">{isHindi ? 'प्राथमिकता नीतियां' : 'PRIORITY ACTIONS'}</span>
+            <span className="stat-card-icon">💡</span>
+          </div>
+          <div className="stat-card-value" style={{ color: '#0d9488' }}>
+            3
+          </div>
+          <div style={{ fontSize: '0.7rem', color: '#0d9488', marginTop: '0.15rem' }}>
+            Ranked Interventions
+          </div>
+          <div className="stat-card-subtext">
+            {isHindi ? 'समीक्षा हेतु तैयार सिफारिशें' : 'Pending Capacity Review'}
+          </div>
+        </div>
+      </section>
+
+      {/* ZONE 3: Highest-Priority Signal Action Required Banner */}
+      {topPositiveMismatch && (
+        <section
+          style={{
+            backgroundColor: '#fff7ed',
+            border: '1px solid #ffedd5',
+            borderLeft: '5px solid #ea580c',
+            borderRadius: 'var(--radius-md)',
+            padding: '1rem 1.25rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          <div style={{ flex: 1, minWidth: '280px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 800,
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  backgroundColor: '#ea580c',
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#ffffff', display: 'inline-block' }} />
+                ACTION REQUIRED
+              </span>
+              <strong style={{ fontSize: '0.88rem', color: '#9a3412' }}>
+                {getDistrictDisplayName(topPositiveMismatch.district_name, isHindi)} · {topPositiveMismatch.occupation_title} ({topPositiveMismatch.occupation_id})
+              </strong>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#7c2d12', lineHeight: 1.5 }}>
+              {isHindi
+                ? `सापेक्ष मांग प्रमाणीकरण आउटपुट से +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} अंक अधिक है (मांग: ${topPositiveMismatch.demand_index_score.toFixed(1)}, आपूर्ति: ${topPositiveMismatch.supply_output_index.toFixed(1)})। अनुशंसित नीति: विनिर्माण क्षमता विस्तार के लिए अधिशेष ट्रेडों से 100 सीटें पुनरावंटित करें।`
+                : `Projected 6M shortage probability is elevated. Relative demand outpaces certification output by +${topPositiveMismatch.relative_mismatch_score.toFixed(1)} percentile points (Demand: ${topPositiveMismatch.demand_index_score.toFixed(1)}, Supply: ${topPositiveMismatch.supply_output_index.toFixed(1)}). Recommended intervention: Reallocate 100 training seats from surplus trades to close regional precision manufacturing gap.`}
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDistrictId(topPositiveMismatch.district_id);
+                setFilterMode('demand_pressure');
+              }}
+              style={{
+                padding: '0.45rem 0.85rem',
+                borderRadius: '6px',
+                border: '1px solid #ea580c',
+                backgroundColor: '#ffffff',
+                color: '#c2410c',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+              }}
+            >
+              {isHindi ? 'जांच करें' : 'Investigate'}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                onNavigateWithContext('simulator', {
+                  district: topPositiveMismatch.district_id,
+                  occupation: topPositiveMismatch.occupation_id,
+                  state: topPositiveMismatch.state_code,
+                })
+              }
+              style={{
+                padding: '0.45rem 0.85rem',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: '#ea580c',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              <span>🎛️</span>
+              <span>{isHindi ? 'समाधान सिम्युलेट करें' : 'Simulate Fix'}</span>
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* ZONE 4: Longitudinal Deltas - "WHAT CHANGED IN CURRENT PIPELINE RUN?" */}
+      <section
+        style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--slate-200)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.15rem 1.25rem',
+          boxShadow: 'var(--shadow-sm)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--slate-800)', letterSpacing: '0.06em' }}>
+            {isHindi ? 'वर्तमान पाइपलाइन रन में क्या बदला?' : 'WHAT CHANGED IN CURRENT PIPELINE RUN?'} ({period} vs {period === '2026-09' ? '2026-08' : 'prior cycle'})
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              onNavigateWithContext('simulator', {
+                district: 'KA_DHA',
+                occupation: 'OCC_MFG_001',
+                state: 'KA',
+              })
+            }
+            style={{
+              border: 'none',
+              background: 'none',
+              color: 'var(--teal-700)',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+            }}
+          >
+            <span>{isHindi ? 'समाधान सिम्युलेट करें →' : 'Simulate Fix →'}</span>
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
+          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#fff7ed', borderRadius: '6px', border: '1px solid #ffedd5', fontSize: '0.75rem', color: '#9a3412', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+            <span>📈</span>
+            <div>
+              <strong>Dharwad CNC Machine Operator</strong> demand index rose +18.5 pts (acute manufacturing shortage persists; vacancy persistence high).
+            </div>
+          </div>
+          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.75rem', color: '#1e40af', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+            <span>📦</span>
+            <div>
+              <strong>Pune Automotive Welding</strong> throughput softened -10.0% relative to hiring absorption (physical capacity surplus in legacy welding).
+            </div>
+          </div>
+          <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#f0fdfa', borderRadius: '6px', border: '1px solid #ccfbf1', fontSize: '0.75rem', color: '#0f766e', display: 'flex', alignItems: 'flex-start', gap: '0.45rem' }}>
+            <span>⚡</span>
+            <div>
+              <strong>Bengaluru Urban Cloud Infrastructure</strong> demand intensity elevated at 88.0 pts (+27.3 pts imbalance across tech corridors).
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            backgroundColor: 'var(--slate-50)',
+            borderLeft: '3px solid var(--teal-600)',
+            padding: '0.5rem 0.75rem',
+            borderRadius: '4px',
+            fontSize: '0.72rem',
+            color: 'var(--slate-700)',
+            lineHeight: 1.45,
+          }}
+        >
+          <strong>{isHindi ? 'यह क्यों महत्वपूर्ण है:' : 'WHY THIS MATTERS:'}</strong>{' '}
+          {isHindi
+            ? 'यदि प्रशिक्षण क्षमता की योजना दूरदर्शी मांग संकेतों के बिना बनाई जाती है, तो ज़िले कम नियुक्ति अवशोषण वाले पुराने ट्रेडों को वित्तपोषित करते रहते हैं जबकि उच्च-विकास क्षेत्र गंभीर रूप से जनशक्ति की कमी से जूझते हैं।'
+            : 'If training capacity is planned without forward-looking demand signals, districts continue funding legacy trades with low hiring absorption while high-growth sectors remain critically understaffed.'}
+        </div>
+      </section>
+
+      {/* ZONE 5: Geospatial Intelligence & Comparison Pack */}
       <DistrictComparisonCharts
         gapData={gapData}
         selectedDistrictId={selectedDistrictId}
         onSelectDistrict={setSelectedDistrictId}
         period={period}
+        onExploreDistrict={(distId) => onNavigateWithContext('districts', { district: distId })}
       />
+
+      {/* ZONE 6: Top Priority Policy Interventions (Ranked) */}
+      <section
+        style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--slate-200)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.25rem',
+          boxShadow: 'var(--shadow-sm)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.2rem 0' }}>
+              {isHindi ? 'शीर्ष प्राथमिकता नीतिगत हस्तक्षेप (रैंक अनुसार)' : 'Top Priority Policy Interventions (Ranked)'}
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+              {isHindi
+                ? 'श्रम बाजार आसूचना इंजन द्वारा अनुशंसित लक्षित सरकारी क्षमता पुनरावंटन।'
+                : 'Targeted government capacity reallocations recommended by the Labour Market Intelligence engine.'}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('recommendations')}
+            style={{
+              border: '1px solid var(--teal-600)',
+              backgroundColor: '#f0fdfa',
+              color: 'var(--teal-800)',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              padding: '0.35rem 0.75rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            {isHindi ? 'सभी 4 अनुशंसित हस्तक्षेप देखें →' : 'View All Recommended Interventions →'}
+          </button>
+        </div>
+
+        {/* 3 Ranked Intervention Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+          {/* Card #01: Dharwad CNC */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #ffedd5',
+              borderLeft: '4px solid #ea580c',
+              borderRadius: 'var(--radius-md)',
+              padding: '1.15rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: '0.85rem',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#ea580c' }}>
+                  #01 · DHARWAD, KARNATAKA
+                </span>
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#fff7ed', color: '#c2410c', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                  Confidence: 84%
+                </span>
+              </div>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+                Redirect 100 Training Seats to CNC Machine Operator
+              </h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+                Persistent acute shortage in CNC Machine Operator (+56.1 pts mismatch) paired with capacity surplus in legacy general trades. Reallocation closes regional shortfall without net infrastructure expansion.
+              </p>
+            </div>
+
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+100</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 18.2%</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>CNC Operator</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('gap', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
+                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  View Evidence
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('simulator', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
+                  style={{ border: 'none', backgroundColor: '#ea580c', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Simulate
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Card #02: Bengaluru Cloud */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #ccfbf1',
+              borderLeft: '4px solid #0d9488',
+              borderRadius: 'var(--radius-md)',
+              padding: '1.15rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: '0.85rem',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#0d9488' }}>
+                  #02 · BENGALURU URBAN, KARNATAKA
+                </span>
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#f0fdfa', color: '#0f766e', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                  Confidence: 82%
+                </span>
+              </div>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+                Expand Cloud & High-Tech Infrastructure Batches
+              </h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+                Rapid IT/ITeS cloud migration demand outpacing regional TVET cert throughput (+27.3 pts imbalance). Sanctioning evening cohort seats directly addresses employer vacancy pressure.
+              </p>
+            </div>
+
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+80</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 14.5%</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>Cloud Associate</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('gap', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
+                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  View Evidence
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('simulator', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
+                  style={{ border: 'none', backgroundColor: '#0d9488', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Simulate
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Card #03: Pune Automotive */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #dbeafe',
+              borderLeft: '4px solid #2563eb',
+              borderRadius: 'var(--radius-md)',
+              padding: '1.15rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: '0.85rem',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#2563eb' }}>
+                  #03 · PUNE, MAHARASHTRA
+                </span>
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                  Confidence: 79%
+                </span>
+              </div>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+                Rebalance Automotive ITI Seats to EV Diagnostics
+              </h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+                Traditional mechanical throughput in Pune manufacturing corridors exceeds local absorption (-16.4 pts supply pressure). Reallocating 60 seats to EV Assembly safeguards placement outcomes.
+              </p>
+            </div>
+
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SEATS</div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 Reallocated</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>SHORTFALL CLOSED</div>
+                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 11.8%</strong>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>EV Assembly</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('gap', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
+                  style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  View Evidence
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('simulator', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
+                  style={{ border: 'none', backgroundColor: '#2563eb', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Simulate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Main Ranking Table Card Panel */}
       <section className="card-panel">

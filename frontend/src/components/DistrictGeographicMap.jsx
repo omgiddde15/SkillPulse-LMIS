@@ -64,6 +64,8 @@ export default function DistrictGeographicMap({
   period = '2026-09',
   isHindi = false,
   onSwitchToCharts = () => {},
+  onExploreDistrict = () => {},
+  gapRecords = [],
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -73,9 +75,30 @@ export default function DistrictGeographicMap({
 
   const [mapMode, setMapMode] = useState('basemap'); // 'basemap' | 'schematic'
   const [tilesOffline, setTilesOffline] = useState(false);
+  const [intelligenceLayer, setIntelligenceLayer] = useState('shortage'); // 'shortage' | 'demand' | 'supply'
 
   // Active district metrics object
   const activeDistrict = districts.find((d) => d.id === selectedDistrictId);
+
+  // Trades for selected district
+  const districtGapItems = React.useMemo(() => {
+    if (!activeDistrict || !gapRecords.length) return [];
+    return gapRecords.filter((r) => r.district_id === activeDistrict.id);
+  }, [activeDistrict, gapRecords]);
+
+  const shortageTrades = React.useMemo(() => {
+    return [...districtGapItems]
+      .filter((r) => Number(r.relative_mismatch_score) > 0)
+      .sort((a, b) => Number(b.relative_mismatch_score) - Number(a.relative_mismatch_score))
+      .slice(0, 2);
+  }, [districtGapItems]);
+
+  const oversuppliedTrades = React.useMemo(() => {
+    return [...districtGapItems]
+      .filter((r) => Number(r.relative_mismatch_score) < 0)
+      .sort((a, b) => Number(a.relative_mismatch_score) - Number(b.relative_mismatch_score))
+      .slice(0, 2);
+  }, [districtGapItems]);
 
   // Initialize Leaflet Interactive Basemap
   useEffect(() => {
@@ -170,9 +193,16 @@ export default function DistrictGeographicMap({
     districts.forEach((d) => {
       const isSelected = selectedDistrictId === d.id;
       const badge = getClassificationBadge(d.classification, isHindi);
-      const isDemand = d.classification === 'Demand Pressure';
-      const isSupply = d.classification === 'Supply Pressure';
-      const pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+      let pinColor = '#475569';
+      if (intelligenceLayer === 'shortage') {
+        const isDemand = d.classification === 'Demand Pressure';
+        const isSupply = d.classification === 'Supply Pressure';
+        pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+      } else if (intelligenceLayer === 'demand') {
+        pinColor = d.avgDemand >= 60 ? '#ea580c' : d.avgDemand >= 40 ? '#0d9488' : '#64748b';
+      } else if (intelligenceLayer === 'supply') {
+        pinColor = d.avgSupply >= 60 ? '#2563eb' : d.avgSupply >= 40 ? '#0d9488' : '#64748b';
+      }
       const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 36, offsetY: 4 };
 
       // Custom DivIcon with directional label placement preventing collisions
@@ -294,7 +324,7 @@ export default function DistrictGeographicMap({
         maxZoom: 7,
       });
     }
-  }, [districts, mapMode, period, isHindi, onSelectDistrict, selectedDistrictId]);
+  }, [districts, mapMode, period, isHindi, onSelectDistrict, selectedDistrictId, intelligenceLayer]);
 
   // Synchronize Leaflet popup with selectedDistrictId
   useEffect(() => {
@@ -336,8 +366,66 @@ export default function DistrictGeographicMap({
           </p>
         </div>
 
-        {/* Map View Mode Switcher + Legend */}
+        {/* Map View Mode Switcher + Intelligence Layer + Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {/* Intelligence Layer Switcher */}
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
+            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--slate-500)', padding: '0.2rem 0.35rem', alignSelf: 'center' }}>
+              LAYER:
+            </span>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: intelligenceLayer === 'shortage' ? '#ffffff' : 'transparent',
+                color: intelligenceLayer === 'shortage' ? '#ea580c' : 'var(--slate-600)',
+                fontWeight: intelligenceLayer === 'shortage' ? 700 : 500,
+                boxShadow: intelligenceLayer === 'shortage' ? 'var(--shadow-sm)' : 'none',
+                padding: '0.25rem 0.55rem',
+                fontSize: '0.72rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setIntelligenceLayer('shortage')}
+            >
+              {isHindi ? 'असंतुलन' : 'Shortage Severity'}
+            </button>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: intelligenceLayer === 'demand' ? '#ffffff' : 'transparent',
+                color: intelligenceLayer === 'demand' ? 'var(--teal-800)' : 'var(--slate-600)',
+                fontWeight: intelligenceLayer === 'demand' ? 700 : 500,
+                boxShadow: intelligenceLayer === 'demand' ? 'var(--shadow-sm)' : 'none',
+                padding: '0.25rem 0.55rem',
+                fontSize: '0.72rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setIntelligenceLayer('demand')}
+            >
+              {isHindi ? 'मांग' : 'Demand Intensity'}
+            </button>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: intelligenceLayer === 'supply' ? '#ffffff' : 'transparent',
+                color: intelligenceLayer === 'supply' ? '#2563eb' : 'var(--slate-600)',
+                fontWeight: intelligenceLayer === 'supply' ? 700 : 500,
+                boxShadow: intelligenceLayer === 'supply' ? 'var(--shadow-sm)' : 'none',
+                padding: '0.25rem 0.55rem',
+                fontSize: '0.72rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setIntelligenceLayer('supply')}
+            >
+              {isHindi ? 'आपूर्ति' : 'Effective Supply'}
+            </button>
+          </div>
+
           {/* Mode Toggle: Basemap vs Schematic */}
           <div style={{ display: 'inline-flex', backgroundColor: 'var(--slate-100)', padding: '0.2rem', borderRadius: 'var(--radius-sm)' }}>
             <button
@@ -355,7 +443,7 @@ export default function DistrictGeographicMap({
               }}
               onClick={() => setMapMode('basemap')}
             >
-              🌐 {isHindi ? 'इंटरैक्टिव बेसमैप' : 'Interactive Basemap'}
+              🌐 {isHindi ? 'इंटरैक्टिव बेसमैप' : 'Basemap'}
             </button>
             <button
               type="button"
@@ -372,7 +460,7 @@ export default function DistrictGeographicMap({
               }}
               onClick={() => setMapMode('schematic')}
             >
-              📍 {isHindi ? 'स्थानिक लोकेशन मैप' : 'Schematic Location Map'}
+              📍 {isHindi ? 'स्थानिक लोकेशन' : 'Schematic'}
             </button>
           </div>
 
@@ -546,10 +634,16 @@ export default function DistrictGeographicMap({
                 const px = projX(d.lon);
                 const py = projY(d.lat);
                 const isSelected = selectedDistrictId === d.id;
-                const badge = getClassificationBadge(d.classification, isHindi);
-                const isDemand = d.classification === 'Demand Pressure';
-                const isSupply = d.classification === 'Supply Pressure';
-                const pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+                let pinColor = '#475569';
+                if (intelligenceLayer === 'shortage') {
+                  const isDemand = d.classification === 'Demand Pressure';
+                  const isSupply = d.classification === 'Supply Pressure';
+                  pinColor = isDemand ? '#ea580c' : isSupply ? '#2563eb' : '#475569';
+                } else if (intelligenceLayer === 'demand') {
+                  pinColor = d.avgDemand >= 60 ? '#ea580c' : d.avgDemand >= 40 ? '#0d9488' : '#64748b';
+                } else if (intelligenceLayer === 'supply') {
+                  pinColor = d.avgSupply >= 60 ? '#2563eb' : d.avgSupply >= 40 ? '#0d9488' : '#64748b';
+                }
                 const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 20, offsetY: 0 };
 
                 // Directional label text anchor & box
@@ -698,16 +792,84 @@ export default function DistrictGeographicMap({
               </div>
             </div>
 
+            {/* Top Shortage Trades */}
+            {shortageTrades.length > 0 && (
+              <div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#c2410c', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span>⚡</span>
+                  <span>{isHindi ? 'शीर्ष कमी वाले ट्रेड:' : 'TOP SHORTAGE TRADES:'}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {shortageTrades.map((t, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: '#fff7ed', borderRadius: '4px', border: '1px solid #ffedd5' }}>
+                      <span style={{ fontWeight: 600, color: '#9a3412', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                        {t.occupation_title}
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#c2410c', fontSize: '0.68rem' }}>
+                        +{Number(t.relative_mismatch_score).toFixed(1)} pts
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Oversupplied Trades */}
+            {oversuppliedTrades.length > 0 && (
+              <div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1d4ed8', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span>📦</span>
+                  <span>{isHindi ? 'अधिशेष आपूर्ति वाले ट्रेड:' : 'OVERSUPPLIED TRADES:'}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {oversuppliedTrades.map((t, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: '#eff6ff', borderRadius: '4px', border: '1px solid #dbeafe' }}>
+                      <span style={{ fontWeight: 600, color: '#1e40af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                        {t.occupation_title}
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#1d4ed8', fontSize: '0.68rem' }}>
+                        {Number(t.relative_mismatch_score).toFixed(1)} pts
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Filter Active Notice */}
             <div style={{ fontSize: '0.72rem', color: 'var(--teal-800)', backgroundColor: '#f0fdfa', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid #99f6e4', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span>✓</span>
               <span>{isHindi ? 'नीचे दी गई तालिका इस ज़िले के लिए फ़िल्टर की गई है।' : 'Rankings table below is filtered to this district.'}</span>
             </div>
 
+            {/* Explore Complete Dossier Button */}
+            {onExploreDistrict && (
+              <button
+                type="button"
+                onClick={() => onExploreDistrict(activeDistrict.id)}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#0d9488',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.45rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
+              >
+                {isHindi ? `${getDistrictDisplayName(activeDistrict.name, isHindi)} पूर्ण डॉसियर देखें →` : `Explore Complete ${activeDistrict.name} Dossier →`}
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => onSelectDistrict(null)}
-              style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.35rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', marginTop: 'auto' }}
+              style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.35rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', marginTop: '0.25rem' }}
             >
               ✕ {isHindi ? 'फ़िल्टर हटाएं (सभी ज़िले देखें)' : 'Clear Filter (Show All Districts)'}
             </button>

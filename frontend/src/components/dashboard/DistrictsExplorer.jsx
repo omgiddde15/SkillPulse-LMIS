@@ -19,6 +19,7 @@ const PILOT_COORDINATES = {
 export default function DistrictsExplorer({
   gapData = null,
   period = '2026-09',
+  onNavigateWithContext = () => {},
 }) {
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
@@ -27,32 +28,33 @@ export default function DistrictsExplorer({
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [stateFilter, setStateFilter] = useState('');
 
-  // Aggregate district-level statistics from gapData records
+  // Aggregate district-level statistics from gapData results or records
   const districtSummaries = useMemo(() => {
-    if (!gapData || !gapData.records) return [];
+    const rawList = gapData?.results || gapData?.records || [];
+    if (!rawList.length) return [];
 
     const map = {};
-    gapData.records.forEach((r) => {
-      if (!map[r.district_id]) {
-        map[r.district_id] = {
-          id: r.district_id,
+    rawList.forEach((r) => {
+      const distId = r.district_id;
+      if (!map[distId]) {
+        map[distId] = {
+          id: distId,
           name: r.district_name,
-          state: r.state,
-          lat: PILOT_COORDINATES[r.district_id]?.lat || 0,
-          lon: PILOT_COORDINATES[r.district_id]?.lon || 0,
+          state: r.state_code || r.state,
+          lat: PILOT_COORDINATES[distId]?.lat || 0,
+          lon: PILOT_COORDINATES[distId]?.lon || 0,
           demandTotal: 0,
           supplyTotal: 0,
           mismatchTotal: 0,
           count: 0,
-          classifications: {},
+          records: [],
         };
       }
-      map[r.district_id].demandTotal += r.demand_index || 0;
-      map[r.district_id].supplyTotal += r.supply_index || 0;
-      map[r.district_id].mismatchTotal += r.mismatch || 0;
-      map[r.district_id].count += 1;
-      map[r.district_id].classifications[r.classification] =
-        (map[r.district_id].classifications[r.classification] || 0) + 1;
+      map[distId].demandTotal += Number(r.demand_index_score ?? r.demand_index ?? 0);
+      map[distId].supplyTotal += Number(r.supply_output_index ?? r.supply_index ?? 0);
+      map[distId].mismatchTotal += Number(r.relative_mismatch_score ?? r.mismatch ?? 0);
+      map[distId].count += 1;
+      map[distId].records.push(r);
     });
 
     return Object.values(map).map((d) => {
@@ -60,6 +62,14 @@ export default function DistrictsExplorer({
       let classification = 'Balanced';
       if (avgMismatch >= 15) classification = 'Demand Pressure';
       else if (avgMismatch <= -15) classification = 'Supply Pressure';
+
+      // Find top shortage and oversupply trade
+      const sortedByMismatch = [...d.records].sort(
+        (a, b) => Number(b.relative_mismatch_score ?? b.mismatch ?? 0) - Number(a.relative_mismatch_score ?? a.mismatch ?? 0)
+      );
+
+      const topShortage = sortedByMismatch[0] || null;
+      const topSurplus = sortedByMismatch[sortedByMismatch.length - 1] || null;
 
       return {
         id: d.id,
@@ -72,6 +82,9 @@ export default function DistrictsExplorer({
         mismatch: avgMismatch,
         classification,
         count: d.count,
+        topShortage,
+        topSurplus,
+        records: d.records,
       };
     });
   }, [gapData]);
@@ -88,7 +101,7 @@ export default function DistrictsExplorer({
       <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '1.25rem' }}>🗺️</span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('districts.title', 'Pilot Districts Intelligence')}
@@ -168,58 +181,137 @@ export default function DistrictsExplorer({
             period={period}
             isHindi={isHindi}
             onSwitchToCharts={() => setActiveTab('charts')}
+            onExploreDistrict={(distId) => setSelectedDistrictId(distId)}
+            gapRecords={gapData?.results || gapData?.records || []}
           />
         ) : (
           <DistrictComparisonCharts
-            districts={filteredDistricts}
+            gapData={gapData}
             selectedDistrictId={selectedDistrictId}
             onSelectDistrict={setSelectedDistrictId}
-            isHindi={isHindi}
+            period={period}
+            onExploreDistrict={(distId) => setSelectedDistrictId(distId)}
           />
         )}
       </div>
 
-      {/* District KPI Summary Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+      {/* District Dossier Cards Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
         {filteredDistricts.map((d) => {
           const isSelected = selectedDistrictId === d.id;
+          const topShortageScore = Number(d.topShortage?.relative_mismatch_score ?? d.topShortage?.mismatch ?? 0);
+          const topSurplusScore = Number(d.topSurplus?.relative_mismatch_score ?? d.topSurplus?.mismatch ?? 0);
+
           return (
             <div
               key={d.id}
-              onClick={() => setSelectedDistrictId(isSelected ? null : d.id)}
               style={{
                 backgroundColor: '#ffffff',
                 border: isSelected ? '2px solid #0d9488' : '1px solid var(--slate-200)',
                 borderRadius: 'var(--radius-md)',
-                padding: '1rem',
-                cursor: 'pointer',
+                padding: '1.15rem',
                 boxShadow: isSelected ? 'var(--shadow-md)' : 'var(--shadow-sm)',
                 transition: 'all 0.15s',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.85rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--slate-900)' }}>
-                  📍 {getDistrictDisplayName(d.name, isHindi)}
-                </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
-                  {getStateDisplayName(d.state, isHindi)}
-                </span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', textAlign: 'center', fontSize: '0.75rem', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--slate-100)' }}>
-                <div>
-                  <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Demand</div>
-                  <div style={{ fontWeight: 800, color: '#0f766e', fontFamily: 'var(--font-mono)' }}>{d.avgDemand.toFixed(1)}</div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+                    📍 {getDistrictDisplayName(d.name, isHindi)}
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                    {getStateDisplayName(d.state, isHindi)} • {d.id}
+                  </span>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Supply</div>
-                  <div style={{ fontWeight: 800, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>{d.avgSupply.toFixed(1)}</div>
-                </div>
-                <div>
-                  <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Mismatch</div>
-                  <div style={{ fontWeight: 800, color: d.mismatch >= 15 ? '#c2410c' : d.mismatch <= -15 ? '#1d4ed8' : '#475569', fontFamily: 'var(--font-mono)' }}>
-                    {d.mismatch > 0 ? `+${d.mismatch.toFixed(1)}` : d.mismatch.toFixed(1)}
+
+                {/* 3 Metric Pills */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', textAlign: 'center', fontSize: '0.75rem', marginTop: '0.5rem', padding: '0.5rem 0', borderTop: '1px solid var(--slate-100)', borderBottom: '1px solid var(--slate-100)' }}>
+                  <div>
+                    <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Demand Avg</div>
+                    <div style={{ fontWeight: 800, color: '#0f766e', fontFamily: 'var(--font-mono)' }}>{d.avgDemand.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Supply Avg</div>
+                    <div style={{ fontWeight: 800, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>{d.avgSupply.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Net Mismatch</div>
+                    <div style={{ fontWeight: 800, color: d.mismatch >= 15 ? '#c2410c' : d.mismatch <= -15 ? '#1d4ed8' : '#475569', fontFamily: 'var(--font-mono)' }}>
+                      {d.mismatch > 0 ? `+${d.mismatch.toFixed(1)}` : d.mismatch.toFixed(1)} pts
+                    </div>
                   </div>
                 </div>
+
+                {/* Key Corridors Breakdown */}
+                <div style={{ marginTop: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem' }}>
+                  {d.topShortage && topShortageScore > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff7ed', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #ffedd5' }}>
+                      <span style={{ color: '#9a3412', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                        ⚡ {d.topShortage.occupation_title}
+                      </span>
+                      <strong style={{ color: '#c2410c', fontFamily: 'var(--font-mono)' }}>
+                        +{topShortageScore.toFixed(1)}
+                      </strong>
+                    </div>
+                  )}
+
+                  {d.topSurplus && topSurplusScore < 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#eff6ff', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #dbeafe' }}>
+                      <span style={{ color: '#1e40af', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                        📦 {d.topSurplus.occupation_title}
+                      </span>
+                      <strong style={{ color: '#1d4ed8', fontFamily: 'var(--font-mono)' }}>
+                        {topSurplusScore.toFixed(1)}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid var(--slate-100)', paddingTop: '0.65rem' }}>
+                <button
+                  type="button"
+                  onClick={() => onNavigateWithContext('gap', { district: d.id, state: d.state })}
+                  style={{
+                    border: '1px solid var(--slate-300)',
+                    backgroundColor: '#ffffff',
+                    color: 'var(--slate-700)',
+                    padding: '0.3rem 0.6rem',
+                    borderRadius: '4px',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {isHindi ? 'गैप विवरण' : 'Inspect Gaps'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onNavigateWithContext('simulator', {
+                      district: d.id,
+                      occupation: d.topShortage?.occupation_id,
+                      state: d.state,
+                    })
+                  }
+                  style={{
+                    border: 'none',
+                    backgroundColor: '#0d9488',
+                    color: '#ffffff',
+                    padding: '0.3rem 0.65rem',
+                    borderRadius: '4px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {isHindi ? 'सिम्युलेट करें' : 'Test in Simulator'}
+                </button>
               </div>
             </div>
           );

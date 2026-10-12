@@ -15,12 +15,37 @@ import QualificationsExplorer from './components/dashboard/QualificationsExplore
 import DataHealth from './components/dashboard/DataHealth';
 import ApiExports from './components/dashboard/ApiExports';
 import Settings from './components/dashboard/Settings';
+import ContextFilterBar from './components/dashboard/ContextFilterBar';
+import CopilotDrawer from './components/dashboard/CopilotDrawer';
 import PlaceholderPage from './components/PlaceholderPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorAlert from './components/ErrorAlert';
 import ErrorBoundary from './components/ErrorBoundary';
-import { fetchHealth, fetchDemandIndex, fetchGapAnalysis } from './api/client';
+import { fetchHealth, fetchDemandIndex, fetchGapAnalysis, fetchAlerts } from './api/client';
 import { useLanguage } from './context/LanguageContext';
+
+const FILTERABLE_TABS = ['overview', 'demand', 'gap', 'forecasts', 'alerts'];
+
+const PILOT_DISTRICTS = [
+  { id: 'MH_PUN', state: 'MH' },
+  { id: 'MH_MUM', state: 'MH' },
+  { id: 'KA_BLR_U', state: 'KA' },
+  { id: 'KA_DHA', state: 'KA' },
+  { id: 'TS_HYD', state: 'TS' },
+  { id: 'TS_MED', state: 'TS' },
+];
+
+const PILOT_OCCUPATIONS = [
+  { id: 'OCC_IT_001', sector: 'IT/ITeS' },
+  { id: 'OCC_IT_002', sector: 'IT/ITeS' },
+  { id: 'OCC_IT_003', sector: 'IT/ITeS' },
+  { id: 'OCC_MFG_001', sector: 'Manufacturing' },
+  { id: 'OCC_MFG_002', sector: 'Manufacturing' },
+  { id: 'OCC_MFG_003', sector: 'Manufacturing' },
+  { id: 'OCC_LOG_001', sector: 'Logistics' },
+  { id: 'OCC_LOG_002', sector: 'Logistics' },
+  { id: 'OCC_LOG_003', sector: 'Logistics' },
+];
 
 const ROUTE_TO_PATH = {
   home: '/',
@@ -73,9 +98,43 @@ export default function App() {
   const [backendHealth, setBackendHealth] = useState({ status: 'checking' });
   const [demandData, setDemandData] = useState(null);
   const [gapData, setGapData] = useState(null);
+  const [alertsData, setAlertsData] = useState(null);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [simulatorTarget, setSimulatorTarget] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  // Global Context Filter State
+  const [stateFilter, setStateFilter] = useState('');
+  const [districtFilter, setDistrictFilter] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('');
+  const [occupationFilter, setOccupationFilter] = useState('');
+  const [horizonFilter, setHorizonFilter] = useState(3);
+
+  const handleStateChange = useCallback((newState) => {
+    setStateFilter(newState);
+    if (newState && districtFilter) {
+      const match = PILOT_DISTRICTS.find((d) => d.id === districtFilter && d.state === newState);
+      if (!match) setDistrictFilter('');
+    }
+  }, [districtFilter]);
+
+  const handleSectorChange = useCallback((newSector) => {
+    setSectorFilter(newSector);
+    if (newSector && occupationFilter) {
+      const match = PILOT_OCCUPATIONS.find((o) => o.id === occupationFilter && o.sector === newSector);
+      if (!match) setOccupationFilter('');
+    }
+  }, [occupationFilter]);
+
+  const handleResetFilters = useCallback(() => {
+    setStateFilter('');
+    setDistrictFilter('');
+    setSectorFilter('');
+    setOccupationFilter('');
+    setHorizonFilter(3);
+  }, []);
 
   // Synchronize browser history on route changes
   const handleNavigate = useCallback((tabId) => {
@@ -86,6 +145,19 @@ export default function App() {
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
+
+  // Context-aware deep-linking across modules
+  const handleNavigateWithContext = useCallback((tabId, context = {}) => {
+    if (context.state !== undefined) setStateFilter(context.state);
+    if (context.district !== undefined) setDistrictFilter(context.district);
+    if (context.sector !== undefined) setSectorFilter(context.sector);
+    if (context.occupation !== undefined) setOccupationFilter(context.occupation);
+    if (context.horizon !== undefined) setHorizonFilter(context.horizon);
+    if (tabId === 'simulator') {
+      setSimulatorTarget(context);
+    }
+    handleNavigate(tabId);
+  }, [handleNavigate]);
 
   // Listen for browser forward/backward buttons
   useEffect(() => {
@@ -106,14 +178,16 @@ export default function App() {
         if (ignore) return;
         setBackendHealth(healthRes);
 
-        const [demandRes, gapRes] = await Promise.all([
+        const [demandRes, gapRes, alertsRes] = await Promise.all([
           fetchDemandIndex({ period, limit: 100 }),
           fetchGapAnalysis({ period, limit: 100 }),
+          fetchAlerts({ period, limit: 100 }),
         ]);
 
         if (ignore) return;
         setDemandData(demandRes);
         setGapData(gapRes);
+        setAlertsData(alertsRes);
         setErrorMessage(null);
       } catch (err) {
         if (ignore) return;
@@ -144,13 +218,15 @@ export default function App() {
       const healthRes = await fetchHealth();
       setBackendHealth(healthRes);
 
-      const [demandRes, gapRes] = await Promise.all([
+      const [demandRes, gapRes, alertsRes] = await Promise.all([
         fetchDemandIndex({ period, limit: 100 }),
         fetchGapAnalysis({ period, limit: 100 }),
+        fetchAlerts({ period, limit: 100 }),
       ]);
 
       setDemandData(demandRes);
       setGapData(gapRes);
+      setAlertsData(alertsRes);
     } catch (err) {
       setBackendHealth({ status: 'offline', error: err.message });
       setErrorMessage(
@@ -170,13 +246,15 @@ export default function App() {
       const healthRes = await fetchHealth();
       setBackendHealth(healthRes);
 
-      const [demandRes, gapRes] = await Promise.all([
+      const [demandRes, gapRes, alertsRes] = await Promise.all([
         fetchDemandIndex({ period, limit: 100 }),
         fetchGapAnalysis({ period, limit: 100 }),
+        fetchAlerts({ period, limit: 100 }),
       ]);
 
       setDemandData(demandRes);
       setGapData(gapRes);
+      setAlertsData(alertsRes);
     } catch (err) {
       setBackendHealth({ status: 'offline', error: err.message });
       setErrorMessage(
@@ -205,6 +283,8 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={handleNavigate}
         backendHealth={backendHealth}
+        onOpenCopilot={() => setIsCopilotOpen(true)}
+        alertsCount={alertsData?.results?.length}
       />
 
       {/* Main Workspace Area */}
@@ -219,12 +299,32 @@ export default function App() {
           }}
           onRefresh={handleRefresh}
           onNavigateHome={() => handleNavigate('home')}
+          onOpenCopilot={() => setIsCopilotOpen(true)}
           isRefreshing={isRefreshing}
           backendHealth={backendHealth}
         />
 
         {/* Dynamic Page Content */}
         <main className="page-content" style={{ padding: '1.25rem', overflowY: 'auto' }}>
+          {/* Global Context Filter Bar for analytical pages */}
+          {FILTERABLE_TABS.includes(activeTab) && (
+            <ContextFilterBar
+              stateFilter={stateFilter}
+              districtFilter={districtFilter}
+              sectorFilter={sectorFilter}
+              occupationFilter={occupationFilter}
+              horizonFilter={horizonFilter}
+              showHorizon={activeTab === 'forecasts' || activeTab === 'alerts'}
+              showOccupation={activeTab !== 'overview'}
+              onStateChange={handleStateChange}
+              onDistrictChange={setDistrictFilter}
+              onSectorChange={handleSectorChange}
+              onOccupationChange={setOccupationFilter}
+              onHorizonChange={setHorizonFilter}
+              onReset={handleResetFilters}
+            />
+          )}
+
           {activeTab === 'overview' && (
             <ErrorBoundary moduleName="Overview" onRetry={handleRetry}>
               {errorMessage ? (
@@ -235,8 +335,14 @@ export default function App() {
                 <Overview
                   demandData={demandData}
                   gapData={gapData}
+                  alertsData={alertsData}
                   backendHealth={backendHealth}
                   period={period}
+                  stateFilter={stateFilter}
+                  districtFilter={districtFilter}
+                  sectorFilter={sectorFilter}
+                  onNavigate={handleNavigate}
+                  onNavigateWithContext={handleNavigateWithContext}
                 />
               )}
             </ErrorBoundary>
@@ -247,6 +353,15 @@ export default function App() {
               <DemandIntelligence
                 period={period}
                 onPeriodChange={(newPeriod) => setPeriod(newPeriod)}
+                stateFilter={stateFilter}
+                districtFilter={districtFilter}
+                sectorFilter={sectorFilter}
+                occupationFilter={occupationFilter}
+                onStateChange={handleStateChange}
+                onDistrictChange={setDistrictFilter}
+                onSectorChange={handleSectorChange}
+                onOccupationChange={setOccupationFilter}
+                onResetFilters={handleResetFilters}
               />
             </ErrorBoundary>
           )}
@@ -256,6 +371,15 @@ export default function App() {
               <GapAnalysis
                 period={period}
                 onPeriodChange={(newPeriod) => setPeriod(newPeriod)}
+                stateFilter={stateFilter}
+                districtFilter={districtFilter}
+                sectorFilter={sectorFilter}
+                occupationFilter={occupationFilter}
+                onStateChange={handleStateChange}
+                onDistrictChange={setDistrictFilter}
+                onSectorChange={handleSectorChange}
+                onOccupationChange={setOccupationFilter}
+                onResetFilters={handleResetFilters}
               />
             </ErrorBoundary>
           )}
@@ -265,6 +389,17 @@ export default function App() {
               <Forecasts
                 period={period}
                 onPeriodChange={(newPeriod) => setPeriod(newPeriod)}
+                stateFilter={stateFilter}
+                districtFilter={districtFilter}
+                sectorFilter={sectorFilter}
+                occupationFilter={occupationFilter}
+                horizonFilter={horizonFilter}
+                onStateChange={handleStateChange}
+                onDistrictChange={setDistrictFilter}
+                onSectorChange={handleSectorChange}
+                onOccupationChange={setOccupationFilter}
+                onHorizonChange={setHorizonFilter}
+                onResetFilters={handleResetFilters}
               />
             </ErrorBoundary>
           )}
@@ -274,6 +409,20 @@ export default function App() {
               <EarlyWarningAlerts
                 period={period}
                 onPeriodChange={(newPeriod) => setPeriod(newPeriod)}
+                stateFilter={stateFilter}
+                districtFilter={districtFilter}
+                sectorFilter={sectorFilter}
+                occupationFilter={occupationFilter}
+                horizonFilter={horizonFilter}
+                onStateChange={handleStateChange}
+                onDistrictChange={setDistrictFilter}
+                onSectorChange={handleSectorChange}
+                onOccupationChange={setOccupationFilter}
+                onHorizonChange={setHorizonFilter}
+                onResetFilters={handleResetFilters}
+                onNavigateToSimulator={(dist, occ, h) =>
+                  handleNavigateWithContext('simulator', { district: dist, occupation: occ, horizon: h })
+                }
               />
             </ErrorBoundary>
           )}
@@ -283,8 +432,9 @@ export default function App() {
               <Recommendations
                 period={period}
                 onNavigateToSimulator={(_districtId, _occupationId) => {
-                  handleNavigate('simulator');
+                  handleNavigateWithContext('simulator', { district: _districtId, occupation: _occupationId });
                 }}
+                onNavigateWithContext={handleNavigateWithContext}
               />
             </ErrorBoundary>
           )}
@@ -294,6 +444,9 @@ export default function App() {
               <SeatSimulator
                 period={period}
                 onPeriodChange={(newPeriod) => setPeriod(newPeriod)}
+                initialDistrict={simulatorTarget?.district}
+                initialOccupation={simulatorTarget?.occupation}
+                initialHorizon={simulatorTarget?.horizon}
               />
             </ErrorBoundary>
           )}
@@ -303,6 +456,7 @@ export default function App() {
               <DistrictsExplorer
                 gapData={gapData}
                 period={period}
+                onNavigateWithContext={handleNavigateWithContext}
               />
             </ErrorBoundary>
           )}
@@ -359,6 +513,18 @@ export default function App() {
             )}
         </main>
       </div>
+
+      {/* Grounded Analytical Policy Copilot Drawer */}
+      <CopilotDrawer
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        gapData={gapData}
+        demandData={demandData}
+        alertsData={alertsData}
+        period={period}
+        onNavigateToTab={handleNavigate}
+        onNavigateWithContext={handleNavigateWithContext}
+      />
     </div>
   );
 }

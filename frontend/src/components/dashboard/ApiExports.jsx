@@ -6,7 +6,14 @@ import {
   exportForecastsCsv,
   exportEarlyWarningAlertsCsv,
 } from '../../utils/exportCsv';
-import { fetchDemandIndex, fetchGapAnalysis, fetchForecasts, fetchAlerts } from '../../api/client';
+import {
+  fetchDemandIndex,
+  fetchGapAnalysis,
+  fetchForecasts,
+  fetchAlerts,
+  fetchMetadata,
+  postSeatAllocation,
+} from '../../api/client';
 
 const API_ENDPOINTS = [
   {
@@ -54,6 +61,12 @@ export default function ApiExports({ period = '2026-09' }) {
   const [exportingType, setExportingType] = useState(null);
   const [exportMessage, setExportMessage] = useState(null);
 
+  // Interactive Live Endpoint Tester State
+  const [testedEndpoint, setTestedEndpoint] = useState(null);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResponse, setTestResponse] = useState(null);
+  const [testError, setTestError] = useState(null);
+
   const handleExport = async (type) => {
     setExportingType(type);
     setExportMessage(null);
@@ -79,13 +92,54 @@ export default function ApiExports({ period = '2026-09' }) {
     }
   };
 
+  const handleTestEndpoint = async (endpointPath) => {
+    if (testedEndpoint === endpointPath && testResponse) {
+      // Toggle collapse if already open
+      setTestedEndpoint(null);
+      return;
+    }
+
+    setTestedEndpoint(endpointPath);
+    setTestLoading(true);
+    setTestResponse(null);
+    setTestError(null);
+
+    try {
+      let data = null;
+      if (endpointPath === '/api/v1/demand-index') {
+        data = await fetchDemandIndex({ period, limit: 2 });
+      } else if (endpointPath === '/api/v1/gap-analysis') {
+        data = await fetchGapAnalysis({ period, limit: 2 });
+      } else if (endpointPath === '/api/v1/forecasts') {
+        data = await fetchForecasts({ period, horizon: 3, limit: 2 });
+      } else if (endpointPath === '/api/v1/alerts') {
+        data = await fetchAlerts({ period, limit: 2 });
+      } else if (endpointPath === '/api/v1/metadata') {
+        data = await fetchMetadata();
+      } else if (endpointPath === '/api/v1/simulations/seat-allocation') {
+        data = await postSeatAllocation({
+          period,
+          horizon_months: 3,
+          district_id: 'KA_DHA',
+          occupation_id: 'OCC_MFG_001',
+          proposed_seats_per_cohort: 150,
+        });
+      }
+      setTestResponse(data);
+    } catch (err) {
+      setTestError(err.message || 'Endpoint execution error');
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
       <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '1.25rem' }}>⚡</span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('apiExports.title', 'Developer API & CSV Data Exports')}
@@ -140,7 +194,7 @@ export default function ApiExports({ period = '2026-09' }) {
             }}
           >
             <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)' }}>📈 Demand Index CSV</strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Rankings, percentiles &amp; drivers</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Composite scores &amp; vacancy indicators</span>
           </button>
 
           <button
@@ -159,8 +213,8 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)' }}>⚖️ Gap Analysis CSV</strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Mismatch scores &amp; classifications</span>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)' }}>⚖️ Skill Gap Analysis CSV</strong>
+            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Relative mismatch scores &amp; ranks</span>
           </button>
 
           <button
@@ -179,8 +233,8 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)' }}>🔮 Forecasts (+3M) CSV</strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Model projections &amp; intervals</span>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)' }}>🔮 Projections CSV (3M)</strong>
+            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Point forecasts &amp; 80% intervals</span>
           </button>
 
           <button
@@ -205,51 +259,135 @@ export default function ApiExports({ period = '2026-09' }) {
         </div>
       </div>
 
-      {/* REST API Endpoints Catalog */}
+      {/* REST API Endpoints Catalog & Live Playground */}
       <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 1rem 0' }}>
-          🌐 {isHindi ? 'लाइव रेस्ट एपीआई एंडपॉइंट्स' : 'Live REST API Endpoints'}
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              🌐 {isHindi ? 'लाइव रेस्ट एपीआई एंडपॉइंट्स एवं परीक्षण कंसोल' : 'Live REST API Endpoints & Interactive Playground'}
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', margin: '0.2rem 0 0 0' }}>
+              {isHindi ? 'वर्तमान बैकएंड सेवा पर सीधे परीक्षण करने के लिए "परीक्षण करें" पर क्लिक करें।' : 'Click "Test Endpoint" on any route to inspect live JSON responses from FastAPI.'}
+            </p>
+          </div>
+          <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--teal-700)', fontWeight: 600 }}>
+            Base: http://127.0.0.1:8000
+          </span>
+        </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          {API_ENDPOINTS.map((ep, idx) => (
-            <div
-              key={idx}
-              style={{
-                border: '1px solid var(--slate-200)',
-                borderRadius: '6px',
-                padding: '0.85rem 1rem',
-                backgroundColor: 'var(--slate-50)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                <span
-                  style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    fontFamily: 'var(--font-mono)',
-                    padding: '0.15rem 0.45rem',
-                    borderRadius: '4px',
-                    backgroundColor: ep.method === 'GET' ? '#0d9488' : '#2563eb',
-                    color: '#ffffff',
-                  }}
-                >
-                  {ep.method}
-                </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.82rem', color: 'var(--slate-900)' }}>
-                  {ep.path}
-                </span>
-              </div>
+          {API_ENDPOINTS.map((ep, idx) => {
+            const isCurrentlyTested = testedEndpoint === ep.path;
 
-              <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', margin: '0 0 0.45rem 0', lineHeight: 1.4 }}>
-                {ep.description}
-              </p>
+            return (
+              <div
+                key={idx}
+                style={{
+                  border: isCurrentlyTested ? '1px solid var(--teal-600)' : '1px solid var(--slate-200)',
+                  borderRadius: '6px',
+                  padding: '0.85rem 1rem',
+                  backgroundColor: isCurrentlyTested ? '#f0fdfa' : 'var(--slate-50)',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 800,
+                        fontFamily: 'var(--font-mono)',
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '4px',
+                        backgroundColor: ep.method === 'GET' ? '#0d9488' : '#2563eb',
+                        color: '#ffffff',
+                      }}
+                    >
+                      {ep.method}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.82rem', color: 'var(--slate-900)' }}>
+                      {ep.path}
+                    </span>
+                  </div>
 
-              <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
-                <strong>Query Parameters: </strong> {ep.params}
+                  <button
+                    type="button"
+                    onClick={() => handleTestEndpoint(ep.path)}
+                    style={{
+                      backgroundColor: isCurrentlyTested ? '#0d9488' : '#ffffff',
+                      color: isCurrentlyTested ? '#ffffff' : 'var(--teal-800)',
+                      border: '1px solid var(--teal-600)',
+                      borderRadius: '4px',
+                      padding: '0.25rem 0.65rem',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                    }}
+                  >
+                    <span>⚡</span>
+                    <span>{isCurrentlyTested && testResponse ? (isHindi ? 'बंद करें' : 'Hide Response') : (isHindi ? 'परीक्षण करें' : 'Test Endpoint')}</span>
+                  </button>
+                </div>
+
+                <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', margin: '0 0 0.45rem 0', lineHeight: 1.4 }}>
+                  {ep.description}
+                </p>
+
+                <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                  <strong>Parameters: </strong> {ep.params}
+                </div>
+
+                {/* Live JSON Response Preview Drawer */}
+                {isCurrentlyTested && (
+                  <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--slate-200)', paddingTop: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                        LIVE RESPONSE STATUS: {testLoading ? 'QUERYING...' : testError ? 'ERROR' : 'HTTP 200 OK'}
+                      </span>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                        Reporting Period: {period}
+                      </span>
+                    </div>
+
+                    {testLoading && (
+                      <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                        Executing query against live backend...
+                      </div>
+                    )}
+
+                    {testError && (
+                      <div style={{ padding: '0.5rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '4px', fontSize: '0.72rem', color: '#991b1b', fontFamily: 'var(--font-mono)' }}>
+                        {testError}
+                      </div>
+                    )}
+
+                    {testResponse && (
+                      <pre
+                        style={{
+                          margin: 0,
+                          padding: '0.75rem',
+                          backgroundColor: '#0f172a',
+                          color: '#38bdf8',
+                          borderRadius: '6px',
+                          fontSize: '0.7rem',
+                          fontFamily: 'var(--font-mono)',
+                          maxHeight: '260px',
+                          overflowY: 'auto',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-all',
+                        }}
+                      >
+                        {JSON.stringify(testResponse, null, 2)}
+                      </pre>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

@@ -27,7 +27,19 @@ const DISTRICTS = [
 
 const SECTORS = ['IT/ITeS', 'Logistics', 'Manufacturing'];
 
-export default function DemandIntelligence({ period = '2026-09', onPeriodChange }) {
+export default function DemandIntelligence({
+  period = '2026-09',
+  onPeriodChange,
+  stateFilter,
+  districtFilter,
+  sectorFilter,
+  occupationFilter,
+  onStateChange,
+  onDistrictChange,
+  onSectorChange,
+  _onOccupationChange,
+  onResetFilters,
+}) {
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
   const [data, setData] = useState(null);
@@ -35,9 +47,22 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Filters
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedSector, setSelectedSector] = useState('');
+  const [selectedState, setSelectedState] = useState(stateFilter || '');
+  const [selectedDistrict, setSelectedDistrict] = useState(districtFilter || '');
+  const [selectedSector, setSelectedSector] = useState(sectorFilter || '');
+
+  // Sync external filters when passed from parent ContextFilterBar
+  useEffect(() => {
+    if (stateFilter !== undefined) setSelectedState(stateFilter);
+  }, [stateFilter]);
+
+  useEffect(() => {
+    if (districtFilter !== undefined) setSelectedDistrict(districtFilter);
+  }, [districtFilter]);
+
+  useEffect(() => {
+    if (sectorFilter !== undefined) setSelectedSector(sectorFilter);
+  }, [sectorFilter]);
 
   // Selected row for Component Breakdown Drawer
   const [selectedRowId, setSelectedRowId] = useState(null);
@@ -110,10 +135,14 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
   const handleStateChange = (e) => {
     const newState = e.target.value;
     setSelectedState(newState);
+    onStateChange?.(newState);
     // Reset district if it doesn't belong to newly selected state
     if (newState && selectedDistrict) {
       const match = DISTRICTS.find((d) => d.id === selectedDistrict && d.state === newState);
-      if (!match) setSelectedDistrict('');
+      if (!match) {
+        setSelectedDistrict('');
+        onDistrictChange?.('');
+      }
     }
   };
 
@@ -121,6 +150,7 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
     setSelectedState('');
     setSelectedDistrict('');
     setSelectedSector('');
+    onResetFilters?.();
   };
 
   const filteredDistricts = useMemo(() => {
@@ -128,10 +158,14 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
     return DISTRICTS.filter((d) => d.state === selectedState);
   }, [selectedState]);
 
-  // Client-side sorting for rapid column interaction
+  // Client-side sorting and occupation filtering
   const sortedResults = useMemo(() => {
     if (!data?.results) return [];
-    return [...data.results].sort((a, b) => {
+    let list = [...data.results];
+    if (occupationFilter) {
+      list = list.filter((r) => r.occupation_id === occupationFilter);
+    }
+    return list.sort((a, b) => {
       let aVal = a[sortField];
       let bVal = b[sortField];
 
@@ -145,7 +179,19 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
       bVal = Number(bVal) || 0;
       return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  }, [data, sortField, sortDirection]);
+  }, [data, occupationFilter, sortField, sortDirection]);
+
+  // Keep selected row synchronized with filtered results
+  useEffect(() => {
+    if (sortedResults.length > 0) {
+      const exists = sortedResults.some((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId);
+      if (!exists) {
+        setSelectedRowId(`${sortedResults[0].district_id}-${sortedResults[0].occupation_id}`);
+      }
+    } else {
+      setSelectedRowId(null);
+    }
+  }, [sortedResults, selectedRowId]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -158,13 +204,13 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
 
   // Selected item object for breakdown
   const selectedItem = useMemo(() => {
-    if (!selectedRowId || !data?.results) return null;
-    return data.results.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
-  }, [data, selectedRowId]);
+    if (!selectedRowId || sortedResults.length === 0) return null;
+    return sortedResults.find((r) => `${r.district_id}-${r.occupation_id}` === selectedRowId) || null;
+  }, [sortedResults, selectedRowId]);
 
   // Summary Metrics
   const summaryMetrics = useMemo(() => {
-    const list = data?.results || [];
+    const list = sortedResults;
     if (list.length === 0) {
       return { total: 0, highestScore: null, highestItem: null, avgScore: 0 };
     }
@@ -176,7 +222,7 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
       highestItem: maxItem,
       avgScore: avg,
     };
-  }, [data]);
+  }, [sortedResults]);
 
   const formatGrowth = (rawVal) => {
     if (rawVal === null || rawVal === undefined) return 'N/A';
@@ -236,7 +282,10 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
             id="demand-district"
             className="filter-select"
             value={selectedDistrict}
-            onChange={(e) => setSelectedDistrict(e.target.value)}
+            onChange={(e) => {
+              setSelectedDistrict(e.target.value);
+              onDistrictChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allDistricts', 'All Districts')} ({filteredDistricts.length})</option>
             {filteredDistricts.map((d) => (
@@ -251,7 +300,10 @@ export default function DemandIntelligence({ period = '2026-09', onPeriodChange 
             id="demand-sector"
             className="filter-select"
             value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
+            onChange={(e) => {
+              setSelectedSector(e.target.value);
+              onSectorChange?.(e.target.value);
+            }}
           >
             <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
             {SECTORS.map((sec) => (

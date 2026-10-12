@@ -1,0 +1,78 @@
+{
+  "bodyText": "Skip to main content\nKY\nKaushalYuva\nLABOUR MARKET INTELLIGENCE\nINTELLIGENCE\nOverview\nLabour Intelligence\nForecasts\nSkill Gaps\nACTION\nEarly Warnings\n35\nRecommendations\n4\nScenario Studio\nSTUDIO\nEXPLORE\nDistricts\nOccupations\nQualifications\nSYSTEM\nData & Model Health\nAPI & Exports\nSettings\nKaushal Copilot\nGrounded\n\nBilingual policy & forecast assistant over current API.\n\nAsk Kaushal Copilot\nKaushalYuva Home\nMSDE Intelligence\n/\nIndia\n/\nUttar Pradesh\n/\nGorakhpur\n/\nOverview\nSearch...\n⌘K\nDATA SOURCE:\nSIH DATASET\nDEMO DATASET\nLast run RUN-SIH-001 · 2h ago\nFixture Data\nEN\nहिन्दी\n4\nCopilot\nNATIONAL INTELLIGENCE DASHBOARD\nOFFICIAL SIH\nNational Intelligence Command Center\n\nKaushalYuva turns labour-market data into district-level forecasts, early warnings and seat-reallocation decisions for India's youth skilling system.\n\nOpen Scenario Studio\nCONTEXT FILTERS\nReset\nSTATE\nUttar Pradesh\nMaharashtra\nKarnataka\nGujarat\nDISTRICT (LGD)\nGorakhpur (LGD 178)\nLucknow (LGD 180)\nVaranasi (LGD 201)\nGautam Buddha Nagar (LGD 168)\nSECTOR\nAll Sectors (6)\nGreen Jobs & Renewable Energy\nAutomotive & Advanced Manufacturing\nIT & ITES\nHealthcare & Life Sciences\nRetail, Logistics & Supply Chain\nConstruction & Infrastructure\nOCCUPATION (NCO)\nSolar PV Installer (7126.0101)\nRetail Sales Associate (5223.0101)\nEV Service Technician (7233.0102)\nAI/ML Data Annotation Specialist (2512.0101)\nCNC Machine Operator (8151.0101)\nDrone Maintenance Technician (7212.0101)\nCommunity Health Assistant (3253.0101)\nSmart Meter Installation Technician (7131.0101)\nIndustrial Automation Specialist (7412.0101)\nTele-Sales Executive (5244.0101)\nGeneral Data Entry Operator (4132.0101)\nCybersecurity Operations Associate (2529.0101)\nFORECAST HORIZON\n3M\n6M\n12M\nDEMAND\nOFFICIAL SIH\n10.3K\n+18.6%\n6M Growth\nNational Vacancies\nEFFECTIVE SUPPLY\nOFFICIAL SIH\n6.9K\nStaged Pool\n0.70 Readiness\nCertified & Active\nSTRUCTURAL SHORTFALL\nOFFICIAL SIH\n3.4K\nNational Deficit\nUnmet Need\nPurvanchal & Corridors\nAT-RISK TRADES\nOFFICIAL SIH\n8\nImbalance\nScore >75 / <25\nNCO Specializations\nINTELLIGENCE SIGNALS\nOFFICIAL SIH\n35\nAlert Engine\n35 Anomalies\nCritical Shortage #1\nPRIORITY ACTIONS\nOFFICIAL SIH\n4\nRanked Actions\nInterventions\nPending Approval\nACTION REQUIRED\n•\nGorakhpur · Solar PV Installer (NCO 7126.0101)\n\nProjected 6M shortage probability is 88% (Shortfall: 711 candidates). Recommended intervention: Reallocate 97 seats from Retail Sales Associate (saving ₹6.3L vs new capacity).\n\nInvestigate\nSimulate Fix\nWHAT CHANGED IN CURRENT PIPELINE RUN?\nSolar PV Installer demand growth -0.1% in Gorakhpur (acute shortfall persists)\nRetail Sales Associate softened -10.0% (physical capacity surplus)\nGorakhpur shortage risk reached 88% probability\n\nWHY THIS MATTERS:If training capacity is planned without forward-looking demand signals, districts continue funding legacy trades with low hiring absorption while high-growth sectors remain critically understaffed.\n\nSimulate Fix →\nNational Labour Market Geospatial Intelligence\n\nInteractive geographic overlay of structural shortages, vacancy pressures, and training infrastructure across state corridors.\n\nOFFICIAL SIH\nNCS + SID Corridors\nINTELLIGENCE LAYER:\nShortage Severity\nDemand Volume\nEffective Supply\nOversupply\nTraining Centres\nGorakhpur\nLucknow\nVaranasi\nGautam Buddha Nagar\nPune\nMumbai Suburban\nNagpur\nNashik\nBengaluru Urban\nMysuru\nDharwad\nDakshina Kannada\nAhmedabad\nSurat\nVadodara\nRajkot\nSHORTAGE SEVERITY\nSevere Shortage (Gap > 75)\nModerate Shortage (60–75)\nBalanced Labour Pool (40–60)\nOversupply (Gap < 40)\nSELECTED GEOGRAPHY\nGorakhpur\nUttar Pradesh (LGD Code: 178)\nSOLAR GAP SCORE\n94\nSevere Shortage\n6M SHORTAGE RISK\n88%\nProbability\nTRAINING CAPACITY\n217 Solar / 916 Retail\n2 Centres • 1133 Seats\nACTIVE EMPLOYERS\n46\nHiring Verified\nTOP SHORTAGE TRADES:\nSolar PV Installer (NCO 7126.0101)\nDeficit\nEV Service Technician\nDeficit\nSmart Meter Technician\nDeficit\nOVERSUPPLIED TRADES:\nRetail Sales Associate (NCO 5223.0101)\nExcess\nGeneral Data Entry Operator\nExcess\nExplore Complete Gorakhpur Dossier\nTop Priority Policy Interventions (Ranked)\n\nTargeted government capacity reallocations recommended by the Labour Market Intelligence engine.\n\nView All 4 Recommended Interventions\n#01\nGORAKHPUR, UTTAR PRADESH\nConfidence: 82%\nRedirect 97 Training Seats from Retail to Solar PV (Strict Default)\n\nPersistent acute shortage in Solar PV Installer (deficit 711, score 94) paired with physical capacity inefficiency in Retail Sales (916 seats, 536 wasted seats over demand). Strict safety rule guarantees Retail deficit ratio remains <= 5% (Score <= 52 Balanced).\n\nSEATS\n97\nSHORTFALL CLOSED\n▼ 6.2% closed\nTARGET TRADE\nSolar PV Installer\nView Evidence\nSimulate\n#02\nPUNE, MAHARASHTRA\nConfidence: 81%\nEstablish EV Powertrain Diagnostics Hub in Pune ITIs\n\nSevere shortage of high-voltage certified mechanics across automotive OEM clusters in Chakan & Bhosari.\n\nSEATS\n400\nSHORTFALL CLOSED\n▼ 54% closed\nTARGET TRADE\nEV Service Technician\nView Evidence\nSimulate",
+  "selects": [
+    {
+      "id": "state-filter",
+      "name": "",
+      "options": [
+        "Uttar Pradesh",
+        "Maharashtra",
+        "Karnataka",
+        "Gujarat"
+      ]
+    },
+    {
+      "id": "district-filter",
+      "name": "",
+      "options": [
+        "Gorakhpur (LGD 178)",
+        "Lucknow (LGD 180)",
+        "Varanasi (LGD 201)",
+        "Gautam Buddha Nagar (LGD 168)"
+      ]
+    },
+    {
+      "id": "sector-filter",
+      "name": "",
+      "options": [
+        "All Sectors (6)",
+        "Green Jobs & Renewable Energy",
+        "Automotive & Advanced Manufacturing",
+        "IT & ITES",
+        "Healthcare & Life Sciences",
+        "Retail, Logistics & Supply Chain",
+        "Construction & Infrastructure"
+      ]
+    },
+    {
+      "id": "occupation-filter",
+      "name": "",
+      "options": [
+        "Solar PV Installer (7126.0101)",
+        "Retail Sales Associate (5223.0101)",
+        "EV Service Technician (7233.0102)",
+        "AI/ML Data Annotation Specialist (2512.0101)",
+        "CNC Machine Operator (8151.0101)",
+        "Drone Maintenance Technician (7212.0101)",
+        "Community Health Assistant (3253.0101)",
+        "Smart Meter Installation Technician (7131.0101)",
+        "Industrial Automation Specialist (7412.0101)",
+        "Tele-Sales Executive (5244.0101)"
+      ]
+    }
+  ],
+  "buttons": [
+    "Ask Kaushal Copilot",
+    "Search...\n⌘K",
+    "SIH DATASET",
+    "DEMO DATASET",
+    "EN",
+    "हिन्दी",
+    "4",
+    "Copilot",
+    "Reset",
+    "3M",
+    "6M",
+    "12M",
+    "Solar PV Installer demand growth -0.1% in Gorakhpur (acute shortfall persists)",
+    "Retail Sales Associate softened -10.0% (physical capacity surplus)",
+    "Shortage Severity",
+    "Demand Volume",
+    "Effective Supply",
+    "Oversupply",
+    "Training Centres",
+    "View Evidence",
+    "View Evidence"
+  ],
+  "cards": []
+}

@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { fetchGapAnalysis } from '../../api/client';
+import {
+  getDistrictDisplayName,
+  getStateDisplayName,
+  getOccupationDisplayName,
+} from '../../i18n/translations';
 
 export default function LandingPage({
   onNavigate = () => {},
@@ -7,6 +13,45 @@ export default function LandingPage({
 }) {
   const { language, setLanguage, t } = useLanguage();
   const isHindi = language === 'hi';
+
+  // Live pilot observation state (null until loaded from API)
+  const [pilotObs, setPilotObs] = useState(null);
+  const [pilotLoading, setPilotLoading] = useState(true);
+  const [pilotError, setPilotError] = useState(false);
+
+  const loadPilotObservation = React.useCallback(async () => {
+    setPilotLoading(true);
+    setPilotError(false);
+    try {
+      const res = await fetchGapAnalysis({ period: '2026-09', district_id: 'KA_DHA' });
+      const cnc = (res?.results || []).find((r) => r.occupation_id === 'OCC_MFG_001');
+      if (cnc && cnc.demand_index_score != null && cnc.supply_output_index != null) {
+        setPilotObs({
+          demandIndex: Number(cnc.demand_index_score).toFixed(1),
+          supplyOutput: Number(cnc.supply_output_index).toFixed(1),
+          mismatch: (cnc.relative_mismatch_score > 0 ? '+' : '') + Number(cnc.relative_mismatch_score).toFixed(1),
+          classification: cnc.classification || 'Demand Pressure',
+          occupationTitle: cnc.occupation_title || 'CNC Machine Operator',
+          districtName: cnc.district_name || 'Dharwad',
+          stateCode: cnc.state_code || 'KA',
+          sector: cnc.trade || cnc.sector || 'Precision Machining',
+        });
+        setPilotError(false);
+      } else {
+        setPilotObs(null);
+        setPilotError(true);
+      }
+    } catch {
+      setPilotObs(null);
+      setPilotError(true);
+    } finally {
+      setPilotLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPilotObservation();
+  }, [loadPilotObservation]);
 
   return (
     <div className="landing-page-root" style={{ minHeight: '100vh', backgroundColor: '#060b14', color: '#f8fafc', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-sans)' }}>
@@ -284,6 +329,7 @@ export default function LandingPage({
           {/* Right Live Pilot Preview Card */}
           <div>
             <div
+              className="landing-hero-card"
               style={{
                 backgroundColor: 'rgba(15, 23, 42, 0.75)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -292,94 +338,174 @@ export default function LandingPage({
                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.45)',
                 position: 'relative',
                 backdropFilter: 'blur(12px)',
+                minHeight: '340px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
               }}
             >
-              {/* Card Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>
-                    {isHindi ? 'पायलट अवलोकन • चक्र 2026-09' : 'PILOT OBSERVATION • CYCLE 2026-09'}
-                  </div>
-                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', marginTop: '0.2rem' }}>
-                    CNC Machine Operator
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    Dharwad, Karnataka (KA) • Precision Machining
-                  </div>
-                </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.7rem', borderRadius: '8px', backgroundColor: 'rgba(234, 88, 12, 0.15)', border: '1px solid rgba(234, 88, 12, 0.35)', color: '#fb923c', fontSize: '0.75rem', fontWeight: 700 }}>
-                  <span>⚡</span>
-                  <span>{isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
-                </div>
-              </div>
-
-              {/* 3 Metric Pillars */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', textAlign: 'center', marginBottom: '1.25rem' }}>
-                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
-                    {isHindi ? 'मांग सूचकांक' : 'DEMAND INDEX'}
-                  </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2dd4bf', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                    84.2
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
-                </div>
-
-                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
-                    {isHindi ? 'आपूर्ति आउटपुट' : 'SUPPLY OUTPUT'}
-                  </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                    28.1
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
-                </div>
-
-                <div style={{ backgroundColor: 'rgba(234, 88, 12, 0.06)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(234, 88, 12, 0.25)' }}>
-                  <div style={{ fontSize: '0.68rem', color: '#ea580c', fontWeight: 700, textTransform: 'uppercase' }}>
-                    {isHindi ? 'सापेक्ष असंतुलन' : 'MISMATCH'}
-                  </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f97316', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                    +56.1
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: '#ea580c' }}>Demand &gt; Supply</div>
-                </div>
-              </div>
-
-              {/* Sparkline & Short Explanation */}
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '0.85rem 1rem', border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>
-                    {isHindi ? '24-माह अनुदैर्ध्य प्रवृत्ति एवं 80% भविष्यवाणी अंतराल' : '24M Longitudinal Trajectory + 80% Prediction Interval'}
-                  </span>
-                  <span style={{ fontSize: '0.68rem', color: '#2dd4bf', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-                    Linear Trend Model
-                  </span>
-                </div>
-                <svg width="100%" height="40" viewBox="0 0 300 40" fill="none">
-                  {/* Confidence Interval Band */}
-                  <path d="M 0 32 Q 80 28, 160 20 T 300 10 L 300 22 Q 220 28, 160 30 T 0 36 Z" fill="#0d9488" fillOpacity="0.18" />
-                  {/* Historical Series Line */}
-                  <path d="M 0 35 L 50 32 L 100 30 L 150 26 L 200 22" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
-                  {/* Forecast Line */}
-                  <path d="M 200 22 L 250 17 L 300 12" stroke="#14b8a6" strokeWidth="2.5" strokeDasharray="4 3" strokeLinecap="round" />
-                  <circle cx="300" cy="12" r="3.5" fill="#14b8a6" />
-                </svg>
-              </div>
-
-              {/* Action Footer */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
-                <span style={{ color: '#64748b' }}>
-                  {isHindi ? 'प्रारूप हेयूरिस्टिक थ्रेशोल्ड (±15 अंक)' : 'Prototype heuristic thresholds (±15 pts)'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('simulator')}
-                  style={{ background: 'none', border: 'none', color: '#14b8a6', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+              {pilotLoading ? (
+                <div
+                  className="pilot-card-loading"
+                  style={{
+                    padding: '2.5rem 1rem',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.85rem',
+                  }}
                 >
-                  <span>{isHindi ? 'सिम्युलेटर में सुधार देखें →' : 'Simulate the fix in Studio →'}</span>
-                </button>
-              </div>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      border: '3px solid rgba(255,255,255,0.1)',
+                      borderTopColor: '#0d9488',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite',
+                    }}
+                  />
+                  <div style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>
+                    {isHindi ? 'लाइव पायलट मेट्रिक्स लोड हो रहे हैं...' : 'Loading live pilot metrics...'}
+                  </div>
+                </div>
+              ) : pilotError || !pilotObs ? (
+                <div
+                  className="pilot-card-unavailable"
+                  style={{
+                    padding: '2rem 1.25rem',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div style={{ fontSize: '1.85rem' }}>⚠️</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#f87171' }}>
+                    {isHindi ? 'पायलट मेट्रिक्स अनुपलब्ध' : 'Pilot metrics unavailable'}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#94a3b8', maxWidth: '300px', lineHeight: 1.5 }}>
+                    {isHindi
+                      ? 'लाइव अवलोकन डेटा प्राप्त करने में असमर्थ। कृपया पुनः प्रयास करें।'
+                      : 'Live pilot observation data is currently unavailable from the API service.'}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={loadPilotObservation}
+                    style={{
+                      marginTop: '0.5rem',
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#ffffff',
+                      padding: '0.45rem 1.1rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <span>↺</span>
+                    <span>{isHindi ? 'पुनः प्रयास करें' : 'Retry'}</span>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Card Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+                    <div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {isHindi ? 'पायलट अवलोकन • चक्र 2026-09' : 'PILOT OBSERVATION • CYCLE 2026-09'}
+                      </div>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', marginTop: '0.2rem' }}>
+                        {isHindi ? getOccupationDisplayName('OCC_MFG_001', true, pilotObs.occupationTitle) : pilotObs.occupationTitle}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                        {isHindi ? getDistrictDisplayName(pilotObs.districtName, true) : pilotObs.districtName}, {getStateDisplayName(pilotObs.stateCode, isHindi)} • {pilotObs.sector}
+                      </div>
+                    </div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.7rem', borderRadius: '8px', backgroundColor: 'rgba(234, 88, 12, 0.15)', border: '1px solid rgba(234, 88, 12, 0.35)', color: '#fb923c', fontSize: '0.75rem', fontWeight: 700 }}>
+                      <span>⚡</span>
+                      <span>{isHindi ? 'मांग दबाव' : pilotObs.classification}</span>
+                    </div>
+                  </div>
+
+                  {/* 3 Metric Pillars */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', textAlign: 'center', marginBottom: '1.25rem' }}>
+                    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {isHindi ? 'मांग सूचकांक' : 'DEMAND INDEX'}
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2dd4bf', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
+                        {pilotObs.demandIndex}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
+                    </div>
+
+                    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {isHindi ? 'आपूर्ति आउटपुट' : 'SUPPLY OUTPUT'}
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
+                        {pilotObs.supplyOutput}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
+                    </div>
+
+                    <div style={{ backgroundColor: 'rgba(234, 88, 12, 0.06)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(234, 88, 12, 0.25)' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#ea580c', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {isHindi ? 'सापेक्ष असंतुलन' : 'MISMATCH'}
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f97316', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
+                        {pilotObs.mismatch}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#ea580c' }}>Demand &gt; Supply</div>
+                    </div>
+                  </div>
+
+                  {/* Sparkline & Short Explanation */}
+                  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '0.85rem 1rem', border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>
+                        {isHindi ? '24-माह अनुदैर्ध्य प्रवृत्ति एवं 80% भविष्यवाणी अंतराल' : '24M Longitudinal Trajectory + 80% Prediction Interval'}
+                      </span>
+                      <span style={{ fontSize: '0.68rem', color: '#2dd4bf', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+                        Linear Trend Model
+                      </span>
+                    </div>
+                    <svg width="100%" height="40" viewBox="0 0 300 40" fill="none">
+                      {/* Confidence Interval Band */}
+                      <path d="M 0 32 Q 80 28, 160 20 T 300 10 L 300 22 Q 220 28, 160 30 T 0 36 Z" fill="#0d9488" fillOpacity="0.18" />
+                      {/* Historical Series Line */}
+                      <path d="M 0 35 L 50 32 L 100 30 L 150 26 L 200 22" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+                      {/* Forecast Line */}
+                      <path d="M 200 22 L 250 17 L 300 12" stroke="#14b8a6" strokeWidth="2.5" strokeDasharray="4 3" strokeLinecap="round" />
+                      <circle cx="300" cy="12" r="3.5" fill="#14b8a6" />
+                    </svg>
+                  </div>
+
+                  {/* Action Footer */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                    <span style={{ color: '#64748b' }}>
+                      {isHindi ? 'प्रारूप हेयूरिस्टिक थ्रेशोल्ड (±15 अंक)' : 'Prototype heuristic thresholds (±15 pts)'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('simulator')}
+                      style={{ background: 'none', border: 'none', color: '#14b8a6', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                    >
+                      <span>{isHindi ? 'सिम्युलेटर में सुधार देखें →' : 'Simulate the fix in Studio →'}</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

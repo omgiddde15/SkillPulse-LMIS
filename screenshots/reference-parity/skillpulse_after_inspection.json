@@ -1,0 +1,580 @@
+{
+  "01_home": {
+    "url": "http://localhost:3000/",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "Forecast Skill Gaps. Guide Training Decisions."
+    ],
+    "h2": [
+      "From Demand Signals to Actionable Policy",
+      "Integrated Decision Support Modules",
+      "Rigorous Methodology & Transparent Synthetic Pilot",
+      "Ready to Explore India’s Workforce Pulse?"
+    ],
+    "h3": [
+      "Demand Signals",
+      "Demand Index",
+      "Supply Comparison",
+      "Forecasts & Alerts",
+      "Scenario Studio",
+      "Labour Demand Intelligence",
+      "District & Skill-Gap Analysis",
+      "Multi-Horizon Forecasting",
+      "Early-Warning Alerts",
+      "District Geographic Map"
+    ],
+    "hasCopilot": false,
+    "kpis": [
+      "PILOT OBSERVATION • CYCLE 2026-09\nCNC Machine Operator\nDharwad, Karnataka (KA) •"
+    ],
+    "navButtons": [
+      "📊 Overview",
+      "🔮 Forecasts",
+      "🎛️ Scenario Studio",
+      "⚡ API & Exports"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE • SIH26246\n📊 Overview\n🔮 Forecasts\n🎛️ Scenario Studio\n⚡ API & Exports\nEN\nहिन्दी\nOpen Dashboard\n→\n01 / SIH 2026\n•\nProblem Statement SIH26246 (MSDE)\n•\nAPI Online\nForecast Skill Gaps. Guide Training Decisions.\n\nSkillPulse analyses employer demand signals, TVET training throu"
+  },
+  "02_overview": {
+    "url": "http://localhost:3000/overview",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "National Intelligence Command Center"
+    ],
+    "h2": [
+      "District-Wise Workforce Comparison Pack",
+      "Relative Demand-Supply Mismatch Rankings"
+    ],
+    "h3": [
+      "Chart A: Demand vs. Supply Index Comparison",
+      "Chart B: Relative Demand-Supply Mismatch (Zero-Centered)",
+      "Top Priority Policy Interventions (Ranked)"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "DEMAND INTENSITY\n🔥\n50.0/100\n+18.5% 6M Growth\nScope Avg Vacancy Intensity",
+      "DEMAND INTENSITY\n🔥",
+      "DEMAND INTENSITY",
+      "50.0/100"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "03_demand": {
+    "url": "http://localhost:3000/demand",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "SkillPulse Demand Intelligence Engine"
+    ],
+    "h2": [
+      "Composite Demand Index Rankings"
+    ],
+    "h3": [
+      "Component Breakdown: Cloud Infrastructure Associate (Hyderabad, Telangana (TS))"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "MATCHING PAIRS\n📋\n54\nDistrict-Occupation Pairs Evaluated\nPeriod: 2026-09 • Cross",
+      "MATCHING PAIRS\n📋\n54\nDistrict-Occupation Pairs Evaluated\nPeriod: 2026-09 • Cross",
+      "MATCHING PAIRS\n📋",
+      "MATCHING PAIRS"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "04_gaps": {
+    "url": "http://localhost:3000/gaps",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "SkillPulse Relative Demand-Supply Gap Analysis Engine"
+    ],
+    "h2": [
+      "Relative Gap Analysis & TVET Training Funnel Results"
+    ],
+    "h3": [
+      "Relative Gap Diagnostics: CNC Machine Operator (Dharwad, Karnataka (KA))"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "DEMAND PRESSURE\n⚡\n14\nScore ≥ +15.0 pts\nEmployer recruitment outpaces certified o",
+      "DEMAND PRESSURE\n⚡\n14\nScore ≥ +15.0 pts\nEmployer recruitment outpaces certified o",
+      "DEMAND PRESSURE\n⚡",
+      "DEMAND PRESSURE"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "05_forecasts": {
+    "url": "http://localhost:3000/forecasts",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "SkillPulse Time-Series Forecasting Engine"
+    ],
+    "h2": [
+      "Cross-Sectional Workforce Projections (3-Month Horizon)"
+    ],
+    "h3": [
+      "Forecast Diagnostics: Cloud Infrastructure Associate (Pune, Maharashtra (MH))"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "FORECAST HORIZON\n🔮\n+3m\nTarget: 2026-12\nBase Period: 2026-09 • Rolling Origin Ba",
+      "FORECAST HORIZON\n🔮\n+3m\nTarget: 2026-12\nBase Period: 2026-09 • Rolling Origin Ba",
+      "FORECAST HORIZON\n🔮",
+      "FORECAST HORIZON"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "06_alerts": {
+    "url": "http://localhost:3000/alerts",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [
+      "SkillPulse Early-Warning Intelligence & Telemetry Engine"
+    ],
+    "h2": [
+      "Active Early-Warning Telemetry Signals"
+    ],
+    "h3": [
+      "Single-Horizon Demand Pressure: Cold Chain Logistics Supervisor (Bengaluru Urban)"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "CRITICAL SEVERITY\n🚨\n59\nHigh-Urgency Decision Signals\nExtreme mismatch (≥30 pts)",
+      "CRITICAL SEVERITY\n🚨\n59\nHigh-Urgency Decision Signals\nExtreme mismatch (≥30 pts)",
+      "CRITICAL SEVERITY\n🚨",
+      "CRITICAL SEVERITY"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "07_recommendations": {
+    "url": "http://localhost:3000/recommendations",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Evidence-Based Policy Interventions"
+    ],
+    "h3": [
+      "Top Priority Capacity Reallocation Recommendations (Ranked)",
+      "CNC Machine Operator",
+      "Fleet Dispatcher",
+      "Electric Vehicle Assembly Technician",
+      "Full-Stack Web Developer",
+      "Cloud Infrastructure Associate",
+      "Fleet Dispatcher",
+      "Electric Vehicle Assembly Technician",
+      "Warehouse Inventory Coordinator",
+      "Full-Stack Web Developer"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "08_scenarios": {
+    "url": "http://localhost:3000/scenarios",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Training-Seat Allocation Scenario Simulator",
+      "Assumption-Adjusted Pipeline Scenario",
+      "Empirical Cohort Funnel Yield Metrics (Baseline Cohorts)"
+    ],
+    "h3": [
+      "1. Policy Scenario Parameters",
+      "Visual Comparison: Baseline Architecture vs Proposed Scenario"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online",
+      "1. Policy Scenario Parameters\n\nSelect regional jurisdiction, trade specialisatio",
+      "SANCTIONED BATCH CAPACITY\n150\n+33.3 (+28.6%)\nBaseline Avg: 116.7 seats/batch\nCER",
+      "SANCTIONED BATCH CAPACITY\n150\n+33.3 (+28.6%)\nBaseline Avg: 116.7 seats/batch",
+      "SANCTIONED BATCH CAPACITY"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "09_districts": {
+    "url": "http://localhost:3000/districts",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Pilot Districts Intelligence"
+    ],
+    "h3": [
+      "🗺️ Pilot District Geographic Map (Karnataka, Maharashtra, Telangana)"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "10_occupations": {
+    "url": "http://localhost:3000/occupations",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Occupational Taxonomy & Registry"
+    ],
+    "h3": [],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "11_qualifications": {
+    "url": "http://localhost:3000/qualifications",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "TVET Qualifications & NSQF Alignment"
+    ],
+    "h3": [
+      "Cloud Infrastructure Analyst",
+      "AI – Data Quality Analyst",
+      "Web Developer",
+      "CNC Operator Turning",
+      "Industrial Automation Technician",
+      "Electric Vehicle Assembly Technician",
+      "Inventory Clerk",
+      "Refrigerated Storage Unit Supervisor",
+      "Transport Coordinator"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "12_data_health": {
+    "url": "http://localhost:3000/data-health",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Data Governance & Model Health"
+    ],
+    "h3": [
+      "Pipeline Verification and Invariant Checks",
+      "Rolling-Origin Walk-Forward Forecasting Model Diagnostics"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "13_api": {
+    "url": "http://localhost:3000/api",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Developer API & CSV Data Exports"
+    ],
+    "h3": [
+      "📥 Direct CSV Data Exports",
+      "🌐 Live REST API Endpoints & Interactive Playground"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  },
+  "14_settings": {
+    "url": "http://localhost:3000/settings",
+    "status": "OK",
+    "title": "SkillPulse LMIS | Workforce Intelligence & Skill Gap Decision Engine (SIH26246)",
+    "h1": [],
+    "h2": [
+      "Platform & Preferences Settings"
+    ],
+    "h3": [
+      "🌐 Language & Localization",
+      "📅 Default Reporting Cycle",
+      "🎨 Visual Identity & Theme",
+      "⚖️ Data Provenance & Bounds"
+    ],
+    "hasCopilot": true,
+    "kpis": [
+      "API Status\nBackend Online",
+      "Backend Online",
+      "Backend Online",
+      "Backend Online"
+    ],
+    "navButtons": [
+      "←\nSkillPulse Home\nPUBLIC",
+      "📊\nOverview",
+      "📈\nDemand Intelligence",
+      "🔮\nForecasts",
+      "⚖️\nSkill Gaps",
+      "🚨\nEarly-Warning Alerts\n100",
+      "💡\nRecommendations\n4",
+      "🎛️\nScenario Studio\nSTUDIO",
+      "🗺️\nDistricts",
+      "💼\nOccupations",
+      "🎓\nQualifications",
+      "🛡️\nData & Model Health",
+      "⚡\nAPI & Exports",
+      "⚙️\nSettings",
+      "Ask Skill Copilot"
+    ],
+    "bodySnippet": "SP\nSkillPulse\nLMIS ENGINE\n←\nSkillPulse Home\nPUBLIC\nINTELLIGENCE\n📊\nOverview\n📈\nDemand Intelligence\n🔮\nForecasts\n⚖️\nSkill Gaps\nACTION\n🚨\nEarly-Warning Alerts\n100\n💡\nRecommendations\n4\n🎛️\nScenario Studio\nSTUDIO\nEXPLORE\n🗺️\nDistricts\n💼\nOccupations\n🎓\nQualifications\nSYSTEM\n🛡️\nData & Model Health\n⚡\nAPI"
+  }
+}

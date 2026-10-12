@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-10-12T17:01:23.839Z",
+  "stages": {
+    "Stage A": {
+      "name": "Landing Page Live Pilot Observation Card",
+      "status": "PASS",
+      "passed": true,
+      "hasDharwad": true,
+      "hasCNC": true,
+      "hasPeriod": true,
+      "hasDemand": true,
+      "hasSupply": true,
+      "hasMismatch": true,
+      "hasUnavailable": false,
+      "hasLoading": false,
+      "cardSnippet": "PILOT OBSERVATION • CYCLE 2026-09\nCNC Machine Operator\nDharwad, Karnataka (KA) • Precision Machining\n⚡\nDemand Pressure\nDEMAND INDEX\n73.1\n0–100 percentile\nSUPPLY OUTPUT\n17.0\n0–100 percentile\nMISMATCH\n+56.1\nDemand > Supply\n24M Longitudinal Trajectory + 80% Prediction Interval\nLinear Trend Model\nProtot"
+    },
+    "Stage B": {
+      "name": "District Map with 6 Markers, Pune & Bengaluru Popups",
+      "status": "PASS",
+      "mapState": {
+        "hasMapContainer": true,
+        "markerCount": 6
+      },
+      "punePopup": {
+        "hasPopup": true,
+        "hasPune": true,
+        "hasStateMH": true,
+        "hasMismatch": true,
+        "popupText": "Pune\nMaharashtra (MH)\n⚖️\nBalanced\n(-8.0 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t56.2 pts\nSupply Output Index:\t64.2 pts\nRelative Mismatch:\t-8.0 pts\nCentroid Coordinates:\t18.52°N, 73.86°E\nClick mark"
+      },
+      "blrPopup": {
+        "hasPopup": true,
+        "hasBlr": true,
+        "hasStateKA": true,
+        "hasMismatch": true,
+        "popupText": "Bengaluru Urban\nKarnataka (KA)\n⚖️\nBalanced\n(-10.3 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t53.3 pts\nSupply Output Index:\t63.6 pts\nRelative Mismatch:\t-10.3 pts\nCentroid Coordinates:\t12.97°N, 77.59°E"
+      }
+    },
+    "Stage C": {
+      "name": "Demand Intelligence & Gap Analysis with State=KA + CNC Filter",
+      "status": "PASS",
+      "demandRows": {
+        "count": 2,
+        "hasDharwad": true,
+        "hasBengaluru": true,
+        "allAreCNC": true,
+        "rowsSnippet": [
+          "#8\t\nCNC Machine Operator\nPrecision Machining\n\tManufacturing\t\nDharwad\nKarnataka (KA)\n\t73.1\t100%\tPosting volume (148 postings, score: 83.0)Vacancy persistence (70.8 pts, score: 77.4)Employer recruitment breadth (42 employers, score: 70.8)\tViewing",
+          "#48\t\nCNC Machine Operator\nPrecision Machining\n\tManufacturing\t\nBengaluru Urban\nKarnataka (KA)\n\t30.1\t100%\tWage attractiveness index (119.0 pts, score: 60.4)Employer recruitment breadth (34 employers, score: 42.5)Vacancy persistence (63.4 pts, score: 39.6)\tInspect"
+        ]
+      },
+      "gapCheck": {
+        "rowCount": 2,
+        "hasDharwad": true,
+        "hasBengaluru": true,
+        "allAreCNC": true,
+        "hasNonAbsoluteDisclaimer": true,
+        "calloutSnippet": "ℹ️\nGap Analysis Methodology & Governance Disclaimers\n\nCurrent-Period Mismatch Formula: The Relative Mismatch Score is computed as Demand Composite Score (0–100) − Supply Output Percentile Rank (0–100), bounded between −100.0 and +100.0 points. The Demand Composite Score is a weighted multi-signal de"
+      }
+    },
+    "Stage D": {
+      "name": "Forecasts Diagnostics (Observed vs Forecast, 80% Interval, MAE/WAPE, 3M/6M/12M Cycling)",
+      "status": "PASS",
+      "drawer3M": {
+        "found": true,
+        "hasObservedHistory": true,
+        "hasPointForecast": true,
+        "hasTargetPeriod": true,
+        "hasPredictionInterval": true,
+        "hasModelBadge": true,
+        "hasMAE": true,
+        "hasWAPE": true,
+        "hasUncertaintyNote": true,
+        "snippet": "Forecast Diagnostics: Warehouse Inventory Coordinator (Mumbai Suburban, Maharashtra (MH))\n\nTarget Period: 2026-12 (+3 Months) • Projected Mismatch: +63.2 pts (Demand Pressure)\n\n✕ Close Diagnostics\n1. Job-Posting Demand Projection\nModel: Linear Trend Model\n+3M (2026-12)\nAdequate Sample (N=16)\nOBSERVED HISTORY (SYNTHETIC)\n133 postings\nBase: 2026-09\nPOINT FORECAST\n136 postings\nTarget: 2026-12 (+3M)\nC"
+      },
+      "drawer6M": {
+        "found": true,
+        "has6M": true,
+        "hasTargetPeriod": true,
+        "hasMAE": true,
+        "hasWAPE": true
+      },
+      "drawer12M": {
+        "found": true,
+        "has12M": true,
+        "hasTargetPeriod": true,
+        "hasMAE": true,
+        "hasWAPE": true
+      }
+    },
+    "Stage E": {
+      "name": "Early-Warning Alerts Reason, Severity, Action, Limitations",
+      "status": "PASS",
+      "found": true,
+      "hasSeverity": true,
+      "hasCausalExplanation": true,
+      "hasSuggestedAction": true,
+      "hasLimitations": true,
+      "hasHumanNotice": true,
+      "snippet": "CRITICAL\nSingle-Horizon Demand Pressure: Cold Chain Logistics Supervisor (Bengaluru Urban)\n\nAlert ID: ALERT-DEM_PRESSURE-KA_BLR_U-OCC_LOG_002-H12-2026-09 • Reporting Period: 2026-09\n\n✕ Close Diagnostics\nPersistence Evaluation & Horizon Support\nSingle-Horizon Signal Only\n\nThis is a single-horizon signal evaluated at the +12-month horizon (2027-09). Persistence rule requires threshold crossing at tw"
+    },
+    "Stage F": {
+      "name": "Seat Simulator 100-Seat then 180-Seat Comparison & Recalculation",
+      "status": "PASS",
+      "sim100": {
+        "kpiCount": 4,
+        "has100Seats": true,
+        "kpisText": [
+          "SANCTIONED BATCH CAPACITY\n100\n+20.0 (+25.0%)\nBaseline Avg: 80.0 seats/batch",
+          "CERTIFIED CANDIDATE OUTPUT\n69.1\n+13.8/mo (+25.0%)\nBaseline Output: 55.3 certified / mo",
+          "REGIONAL SUPPLY PERCENTILE RANK\n77.4\n+32.1 pts\nBaseline Rank: 45.3 percentile",
+          "PROJECTED MISMATCH (RANK DIFFERENCE)\n-16.98\n-32.08 pts\nClassification: Supply Pressure • Baseline: +15.10 pts"
+        ],
+        "hasThroughput": true,
+        "hasMismatch": true,
+        "hasClassification": true
+      },
+      "sim180": {
+        "has180Seats": true,
+        "hasPrevComparisonBanner": true,
+        "prevBannerText": "Iterative Scenario Comparison: Previous test had 100 seats (Mismatch: -16.98 pt) → Current run evaluates 180 seats (Mismatch: -39.62 pt).\nΔ Output: 55.3 /mo",
+        "kpisText": [
+          "SANCTIONED BATCH CAPACITY\n180\n+100.0 (+125.0%)\nBaseline Avg: 80.0 seats/batch",
+          "CERTIFIED CANDIDATE OUTPUT\n124.4\n+69.1/mo (+125.0%)\nBaseline Output: 55.3 certified / mo",
+          "REGIONAL SUPPLY PERCENTILE RANK\n100.0\n+54.7 pts\nBaseline Rank: 45.3 percentile",
+          "PROJECTED MISMATCH (RANK DIFFERENCE)\n-39.62\n-54.72 pts\nClassification: Supply Pressure • Baseline: +15.10 pts"
+        ]
+      }
+    },
+    "Stage G": {
+      "name": "CSV Export Rectangular Shape, Preserved Negative Numbers & Synthetic Disclaimers",
+      "status": "PASS",
+      "downloadedCount": 3,
+      "verifiedCsvFiles": [
+        {
+          "filename": "skillpulse-forecasts-2026-09-h12.csv",
+          "totalRows": 55,
+          "columnCount": 48,
+          "isRectangular": true,
+          "nonMatchingLine": null,
+          "hasSyntheticNotice": true,
+          "hasNegativeValues": true
+        },
+        {
+          "filename": "skillpulse-gap-analysis-2026-09.csv",
+          "totalRows": 55,
+          "columnCount": 40,
+          "isRectangular": true,
+          "nonMatchingLine": null,
+          "hasSyntheticNotice": true,
+          "hasNegativeValues": true
+        },
+        {
+          "filename": "skillpulse-seat-simulation-KA_BLR_U-OCC_LOG_001-2026-09-H6-S180.csv",
+          "totalRows": 41,
+          "columnCount": 8,
+          "isRectangular": true,
+          "nonMatchingLine": null,
+          "hasSyntheticNotice": true,
+          "hasNegativeValues": true
+        }
+      ],
+      "apiVerification": {
+        "gapRecords": 10,
+        "forecastRecords": 10,
+        "hasNegativeMismatches": true
+      }
+    },
+    "Stage H": {
+      "name": "Hindi Toggle, Zero Raw Translation Keys, Reload Persistence, and English Restore",
+      "status": "PASS",
+      "hindiState": {
+        "storedLang": "hi",
+        "hasOverviewHindi": true,
+        "hasSyntheticPill": true,
+        "rawKeysCount": 0,
+        "sampleRawKeys": []
+      },
+      "persistenceCheck": {
+        "storedLang": "hi",
+        "isStillHindi": true
+      },
+      "restoredEnglish": {
+        "storedLang": "en",
+        "isEnglish": true
+      }
+    }
+  },
+  "summary": {
+    "passed": 8,
+    "failed": 0
+  }
+}

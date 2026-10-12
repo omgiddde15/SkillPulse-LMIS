@@ -23,6 +23,7 @@ export default function DistrictComparisonCharts({
   selectedDistrictId = null,
   onSelectDistrict = () => {},
   period = '2026-09',
+  onExploreDistrict = () => {},
 }) {
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
@@ -489,6 +490,8 @@ export default function DistrictComparisonCharts({
           period={period}
           isHindi={isHindi}
           onSwitchToCharts={() => setActiveView('charts')}
+          onExploreDistrict={onExploreDistrict}
+          gapRecords={gapData?.results || gapData?.records || []}
         />
       )}
     </section>
