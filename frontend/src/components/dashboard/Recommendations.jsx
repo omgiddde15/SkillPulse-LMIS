@@ -22,10 +22,12 @@ const TOP_RANKED_INTERVENTIONS = [
     sector: 'Manufacturing',
     tierLabel: 'Priority Tier 1 (Deficit #1)',
     seats: 100,
-    shortfallClosed: '▼ 18.2% closed',
+    beforeMismatchPts: 63.2,
+    afterMismatchPts: 2.8,
+    mismatchDeltaPts: -60.4,
     titleEn: 'Simulate 100 Seats for CNC Machine Operator',
     titleHi: 'सीएनसी मशीन ऑपरेटर के लिए 100 सीटों का अनुकरण करें',
-    summaryEn: 'Persistent acute shortage in CNC Machine Operator (+56.1 pts relative mismatch) where demand score (73.1 pts) exceeds recent certification throughput (17.0 percentile). Scenario Studio evaluates adjusting 100 cohort seats to address regional precision machining deficit.',
+    summaryEn: 'Persistent acute shortage in CNC Machine Operator (+56.1 pts current relative mismatch) where demand score (73.1 pts) exceeds recent certification throughput (17.0 percentile). Scenario Studio evaluates adjusting 100 cohort seats against local facility constraints.',
     summaryHi: 'सीएनसी मशीन ऑपरेटर में निरंतर तीव्र कमी (+56.1 अंक सापेक्ष असंतुलन) जहां मांग सूचकांक (73.1 अंक) प्रमाणीकरण थ्रूपुट (17.0 पर्सेंटाइल) से अधिक है। परिदृश्य स्टूडियो 100 सीटों के समायोजन का मूल्यांकन करता है।',
   },
   {
@@ -39,7 +41,9 @@ const TOP_RANKED_INTERVENTIONS = [
     sector: 'IT/ITeS',
     tierLabel: 'Priority Tier 2 (Tech Growth)',
     seats: 80,
-    shortfallClosed: '▼ 14.5% closed',
+    beforeMismatchPts: -9.4,
+    afterMismatchPts: 34.0,
+    mismatchDeltaPts: 43.4,
     titleEn: 'Sustain High-Tech Intake for Cloud Infrastructure Associate',
     titleHi: 'क्लाउड इंफ्रास्ट्रक्चर एसोसिएट के लिए हाई-टेक प्रवेश बनाए रखें',
     summaryEn: 'High-volume tech corridor with elevated demand score (85.8 pts) and strong certification throughput (88.7 percentile). Sustaining intake prevents future cohort deficits under enterprise hiring velocity.',
@@ -56,7 +60,9 @@ const TOP_RANKED_INTERVENTIONS = [
     sector: 'Manufacturing',
     tierLabel: 'Priority Tier 3 (EV Transition)',
     seats: 60,
-    shortfallClosed: '▼ 11.8% closed',
+    beforeMismatchPts: -6.6,
+    afterMismatchPts: 55.7,
+    mismatchDeltaPts: 62.3,
     titleEn: 'Align Automotive ITI Cohorts to EV Diagnostics Hub',
     titleHi: 'ऑटोमोटिव आईटीआई बैचों को ईवी डायग्नोस्टिक्स हब के साथ संरेखित करें',
     summaryEn: 'High industrial manufacturing demand (69.7 pts) alongside balanced certification output (68.9 percentile). Evaluating a 60-seat planning scenario safeguards training alignment with automotive EV transition while monitoring throughput constraints.',
@@ -73,7 +79,9 @@ const TOP_RANKED_INTERVENTIONS = [
     sector: 'Logistics',
     tierLabel: 'Priority Tier 4 (Pharma Cluster)',
     seats: 50,
-    shortfallClosed: '▼ 9.4% closed',
+    beforeMismatchPts: -33.0,
+    afterMismatchPts: -5.7,
+    mismatchDeltaPts: 27.4,
     titleEn: 'Expand Pharma Cold-Chain Logistics TVET Certification Tracks',
     titleHi: 'फार्मा कोल्ड-चेन लॉजिस्टिक्स टीवीईटी प्रमाणन ट्रैक का विस्तार करें',
     summaryEn: 'Genome Valley pharmaceutical expansion drives demand for certified temperature-controlled supply chain handlers. Sanctioning specialized modules bridges urgent industry deficit.',
@@ -102,8 +110,8 @@ export default function Recommendations({
       setError(null);
       try {
         const [alertsRes, gapRes] = await Promise.all([
-          fetchAlerts({ period, limit: 100 }),
-          fetchGapAnalysis({ period, limit: 100 }),
+          fetchAlerts({ period, limit: 500 }),
+          fetchGapAnalysis({ period, limit: 500 }),
         ]);
         if (ignore) return;
         setAlerts(alertsRes.results || alertsRes.alerts || []);
@@ -146,8 +154,8 @@ export default function Recommendations({
         priority = mismatch >= 40 ? 'critical' : 'high';
         titleEn = 'Evaluate Capacity Expansion & Fast-Track TVET Batches';
         titleHi = 'प्रशिक्षण क्षमता विस्तार एवं त्वरित बैच परिदृश्यों का मूल्यांकन करें';
-        actionEn = `Employer hiring intensity significantly outpaces certified throughput (+${mismatch.toFixed(1)} pts). Evaluate seat adjustment planning scenarios in Scenario Studio (such as additional intake or evening cohorts) against certified throughput yield and facility constraints to address the projected shortfall.`;
-        actionHi = `नियोक्ता भर्ती की तीव्रता प्रमाणित आउटपुट से काफी अधिक है (+${mismatch.toFixed(1)} अंक)। प्रमाणित थ्रूपुट यील्ड और संस्थागत सीमाओं के विरुद्ध परिदृश्य स्टूडियो में सीट विस्तार परिदृश्यों का मूल्यांकन करें।`;
+        actionEn = `Employer hiring intensity significantly outpaces certified throughput (+${mismatch.toFixed(1)} pts). Evaluate seat adjustment planning scenarios in Scenario Studio (such as additional intake or evening cohorts) against certified throughput yield and facility constraints to evaluate closing the projected relative mismatch.`;
+        actionHi = `नियोक्ता भर्ती की तीव्रता प्रमाणित आउटपुट से काफी अधिक है (+${mismatch.toFixed(1)} अंक)। प्रमाणित थ्रूपुट यील्ड और संस्थागत सीमाओं के विरुद्ध परिदृश्य स्टूडियो में सीट विस्तार परिदृश्यों का मूल्यांकन करें ताकि प्रक्षेपित सापेक्ष असंतुलन को कम किया जा सके।`;
       } else if (isSupplyPressure) {
         policyCategory = 'reallocate';
         priority = mismatch <= -40 ? 'high' : 'medium';
@@ -236,8 +244,8 @@ export default function Recommendations({
           </h3>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
             {isHindi
-              ? 'हेयूरिस्टिक असंतुलन नियमों और पायलट डेटा सिमुलेशन के आधार पर प्रस्तावित योजना परिदृश्य। प्रस्तावित संख्याएं परिदृश्य स्टूडियो में मूल्यांकन के लिए हैं, स्वीकृत आवंटन नहीं।'
-              : 'Deterministic heuristic planning scenarios backed by live gap scores and seat non-depletion constraints. Proposed seat adjustments represent exploratory planning scenarios for evaluation in Scenario Studio, not approved or binding allocations.'}
+              ? 'हेयूरिस्टिक असंतुलन नियमों और पायलट डेटा सिमुलेशन के आधार पर प्रस्तावित योजना परिदृश्य। ये अन्वेषणात्मक नियोजन सिमुलेशन हैं, वास्तविक रोजगार या श्रमिकों की कमी में सत्यापित परिवर्तन नहीं।'
+              : 'Deterministic heuristic planning scenarios backed by live gap scores and seat non-depletion constraints. Results represent exploratory planning simulations, not verified changes in real-world employment or worker shortages.'}
           </p>
         </div>
 
@@ -276,17 +284,30 @@ export default function Recommendations({
               </div>
 
               <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                   <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
-                    <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+{item.seats} (Scenario)</strong>
+                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                      {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
+                    </div>
+                    <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>{item.seats} (Scenario)</strong>
                   </div>
                   <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
-                    <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>{item.shortfallClosed}</strong>
+                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                      {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                      <strong style={{ color: item.mismatchDeltaPts < 0 ? '#059669' : '#2563eb', fontFamily: 'var(--font-mono)' }}>
+                        {item.mismatchDeltaPts >= 0 ? '+' : ''}{item.mismatchDeltaPts.toFixed(1)} pts
+                      </strong>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                        ({item.beforeMismatchPts >= 0 ? '+' : ''}{item.beforeMismatchPts.toFixed(1)} → {item.afterMismatchPts >= 0 ? '+' : ''}{item.afterMismatchPts.toFixed(1)} pts)
+                      </span>
+                    </div>
                   </div>
                   <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                      {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
+                    </div>
                     <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{item.occupationTitle}</strong>
                   </div>
                 </div>

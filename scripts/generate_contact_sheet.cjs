@@ -58,12 +58,12 @@ const AUDIT_NOTES = {
   '06_alerts': {
     status: 'High Parity',
     matchNotes: 'Severity badges (Critical, High, Medium, Low), multi-horizon persistence rule, causal factors, suggested policy actions, and 1-click "Simulate Fix" action.',
-    differenceNotes: 'All 100 alerts generated deterministically from backend /api/v1/alerts endpoint.',
+    differenceNotes: 'All 143 alerts generated deterministically from backend /api/v1/alerts endpoint (35 persistent multi-horizon signals across 39 corridors).',
   },
   '07_recommendations': {
     status: 'High Parity (Rule-Based Priorities)',
-    matchNotes: 'Ranked policy intervention cards (#01 to #04) with proposed seat adjustments, shortfall closed estimates, and direct Simulator deep-links.',
-    differenceNotes: 'SkillPulse labels ranking as "Rule-Based Planning Priority" instead of decorative statistical confidence percentages.',
+    matchNotes: 'Ranked policy intervention cards (#01 to #04) with proposed seat adjustments, simulated relative mismatch changes in points (before → after), and direct Simulator deep-links.',
+    differenceNotes: 'SkillPulse labels ranking as "Rule-Based Planning Priority" instead of decorative statistical confidence percentages, framing outputs as exploratory planning simulations.',
   },
   '08_scenarios': {
     status: 'High Parity (Constant-Yield Pipeline)',

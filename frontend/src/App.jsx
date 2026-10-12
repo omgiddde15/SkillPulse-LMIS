@@ -179,8 +179,8 @@ export default function App() {
         setBackendHealth(healthRes);
 
         const [demandRes, gapRes, alertsRes] = await Promise.all([
-          fetchDemandIndex({ period, limit: 100 }),
-          fetchGapAnalysis({ period, limit: 100 }),
+          fetchDemandIndex({ period, limit: 500 }),
+          fetchGapAnalysis({ period, limit: 500 }),
           fetchAlerts({ period, limit: 500 }),
         ]);
 
@@ -219,8 +219,8 @@ export default function App() {
       setBackendHealth(healthRes);
 
       const [demandRes, gapRes, alertsRes] = await Promise.all([
-        fetchDemandIndex({ period, limit: 100 }),
-        fetchGapAnalysis({ period, limit: 100 }),
+        fetchDemandIndex({ period, limit: 500 }),
+        fetchGapAnalysis({ period, limit: 500 }),
         fetchAlerts({ period, limit: 500 }),
       ]);
 
@@ -247,8 +247,8 @@ export default function App() {
       setBackendHealth(healthRes);
 
       const [demandRes, gapRes, alertsRes] = await Promise.all([
-        fetchDemandIndex({ period, limit: 100 }),
-        fetchGapAnalysis({ period, limit: 100 }),
+        fetchDemandIndex({ period, limit: 500 }),
+        fetchGapAnalysis({ period, limit: 500 }),
         fetchAlerts({ period, limit: 500 }),
       ]);
 

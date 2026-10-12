@@ -647,8 +647,8 @@ export default function Overview({
             </h3>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
               {isHindi
-                ? 'श्रम बाजार आसूचना इंजन द्वारा मूल्यांकन किए गए लक्षित क्षमता समायोजन योजना परिदृश्य।'
-                : 'Targeted capacity adjustment planning scenarios evaluated via Scenario Studio.'}
+                ? 'पायलट अंतर डेटा पर आधारित प्राथमिकता क्षमता समायोजन योजना परिदृश्य। ये अन्वेषणात्मक नियोजन सिमुलेशन हैं, वास्तविक रोजगार या श्रमिकों की कमी में सत्यापित परिवर्तन नहीं।'
+                : 'Targeted capacity adjustment planning scenarios evaluated via Scenario Studio. Results denote exploratory planning simulations, not verified changes in real-world employment or worker shortages.'}
             </p>
           </div>
 
@@ -704,17 +704,26 @@ export default function Overview({
             </div>
 
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+100 (Scenario)</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
+                  </div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>100 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
-                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 18.2%</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>-60.4 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(+63.2 → +2.8 pts)</span>
+                  </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
+                  </div>
                   <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>CNC Operator</strong>
                 </div>
               </div>
@@ -770,17 +779,26 @@ export default function Overview({
             </div>
 
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
-                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>+80 (Scenario)</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
+                  </div>
+                  <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>80 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
-                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 14.5%</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    <strong style={{ color: '#2563eb', fontFamily: 'var(--font-mono)' }}>+43.4 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(-9.4 → +34.0 pts)</span>
+                  </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
+                  </div>
                   <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>Cloud Associate</strong>
                 </div>
               </div>
@@ -836,17 +854,26 @@ export default function Overview({
             </div>
 
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>PLANNING SEATS</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
+                  </div>
                   <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>60 (Scenario)</strong>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>EST. SHORTFALL CLOSED</div>
-                  <strong style={{ color: '#059669', fontFamily: 'var(--font-mono)' }}>▼ 11.8%</strong>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    <strong style={{ color: '#2563eb', fontFamily: 'var(--font-mono)' }}>+62.3 pts</strong>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>(-6.6 → +55.7 pts)</span>
+                  </div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>TARGET TRADE</div>
+                  <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                    {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
+                  </div>
                   <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>EV Assembly</strong>
                 </div>
               </div>

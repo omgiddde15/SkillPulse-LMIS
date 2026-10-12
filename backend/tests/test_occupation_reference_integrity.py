@@ -162,6 +162,25 @@ class TestFrontendModuleReferenceIntegrity:
             "Found non-canonical 'Cloud Infrastructure Architect'; must be 'Cloud Infrastructure Associate'"
         )
 
+    def test_no_misleading_shortfall_closed_in_frontend(self):
+        """Disallow misleading statements claiming a scenario closed an actual shortfall/shortage."""
+        files_to_check = [
+            FRONTEND_DIR / "components" / "Overview.jsx",
+            FRONTEND_DIR / "components" / "dashboard" / "Recommendations.jsx",
+        ]
+        for f in files_to_check:
+            assert f.is_file()
+            content = f.read_text(encoding="utf-8")
+            assert "EST. SHORTFALL CLOSED" not in content, (
+                f"Found misleading 'EST. SHORTFALL CLOSED' in {f.name}"
+            )
+            assert "SHORTFALL CLOSED" not in content, (
+                f"Found misleading 'SHORTFALL CLOSED' in {f.name}"
+            )
+            assert "SIMULATED RELATIVE MISMATCH CHANGE" in content, (
+                f"Missing accurate 'SIMULATED RELATIVE MISMATCH CHANGE' label in {f.name}"
+            )
+
 
 class TestLongitudinalChangeCalculation:
     """Validate mathematical correctness and robustness of longitudinal delta calculations."""
