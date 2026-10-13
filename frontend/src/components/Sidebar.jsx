@@ -66,6 +66,13 @@ const NAV_SECTIONS = [
         icon: 'folder',
         badgeType: 'workspace',
       },
+      {
+        id: 'career',
+        labelKey: 'nav.careerProfile',
+        fallbackLabel: 'Career Profile',
+        icon: 'briefcase',
+        badgeType: 'career',
+      },
     ],
   },
   {

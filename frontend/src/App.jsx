@@ -27,6 +27,7 @@ import { useAuth } from './context/AuthContext';
 import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
 import MyWorkspace from './components/dashboard/MyWorkspace';
+import CareerProfilePage from './components/career/CareerProfilePage';
 
 const FILTERABLE_TABS = ['overview', 'demand', 'gap', 'forecasts', 'alerts'];
 
@@ -56,6 +57,7 @@ const ROUTE_TO_PATH = {
   login: '/login',
   signup: '/signup',
   workspace: '/workspace',
+  career: '/career',
   overview: '/overview',
   demand: '/demand',
   forecasts: '/forecasts',
@@ -80,6 +82,8 @@ const PATH_TO_ROUTE = {
   '/register': 'signup',
   '/workspace': 'workspace',
   '/my-workspace': 'workspace',
+  '/career': 'career',
+  '/profile': 'career',
   '/overview': 'overview',
   '/demand': 'demand',
   '/intelligence': 'demand',
@@ -190,9 +194,9 @@ export default function App() {
     }
   }, [activeTab, isAuthenticated, handleNavigate]);
 
-  // Protect private workspace routes
+  // Protect private workspace and career routes
   useEffect(() => {
-    if (activeTab === 'workspace' && !isLoadingAuth && !isAuthenticated && !isDemo) {
+    if ((activeTab === 'workspace' || activeTab === 'career') && !isLoadingAuth && !isAuthenticated && !isDemo) {
       handleNavigate('login');
     }
   }, [activeTab, isLoadingAuth, isAuthenticated, isDemo, handleNavigate]);
@@ -530,6 +534,12 @@ export default function App() {
             </ErrorBoundary>
           )}
 
+          {activeTab === 'career' && (
+            <ErrorBoundary moduleName="Career Profile">
+              <CareerProfilePage onNavigate={handleNavigate} />
+            </ErrorBoundary>
+          )}
+
           {activeTab === 'districts' && (
             <ErrorBoundary moduleName="Districts">
               <DistrictsExplorer
@@ -581,6 +591,7 @@ export default function App() {
             activeTab !== 'recommendations' &&
             activeTab !== 'simulator' &&
             activeTab !== 'workspace' &&
+            activeTab !== 'career' &&
             activeTab !== 'districts' &&
             activeTab !== 'occupations' &&
             activeTab !== 'qualifications' &&

@@ -29,6 +29,8 @@ export default function Header({
     switch (tabId) {
       case 'workspace':
         return t('nav.workspace', isHindi ? 'मेरा कार्यक्षेत्र' : 'My Workspace');
+      case 'career':
+        return t('nav.careerProfile', isHindi ? 'करियर प्रोफ़ाइल' : 'Career Profile');
       case 'overview':
         return t('nav.overview', 'Overview');
       case 'demand':

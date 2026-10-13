@@ -43,6 +43,8 @@ venv.bak/
 *.db
 *.sqlite
 *.sqlite3
+data/resumes/
+data/*.pdf
 
 # Node.js / Frontend dependencies
 node_modules/

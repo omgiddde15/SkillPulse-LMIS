@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.api.v1.alerts import router as alerts_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.career import router as career_router
 from app.api.v1.demand import router as demand_router
 from app.api.v1.forecasts import router as forecasts_router
 from app.api.v1.gap_analysis import router as gap_router
@@ -19,6 +20,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(career_router, prefix="/api/v1")
 app.include_router(scenarios_router, prefix="/api/v1")
 app.include_router(demand_router, prefix="/api/v1")
 app.include_router(gap_router, prefix="/api/v1")

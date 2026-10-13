@@ -12,6 +12,7 @@ from pathlib import Path
 from contextlib import contextmanager
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "skillpulse.db"
+DEFAULT_UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "resumes"
 
 
 def get_db_path() -> str:
@@ -22,6 +23,17 @@ def get_db_path() -> str:
     # Ensure data directory exists
     DEFAULT_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     return str(DEFAULT_DB_PATH)
+
+
+def get_upload_dir() -> Path:
+    """Returns the private upload directory, allowing override via SKILLPULSE_UPLOAD_DIR."""
+    override = os.environ.get("SKILLPULSE_UPLOAD_DIR")
+    if override:
+        path = Path(override)
+    else:
+        path = DEFAULT_UPLOAD_DIR
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def init_db(db_path: str = None) -> None:
@@ -81,11 +93,52 @@ def init_db(db_path: str = None) -> None:
             );
         """)
 
+        # Career Profiles table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS career_profiles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL UNIQUE,
+                target_role_title TEXT NOT NULL,
+                target_occupation_id TEXT,
+                target_sector TEXT,
+                current_education_level TEXT,
+                institution_name TEXT,
+                graduation_year INTEGER,
+                years_experience REAL NOT NULL DEFAULT 0.0,
+                current_state TEXT,
+                current_district TEXT,
+                preferred_locations_json TEXT NOT NULL DEFAULT '[]',
+                consent_ai_processing INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            );
+        """)
+
+        # User Resumes table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_resumes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                original_filename TEXT NOT NULL,
+                storage_key TEXT NOT NULL UNIQUE,
+                file_size_bytes INTEGER NOT NULL,
+                parsed_data_json TEXT NOT NULL,
+                is_reviewed INTEGER NOT NULL DEFAULT 0,
+                uploaded_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            );
+        """)
+
         # Indexes for fast lookup and integrity
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_scenarios_user_id ON saved_scenarios(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_career_profiles_user_id ON career_profiles(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_resumes_user_id ON user_resumes(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_resumes_storage_key ON user_resumes(storage_key);")
         conn.commit()
 
 

@@ -242,3 +242,75 @@ export async function deleteSavedScenario(scenarioId) {
   });
 }
 
+/**
+ * Fetch authenticated user's career profile
+ * @returns {Promise<{ has_profile: boolean, profile: Object|null }>}
+ */
+export async function fetchCareerProfile() {
+  return request('/api/v1/career/profile');
+}
+
+/**
+ * Create or update user's career profile
+ * @param {Object} profileData
+ * @returns {Promise<{ status: string, message: string, profile: Object }>}
+ */
+export async function saveCareerProfile(profileData) {
+  return request('/api/v1/career/profile', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(profileData),
+  });
+}
+
+/**
+ * Upload a text-based PDF resume
+ * @param {File} file
+ * @returns {Promise<{ status: string, message: string, resume: Object }>}
+ */
+export async function uploadResumeFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return request('/api/v1/career/resume', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+/**
+ * Fetch authenticated user's latest resume metadata and parsed content
+ * @returns {Promise<{ has_resume: boolean, resume: Object|null }>}
+ */
+export async function fetchLatestResume() {
+  return request('/api/v1/career/resume/latest');
+}
+
+/**
+ * Submit user-confirmed or corrected parsed resume data
+ * @param {number} resumeId
+ * @param {Object} parsedData
+ * @returns {Promise<{ status: string, message: string, resume: Object }>}
+ */
+export async function reviewResumeParsedData(resumeId, parsedData) {
+  return request(`/api/v1/career/resume/${resumeId}/review`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(parsedData),
+  });
+}
+
+/**
+ * Delete a resume from server storage and database
+ * @param {number} resumeId
+ * @returns {Promise<{ status: string, message: string }>}
+ */
+export async function deleteResume(resumeId) {
+  return request(`/api/v1/career/resume/${resumeId}`, {
+    method: 'DELETE',
+  });
+}
+
