@@ -1,11 +1,12 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import Icon from './Icon';
 
 const MODULE_DETAILS = {
   demand: {
     title: 'Demand Intelligence Module',
     badge: 'Coming in Task 6B',
-    icon: '📈',
+    icon: 'trendUp',
     description:
       'Detailed drill-downs into employer online job posting volumes, trailing 3-month growth velocity, vacancy persistence, hiring employer diversity, and wage attractiveness index across monitored districts and trades.',
     specs: [
@@ -18,7 +19,7 @@ const MODULE_DETAILS = {
   gap: {
     title: 'Relative Gap Analysis & Mismatch Engine',
     badge: 'Coming in Task 6B',
-    icon: '⚖️',
+    icon: 'scale',
     description:
       'Granular comparative analysis between composite demand indices and cross-sectional training certification throughput. Includes cohort funnel rates, seat utilization, and strict 90-day placement maturity status.',
     specs: [
@@ -31,7 +32,7 @@ const MODULE_DETAILS = {
   forecasts: {
     title: 'Time-Series Forecasting & Projected Mismatch',
     badge: 'Coming in Task 6C',
-    icon: '🔮',
+    icon: 'chart',
     description:
       'Rolling-origin backtested forecasts for monthly job postings and certified throughput across 3, 6, and 12-month horizons. Compares Naive, 3-Month Moving Average, and Linear Trend with 80% normal prediction intervals.',
     specs: [
@@ -44,7 +45,7 @@ const MODULE_DETAILS = {
   alerts: {
     title: 'Early-Warning Alerts & Signal Triggers',
     badge: 'Coming in Task 6C',
-    icon: '🚨',
+    icon: 'alert',
     description:
       'Explainable policy alerts identifying persistent demand pressures, emerging supply bottlenecks, and data coverage warnings. Formats human-in-the-loop decision-support recommendations with clear limitations.',
     specs: [
@@ -57,7 +58,7 @@ const MODULE_DETAILS = {
   simulator: {
     title: 'Training-Seat Allocation Simulator',
     badge: 'Coming in Task 7',
-    icon: '🎛️',
+    icon: 'sliders',
     description:
       'Interactive policy playground allowing TVET authorities and ITI administrators to simulate seat adjustments, projected candidate throughput changes, and estimated impact on regional mismatch scores.',
     specs: [
@@ -74,7 +75,7 @@ export default function PlaceholderPage({ moduleId }) {
   const details = MODULE_DETAILS[moduleId] || {
     title: isHindi ? 'मॉड्यूल निर्माणाधीन है' : 'Module Under Development',
     badge: isHindi ? 'शीघ्र उपलब्ध' : 'Coming next',
-    icon: '🚧',
+    icon: 'layers',
     description: isHindi
       ? 'यह मॉड्यूल आगामी विकास चरणों में कार्यान्वयन हेतु निर्धारित है।'
       : 'This module is scheduled for implementation in upcoming development phases.',
@@ -83,7 +84,7 @@ export default function PlaceholderPage({ moduleId }) {
 
   return (
     <div className="placeholder-panel">
-      <div className="placeholder-icon">{details.icon}</div>
+      <div className="placeholder-icon"><Icon name={details.icon} size={32} /></div>
       <div className="placeholder-badge">{details.badge}</div>
       <h2 className="placeholder-title">{details.title}</h2>
       <p className="placeholder-description">{details.description}</p>

@@ -5,6 +5,7 @@ import {
   getDistrictDisplayName,
   getStateDisplayName,
 } from '../i18n/translations';
+import Icon from './Icon';
 
 /**
  * Directional anchor offsets to prevent any marker or label overlap
@@ -32,28 +33,40 @@ const formatMismatch = (val) => {
 const getClassificationBadge = (classification, isHindi = false) => {
   if (classification === 'Demand Pressure') {
     return {
-      icon: '⚡',
+      iconName: 'zap',
+      markerCode: 'D',
       label: isHindi ? 'मांग दबाव' : 'Demand Pressure',
-      color: '#c2410c',
-      bg: '#fff7ed',
-      border: '#ffedd5',
+      color: 'var(--status-demand-text)',
+      bg: 'var(--status-demand-bg)',
+      border: 'var(--status-demand-border)',
+      hexColor: '#c2410c',
+      hexBg: '#fff7ed',
+      hexBorder: '#ffedd5',
     };
   }
   if (classification === 'Supply Pressure') {
     return {
-      icon: '📦',
+      iconName: 'package',
+      markerCode: 'S',
       label: isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure',
-      color: '#1d4ed8',
-      bg: '#eff6ff',
-      border: '#dbeafe',
+      color: 'var(--status-supply-text)',
+      bg: 'var(--status-supply-bg)',
+      border: 'var(--status-supply-border)',
+      hexColor: '#1d4ed8',
+      hexBg: '#eff6ff',
+      hexBorder: '#dbeafe',
     };
   }
   return {
-    icon: '⚖️',
+    iconName: 'scale',
+    markerCode: 'B',
     label: isHindi ? 'संतुलित' : 'Balanced',
-    color: '#475569',
-    bg: '#f8fafc',
-    border: '#e2e8f0',
+    color: 'var(--text-secondary)',
+    bg: 'var(--bg-subtle)',
+    border: 'var(--border-subtle)',
+    hexColor: '#475569',
+    hexBg: '#f8fafc',
+    hexBorder: '#e2e8f0',
   };
 };
 
@@ -104,7 +117,6 @@ export default function DistrictGeographicMap({
   useEffect(() => {
     if (mapMode !== 'basemap' || !mapContainerRef.current) return;
 
-    // Remove any previous map instance
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
@@ -112,18 +124,16 @@ export default function DistrictGeographicMap({
 
     failedTileCountRef.current = 0;
 
-    // Centered over South-Central India covering MH, KA, and TS
     const map = L.map(mapContainerRef.current, {
       center: [16.2, 75.8],
       zoom: 6,
       minZoom: 5,
       maxZoom: 13,
-      scrollWheelZoom: false, // Prevents intercepting dashboard page scroll
+      scrollWheelZoom: false,
     });
 
     mapInstanceRef.current = map;
 
-    // Primary: OpenStreetMap standard tiles (Clean, reliable, no API key watermark)
     const osmLayer = L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -136,7 +146,6 @@ export default function DistrictGeographicMap({
 
     osmLayer.on('tileerror', () => {
       failedTileCountRef.current += 1;
-      // If repeated tile failures occur (e.g. offline environment), notify user
       if (failedTileCountRef.current >= 6) {
         setTilesOffline(true);
       }
@@ -150,11 +159,9 @@ export default function DistrictGeographicMap({
 
     osmLayer.addTo(map);
 
-    // Feature group for markers
     const markersGroup = L.featureGroup().addTo(map);
     markersLayerRef.current = markersGroup;
 
-    // Use ResizeObserver to ensure Leaflet container size stays accurate
     const resizeObserver = new ResizeObserver(() => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
@@ -163,7 +170,6 @@ export default function DistrictGeographicMap({
 
     resizeObserver.observe(mapContainerRef.current);
 
-    // Initial resize trigger
     const timer = setTimeout(() => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
@@ -205,10 +211,8 @@ export default function DistrictGeographicMap({
       }
       const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 36, offsetY: 4 };
 
-      // Custom DivIcon with directional label placement preventing collisions
       const markerHtml = `
         <div class="pilot-district-marker-anchor" style="position: relative; width: 32px; height: 32px; cursor: pointer;">
-          <!-- Central Pin Bubble -->
           <div style="
             width: 32px;
             height: 32px;
@@ -220,18 +224,18 @@ export default function DistrictGeographicMap({
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: monospace;
             position: absolute;
             top: 0;
             left: 0;
             transition: transform 0.15s ease;
             ${isSelected ? 'transform: scale(1.18); z-index: 20;' : ''}
           ">
-            ${badge.icon}
+            ${badge.markerCode}
           </div>
 
-          <!-- Directional Offset Label Badge (Never Collides) -->
           <div style="
             position: absolute;
             left: ${cfg.offsetX}px;
@@ -263,15 +267,14 @@ export default function DistrictGeographicMap({
 
       const marker = L.marker([d.lat, d.lon], { icon: customIcon });
 
-      // Rich popup with full API metrics
       const popupContent = `
         <div style="min-width: 220px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: #1e293b; line-height: 1.4;">
           <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
             <strong style="font-size: 14px; color: #0f172a;">${getDistrictDisplayName(d.name, isHindi)}</strong>
             <span style="font-size: 11px; color: #64748b; font-weight: 600;">${getStateDisplayName(d.state, isHindi)}</span>
           </div>
-          <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: ${badge.color}; background-color: ${badge.bg}; border: 1px solid ${badge.border}; margin-bottom: 8px;">
-            <span>${badge.icon}</span>
+          <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: ${badge.hexColor}; background-color: ${badge.hexBg}; border: 1px solid ${badge.hexBorder}; margin-bottom: 8px;">
+            <span>[${badge.markerCode}]</span>
             <span>${badge.label}</span>
             <span>(${formatMismatch(d.mismatch)} pts)</span>
           </div>
@@ -290,7 +293,7 @@ export default function DistrictGeographicMap({
             </tr>
             <tr>
               <td style="color: #64748b; padding: 2px 0;">${isHindi ? 'सापेक्ष असंतुलन:' : 'Relative Mismatch:'}</td>
-              <td style="text-align: right; font-weight: 700; color: ${badge.color}; font-family: monospace;">${formatMismatch(d.mismatch)} pts</td>
+              <td style="text-align: right; font-weight: 700; color: ${badge.hexColor}; font-family: monospace;">${formatMismatch(d.mismatch)} pts</td>
             </tr>
             <tr>
               <td style="color: #64748b; padding: 2px 0;">${isHindi ? 'स्थानिक निर्देशांक:' : 'Centroid Coordinates:'}</td>
@@ -314,7 +317,6 @@ export default function DistrictGeographicMap({
       markersRef.current[d.id] = marker;
     });
 
-    // Ensure entire latitude span from Bengaluru (12.97°N) to Mumbai (19.08°N) fits comfortably
     if (districts.length > 0) {
       const southWest = L.latLng(12.0, 71.8);
       const northEast = L.latLng(19.8, 79.5);
@@ -339,8 +341,6 @@ export default function DistrictGeographicMap({
     }
   }, [selectedDistrictId, mapMode]);
 
-  // Schematic SVG Map Coordinate Projection Helpers
-  // Bounding Box: Lon 71.5°E to 80.5°E (9° span), Lat 12.0°N to 20.5°N (8.5° span)
   const svgW = 680;
   const svgH = 480;
   const projX = (lon) => 50 + ((lon - 71.5) / 9.0) * (svgW - 100);
@@ -349,17 +349,18 @@ export default function DistrictGeographicMap({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
       {/* Top Map Header & Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
-              🗺️ {isHindi ? 'पायलट ज़िला भौगोलिक मानचित्र (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot District Geographic Map (Karnataka, Maharashtra, Telangana)'}
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icon name="map" size={16} />
+              <span>{isHindi ? 'पायलट ज़िला भौगोलिक मानचित्र (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot District Geographic Map (Karnataka, Maharashtra, Telangana)'}</span>
             </h3>
-            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: 'rgba(13, 148, 136, 0.15)', color: '#2dd4bf', border: '1px solid rgba(13, 148, 136, 0.35)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
               {isHindi ? '6 ज़िला केंद्रक • 3 राज्य' : '6 District Centroids • 3 States'}
             </span>
           </div>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             {isHindi
               ? 'आधिकारिक भौगोलिक केंद्रक (अक्षांश/देशांतर) पर स्थित 6 पायलट ज़िले। सभी मार्कर और लेबल ओवरलैप-रहित संरेखित हैं।'
               : 'Authentic pilot district locations plotted at official centroid coordinates. Directional labels prevent overlap.'}
@@ -369,16 +370,16 @@ export default function DistrictGeographicMap({
         {/* Map View Mode Switcher + Intelligence Layer + Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           {/* Intelligence Layer Switcher */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#94a3b8', padding: '0.2rem 0.35rem', alignSelf: 'center' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--bg-subtle)', padding: '0.2rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text-muted)', padding: '0.2rem 0.35rem', alignSelf: 'center' }}>
               LAYER:
             </span>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'shortage' ? 'rgba(234, 88, 12, 0.25)' : 'transparent',
-                color: intelligenceLayer === 'shortage' ? '#fb923c' : '#94a3b8',
+                backgroundColor: intelligenceLayer === 'shortage' ? 'var(--status-demand-bg)' : 'transparent',
+                color: intelligenceLayer === 'shortage' ? 'var(--status-demand-text)' : 'var(--text-secondary)',
                 fontWeight: intelligenceLayer === 'shortage' ? 700 : 500,
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
@@ -387,14 +388,14 @@ export default function DistrictGeographicMap({
               }}
               onClick={() => setIntelligenceLayer('shortage')}
             >
-              {isHindi ? 'असंतुलन' : 'Shortage Severity'}
+              {isHindi ? 'असंतुलन' : 'Relative Mismatch'}
             </button>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'demand' ? 'rgba(13, 148, 136, 0.25)' : 'transparent',
-                color: intelligenceLayer === 'demand' ? '#2dd4bf' : '#94a3b8',
+                backgroundColor: intelligenceLayer === 'demand' ? 'var(--accent-soft-bg)' : 'transparent',
+                color: intelligenceLayer === 'demand' ? 'var(--accent-soft-text)' : 'var(--text-secondary)',
                 fontWeight: intelligenceLayer === 'demand' ? 700 : 500,
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
@@ -409,8 +410,8 @@ export default function DistrictGeographicMap({
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: intelligenceLayer === 'supply' ? 'rgba(59, 130, 246, 0.25)' : 'transparent',
-                color: intelligenceLayer === 'supply' ? '#93c5fd' : '#94a3b8',
+                backgroundColor: intelligenceLayer === 'supply' ? 'var(--status-supply-bg)' : 'transparent',
+                color: intelligenceLayer === 'supply' ? 'var(--status-supply-text)' : 'var(--text-secondary)',
                 fontWeight: intelligenceLayer === 'supply' ? 700 : 500,
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
@@ -419,59 +420,70 @@ export default function DistrictGeographicMap({
               }}
               onClick={() => setIntelligenceLayer('supply')}
             >
-              {isHindi ? 'आपूर्ति' : 'Effective Supply'}
+              {isHindi ? 'आपूर्ति' : 'Supply Output'}
             </button>
           </div>
 
           {/* Mode Toggle: Basemap vs Schematic */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--bg-subtle)', padding: '0.2rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: mapMode === 'basemap' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                color: mapMode === 'basemap' ? '#ffffff' : '#94a3b8',
+                backgroundColor: mapMode === 'basemap' ? 'var(--bg-surface)' : 'transparent',
+                color: mapMode === 'basemap' ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontWeight: mapMode === 'basemap' ? 700 : 500,
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
                 borderRadius: '6px',
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
               }}
               onClick={() => setMapMode('basemap')}
             >
-              🌐 {isHindi ? 'इंटरैक्टिव बेसमैप' : 'Basemap'}
+              <Icon name="globe" size={12} />
+              <span>{isHindi ? 'इंटरैक्टिव बेसमैप' : 'Basemap'}</span>
             </button>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: mapMode === 'schematic' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                color: mapMode === 'schematic' ? '#ffffff' : '#94a3b8',
+                backgroundColor: mapMode === 'schematic' ? 'var(--bg-surface)' : 'transparent',
+                color: mapMode === 'schematic' ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontWeight: mapMode === 'schematic' ? 700 : 500,
                 padding: '0.25rem 0.55rem',
                 fontSize: '0.72rem',
                 borderRadius: '6px',
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
               }}
               onClick={() => setMapMode('schematic')}
             >
-              📍 {isHindi ? 'स्थानिक लोकेशन' : 'Schematic'}
+              <Icon name="map-pin" size={12} />
+              <span>{isHindi ? 'स्थानिक लोकेशन' : 'Schematic'}</span>
             </button>
           </div>
 
           {/* Classification Legend */}
-          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: '#cbd5e1', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '0.3rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.72rem', color: 'var(--text-secondary)', backgroundColor: 'var(--bg-subtle)', padding: '0.3rem 0.65rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ea580c', display: 'inline-block' }} />
-              <span>⚡ {isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
+              <Icon name="zap" size={11} />
+              <span>{isHindi ? 'मांग दबाव' : 'Demand Pressure'}</span>
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#64748b', display: 'inline-block' }} />
-              <span>⚖️ {isHindi ? 'संतुलित' : 'Balanced'}</span>
+              <Icon name="scale" size={11} />
+              <span>{isHindi ? 'संतुलित' : 'Balanced'}</span>
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3b82f6', display: 'inline-block' }} />
-              <span>📦 {isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure'}</span>
+              <Icon name="package" size={11} />
+              <span>{isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure'}</span>
             </span>
           </div>
         </div>
@@ -479,24 +491,28 @@ export default function DistrictGeographicMap({
 
       {/* Offline Alert with Quick Switcher if Basemap tiles fail */}
       {tilesOffline && mapMode === 'basemap' && (
-        <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '0.5rem 0.75rem', fontSize: '0.75rem', color: '#92400e', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <span>
-            ⚠️ {isHindi
-              ? 'नेटवर्क टाइल सर्वर धीमी प्रतिक्रिया दे रहा है। आप नीचे दिए गए बटन से स्थानिक लोकेशन मैप पर स्विच कर सकते हैं।'
-              : 'Network map tile server is slow or unavailable. You can switch to the self-contained Schematic Location Map.'}
+        <div style={{ backgroundColor: 'var(--status-demand-bg)', border: '1px solid var(--status-demand-border)', borderRadius: 'var(--radius-sm)', padding: '0.5rem 0.75rem', fontSize: '0.75rem', color: 'var(--status-demand-text)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Icon name="alert-triangle" size={14} />
+            <span>
+              {isHindi
+                ? 'नेटवर्क टाइल सर्वर धीमी प्रतिक्रिया दे रहा है। आप नीचे दिए गए बटन से स्थानिक लोकेशन मैप पर स्विच कर सकते हैं।'
+                : 'Network map tile server is slow or unavailable. You can switch to the self-contained Schematic Location Map.'}
+            </span>
           </span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               type="button"
               onClick={() => setMapMode('schematic')}
-              style={{ border: 'none', backgroundColor: '#d97706', color: '#ffffff', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.72rem' }}
+              style={{ border: 'none', backgroundColor: '#d97706', color: '#ffffff', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
             >
-              📍 {isHindi ? 'लोकेशन मैप देखें' : 'View Location Map'}
+              <Icon name="map-pin" size={12} />
+              <span>{isHindi ? 'लोकेशन मैप देखें' : 'View Location Map'}</span>
             </button>
             <button
               type="button"
               onClick={onSwitchToCharts}
-              style={{ border: 'none', background: 'none', color: '#b45309', fontWeight: 600, cursor: 'pointer', fontSize: '0.72rem', textDecoration: 'underline' }}
+              style={{ border: 'none', background: 'none', color: 'var(--status-demand-text)', fontWeight: 600, cursor: 'pointer', fontSize: '0.72rem', textDecoration: 'underline' }}
             >
               {isHindi ? 'तुलनात्मक चार्ट पर जाएं' : 'Comparison Charts'}
             </button>
@@ -514,8 +530,8 @@ export default function DistrictGeographicMap({
               height: '520px',
               width: '100%',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: '#f1f5f9',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
               position: 'relative',
               zIndex: 1,
@@ -530,8 +546,8 @@ export default function DistrictGeographicMap({
               height: '520px',
               width: '100%',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: '#f8fafc',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               overflow: 'hidden',
               position: 'relative',
               display: 'flex',
@@ -541,84 +557,81 @@ export default function DistrictGeographicMap({
             {/* SVG Geographical Location Canvas */}
             <svg
               viewBox={`0 0 ${svgW} ${svgH}`}
-              style={{ width: '100%', height: '100%', display: 'block', backgroundColor: '#f1f5f9' }}
+              style={{ width: '100%', height: '100%', display: 'block', backgroundColor: 'var(--bg-subtle)' }}
             >
               <defs>
                 <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--border-subtle)" strokeWidth="1" />
                 </pattern>
-                {/* Subtle drop shadow for pins */}
                 <filter id="pinShadow" x="-20%" y="-20%" width="140%" height="140%">
                   <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.3" />
                 </filter>
               </defs>
 
-              {/* Background grid */}
               <rect width={svgW} height={svgH} fill="url(#gridPattern)" />
 
               {/* Arabian Sea Coastal Indicator on the West */}
               <path
                 d={`M 0,0 L ${projX(72.7)},0 L ${projX(72.8)},${projY(19.0)} L ${projX(73.5)},${projY(15.5)} L ${projX(74.5)},${svgH} L 0,${svgH} Z`}
-                fill="#e0f2fe"
-                opacity="0.55"
+                fill="#0284c7"
+                opacity="0.14"
               />
               <text x="25" y={svgH - 25} fill="#0284c7" fontSize="11" fontWeight="700" letterSpacing="0.08em" opacity="0.8">
                 ARABIAN SEA
               </text>
 
-              {/* Geographically Proportionate State Regional Zones (Schematic Location Context) */}
-              {/* Maharashtra Zone (North / Northwest) */}
+              {/* Maharashtra Zone */}
               <path
                 d={`M ${projX(72.8)},${projY(19.5)} L ${projX(79.5)},${projY(20.2)} L ${projX(80.2)},${projY(18.5)} L ${projX(76.5)},${projY(17.8)} L ${projX(73.5)},${projY(16.5)} Z`}
-                fill="#f8fafc"
-                stroke="#cbd5e1"
+                fill="var(--bg-surface)"
+                stroke="var(--border-strong)"
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
-                opacity="0.8"
+                opacity="0.85"
               />
-              <text x={projX(76.0)} y={projY(19.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+              <text x={projX(76.0)} y={projY(19.2)} fill="var(--text-secondary)" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
                 MAHARASHTRA (MH)
               </text>
 
-              {/* Karnataka Zone (South / Southwest) */}
+              {/* Karnataka Zone */}
               <path
                 d={`M ${projX(73.8)},${projY(16.2)} L ${projX(77.2)},${projY(17.5)} L ${projX(78.2)},${projY(13.5)} L ${projX(76.5)},${projY(12.2)} L ${projX(74.5)},${projY(14.2)} Z`}
-                fill="#f8fafc"
-                stroke="#cbd5e1"
+                fill="var(--bg-surface)"
+                stroke="var(--border-strong)"
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
-                opacity="0.8"
+                opacity="0.85"
               />
-              <text x={projX(75.8)} y={projY(14.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+              <text x={projX(75.8)} y={projY(14.2)} fill="var(--text-secondary)" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
                 KARNATAKA (KA)
               </text>
 
-              {/* Telangana Zone (East / Central-East) */}
+              {/* Telangana Zone */}
               <path
                 d={`M ${projX(77.4)},${projY(18.8)} L ${projX(80.5)},${projY(18.5)} L ${projX(79.8)},${projY(16.2)} L ${projX(77.5)},${projY(16.2)} Z`}
-                fill="#f8fafc"
-                stroke="#cbd5e1"
+                fill="var(--bg-surface)"
+                stroke="var(--border-strong)"
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
-                opacity="0.8"
+                opacity="0.85"
               />
-              <text x={projX(79.0)} y={projY(17.2)} fill="#64748b" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
+              <text x={projX(79.0)} y={projY(17.2)} fill="var(--text-secondary)" fontSize="12" fontWeight="700" letterSpacing="0.06em" textAnchor="middle">
                 TELANGANA (TS)
               </text>
 
               {/* Latitude / Longitude Grid Markings */}
               {[14, 16, 18, 20].map((lat) => (
                 <g key={`lat-${lat}`}>
-                  <line x1="45" y1={projY(lat)} x2={svgW - 25} y2={projY(lat)} stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <text x="35" y={projY(lat) + 4} fill="#94a3b8" fontSize="9" textAnchor="end" fontFamily="var(--font-mono)">
+                  <line x1="45" y1={projY(lat)} x2={svgW - 25} y2={projY(lat)} stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                  <text x="35" y={projY(lat) + 4} fill="var(--text-muted)" fontSize="9" textAnchor="end" fontFamily="var(--font-mono)">
                     {lat}°N
                   </text>
                 </g>
               ))}
               {[73, 75, 77, 79].map((lon) => (
                 <g key={`lon-${lon}`}>
-                  <line x1={projX(lon)} y1="30" x2={projX(lon)} y2={svgH - 30} stroke="#e2e8f0" strokeDasharray="3 3" />
-                  <text x={projX(lon)} y={svgH - 12} fill="#94a3b8" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)">
+                  <line x1={projX(lon)} y1="30" x2={projX(lon)} y2={svgH - 30} stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                  <text x={projX(lon)} y={svgH - 12} fill="var(--text-muted)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)">
                     {lon}°E
                   </text>
                 </g>
@@ -629,6 +642,7 @@ export default function DistrictGeographicMap({
                 const px = projX(d.lon);
                 const py = projY(d.lat);
                 const isSelected = selectedDistrictId === d.id;
+                const badge = getClassificationBadge(d.classification, isHindi);
                 let pinColor = '#475569';
                 if (intelligenceLayer === 'shortage') {
                   const isDemand = d.classification === 'Demand Pressure';
@@ -641,7 +655,6 @@ export default function DistrictGeographicMap({
                 }
                 const cfg = DISTRICT_ANCHOR_OFFSETS[d.id] || { offsetX: 20, offsetY: 0 };
 
-                // Directional label text anchor & box
                 const labelX = px + cfg.offsetX;
                 const labelY = py + cfg.offsetY;
 
@@ -651,18 +664,16 @@ export default function DistrictGeographicMap({
                     style={{ cursor: 'pointer' }}
                     onClick={() => onSelectDistrict(isSelected ? null : d.id)}
                   >
-                    {/* Leader Line connecting Pin to Label */}
                     <line
                       x1={px}
                       y1={py}
                       x2={labelX + 30}
                       y2={labelY + 8}
-                      stroke="#94a3b8"
+                      stroke="var(--text-muted)"
                       strokeWidth="1.5"
                       strokeDasharray="2 2"
                     />
 
-                    {/* District Pin Bubble */}
                     <circle
                       cx={px}
                       cy={py}
@@ -679,12 +690,12 @@ export default function DistrictGeographicMap({
                       fill="#ffffff"
                       fontSize="11"
                       fontWeight="bold"
+                      fontFamily="var(--font-mono)"
                       pointerEvents="none"
                     >
-                      {badge.icon}
+                      {badge.markerCode}
                     </text>
 
-                    {/* Directional Non-Overlapping Label Badge */}
                     <rect
                       x={labelX - 4}
                       y={labelY - 5}
@@ -711,9 +722,10 @@ export default function DistrictGeographicMap({
             </svg>
 
             {/* Schematic Provenance Notice Strip */}
-            <div style={{ backgroundColor: '#ffffff', borderTop: '1px solid var(--slate-200)', padding: '0.35rem 0.75rem', fontSize: '0.68rem', color: 'var(--slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>
-                📍 {isHindi ? 'स्थानिक क्षेत्रीय लोकेशन मैप (सटीक अक्षांश/देशांतर केंद्रक • आधिकारिक सीमा नहीं)' : 'Schematic Regional Location Map (Geographically Proportionate Centroids • Not an Official Boundary Map)'}
+            <div style={{ backgroundColor: 'var(--bg-surface)', borderTop: '1px solid var(--border-subtle)', padding: '0.35rem 0.75rem', fontSize: '0.68rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Icon name="map-pin" size={12} />
+                <span>{isHindi ? 'स्थानिक क्षेत्रीय लोकेशन मैप (सटीक अक्षांश/देशांतर केंद्रक • आधिकारिक सीमा नहीं)' : 'Schematic Regional Location Map (Geographically Proportionate Centroids • Not an Official Boundary Map)'}</span>
               </span>
               <span style={{ fontFamily: 'var(--font-mono)' }}>12.0°N–20.5°N, 71.5°E–80.5°E</span>
             </div>
@@ -722,23 +734,24 @@ export default function DistrictGeographicMap({
 
         {/* Selected District Detail Card (Sidebar) */}
         {activeDistrict && (
-          <div style={{ backgroundColor: '#ffffff', border: '2px solid var(--teal-600)', borderRadius: 'var(--radius-sm)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', boxShadow: 'var(--shadow-md)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.5rem' }}>
+          <div style={{ backgroundColor: 'var(--bg-surface)', border: '2px solid #0d9488', borderRadius: 'var(--radius-sm)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', boxShadow: 'var(--shadow-md)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
               <div>
-                <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                   {isHindi ? 'सक्रिय चयनित ज़िला' : 'Selected District'}
                 </span>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-900)', margin: '0.1rem 0 0 0' }}>
-                  📍 {getDistrictDisplayName(activeDistrict.name, isHindi)}
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0.1rem 0 0 0', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <Icon name="map-pin" size={14} style={{ color: 'var(--accent-primary)' }} />
+                  <span>{getDistrictDisplayName(activeDistrict.name, isHindi)}</span>
                 </h4>
-                <span style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                   {getStateDisplayName(activeDistrict.state, isHindi)} • ID: {activeDistrict.id}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => onSelectDistrict(null)}
-                style={{ border: 'none', background: 'none', color: 'var(--slate-400)', cursor: 'pointer', fontSize: '1rem', padding: '0.2rem' }}
+                style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1rem', padding: '0.2rem' }}
                 title={isHindi ? 'चयन हटाएं' : 'Clear selection'}
               >
                 ✕
@@ -751,7 +764,7 @@ export default function DistrictGeographicMap({
                 const b = getClassificationBadge(activeDistrict.classification, isHindi);
                 return (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, color: b.color, backgroundColor: b.bg, border: `1px solid ${b.border}` }}>
-                    <span>{b.icon}</span>
+                    <Icon name={b.iconName} size={13} />
                     <span>{b.label}</span>
                     <span>({formatMismatch(activeDistrict.mismatch)} pts)</span>
                   </span>
@@ -760,48 +773,48 @@ export default function DistrictGeographicMap({
             </div>
 
             {/* Metrics Breakdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', backgroundColor: 'var(--slate-50)', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--slate-200)', fontSize: '0.75rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', backgroundColor: 'var(--bg-subtle)', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontSize: '0.75rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--slate-600)' }}>{isHindi ? 'रिपोर्टिंग अवधि:' : 'Reporting Cycle:'}</span>
-                <strong style={{ fontFamily: 'var(--font-mono)' }}>{period}</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>{isHindi ? 'रिपोर्टिंग अवधि:' : 'Reporting Cycle:'}</span>
+                <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{period}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--slate-600)' }}>{isHindi ? 'औसत मांग सूचकांक:' : 'Avg Demand Index:'}</span>
-                <strong style={{ color: 'var(--teal-800)', fontFamily: 'var(--font-mono)' }}>{formatScore(activeDistrict.avgDemand)} pts</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>{isHindi ? 'औसत मांग सूचकांक:' : 'Avg Demand Index:'}</span>
+                <strong style={{ color: 'var(--accent-soft-text)', fontFamily: 'var(--font-mono)' }}>{formatScore(activeDistrict.avgDemand)} pts</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--slate-600)' }}>{isHindi ? 'औसत आपूर्ति सूचकांक:' : 'Avg Supply Index:'}</span>
-                <strong style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>{formatScore(activeDistrict.avgSupply)} pts</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>{isHindi ? 'औसत आपूर्ति सूचकांक:' : 'Avg Supply Index:'}</span>
+                <strong style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{formatScore(activeDistrict.avgSupply)} pts</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--slate-600)' }}>{isHindi ? 'सापेक्ष असंतुलन स्कोर:' : 'Relative Mismatch:'}</span>
+                <span style={{ color: 'var(--text-secondary)' }}>{isHindi ? 'सापेक्ष असंतुलन स्कोर:' : 'Relative Mismatch:'}</span>
                 <strong style={{ color: getClassificationBadge(activeDistrict.classification, isHindi).color, fontFamily: 'var(--font-mono)' }}>
                   {formatMismatch(activeDistrict.mismatch)} pts
                 </strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--slate-200)', paddingTop: '0.35rem' }}>
-                <span style={{ color: 'var(--slate-500)', fontSize: '0.7rem' }}>{isHindi ? 'केंद्रक निर्देशांक:' : 'Centroid Lat/Lon:'}</span>
-                <span style={{ color: 'var(--slate-600)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.35rem' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>{isHindi ? 'केंद्रक निर्देशांक:' : 'Centroid Lat/Lon:'}</span>
+                <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>
                   {activeDistrict.lat.toFixed(2)}° N, {activeDistrict.lon.toFixed(2)}° E
                 </span>
               </div>
             </div>
 
-            {/* Top Shortage Trades */}
+            {/* Top Demand-Pressure Trades */}
             {shortageTrades.length > 0 && (
               <div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#c2410c', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <span>⚡</span>
-                  <span>{isHindi ? 'शीर्ष कमी वाले ट्रेड:' : 'TOP SHORTAGE TRADES:'}</span>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--status-demand-text)', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Icon name="zap" size={12} />
+                  <span>{isHindi ? 'शीर्ष मांग-दबाव वाले ट्रेड:' : 'TOP DEMAND-PRESSURE TRADES:'}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  {shortageTrades.map((t, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: '#fff7ed', borderRadius: '4px', border: '1px solid #ffedd5' }}>
-                      <span style={{ fontWeight: 600, color: '#9a3412', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
-                        {t.occupation_title}
+                  {shortageTrades.map((tItem, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: 'var(--status-demand-bg)', borderRadius: '4px', border: '1px solid var(--status-demand-border)' }}>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                        {tItem.occupation_title}
                       </span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#c2410c', fontSize: '0.68rem' }}>
-                        +{Number(t.relative_mismatch_score).toFixed(1)} pts
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-demand-text)', fontSize: '0.68rem' }}>
+                        +{Number(tItem.relative_mismatch_score).toFixed(1)} pts
                       </span>
                     </div>
                   ))}
@@ -809,21 +822,21 @@ export default function DistrictGeographicMap({
               </div>
             )}
 
-            {/* Oversupplied Trades */}
+            {/* Supply-Pressure Trades */}
             {oversuppliedTrades.length > 0 && (
               <div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1d4ed8', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <span>📦</span>
-                  <span>{isHindi ? 'अधिशेष आपूर्ति वाले ट्रेड:' : 'OVERSUPPLIED TRADES:'}</span>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--status-supply-text)', textTransform: 'uppercase', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Icon name="package" size={12} />
+                  <span>{isHindi ? 'आपूर्ति-दबाव वाले ट्रेड:' : 'SUPPLY-PRESSURE TRADES:'}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  {oversuppliedTrades.map((t, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: '#eff6ff', borderRadius: '4px', border: '1px solid #dbeafe' }}>
-                      <span style={{ fontWeight: 600, color: '#1e40af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
-                        {t.occupation_title}
+                  {oversuppliedTrades.map((tItem, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0.25rem 0.5rem', backgroundColor: 'var(--status-supply-bg)', borderRadius: '4px', border: '1px solid var(--status-supply-border)' }}>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                        {tItem.occupation_title}
                       </span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#1d4ed8', fontSize: '0.68rem' }}>
-                        {Number(t.relative_mismatch_score).toFixed(1)} pts
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-supply-text)', fontSize: '0.68rem' }}>
+                        {Number(tItem.relative_mismatch_score).toFixed(1)} pts
                       </span>
                     </div>
                   ))}
@@ -832,8 +845,8 @@ export default function DistrictGeographicMap({
             )}
 
             {/* Filter Active Notice */}
-            <div style={{ fontSize: '0.72rem', color: 'var(--teal-800)', backgroundColor: '#f0fdfa', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid #99f6e4', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span>✓</span>
+            <div style={{ fontSize: '0.72rem', color: 'var(--accent-soft-text)', backgroundColor: 'var(--accent-soft-bg)', padding: '0.45rem 0.65rem', borderRadius: '4px', border: '1px solid var(--accent-soft-border)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Icon name="check-circle" size={13} />
               <span>{isHindi ? 'नीचे दी गई तालिका इस ज़िले के लिए फ़िल्टर की गई है।' : 'Rankings table below is filtered to this district.'}</span>
             </div>
 
@@ -854,8 +867,6 @@ export default function DistrictGeographicMap({
                   cursor: 'pointer',
                   transition: 'background-color 0.15s ease',
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0f766e')}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0d9488')}
               >
                 {isHindi ? `${getDistrictDisplayName(activeDistrict.name, isHindi)} पूर्ण डॉसियर देखें →` : `Explore Complete ${activeDistrict.name} Dossier →`}
               </button>
@@ -864,7 +875,7 @@ export default function DistrictGeographicMap({
             <button
               type="button"
               onClick={() => onSelectDistrict(null)}
-              style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.35rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', marginTop: '0.25rem' }}
+              style={{ border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '0.35rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', marginTop: '0.25rem' }}
             >
               ✕ {isHindi ? 'फ़िल्टर हटाएं (सभी ज़िले देखें)' : 'Clear Filter (Show All Districts)'}
             </button>
@@ -873,9 +884,9 @@ export default function DistrictGeographicMap({
       </div>
 
       {/* Cartographic & Boundary Provenance Disclosure */}
-      <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '0.65rem 0.85rem', fontSize: '0.72rem', color: '#92400e', lineHeight: 1.5 }}>
-        <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.2rem' }}>
-          <span>ℹ️</span>
+      <div style={{ backgroundColor: 'var(--status-demand-bg)', border: '1px solid var(--status-demand-border)', borderRadius: 'var(--radius-sm)', padding: '0.65rem 0.85rem', fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+        <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.2rem', color: 'var(--status-demand-text)' }}>
+          <Icon name="info" size={14} />
           <span>{isHindi ? 'मानचित्र स्रोत एवं सीमा प्रकटीकरण:' : 'Cartographic Provenance & Boundary Notice:'}</span>
         </div>
         <div>

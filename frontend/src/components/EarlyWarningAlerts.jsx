@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorAlert from './ErrorAlert';
+import Icon from './Icon';
 import { fetchAlerts } from '../api/client';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -476,9 +477,9 @@ export default function EarlyWarningAlerts({
             <div className="stat-card demand-pressure">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('alerts.cardCriticalTitle', 'Critical Severity')}</span>
-                <span className="stat-card-icon">🚨</span>
+                <span className="stat-card-icon"><Icon name="alert" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#991b1b' }}>
+              <div className="stat-card-value" style={{ color: 'var(--status-danger-text)' }}>
                 {summaryMetrics.criticalCount}
               </div>
               <div className="stat-card-meta">
@@ -492,9 +493,9 @@ export default function EarlyWarningAlerts({
             <div className="stat-card supply-pressure">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('alerts.cardHighTitle', 'High Severity')}</span>
-                <span className="stat-card-icon">⚠️</span>
+                <span className="stat-card-icon"><Icon name="warning" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#c2410c' }}>
+              <div className="stat-card-value" style={{ color: 'var(--status-demand-text)' }}>
                 {summaryMetrics.highCount}
               </div>
               <div className="stat-card-meta">
@@ -508,9 +509,9 @@ export default function EarlyWarningAlerts({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('alerts.cardPersistentTitle', 'Persistent Signals')}</span>
-                <span className="stat-card-icon">🔁</span>
+                <span className="stat-card-icon"><Icon name="refresh" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#4338ca' }}>
+              <div className="stat-card-value" style={{ color: 'var(--accent-indigo)' }}>
                 {summaryMetrics.persistentCount}
               </div>
               <div className="stat-card-meta">
@@ -524,9 +525,9 @@ export default function EarlyWarningAlerts({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('alerts.cardQualityTitle', 'Data Quality Warnings')}</span>
-                <span className="stat-card-icon">🛡️</span>
+                <span className="stat-card-icon"><Icon name="shield" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: summaryMetrics.qualityCount > 0 ? '#b45309' : '#15803d' }}>
+              <div className="stat-card-value" style={{ color: summaryMetrics.qualityCount > 0 ? 'var(--status-demand-text)' : 'var(--status-success-text)' }}>
                 {summaryMetrics.qualityCount}
               </div>
               <div className="stat-card-meta">
@@ -607,8 +608,8 @@ export default function EarlyWarningAlerts({
                           </td>
                           <td>
                             {isPersistent ? (
-                              <span className="persistence-badge persistent">
-                                🔁 {t('alerts.persistentBadge', 'Persistent')} ({alert.key_values?.supporting_horizons?.length} {isHindi ? 'क्षितिज' : 'horizons'})
+                              <span className="persistence-badge persistent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Icon name="refresh" size={12} /> {t('alerts.persistentBadge', 'Persistent')} ({alert.key_values?.supporting_horizons?.length} {isHindi ? 'क्षितिज' : 'horizons'})
                               </span>
                             ) : (
                               <span className="persistence-badge single">
@@ -644,7 +645,7 @@ export default function EarlyWarningAlerts({
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
                                 border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
-                                backgroundColor: isSelected ? 'var(--teal-50)' : '#ffffff',
+                                backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
                                 color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
                               }}
                               onClick={(e) => {
@@ -714,7 +715,7 @@ export default function EarlyWarningAlerts({
                       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                         {selectedItem.key_values?.scores_by_horizon && (
                           Object.entries(selectedItem.key_values.scores_by_horizon).map(([h, score]) => (
-                            <div key={h} className="spec-chip" style={{ background: '#eef2ff', borderColor: '#c7d2fe', color: '#4338ca', fontWeight: 600 }}>
+                            <div key={h} className="spec-chip" style={{ background: 'var(--accent-indigo-bg)', borderColor: 'var(--accent-indigo-border)', color: 'var(--accent-indigo)', fontWeight: 600 }}>
                               {isHindi ? 'क्षितिज' : 'Horizon'} +{h}m: {score > 0 ? '+' : ''}{Number(score).toFixed(1)} {isHindi ? 'अंक' : 'pts'}
                             </div>
                           ))
@@ -731,9 +732,9 @@ export default function EarlyWarningAlerts({
                 </div>
 
                 {/* 2. Causal Narrative Explanation */}
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ background: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
                   <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span>🔍</span>
+                    <Icon name="search" size={15} />
                     <span>{t('alerts.causalExplanationTitle', 'Causal Explanation')}</span>
                   </h4>
                   <p style={{ fontSize: '0.85rem', color: 'var(--slate-800)', lineHeight: 1.6 }}>
@@ -745,10 +746,10 @@ export default function EarlyWarningAlerts({
                 </div>
 
                 {/* 3. Suggested Policy / Planning Action */}
-                <div style={{ background: '#f0fdf4', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #bbf7d0', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ background: 'var(--status-success-bg)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--status-success-border)', boxShadow: 'var(--shadow-sm)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#166534', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span>🎯</span>
+                    <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--status-success-text)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Icon name="target" size={15} />
                       <span>{t('alerts.suggestedActionTitle', 'Suggested TVET / Policy Planning Action')}</span>
                     </h4>
                     {onNavigateToSimulator && (
@@ -769,26 +770,26 @@ export default function EarlyWarningAlerts({
                           gap: '0.35rem',
                         }}
                       >
-                        <span>🎛️</span>
+                        <Icon name="sliders" size={14} />
                         <span>{isHindi ? 'परिदृश्य स्टूडियो में समाधान सिम्युलेट करें' : 'Simulate Fix in Scenario Studio'}</span>
                       </button>
                     )}
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: '#14532d', lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.6, margin: 0 }}>
                     {selectedItem.suggested_action}
                   </p>
                 </div>
 
                 {/* 4. Limitations & Human-in-the-Loop Governance Notice */}
-                <div className="callout-box" style={{ background: '#fffbeb', borderColor: '#fde68a', borderLeftColor: '#d97706' }}>
-                  <h4 style={{ color: '#92400e' }}>
-                    <span>🛡️</span>
+                <div className="callout-box" style={{ background: 'var(--status-demand-bg)', borderColor: 'var(--status-demand-border)', borderLeftColor: 'var(--status-demand)' }}>
+                  <h4 style={{ color: 'var(--status-demand-text)' }}>
+                    <Icon name="shield" size={15} />
                     <span>{t('alerts.humanLimitationsTitle', 'Human Decision-Support Limitations')}</span>
                   </h4>
-                  <p style={{ color: '#78350f' }}>
+                  <p style={{ color: 'var(--text-secondary)' }}>
                     {selectedItem.limitations}
                   </p>
-                  <p style={{ color: '#78350f', marginTop: '0.35rem', fontWeight: 600 }}>
+                  <p style={{ color: 'var(--status-demand-text)', marginTop: '0.35rem', fontWeight: 600 }}>
                     {t('alerts.humanNotice', 'Alerts serve as decision-support signals requiring qualitative human review and field verification. They do NOT constitute automated budget allocations or administrative decrees.')}
                   </p>
                 </div>
@@ -799,7 +800,7 @@ export default function EarlyWarningAlerts({
           {/* Persistent Disclosures */}
           <section className="callout-box">
             <h4>
-              <span>ℹ️</span>
+              <Icon name="info" size={15} />
               <span>{t('alerts.methodologyHeader', 'Early-Warning Classification Rules & Governance')}</span>
             </h4>
             <p>

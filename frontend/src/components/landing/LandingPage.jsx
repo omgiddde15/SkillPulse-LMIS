@@ -1,597 +1,734 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { fetchGapAnalysis } from '../../api/client';
+import { fetchGapAnalysis, fetchMetadata } from '../../api/client';
 import {
   getDistrictDisplayName,
   getStateDisplayName,
   getOccupationDisplayName,
 } from '../../i18n/translations';
+import ThemeToggle from '../ThemeToggle';
+import Icon from '../Icon';
 
 export default function LandingPage({
-  onNavigate = () => {},
+  onNavigate,
+  onEnterDashboard: onEnterDashboardProp,
+  onNavigateToModule: onNavigateToModuleProp,
+  onNavigateToSimulatorWithContext: onNavigateToSimulatorWithContextProp,
   backendHealth = { status: 'healthy' },
 }) {
+  const onEnterDashboard = onEnterDashboardProp || (() => onNavigate?.('overview'));
+  const onNavigateToModule = onNavigateToModuleProp || ((mod) => onNavigate?.(mod));
+  const onNavigateToSimulatorWithContext =
+    onNavigateToSimulatorWithContextProp || (() => onNavigate?.('simulator'));
   const { language, setLanguage, t } = useLanguage();
   const isHindi = language === 'hi';
+  const isOnline = backendHealth.status === 'healthy';
 
-  // Live pilot observation state (null until loaded from API)
   const [pilotObs, setPilotObs] = useState(null);
   const [pilotLoading, setPilotLoading] = useState(true);
-  const [pilotError, setPilotError] = useState(false);
+  const [pilotError, setPilotError] = useState(null);
 
-  const loadPilotObservation = React.useCallback(async () => {
+  const loadLivePilotMetrics = useCallback(async () => {
     setPilotLoading(true);
-    setPilotError(false);
+    setPilotError(null);
     try {
-      const res = await fetchGapAnalysis({ period: '2026-09', district_id: 'KA_DHA' });
-      const cnc = (res?.results || []).find((r) => r.occupation_id === 'OCC_MFG_001');
-      if (cnc && cnc.demand_index_score != null && cnc.supply_output_index != null) {
-        const formattedMismatch = (cnc.relative_mismatch_score > 0 ? '+' : '') + Number(cnc.relative_mismatch_score).toFixed(1);
-        setPilotObs({
-          period: cnc.period || '2026-09',
-          demandIndex: Number(cnc.demand_index_score).toFixed(1),
-          supplyOutput: Number(cnc.supply_output_index).toFixed(1),
-          mismatch: formattedMismatch,
-          mismatchScore: formattedMismatch,
-          classification: cnc.classification || 'Demand Pressure',
-          occupationTitle: cnc.occupation_title || 'CNC Machine Operator',
-          districtName: cnc.district_name || 'Dharwad',
-          stateCode: cnc.state_code || 'KA',
-          sector: cnc.trade || cnc.sector || 'Precision Machining',
-        });
-        setPilotError(false);
-      } else {
-        setPilotObs(null);
-        setPilotError(true);
+      const [metaRes, gapRes] = await Promise.all([
+        fetchMetadata(),
+        fetchGapAnalysis({ period: '2026-09', limit: 200 }),
+      ]);
+
+      const gapRecords = gapRes?.results || gapRes?.records || [];
+      if (!gapRecords.length) {
+        throw new Error('No gap analysis records returned from API.');
       }
-    } catch {
+
+      const targetRecord =
+        gapRecords.find((r) => r.district_id === 'KA_DHA' && r.occupation_id === 'OCC_MFG_001') ||
+        gapRecords.reduce((max, r) => (r.relative_mismatch_score > max.relative_mismatch_score ? r : max), gapRecords[0]);
+
+      const latestPeriod =
+        targetRecord.period ||
+        metaRes?.Coverage?.latest_period ||
+        metaRes?.coverage?.latest_period ||
+        '2026-09';
+
+      setPilotObs({
+        districtId: targetRecord.district_id,
+        districtName: targetRecord.district_name,
+        stateCode: targetRecord.state_code,
+        occupationId: targetRecord.occupation_id,
+        occupationTitle: targetRecord.occupation_title,
+        trade: targetRecord.trade || targetRecord.sector,
+        period: latestPeriod,
+        demandScore: Number(targetRecord.demand_index_score ?? targetRecord.demand_index ?? 0),
+        supplyScore: Number(targetRecord.supply_output_index ?? targetRecord.supply_index ?? 0),
+        mismatchScore: Number(targetRecord.relative_mismatch_score ?? targetRecord.mismatch ?? 0),
+        classification: targetRecord.classification || 'Demand Pressure',
+      });
+    } catch (err) {
       setPilotObs(null);
-      setPilotError(true);
+      setPilotError(err.message || 'Unable to fetch live pilot metrics from backend API.');
     } finally {
       setPilotLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadPilotObservation();
-  }, [loadPilotObservation]);
+    loadLivePilotMetrics();
+  }, [loadLivePilotMetrics]);
 
   return (
-    <div className="landing-page-root" style={{ minHeight: '100vh', backgroundColor: '#090a0c', color: '#e9ecf1', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-sans)' }}>
-      {/* Floating Capsule Header */}
-      <div style={{ padding: '0.75rem 1rem 0', width: '100%' }}>
-        <header
-          className="glass-strong"
+    <div className="landing-page">
+      {/* Top Public Header Bar */}
+      <header className="landing-header">
+        <div
           style={{
-            maxWidth: '1240px',
+            maxWidth: '1400px',
             margin: '0 auto',
-            padding: '0.65rem 1.25rem',
-            borderRadius: '16px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 14px 44px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            flexWrap: 'wrap',
             gap: '1rem',
           }}
         >
-          {/* Logo & Product Brand */}
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
-            onClick={() => onNavigate('home')}
-          >
-            <div
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #0d9488 0%, #4f46e5 100%)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '15px',
-                boxShadow: '0 4px 12px rgba(13, 148, 136, 0.35)',
-              }}
-            >
+          {/* Brand Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="brand-logo" style={{ width: '36px', height: '36px', fontSize: '1rem' }}>
               SP
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span style={{ fontSize: '1.05rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#ffffff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
                   SkillPulse
                 </span>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
+                <span
+                  style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    backgroundColor: isOnline ? 'var(--accent-primary)' : '#ef4444',
+                    display: 'inline-block',
+                  }}
+                  title={isOnline ? 'Backend API Online' : 'Backend API Offline'}
+                />
               </div>
-              <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
-                {t('app.brandSubtitle', 'LABOUR MARKET INTELLIGENCE')} · SIH26246
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
+                LMIS ENGINE • SIH26246
               </div>
             </div>
           </div>
 
-          {/* Quick Marketing Nav */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="landing-nav-links">
+          {/* Quick Jump Links */}
+          <nav
+            aria-label="Public quick navigation"
+            style={{ display: 'flex', alignItems: 'center', gap: '1.35rem', flexWrap: 'wrap' }}
+          >
             <button
               type="button"
-              onClick={() => onNavigate('overview')}
-              style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', transition: 'color 0.15s' }}
-              onMouseOver={(e) => (e.target.style.color = '#818cf8')}
-              onMouseOut={(e) => (e.target.style.color = '#cbd5e1')}
+              onClick={() => onNavigateToModule('overview')}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
             >
-              📊 {t('nav.overview', 'Overview')}
+              <Icon name="chart-bar" size={14} />
+              <span>{t('landing.navOverview', 'Overview')}</span>
             </button>
             <button
               type="button"
-              onClick={() => onNavigate('simulator')}
-              style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', transition: 'color 0.15s' }}
-              onMouseOver={(e) => (e.target.style.color = '#818cf8')}
-              onMouseOut={(e) => (e.target.style.color = '#cbd5e1')}
+              onClick={() => onNavigateToModule('forecasts')}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
             >
-              🎛️ {t('nav.simulator', 'Scenario Studio')}
+              <Icon name="compass" size={14} />
+              <span>{t('landing.navForecasts', 'Forecasts')}</span>
             </button>
             <button
               type="button"
-              onClick={() => onNavigate('api')}
-              style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', transition: 'color 0.15s' }}
-              onMouseOver={(e) => (e.target.style.color = '#818cf8')}
-              onMouseOut={(e) => (e.target.style.color = '#cbd5e1')}
+              onClick={() => onNavigateToModule('simulator')}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
             >
-              ⚡ {t('nav.apiExports', 'API & Exports')}
+              <Icon name="sliders" size={14} />
+              <span>{t('landing.navSimulator', 'Scenario Studio')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigateToModule('api')}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              <Icon name="zap" size={14} />
+              <span>{t('landing.navApi', 'API & Exports')}</span>
             </button>
           </nav>
 
-          {/* Right Header Actions: Language & Open Dashboard */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Bilingual Switcher */}
-            <div
-              style={{
-                display: 'inline-flex',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                borderRadius: '8px',
-                padding: '2px',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-              }}
-            >
+          {/* Theme Switcher, Language Switcher & Launch CTA */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <ThemeToggle />
+
+            <div className="lang-toggle-group" role="group" aria-label="Language selector">
               <button
                 type="button"
                 onClick={() => setLanguage('en')}
-                style={{
-                  border: 'none',
-                  backgroundColor: language === 'en' ? '#4f46e5' : 'transparent',
-                  color: language === 'en' ? '#ffffff' : '#94a3b8',
-                  padding: '3px 9px',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
+                className={`lang-toggle-btn ${language === 'en' ? 'active' : ''}`}
               >
                 EN
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage('hi')}
-                style={{
-                  border: 'none',
-                  backgroundColor: language === 'hi' ? '#4f46e5' : 'transparent',
-                  color: language === 'hi' ? '#ffffff' : '#94a3b8',
-                  padding: '3px 9px',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
+                className={`lang-toggle-btn ${language === 'hi' ? 'active' : ''}`}
               >
                 हिन्दी
               </button>
             </div>
 
-            {/* Open Dashboard Primary Action */}
             <button
               type="button"
-              onClick={() => onNavigate('overview')}
+              onClick={onEnterDashboard}
               style={{
-                backgroundColor: '#4f46e5',
+                background: 'var(--accent-primary)',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '10px',
-                padding: '0.55rem 1.15rem',
+                borderRadius: '8px',
+                padding: '0.48rem 1rem',
                 fontSize: '0.82rem',
                 fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(79, 70, 229, 0.4)',
-                transition: 'transform 0.15s, background-color 0.15s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: 'var(--shadow-xs)',
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#4338ca')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#4f46e5')}
             >
-              <span>{t('landing.cta.openDashboard', 'Open Dashboard')}</span>
-              <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+              <span>{t('landing.openDashboard', 'Open Dashboard')}</span>
+              <span>&rarr;</span>
             </button>
           </div>
-        </header>
-      </div>
+        </div>
+      </header>
 
       {/* Hero Section */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '4rem 1.5rem 3.5rem', width: '100%' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>
-          {/* Left Hero Pitch */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-              <div style={{ width: '28px', height: '2px', backgroundColor: '#818cf8' }} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.08em', color: '#818cf8', textTransform: 'uppercase' }}>
-                01 / SIH 2026 · PS 26246 · MSDE
-              </span>
-              <span style={{ color: 'rgba(255, 255, 255, 0.2)' }}>•</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: backendHealth?.status === 'healthy' ? '#34d399' : '#f59e0b', fontWeight: 600 }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: backendHealth?.status === 'healthy' ? '#10b981' : '#f59e0b', boxShadow: backendHealth?.status === 'healthy' ? '0 0 8px #10b981' : 'none' }} />
-                {backendHealth?.status === 'healthy' ? 'API ONLINE' : 'API CONNECTING'}
-              </span>
-            </div>
+      <section
+        style={{
+          maxWidth: '1340px',
+          margin: '0 auto',
+          padding: 'clamp(2rem, 5vw, 4.5rem) clamp(1rem, 3vw, 2rem) 3rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
+          gap: '2.5rem',
+          alignItems: 'center',
+        }}
+      >
+        {/* Left Column: Headline & CTAs */}
+        <div>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '999px',
+              backgroundColor: 'var(--accent-soft-bg)',
+              border: '1px solid var(--accent-soft-border)',
+              marginBottom: '1.5rem',
+              fontSize: '0.73rem',
+              color: 'var(--accent-soft-text)',
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>SIH26246 PILOT</span>
+            <span style={{ color: 'var(--text-faint)' }}>•</span>
+            <span>{t('landing.badgeText', 'Labour Market Intelligence Pilot — Synthetic Data')}</span>
+            <span style={{ color: 'var(--text-faint)' }}>•</span>
+            <span style={{ color: isOnline ? 'var(--accent-soft-text)' : '#ef4444', fontWeight: 700 }}>
+              ● {isOnline ? (isHindi ? 'एपीआई सक्रिय' : 'API Online') : 'API Offline'}
+            </span>
+          </div>
 
-            <h1
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2.5rem, 4.4vw, 3.85rem)',
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: '-0.01em',
+              margin: '0 0 1.25rem 0',
+              color: 'var(--text-primary)',
+            }}
+          >
+            {isHindi ? (
+              <>
+                कौशल अंतराल का पूर्वानुमान।{' '}
+                <span style={{ color: 'var(--accent-primary)', display: 'block' }}>
+                  प्रशिक्षण निर्णयों को दिशा।
+                </span>
+              </>
+            ) : (
+              <>
+                Forecast Skill Gaps.{' '}
+                <span style={{ color: 'var(--accent-primary)', display: 'block' }}>
+                  Guide Training Decisions.
+                </span>
+              </>
+            )}
+          </h1>
+
+          <p
+            style={{
+              fontSize: '1.02rem',
+              lineHeight: 1.65,
+              color: 'var(--text-secondary)',
+              margin: '0 0 2rem 0',
+              maxWidth: '580px',
+            }}
+          >
+            {isHindi
+              ? 'स्किलपल्स क्षेत्रीय कार्यबल योजना के लिए नियोक्ता मांग संकेतों, टीवीईटी प्रशिक्षण आउटपुट, सापेक्ष कौशल अंतराल, बहु-क्षितिज पूर्वानुमानों और प्रशिक्षण-सीट परिदृश्यों का विश्लेषण करता है (सिंथेटिक पायलट डेटासेट)।'
+              : 'SkillPulse analyses employer demand signals, TVET training throughput, relative skill gaps, multi-horizon forecasts, and training-capacity scenarios for regional workforce planning (synthetic pilot dataset).'}
+          </p>
+
+          {/* 3 Action Buttons */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem' }}>
+            <button
+              type="button"
+              onClick={onEnterDashboard}
               style={{
-                fontSize: 'clamp(2.5rem, 5.5vw, 4.8rem)',
-                fontWeight: 800,
-                lineHeight: 1.05,
-                letterSpacing: '-0.03em',
-                textTransform: 'uppercase',
-                margin: '0 0 1.5rem 0',
-                fontFamily: '"Barlow Condensed", "Arial Narrow", -apple-system, sans-serif',
+                background: 'var(--accent-primary)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.78rem 1.45rem',
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
-              <span>{t('landing.heroHeadlineStart', 'FORECAST THE SKILL GAP. ')}</span>
-              <span style={{ color: '#818cf8' }}>{t('landing.heroHeadlineEnd', 'FUND THE FIX.')}</span>
-              <svg
-                style={{ display: 'inline-block', height: '0.65em', width: '2.1em', marginLeft: '0.5rem', verticalAlign: 'baseline', color: '#818cf8' }}
-                viewBox="0 0 64 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path d="M2 18 L16 14 L30 19 L44 9" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M44 9 L54 4 L62 2" stroke="#818cf8" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 3" />
-                <circle cx="62" cy="2" r="2.5" fill="#818cf8" />
-              </svg>
-            </h1>
+              <span>{isHindi ? 'डैशबोर्ड खोलें' : 'Open Dashboard'}</span>
+              <span>&rarr;</span>
+            </button>
 
-            <p style={{ fontSize: '1.05rem', color: '#94a3b8', lineHeight: 1.65, maxWidth: '580px', margin: '0 0 2rem 0' }}>
-              {t(
-                'landing.heroSubtitle',
-                "SkillPulse turns labour-market data into district-level forecasts, early warnings and seat-reallocation decisions for India's youth skilling system."
-              )}
-            </p>
+            <button
+              type="button"
+              onClick={() => onNavigateToModule('forecasts')}
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-strong)',
+                borderRadius: '8px',
+                padding: '0.78rem 1.25rem',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+              }}
+            >
+              <Icon name="compass" size={15} />
+              <span>{isHindi ? 'पूर्वानुमान देखें' : 'Explore Forecasts'}</span>
+            </button>
 
-            {/* Primary Actions */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem' }}>
+            <button
+              type="button"
+              onClick={() => onNavigateToModule('simulator')}
+              style={{
+                backgroundColor: 'var(--status-demand-bg)',
+                color: 'var(--status-demand-text)',
+                border: '1px solid var(--status-demand-border)',
+                borderRadius: '8px',
+                padding: '0.78rem 1.25rem',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+              }}
+            >
+              <Icon name="sliders" size={15} />
+              <span>{isHindi ? 'सीट सिम्युलेटर आज़माएं' : 'Try Seat Simulator'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Live Pilot Observation Card */}
+        <div
+          className="landing-hero-card landing-card-surface"
+          style={{
+            padding: '1.6rem',
+            position: 'relative',
+          }}
+        >
+          {pilotLoading ? (
+            <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+              <div
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  border: '3px solid var(--accent-soft-border)',
+                  borderTopColor: 'var(--accent-primary)',
+                  borderRadius: '50%',
+                  margin: '0 auto 0.85rem auto',
+                  animation: 'spin 0.9s linear infinite',
+                }}
+              />
+              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {isHindi ? 'लाइव पायलट मेट्रिक्स लोड हो रहे हैं...' : 'Loading live pilot metrics...'}
+              </div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                {isHindi ? 'बैकएंड एपीआई से संपर्क किया जा रहा है' : 'Querying /api/v1/gap-analysis & /api/v1/metadata'}
+              </div>
+            </div>
+          ) : pilotError || !pilotObs ? (
+            <div
+              role="alert"
+              style={{
+                padding: '1.75rem 1.25rem',
+                textAlign: 'center',
+                backgroundColor: 'var(--status-danger-bg)',
+                border: '1px solid var(--status-danger-border)',
+                borderRadius: '10px',
+              }}
+            >
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--status-danger-text)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+                <Icon name="alert-triangle" size={16} />
+                <span>{isHindi ? 'पायलट मेट्रिक्स अनुपलब्ध' : 'Pilot metrics unavailable'}</span>
+              </div>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 1rem 0', lineHeight: 1.45 }}>
+                {isHindi
+                  ? 'लाइव बैकएंड एपीआई से डेटा प्राप्त नहीं किया जा सका। कोई अनुमानित संख्या प्रदर्शित नहीं की गई है।'
+                  : 'Live pilot metrics could not be loaded from the backend API. No fabricated fallback figures are displayed.'}
+              </p>
               <button
                 type="button"
-                onClick={() => onNavigate('overview')}
+                onClick={loadLivePilotMetrics}
                 style={{
-                  backgroundColor: '#4f46e5',
+                  backgroundColor: 'var(--accent-primary)',
                   color: '#ffffff',
                   border: 'none',
-                  borderRadius: '12px',
-                  padding: '0.85rem 1.75rem',
-                  fontSize: '0.92rem',
+                  borderRadius: '6px',
+                  padding: '0.45rem 1rem',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 6px 20px rgba(79, 70, 229, 0.4)',
-                  transition: 'all 0.15s',
                 }}
               >
-                <span>{t('landing.cta.openDashboard', 'Open Dashboard')}</span>
-                <span>→</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onNavigate('simulator')}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                  color: '#e2e8f0',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: '12px',
-                  padding: '0.85rem 1.5rem',
-                  fontSize: '0.92rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span>🎛️ {t('landing.cta.trySimulator', 'Try Scenario Studio')}</span>
+                {isHindi ? 'पुनः प्रयास करें' : 'Retry'}
               </button>
             </div>
-          </div>
-
-          {/* Right Live Pilot Preview Card */}
-          <div>
-            <div
-              className="glass-strong landing-hero-card"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '20px',
-                padding: '1.75rem',
-                boxShadow: '0 14px 44px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-                position: 'relative',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                minHeight: '340px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-              }}
-            >
-              {pilotLoading ? (
-                <div
-                  className="pilot-card-loading"
-                  style={{
-                    padding: '2.5rem 1rem',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.85rem',
-                  }}
-                >
+          ) : (
+            <>
+              {/* Card Header */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '1.2rem',
+                  gap: '0.75rem',
+                }}
+              >
+                <div>
                   <div
                     style={{
-                      width: '32px',
-                      height: '32px',
-                      border: '3px solid rgba(255,255,255,0.1)',
-                      borderTopColor: '#818cf8',
-                      borderRadius: '50%',
-                      animation: 'spin 0.8s linear infinite',
-                    }}
-                  />
-                  <div style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>
-                    {isHindi ? 'लाइव पायलट मेट्रिक्स लोड हो रहे हैं...' : 'Loading live pilot metrics...'}
-                  </div>
-                </div>
-              ) : pilotError || !pilotObs ? (
-                <div
-                  className="pilot-card-unavailable"
-                  style={{
-                    padding: '2rem 1.25rem',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div style={{ fontSize: '1.85rem' }}>⚠️</div>
-                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#f87171' }}>
-                    {isHindi ? 'पायलट मेट्रिक्स अनुपलब्ध' : 'Pilot metrics unavailable'}
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: '#94a3b8', maxWidth: '300px', lineHeight: 1.5 }}>
-                    {isHindi
-                      ? 'लाइव अवलोकन डेटा प्राप्त करने में असमर्थ। कृपया पुनः प्रयास करें।'
-                      : 'Live pilot observation data is currently unavailable from the API service.'}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={loadPilotObservation}
-                    style={{
-                      marginTop: '0.5rem',
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      color: '#ffffff',
-                      padding: '0.45rem 1.1rem',
-                      borderRadius: '8px',
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      transition: 'all 0.15s',
+                      fontSize: '0.65rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--text-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      marginBottom: '0.25rem',
                     }}
                   >
-                    <span>↺</span>
-                    <span>{isHindi ? 'पुनः प्रयास करें' : 'Retry'}</span>
-                  </button>
+                    {isHindi
+                      ? `पायलट अवलोकन • चक्र ${pilotObs.period}`
+                      : `PILOT OBSERVATION • CYCLE ${pilotObs.period}`}
+                  </div>
+                  <div style={{ fontSize: '1.08rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {getOccupationDisplayName(pilotObs.occupationTitle, isHindi)}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
+                    {getDistrictDisplayName(pilotObs.districtName, isHindi)}, {getStateDisplayName(pilotObs.stateCode, isHindi)} ({pilotObs.stateCode}) • {pilotObs.trade}
+                  </div>
                 </div>
-              ) : (
-                <>
-                  {/* Card Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-                    <div>
-                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>
-                        {pilotObs.districtName.toUpperCase()} · {pilotObs.occupationTitle.toUpperCase()} · {pilotObs.period} · 6M
-                      </div>
-                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', marginTop: '0.2rem' }}>
-                        {isHindi ? getOccupationDisplayName('OCC_MFG_001', true, pilotObs.occupationTitle) : pilotObs.occupationTitle}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        {isHindi ? getDistrictDisplayName(pilotObs.districtName, true) : pilotObs.districtName}, {getStateDisplayName(pilotObs.stateCode, isHindi)} • {pilotObs.sector}
-                      </div>
-                    </div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.35rem 0.7rem', borderRadius: '8px', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.35)', color: '#f87171', fontSize: '0.75rem', fontWeight: 700 }}>
-                      <span>⚠️</span>
-                      <span>{isHindi ? 'मांग दबाव' : 'Severe Shortfall'}</span>
-                    </div>
+
+                <span
+                  style={{
+                    backgroundColor: 'var(--status-demand-bg)',
+                    color: 'var(--status-demand-text)',
+                    border: '1px solid var(--status-demand-border)',
+                    padding: '0.28rem 0.65rem',
+                    borderRadius: '6px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-mono)',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
+                  <Icon name="zap" size={12} />
+                  <span>{isHindi ? 'मांग दबाव' : pilotObs.classification}</span>
+                </span>
+              </div>
+
+              {/* 3 Score Metric Tiles */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '0.75rem',
+                  marginBottom: '1.2rem',
+                }}
+              >
+                <div className="landing-subcard-surface" style={{ padding: '0.85rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {isHindi ? 'मांग सूचकांक' : 'DEMAND INDEX'}
                   </div>
-
-                  {/* 3 Metric Pillars */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', textAlign: 'center', marginBottom: '1.25rem' }}>
-                    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                      <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
-                        {isHindi ? 'मांग सूचकांक' : 'DEMAND'}
-                      </div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                        {pilotObs.demandIndex}
-                      </div>
-                      <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
-                    </div>
-
-                    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                      <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
-                        {isHindi ? 'प्रभावी आपूर्ति' : 'EFFECTIVE SUPPLY'}
-                      </div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2dd4bf', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                        {pilotObs.supplyOutput}
-                      </div>
-                      <div style={{ fontSize: '0.65rem', color: '#64748b' }}>0–100 percentile</div>
-                    </div>
-
-                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.06)', padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
-                      <div style={{ fontSize: '0.68rem', color: '#f87171', fontWeight: 700, textTransform: 'uppercase' }}>
-                        {isHindi ? 'सापेक्ष असंतुलन' : 'SHORTFALL'}
-                      </div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f87171', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                        {pilotObs.mismatch}
-                      </div>
-                      <div style={{ fontSize: '0.65rem', color: '#f87171' }}>Demand &gt; Supply</div>
-                    </div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)', margin: '0.2rem 0' }}>
+                    {pilotObs.demandScore.toFixed(1)}
                   </div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>0–100 percentile</div>
+                </div>
 
-                  {/* Sparkline & Short Explanation */}
-                  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: '12px', padding: '0.85rem 1rem', border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>
-                        📈 88% 6M shortage probability
-                      </span>
-                      <span style={{ fontSize: '0.68rem', color: '#818cf8', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-                        Gap {pilotObs.mismatch}/100
-                      </span>
-                    </div>
-                    <svg width="100%" height="40" viewBox="0 0 300 40" fill="none">
-                      <defs>
-                        <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#818cf8" stopOpacity="0.25" />
-                          <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M 0 32 Q 80 28, 160 22 T 300 10 L 300 38 L 0 38 Z" fill="url(#curveGradient)" />
-                      {/* Historical Solid Line */}
-                      <path d="M 0 32 Q 80 28, 160 22" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-                      {/* Forecast Dashed Line */}
-                      <path d="M 160 22 T 300 10" stroke="#818cf8" strokeWidth="2.5" strokeDasharray="4 3" strokeLinecap="round" />
-                      <circle cx="300" cy="10" r="3.5" fill="#818cf8" />
-                    </svg>
+                <div className="landing-subcard-surface" style={{ padding: '0.85rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {isHindi ? 'आपूर्ति आउटपुट' : 'SUPPLY OUTPUT'}
                   </div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', margin: '0.2rem 0' }}>
+                    {pilotObs.supplyScore.toFixed(1)}
+                  </div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>0–100 percentile</div>
+                </div>
 
-                  {/* Action Footer */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
-                    <span style={{ color: '#64748b' }}>
-                      Calculated from 24-mo demand-supply signals
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onNavigate('simulator')}
-                      style={{ background: 'none', border: 'none', color: '#818cf8', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <span>{isHindi ? 'सिम्युलेटर में सुधार देखें →' : 'Simulate the fix in Studio →'}</span>
-                    </button>
+                <div
+                  style={{
+                    backgroundColor: 'var(--status-demand-bg)',
+                    border: '1px solid var(--status-demand-border)',
+                    borderRadius: '10px',
+                    padding: '0.85rem',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: '0.64rem', color: 'var(--status-demand-text)', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {isHindi ? 'सापेक्ष असंतुलन' : 'RELATIVE MISMATCH'}
                   </div>
-                </>
-              )}
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-demand-text)', fontFamily: 'var(--font-mono)', margin: '0.2rem 0' }}>
+                    {pilotObs.mismatchScore > 0 ? `+${pilotObs.mismatchScore.toFixed(1)}` : pilotObs.mismatchScore.toFixed(1)}
+                  </div>
+                  <div style={{ fontSize: '0.64rem', color: 'var(--status-demand-text)' }}>Demand − Supply (pts)</div>
+                </div>
+              </div>
+
+              {/* Mini Trajectory & Forecast Strip */}
+              <div
+                className="landing-subcard-surface"
+                style={{
+                  padding: '0.9rem 1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>
+                    {isHindi ? '24-माह अनुदैर्ध्य प्रक्षेपवक्र + 80% अंतराल' : '24M Longitudinal Trajectory + 80% Prediction Interval'}
+                  </span>
+                  <span style={{ color: 'var(--accent-soft-text)', fontFamily: 'var(--font-mono)', fontSize: '0.68rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Icon name="trending-up" size={12} />
+                    <span>Linear Trend Model</span>
+                  </span>
+                </div>
+
+                <svg viewBox="0 0 360 54" style={{ width: '100%', height: '54px', display: 'block' }}>
+                  <line x1="0" y1="44" x2="360" y2="44" stroke="var(--chart-grid)" strokeWidth="1" />
+                  <path
+                    d="M 10 40 L 50 38 L 90 36 L 130 33 L 170 30 L 210 27 L 250 23"
+                    fill="none"
+                    stroke="var(--text-muted)"
+                    strokeWidth="2"
+                  />
+                  <polygon
+                    points="250,23 345,6 345,26 250,23"
+                    fill="rgba(16, 185, 129, 0.2)"
+                  />
+                  <path
+                    d="M 250 23 L 345 15"
+                    fill="none"
+                    stroke="var(--accent-primary)"
+                    strokeWidth="2.5"
+                    strokeDasharray="4 3"
+                  />
+                  <circle cx="250" cy="23" r="3.5" fill="var(--text-primary)" />
+                  <circle cx="345" cy="15" r="4" fill="var(--accent-primary)" />
+                </svg>
+              </div>
+
+              {/* Card Footer CTA */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>
+                  {isHindi ? 'प्रोटोटाइप ह्युरिस्टिक सीमा (±15 अंक)' : 'Prototype heuristic thresholds (±15 pts)'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onNavigateToSimulatorWithContext) {
+                      onNavigateToSimulatorWithContext({
+                        district: pilotObs.districtId,
+                        occupation: pilotObs.occupationId,
+                        state: pilotObs.stateCode,
+                      });
+                    } else {
+                      onNavigateToModule('simulator');
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--accent-primary)',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
+                  <span>{isHindi ? 'स्टूडियो में समाधान सिम्युलेट करें' : 'Simulate scenario in Studio'}</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* 4-Column Metric Strip */}
+      <section
+        style={{
+          borderTop: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid var(--border-subtle)',
+          backgroundColor: 'var(--bg-subtle)',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1340px',
+            margin: '0 auto',
+            padding: '2rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '1.5rem',
+            textAlign: 'center',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '2.1rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+              54
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              {isHindi ? 'ज़िला-व्यवसाय समय श्रृंखलाएं' : 'District-Occupation Series Tracked'}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '2.1rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--accent-primary)' }}>
+              6
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              {isHindi ? 'पायलट ज़िले (कर्नाटक, महाराष्ट्र, तेलंगाना)' : 'Pilot Districts (KA, MH, TS)'}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '2.1rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+              3 / 6 / 12 M
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              {isHindi ? 'रोलिंग-ओरिजिन पूर्वानुमान क्षितिज' : 'Rolling-Origin Forecast Horizons'}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '2.1rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: '#f59e0b' }}>
+              24 M
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              {isHindi ? 'मासिक अनुदैर्ध्य डेटा (2024-10 से 2026-09)' : 'Monthly Longitudinal Data (2024-10 to 2026-09)'}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Key Indicators Ribbon */}
-      <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(12px)', padding: '2.5rem 1.5rem' }}>
-        <div style={{ maxWidth: '1240px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)' }}>54</div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.35rem' }}>
-              {t('landing.kpi.monitoredPairsLabel', 'District-Occupations Tracked')}
-            </div>
+      {/* 5-Stage Methodology Pipeline */}
+      <section style={{ maxWidth: '1340px', margin: '0 auto', padding: '4rem 2rem 2.5rem 2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem', fontWeight: 700 }}>
+            {isHindi ? 'पद्धति चक्र' : 'METHODOLOGY PIPELINE'}
           </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#818cf8', fontFamily: 'var(--font-mono)' }}>6</div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.35rem' }}>
-              {t('landing.kpi.districtsLabel', 'Districts Covered')}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)' }}>3 / 6 / 12 M</div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.35rem' }}>
-              {t('landing.kpi.horizonsLabel', 'Backtested Forecast Horizons')}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#2dd4bf', fontFamily: 'var(--font-mono)' }}>11.8%</div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.35rem' }}>
-              {isHindi ? 'समूह बैकटेस्ट MAPE (24 माह)' : 'Ensemble Backtest MAPE'}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 02 / Methodology Cycle */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '5rem 1.5rem 4rem', width: '100%' }}>
-        <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3rem' }}>
-          <div style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>
-            02 / METHODOLOGY CYCLE
-          </div>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.8rem 0', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
-            FROM DATA SIGNALS TO POLICY ACTION
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+            {isHindi ? 'मांग संकेतों से साक्ष्य-आधारित योजना तक' : 'From Demand Signals to Scenario Planning'}
           </h2>
         </div>
 
-        {/* 6-Step Cycle Flow */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           {[
-            { step: '01', icon: '📡', title: 'Intelligence', desc: 'Intelligence: Ingest vacancy & employer signals across sectors', route: 'demand' },
-            { step: '02', icon: '📈', title: 'Forecast', desc: 'Forecast: Project 3M, 6M, 12M demand via walk-forward ensemble', route: 'forecasts' },
-            { step: '03', icon: '📊', title: 'Gap', desc: 'Gap: Compute net skill deficits through staged supply funnels', route: 'gap' },
-            { step: '04', icon: '✨', title: 'Explain', desc: 'Explain: Decompose key structural drivers via SHAP attribution', route: 'demand' },
-            { step: '05', icon: '🛡️', title: 'Act', desc: 'Act: Formulate prioritized government intervention dossiers', route: 'recommendations' },
-            { step: '06', icon: '🎛️', title: 'Simulate', desc: 'Simulate: Test capacity reallocation under donor safety constraints', route: 'simulator' },
+            {
+              step: '01',
+              icon: 'activity',
+              title: isHindi ? 'मांग संकेत' : 'Demand Signals',
+              desc: isHindi ? 'जॉब विज्ञापन, रिक्ति निरंतरता, नियोक्ता विविधता और वेतन सूचकांक।' : 'Online job postings, growth velocity, vacancy persistence, employer breadth & wage index.',
+            },
+            {
+              step: '02',
+              icon: 'trending-up',
+              title: isHindi ? 'समग्र मांग सूचकांक' : 'Demand Composite Index',
+              desc: isHindi ? '5 भारित घटकों का 0–100 क्रॉस-सेक्शनल पर्सेंटाइल सूचकांक।' : 'Explainable 5-component weighted cross-sectional percentile score (0 to 100).',
+            },
+            {
+              step: '03',
+              icon: 'scale',
+              title: isHindi ? 'आपूर्ति एवं अंतर विश्लेषण' : 'Supply & Relative Mismatch',
+              desc: isHindi ? '90-दिन के परिपक्वता नियम के साथ प्रमाणीकरण आउटपुट रैंक बनाम मांग रैंक।' : 'Compares Demand Score against trailing 3M Certification Rank with 90-day placement maturity.',
+            },
+            {
+              step: '04',
+              icon: 'compass',
+              title: isHindi ? 'पूर्वानुमान एवं अलर्ट' : 'Forecasts & Alerts',
+              desc: isHindi ? 'रोलिंग-ओरिजिन बैकटेस्टेड मॉडल (Naive, MA3, Linear Trend) और ±15 सीमा अलर्ट।' : 'Rolling-origin backtested models (Naive, MA3, Linear Trend) with 80% intervals and ±15 alerts.',
+            },
+            {
+              step: '05',
+              icon: 'sliders',
+              title: isHindi ? 'परिदृश्य स्टूडियो' : 'Scenario Studio',
+              desc: isHindi ? 'आनुपातिक स्थिर-उपज सीट सिमुलेशन और डोनर गैर-कमी जांच।' : 'Proportional constant-yield seat capacity simulation and donor non-depletion checks.',
+            },
           ].map((item) => (
             <div
               key={item.step}
-              onClick={() => onNavigate(item.route)}
-              className="glass"
+              className="landing-card-surface"
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '14px',
                 padding: '1.25rem',
-                cursor: 'pointer',
-                transition: 'transform 0.2s, border-color 0.2s',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.borderColor = 'rgba(129, 140, 248, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                position: 'relative',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', fontWeight: 800, color: '#818cf8' }}>
-                  {item.step}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent-primary)' }}>
+                  STAGE {item.step}
                 </span>
-                <span style={{ fontSize: '1.25rem' }}>{item.icon}</span>
+                <span style={{ color: 'var(--accent-primary)' }}>
+                  <Icon name={item.icon} size={16} />
+                </span>
               </div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff', margin: '0 0 0.4rem 0' }}>
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.4rem 0' }}>
                 {item.title}
               </h3>
-              <p style={{ fontSize: '0.74rem', color: '#94a3b8', lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
                 {item.desc}
               </p>
             </div>
@@ -599,331 +736,356 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 03 / Product Architecture */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '1rem 1.5rem 5rem', width: '100%' }}>
-        <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3rem' }}>
-          <div style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>
-            03 / PRODUCT ARCHITECTURE
+      {/* Core Platform Capabilities (6 Module Cards) */}
+      <section style={{ maxWidth: '1340px', margin: '0 auto', padding: '2rem 2rem 3.5rem 2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.25rem' }}>
+          <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem', fontWeight: 700 }}>
+            {isHindi ? 'प्लेटफॉर्म क्षमताएं' : 'CORE PLATFORM CAPABILITIES'}
           </div>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.8rem 0', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
-            CORE ANALYTICAL CAPABILITIES
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+            {isHindi ? 'एकीकृत श्रम बाजार निर्णय प्रणाली' : 'End-to-End Workforce Decision Intelligence'}
           </h2>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Feature 1: Multi-Horizon Predictive Trajectories */}
-          <div
-            className="glass-strong"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '20px',
-              padding: '2rem',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-              alignItems: 'center',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#818cf8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                01 / FORECASTS
-              </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.75rem 0' }}>
-                Multi-Horizon Predictive Trajectories
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-                Walk-forward ensemble forecasts (LightGBM + Random Forest) benchmarked against seasonal baselines with rolling-origin out-of-sample evaluation.
-              </p>
-              <button
-                type="button"
-                onClick={() => onNavigate('forecasts')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#818cf8',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: 0,
-                }}
-              >
-                <span>Explore Forecasts Studio</span>
-                <span>→</span>
-              </button>
-            </div>
-
-            {/* Weights Table Box */}
-            <div
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem', marginBottom: '0.75rem', color: '#64748b', fontWeight: 700 }}>
-                <span>Model Architecture</span>
-                <span>Out-of-Sample Weight</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
-                  <span>LightGBM Gradient Booster</span>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>48.2%</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
-                  <span>Random Forest Regressor</span>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>26.4%</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
-                  <span>Exponential Smoothing (ETS)</span>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>15.1%</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
-                  <span>Seasonal Rolling Baseline</span>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>10.3%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 2: Interactive Policy Sandbox */}
-          <div
-            className="glass-strong"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '20px',
-              padding: '2rem',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-              alignItems: 'center',
-            }}
-          >
-            {/* Solver Verification Box */}
-            <div
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
-                <span style={{ color: '#ffffff', fontWeight: 700 }}>LP Solver Constraint Verification</span>
-                <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 700 }}>
-                  Optimal
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
-                  <span>Requested Seat Shift:</span>
-                  <span style={{ color: '#ffffff', fontWeight: 700 }}>100 Seats</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
-                  <span>LP Donor Safe Bound (≤ 0.05):</span>
-                  <span style={{ color: '#2dd4bf', fontWeight: 700 }}>97 Seats (Capped)</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
-                  <span>Donor Post-Transfer Score:</span>
-                  <span style={{ color: '#34d399', fontWeight: 700 }}>52 / 100 (Balanced)</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
-                  <span>Simulated Relative Mismatch Change:</span>
-                  <span style={{ color: '#818cf8', fontWeight: 700 }}>-15.6 pts</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                02 / SCENARIO STUDIO
-              </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.75rem 0' }}>
-                Interactive Policy Sandbox
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-                Simulate seat reallocation with linear programming non-depletion constraints safeguarding donor trades while analyzing relative mismatch changes.
-              </p>
-              <button
-                type="button"
-                onClick={() => onNavigate('simulator')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#f59e0b',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: 0,
-                }}
-              >
-                <span>Open Policy Sandbox</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Governance & Trust Section */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.5rem 5rem', width: '100%' }}>
         <div
-          className="glass-strong"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '20px',
-            padding: '2.5rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
+            gap: '1.25rem',
           }}
         >
-          <div style={{ maxWidth: '640px', marginBottom: '2rem' }}>
-            <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: 'var(--font-mono)' }}>
-              GOVERNANCE & TRUST
-            </span>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', margin: '0.4rem 0 0 0' }}>
-              Methodological Rigor & Data Governance
-            </h2>
+          {[
+            {
+              tab: 'demand',
+              icon: 'trending-up',
+              title: isHindi ? 'मांग इंटेलिजेंस इंजन' : 'Demand Intelligence Engine',
+              desc: isHindi
+                ? '5 व्याख्यात्मक घटकों (रिक्ति मात्रा 30%, वृद्धि 25%, निरंतरता 15%, नियोक्ता विविधता 15%, वेतन 15%) का विश्लेषण।'
+                : 'Synthesises 5 explainable components (posting volume 30%, growth 25%, persistence 15%, employer breadth 15%, wage index 15%) into a 0–100 score.',
+            },
+            {
+              tab: 'gap',
+              icon: 'scale',
+              title: isHindi ? 'सापेक्ष कौशल अंतर विश्लेषण' : 'Relative Skill Gap Analysis',
+              desc: isHindi
+                ? 'मांग सूचकांक और प्रमाणित आउटपुट के बीच सापेक्ष रैंक अंतराल और 90-दिन के प्लेसमेंट परिपक्वता नियम का मूल्यांकन।'
+                : 'Computes relative mismatch (Demand Score − Supply Output Rank) with cohort funnel yields and 90-day placement maturity guardrails.',
+            },
+            {
+              tab: 'forecasts',
+              icon: 'compass',
+              title: isHindi ? 'बहु-क्षितिज पूर्वानुमान (3, 6, 12 माह)' : 'Multi-Horizon Forecasts (3M, 6M, 12M)',
+              desc: isHindi
+                ? '16 रोलिंग-ओरिजिन कटऑफ पर Naive, 3-Month Moving Average और Linear Trend मॉडलों की तुलना और 80% अंतराल।'
+                : 'Compares Naive baseline, 3-Month Moving Average (MA3), and Linear Trend across rolling-origin cutoffs with 80% prediction intervals (±1.282 × RMSE).',
+            },
+            {
+              tab: 'alerts',
+              icon: 'bell',
+              title: isHindi ? 'प्रारंभिक चेतावनी अलर्ट और सिफारिशें' : 'Early-Warning Alerts & Dossiers',
+              desc: isHindi
+                ? '≥2 क्षितिजों पर निरंतर असंतुलन (±15 अंक) और कारण स्पष्टीकरण के साथ साक्ष्य-आधारित हस्तक्षेप।'
+                : 'Detects persistent multi-horizon pressures (≥2 horizons crossing ±15 pts) and formats human-in-the-loop planning dossiers.',
+            },
+            {
+              tab: 'simulator',
+              icon: 'sliders',
+              title: isHindi ? 'प्रशिक्षण-सीट परिदृश्य स्टूडियो' : 'Training-Seat Scenario Studio',
+              desc: isHindi
+                ? 'आनुपातिक स्थिर-उपज स्केलिंग और डोनर ट्रेड सुरक्षा जांच के तहत प्रस्तावित सीट क्षमता का परीक्षण करें।'
+                : 'Test proposed batch seat adjustments using proportional constant-yield throughput scaling and heuristic donor non-depletion checks.',
+            },
+            {
+              tab: 'districts',
+              icon: 'map',
+              title: isHindi ? 'स्थानिक पायलट मानचित्र एवं एक्सप्लोरर' : 'Spatial District Map & Explorers',
+              desc: isHindi
+                ? 'कर्नाटक, महाराष्ट्र और तेलंगाना के 6 पायलट ज़िलों, 9 व्यवसायों और एनएसक्यूएफ स्तरों का इंटरैक्टिव मानचित्र।'
+                : 'Interactive Leaflet geographic map across 6 pilot districts, 9 NCO/QP-mapped occupations, and NSQF Levels 3.0–6.0.',
+            },
+          ].map((card) => (
+            <div
+              key={card.tab}
+              onClick={() => onNavigateToModule(card.tab)}
+              className="landing-card-surface"
+              style={{
+                padding: '1.4rem',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '1rem',
+              }}
+            >
+              <div>
+                <div style={{ color: 'var(--accent-primary)', marginBottom: '0.65rem' }}>
+                  <Icon name={card.icon} size={20} />
+                </div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.45rem 0' }}>
+                  {card.title}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
+                  {card.desc}
+                </p>
+              </div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>{isHindi ? 'मॉड्यूल खोलें' : 'Explore Module'}</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Forecasting & Scenario Studio Technical Architecture Section */}
+      <section style={{ maxWidth: '1340px', margin: '0 auto', padding: '1rem clamp(1rem, 3vw, 2rem) 3.5rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 460px), 1fr))',
+            gap: '1.5rem',
+          }}
+        >
+          {/* Left Panel: Implemented Forecasting Models & Rolling-Origin Backtesting */}
+          <div className="landing-card-surface" style={{ padding: '1.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+                  {isHindi ? 'रोलिंग-ओरिजिन बैकटेस्टिंग' : 'ROLLING-ORIGIN BACKTEST ARCHITECTURE'}
+                </span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0 0 0' }}>
+                  {isHindi ? 'पारदर्शी पूर्वानुमान मॉडल चयन' : 'Deterministic Baseline Model Selection'}
+                </h3>
+              </div>
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '0.25rem 0.6rem', borderRadius: '6px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
+                Min Out-of-Sample MAE
+              </span>
+            </div>
+
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: '0 0 1.25rem 0' }}>
+              {isHindi
+                ? 'प्रत्येक ज़िला-व्यवसाय श्रृंखला के लिए 16 समय-क्रमबद्ध रोलिंग कटऑफ पर तीन पारदर्शी सांख्यिकीय मॉडलों का परीक्षण किया जाता है। न्यूनतम आउट-ऑफ़-सैंपल MAE वाला मॉडल स्वचालित रूप से चुना जाता है।'
+                : 'Each district-occupation series is evaluated across time-ordered rolling-origin cutoffs (up to 16 origins for 3M horizon) comparing three transparent models. The model with the lowest out-of-sample MAE is deterministically selected.'}
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              {[
+                {
+                  name: isHindi ? 'रैखिक प्रवृत्ति मॉडल (Linear Trend)' : 'Linear Trend (OLS Drift)',
+                  metric: '3M Avg WAPE: 4.85% • MAE: 4.55 postings',
+                  role: isHindi ? 'निरंतर विस्तार या गिरावट वाली श्रृंखलाओं के लिए चयनित' : 'Selected via minimum out-of-sample MAE on trending series',
+                  color: 'var(--accent-primary)',
+                },
+                {
+                  name: isHindi ? '3-माह गतिमान औसत (MA3)' : '3-Month Moving Average (MA3)',
+                  metric: '3M Avg WAPE: 7.85% • MAE: 7.34 postings',
+                  role: isHindi ? 'चक्रीय या अल्पकालिक उतार-चढ़ाव वाली श्रृंखलाओं के लिए' : 'Trailing 3-month mean evaluated on cyclical series',
+                  color: '#3b82f6',
+                },
+                {
+                  name: isHindi ? 'अंतिम-प्रेक्षण बेंचमार्क (Naive Baseline)' : 'Last-Observation Naive Baseline',
+                  metric: '3M Avg WAPE: 7.21% • MAE: 6.74 postings',
+                  role: isHindi ? 'स्थिरता बेंचमार्क और टाई-ब्रेकर' : 'Persistence baseline and deterministic tie-breaker',
+                  color: '#f59e0b',
+                },
+              ].map((m) => (
+                <div
+                  key={m.name}
+                  className="landing-subcard-surface"
+                  style={{
+                    padding: '0.75rem 0.95rem',
+                    borderLeft: `3px solid ${m.color}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.2rem', flexWrap: 'wrap', gap: '0.35rem' }}>
+                    <span style={{ color: 'var(--text-primary)' }}>{m.name}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', color: m.color }}>{m.metric}</span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {m.role}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="landing-subcard-surface" style={{ padding: '0.75rem 1rem', fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <span>
+                {isHindi
+                  ? 'अनिश्चितता अंतराल: बिंदु पूर्वानुमान ± 1.282 × आउट-ऑफ़-सैंपल RMSE (नाममात्र 80%)'
+                  : 'Prediction Interval: Point Forecast ± 1.282 × out-of-sample RMSE (Nominal 80%)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => onNavigateToModule('data-health')}
+                style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer' }}
+              >
+                {isHindi ? 'डायग्नोस्टिक्स देखें →' : 'View Diagnostics →'}
+              </button>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            <div>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(129, 140, 248, 0.15)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '0.85rem' }}>
-                📋
+          {/* Right Panel: Scenario Studio Constant-Yield Simulator Equations */}
+          <div className="landing-card-surface" style={{ padding: '1.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+                  {isHindi ? 'सीट आवंटन सिमुलेशन इंजन' : 'CONSTANT-YIELD SCENARIO ENGINE'}
+                </span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0 0 0' }}>
+                  {isHindi ? 'प्रशिक्षण-सीट परिदृश्य समीकरण' : 'Proportional Throughput & Rank Recalculation'}
+                </h3>
               </div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', margin: '0 0 0.4rem 0' }}>
-                Official SIH Dataset
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                Ingested from canonical government skill registers, ITI admissions, and employer hiring feeds across pilot states.
-              </p>
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '0.25rem 0.6rem', borderRadius: '6px', backgroundColor: 'var(--status-demand-bg)', color: 'var(--status-demand-text)', border: '1px solid var(--status-demand-border)', fontWeight: 700 }}>
+                Exploratory Simulation
+              </span>
             </div>
 
-            <div>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '0.85rem' }}>
-                🔬
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: '0 0 1.15rem 0' }}>
+              {isHindi
+                ? 'परिदृश्य स्टूडियो स्थिर फ़नल उपज (नामांकन × पूर्णता × प्रमाणन दर) के तहत प्रस्तावित सीट परिवर्तनों के प्रभाव की गणना करता है और सभी 54 श्रृंखलाओं में आपूर्ति पर्सेंटाइल को पुनः क्रमित करता है।'
+                : 'Scenario Studio models how proposed batch seat adjustments scale future certified throughput under constant empirical funnel yields, then recalculates cross-sectional supply percentile ranks across all 54 monitored series.'}
+            </p>
+
+            {/* Grounded Simulator Equations Box */}
+            <div className="landing-subcard-surface" style={{ padding: '1rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Icon name="calculator" size={14} />
+                  <span>{isHindi ? 'सिम्युलेटर गणना समीकरण' : 'Simulator Calculation Equations'}</span>
+                </span>
+                <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-soft-text)', fontWeight: 700 }}>
+                  54-Series Mid-Rank
+                </span>
               </div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', margin: '0 0 0.4rem 0' }}>
-                Walk-Forward Validation
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                Fitted strictly on preceding origins without future look-ahead data leakage across 24-month longitudinal timeline.
-              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.73rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>1. Scaling Ratio:</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>R = Proposed_Seats / Baseline_Avg_Seats</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>2. Scenario Output:</span>
+                  <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>Output_sim = Forecast_Output × R</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>3. Relative Mismatch:</span>
+                  <span style={{ color: '#f59e0b', fontWeight: 700 }}>Mismatch_sim = Demand_Rank − Supply_Rank_sim</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>4. Heuristic Thresholds:</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>±15.0 percentile points (Prototype Rule)</span>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '0.85rem' }}>
-                🛡️
-              </div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', margin: '0 0 0.4rem 0' }}>
-                Donor Non-Depletion
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                Mathematically prevents donor training trades from slipping into severe deficits during reallocation scenarios.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
+                {isHindi ? 'सापेक्ष रैंक अंतराल (श्रमिक हेडकाउंट कमी नहीं)' : 'Measures relative rank mismatch, not a worker headcount shortfall'}
+              </span>
+              <button
+                type="button"
+                onClick={() => onNavigateToModule('simulator')}
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.45rem 0.95rem',
+                  fontSize: '0.76rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {isHindi ? 'परिदृश्य स्टूडियो खोलें →' : 'Launch Scenario Studio →'}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA Section */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.5rem 5rem', width: '100%', textAlign: 'center' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.8rem 0', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
-            READY TO EXPLORE INDIA'S SKILL PULSE?
-          </h2>
-          <p style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6, margin: '0 0 1.75rem 0' }}>
-            Access district-level intelligence, multi-horizon demand forecasts, and linear programming seat reallocation models.
-          </p>
-          <button
-            type="button"
-            onClick={() => onNavigate('overview')}
-            style={{
-              backgroundColor: '#4f46e5',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '0.95rem 2.2rem',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              boxShadow: '0 8px 24px rgba(79, 70, 229, 0.4)',
-              transition: 'transform 0.15s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
-            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-          >
-            <span>{t('landing.cta.openDashboard', 'Open Dashboard')}</span>
-            <span>→</span>
-          </button>
+      {/* Governance & Synthetic Transparency Section */}
+      <section style={{ maxWidth: '1340px', margin: '0 auto', padding: '1rem 2rem 4rem 2rem' }}>
+        <div
+          className="landing-card-surface"
+          style={{
+            padding: '1.75rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '1.5rem',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-primary)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icon name="layers" size={15} />
+              <span>{isHindi ? 'सिंथेटिक पायलट डेटा प्रकटीकरण' : 'Synthetic Pilot Data Disclosure'}</span>
+            </div>
+            <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
+              {isHindi
+                ? 'इस प्लेटफॉर्म के सभी 6,495 अवलोकन रिकॉर्ड SIH26246 बेंचमार्क मूल्यांकन के लिए सिंथेटिक प्रदर्शन डेटा हैं (आधिकारिक सरकारी जनगणना आंकड़े नहीं)।'
+                : 'All 6,495 observation records in this pilot are synthetic demonstration data created for SIH26246 benchmark evaluation (not official census or ministry statistics).'}
+            </p>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#3b82f6', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icon name="file-text" size={15} />
+              <span>{isHindi ? '90-दिन प्लेसमेंट परिपक्वता नियम' : '90-Day Placement Maturity Rule'}</span>
+            </div>
+            <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
+              {isHindi
+                ? 'टीवीईटी मानकों के तहत, पूर्णता के 90 दिनों के भीतर वाले बैचों को "अनुवर्ती लंबित" के रूप में चिह्नित किया जाता है और शून्य प्लेसमेंट के रूप में दंडित नहीं किया जाता।'
+                : 'Cohorts completed within 90 days of the reference cutoff are flagged as "Pending 90-Day Follow-Up" rather than misreported as zero-placement outcomes.'}
+            </p>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#f59e0b', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Icon name="scale" size={15} />
+              <span>{isHindi ? 'सापेक्ष असंतुलन बनाम श्रमिक कमी' : 'Relative Mismatch vs. Headcount'}</span>
+            </div>
+            <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
+              {isHindi
+                ? 'असंतुलन स्कोर (−100 से +100) मांग और आपूर्ति पर्सेंटाइल रैंक के अंतर को दर्शाता है, न कि श्रमिकों की वास्तविक संख्या की कमी को।'
+                : 'Mismatch scores (−100 to +100 pts) measure cross-sectional percentile rank differences, not an empirical worker headcount deficit or guaranteed employment outcome.'}
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: '#04070d', padding: '3rem 1.5rem 2rem', marginTop: 'auto' }}>
-        <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', marginBottom: '2.5rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.85rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #0d9488, #4f46e5)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '11px' }}>
-                  SP
-                </div>
-                <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#ffffff' }}>SkillPulse</span>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: 1.6, margin: '0 0 1rem 0' }}>
-                Skills for India's youth, planned before the shortage.
-              </p>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'inline-block' }}>
-                RUN-SIH-001 • Official SIH Dataset v2.1 • Ensemble Model v2.1.0
-              </div>
+      <footer
+        style={{
+          borderTop: '1px solid var(--border-subtle)',
+          backgroundColor: 'var(--bg-subtle)',
+          padding: '2.5rem 2rem',
+          fontSize: '0.78rem',
+          color: 'var(--text-muted)',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1340px',
+            margin: '0 auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <div className="brand-logo" style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}>
+              SP
             </div>
-
-            <div>
-              <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)', marginBottom: '0.85rem' }}>
-                INTELLIGENCE MODULES
-              </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem' }}>
-                <li><button type="button" onClick={() => onNavigate('overview')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Overview</button></li>
-                <li><button type="button" onClick={() => onNavigate('forecasts')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Forecasts Studio</button></li>
-                <li><button type="button" onClick={() => onNavigate('gap')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Skill Gaps</button></li>
-                <li><button type="button" onClick={() => onNavigate('simulator')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Scenario Studio</button></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)', marginBottom: '0.85rem' }}>
-                GOVERNANCE & PLATFORM
-              </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem' }}>
-                <li><button type="button" onClick={() => onNavigate('recommendations')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Recommendations</button></li>
-                <li><button type="button" onClick={() => onNavigate('api')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>API & Exports</button></li>
-                <li><button type="button" onClick={() => onNavigate('data-health')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Data & Model Health</button></li>
-                <li><button type="button" onClick={() => onNavigate('settings')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0 }}>Settings & Preferences</button></li>
-              </ul>
-            </div>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
+              SkillPulse LMIS
+            </span>
+            <span>•</span>
+            <span>Smart India Hackathon 2026 (PS SIH26246)</span>
           </div>
 
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.72rem', color: '#475569' }}>
-            <div>
-              Ministry of Skill Development & Entrepreneurship (MSDE) — Smart India Hackathon 2026
-            </div>
-            <div style={{ fontFamily: 'var(--font-mono)' }}>
-              Pipeline snapshot — not a live feed
-            </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
+            Synthetic Pilot Dataset (6,495 rows) • Deterministic Backtest Engine (Naive, MA3, Linear Trend)
           </div>
         </div>
       </footer>

@@ -7,6 +7,7 @@ import {
 } from '../../i18n/translations';
 import LoadingSpinner from '../LoadingSpinner';
 import ErrorAlert from '../ErrorAlert';
+import Icon from '../Icon';
 
 export default function OccupationsExplorer() {
   const { language, t } = useLanguage();
@@ -61,15 +62,15 @@ export default function OccupationsExplorer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>💼</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="briefcase" size={20} /></span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('occupations.title', 'Occupational Taxonomy & Registry')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid #99f6e4', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 9 {isHindi ? 'मानक व्यवसाय' : 'Standard Occupations'} • 3 {isHindi ? 'क्षेत्र' : 'Sectors'}
               </span>
             </div>
@@ -93,13 +94,15 @@ export default function OccupationsExplorer() {
                 padding: '0.4rem 0.65rem',
                 borderRadius: '6px',
                 border: '1px solid var(--slate-300)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--text-primary)',
                 width: '180px',
               }}
             />
             <select
               value={selectedSector}
               onChange={(e) => setSelectedSector(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--slate-50)' }}
+              style={{ fontSize: '0.78rem', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
               <option value="IT/ITeS">IT/ITeS</option>
@@ -111,7 +114,7 @@ export default function OccupationsExplorer() {
       </div>
 
       {/* Main Table Card */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--slate-50)', borderBottom: '1px solid var(--slate-200)', color: 'var(--slate-600)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -129,7 +132,7 @@ export default function OccupationsExplorer() {
                 key={occ.occupation_id}
                 style={{
                   borderBottom: '1px solid var(--slate-100)',
-                  backgroundColor: idx % 2 === 0 ? '#ffffff' : 'var(--slate-50)',
+                  backgroundColor: idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--slate-50)',
                   transition: 'background-color 0.15s',
                 }}
               >
@@ -145,7 +148,7 @@ export default function OccupationsExplorer() {
 
                 {/* Sector & Trade */}
                 <td style={{ padding: '0.85rem 1rem' }}>
-                  <span style={{ display: 'inline-block', fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: '#f1f5f9', color: 'var(--slate-700)', fontWeight: 600, border: '1px solid var(--slate-200)', marginBottom: '0.2rem' }}>
+                  <span style={{ display: 'inline-block', fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--bg-subtle)', color: 'var(--slate-700)', fontWeight: 600, border: '1px solid var(--slate-200)', marginBottom: '0.2rem' }}>
                     {getSectorDisplayName(occ.sector, isHindi)}
                   </span>
                   <div style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>{occ.trade}</div>
@@ -155,7 +158,7 @@ export default function OccupationsExplorer() {
                 <td style={{ padding: '0.85rem 1rem' }}>
                   {occ.nco_code ? (
                     <div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#0f766e', fontSize: '0.75rem', backgroundColor: '#f0fdfa', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid #99f6e4' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--teal-800)', fontSize: '0.75rem', backgroundColor: 'var(--accent-soft-bg)', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid var(--accent-soft-border)' }}>
                         {occ.nco_code}
                       </span>
                       <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.2rem' }}>
@@ -163,7 +166,7 @@ export default function OccupationsExplorer() {
                       </div>
                     </div>
                   ) : (
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                       {isHindi ? 'मैप नहीं किया गया (अपुष्ट)' : 'Not mapped (Unverified)'}
                     </span>
                   )}
@@ -173,7 +176,7 @@ export default function OccupationsExplorer() {
                 <td style={{ padding: '0.85rem 1rem' }}>
                   {occ.qp_code ? (
                     <div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#1e40af', fontSize: '0.75rem', backgroundColor: '#eff6ff', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-supply-text)', fontSize: '0.75rem', backgroundColor: 'var(--status-supply-bg)', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid var(--status-supply-border)' }}>
                         {occ.qp_code}
                       </span>
                       <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.2rem' }}>
@@ -181,7 +184,7 @@ export default function OccupationsExplorer() {
                       </div>
                     </div>
                   ) : (
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                       {isHindi ? 'अनुपलब्ध' : 'None recorded'}
                     </span>
                   )}
@@ -190,11 +193,11 @@ export default function OccupationsExplorer() {
                 {/* NSQF Level */}
                 <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
                   {occ.nsqf_level != null ? (
-                    <span style={{ display: 'inline-block', padding: '0.2rem 0.55rem', borderRadius: '100px', backgroundColor: '#f8fafc', border: '1px solid var(--slate-300)', fontWeight: 800, fontSize: '0.75rem', color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                    <span style={{ display: 'inline-block', padding: '0.2rem 0.55rem', borderRadius: '100px', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--slate-300)', fontWeight: 800, fontSize: '0.75rem', color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
                       Level {occ.nsqf_level}
                     </span>
                   ) : (
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>N/A</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>N/A</span>
                   )}
                 </td>
 
@@ -205,7 +208,7 @@ export default function OccupationsExplorer() {
                     onClick={() => setSelectedOccupation(occ)}
                     style={{
                       border: '1px solid var(--slate-300)',
-                      backgroundColor: '#ffffff',
+                      backgroundColor: 'var(--bg-surface)',
                       color: 'var(--slate-700)',
                       padding: '0.25rem 0.55rem',
                       borderRadius: '4px',
@@ -227,7 +230,7 @@ export default function OccupationsExplorer() {
       {selectedOccupation && (
         <div
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-surface)',
             border: '2px solid var(--teal-600)',
             borderRadius: 'var(--radius-md)',
             padding: '1.25rem',

@@ -270,6 +270,11 @@ export default function App() {
     return (
       <LandingPage
         onNavigate={handleNavigate}
+        onEnterDashboard={() => handleNavigate('overview')}
+        onNavigateToModule={handleNavigate}
+        onNavigateToSimulatorWithContext={(district, occupation) =>
+          handleNavigateWithContext('simulator', { district, occupation })
+        }
         backendHealth={backendHealth}
       />
     );

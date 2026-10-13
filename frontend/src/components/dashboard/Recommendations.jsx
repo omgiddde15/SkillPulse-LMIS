@@ -9,6 +9,7 @@ import {
 } from '../../i18n/translations';
 import LoadingSpinner from '../LoadingSpinner';
 import ErrorAlert from '../ErrorAlert';
+import Icon from '../Icon';
 
 const TOP_RANKED_INTERVENTIONS = [
   {
@@ -196,15 +197,15 @@ export default function Recommendations({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.25rem' }}>💡</span>
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="lightbulb" size={20} /></span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('recommendations.title', 'Evidence-Based Policy Interventions')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid #99f6e4', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 4 {isHindi ? 'रैंक किए गए हस्तक्षेप' : 'Ranked Interventions'} • {dossiers.length} {isHindi ? 'कार्यवाही योग्य मामले' : 'Total Dossiers'}
               </span>
             </div>
@@ -225,7 +226,7 @@ export default function Recommendations({
               id="rec-sector"
               value={sectorFilter}
               onChange={(e) => setSectorFilter(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--slate-50)' }}
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
               <option value="IT/ITeS">IT/ITeS</option>
@@ -237,7 +238,7 @@ export default function Recommendations({
       </div>
 
       {/* TOP RANKED INTERVENTION DOSSIERS (#01 to #04) */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ marginBottom: '1rem' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.2rem 0' }}>
             {isHindi ? 'शीर्ष प्राथमिकता क्षमता योजना परिदृश्य (रैंक अनुसार)' : 'Top Priority Capacity Planning Scenarios (Ranked)'}
@@ -254,7 +255,7 @@ export default function Recommendations({
             <div
               key={item.rank}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-elevated)',
                 border: '1px solid var(--slate-200)',
                 borderLeft: '4px solid #0d9488',
                 borderRadius: 'var(--radius-md)',
@@ -268,10 +269,10 @@ export default function Recommendations({
             >
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#0d9488' }}>
+                  <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-primary)' }}>
                     {item.rank} · {item.districtName.toUpperCase()}, {item.stateName.toUpperCase()}
                   </span>
-                  <span style={{ fontSize: '0.68rem', backgroundColor: '#f0fdfa', color: '#0f766e', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid var(--accent-soft-border)' }}>
                     {item.tierLabel}
                   </span>
                 </div>
@@ -283,7 +284,7 @@ export default function Recommendations({
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
+              <div style={{ borderTop: '1px solid var(--slate-200)', paddingTop: '0.65rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
                   <div>
                     <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
@@ -296,7 +297,7 @@ export default function Recommendations({
                       {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
-                      <strong style={{ color: item.mismatchDeltaPts < 0 ? '#059669' : '#2563eb', fontFamily: 'var(--font-mono)' }}>
+                      <strong style={{ color: item.mismatchDeltaPts < 0 ? 'var(--status-success-text)' : 'var(--status-supply-text)', fontFamily: 'var(--font-mono)' }}>
                         {item.mismatchDeltaPts >= 0 ? '+' : ''}{item.mismatchDeltaPts.toFixed(1)} pts
                       </strong>
                       <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
@@ -316,7 +317,7 @@ export default function Recommendations({
                   <button
                     type="button"
                     onClick={() => onNavigateWithContext('gap', { district: item.districtId, occupation: item.occupationId, state: item.stateCode })}
-                    style={{ border: '1px solid var(--slate-300)', backgroundColor: '#ffffff', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                    style={{ border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-surface)', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
                   >
                     View Evidence
                   </button>
@@ -345,17 +346,18 @@ export default function Recommendations({
         {dossiers.slice(0, 12).map((d) => {
           const isExpand = d.policyCategory === 'expand';
           const isReallocate = d.policyCategory === 'reallocate';
-          const accentColor = isExpand ? '#c2410c' : isReallocate ? '#1d4ed8' : '#475569';
-          const accentBg = isExpand ? '#fff7ed' : isReallocate ? '#eff6ff' : '#f8fafc';
-          const accentBorder = isExpand ? '#ffedd5' : isReallocate ? '#dbeafe' : '#e2e8f0';
+          const accentColor = isExpand ? 'var(--status-demand-text)' : isReallocate ? 'var(--status-supply-text)' : 'var(--text-secondary)';
+          const accentBg = isExpand ? 'var(--status-demand-bg)' : isReallocate ? 'var(--status-supply-bg)' : 'var(--bg-subtle)';
+          const accentBorder = isExpand ? 'var(--status-demand-border)' : isReallocate ? 'var(--status-supply-border)' : 'var(--border-subtle)';
+          const leftBarColor = isExpand ? 'var(--status-demand)' : isReallocate ? 'var(--status-supply)' : 'var(--slate-400)';
 
           return (
             <div
               key={d.id}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-surface)',
                 border: `1px solid ${accentBorder}`,
-                borderLeft: `4px solid ${accentColor}`,
+                borderLeft: `4px solid ${leftBarColor}`,
                 borderRadius: 'var(--radius-md)',
                 padding: '1.25rem',
                 display: 'flex',
@@ -372,8 +374,9 @@ export default function Recommendations({
                     <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                       {getOccupationDisplayName(d.occupationTitle, isHindi)}
                     </h3>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.15rem' }}>
-                      📍 {getDistrictDisplayName(d.districtName, isHindi)}, {getStateDisplayName(d.stateCode, isHindi)} • {getSectorDisplayName(d.sector, isHindi)}
+                    <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Icon name="pin" size={12} />
+                      <span>{getDistrictDisplayName(d.districtName, isHindi)}, {getStateDisplayName(d.stateCode, isHindi)} • {getSectorDisplayName(d.sector, isHindi)}</span>
                     </div>
                   </div>
 
@@ -394,9 +397,9 @@ export default function Recommendations({
                 </div>
 
                 {/* Recommendation Title */}
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: accentColor, marginBottom: '0.4rem' }}>
-                  {isExpand ? '⚡ ' : isReallocate ? '📦 ' : '⚖️ '}
-                  {d.title}
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: accentColor, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Icon name={isExpand ? 'zap' : isReallocate ? 'box' : 'scale'} size={14} />
+                  <span>{d.title}</span>
                 </div>
 
                 {/* Evidence & Action Text */}
@@ -416,7 +419,7 @@ export default function Recommendations({
                     type="button"
                     onClick={() => onNavigateWithContext('gap', { district: d.districtId, occupation: d.occupationId, state: d.stateCode })}
                     style={{
-                      backgroundColor: '#ffffff',
+                      backgroundColor: 'var(--bg-surface)',
                       color: 'var(--slate-700)',
                       border: '1px solid var(--slate-300)',
                       borderRadius: '4px',
@@ -451,7 +454,7 @@ export default function Recommendations({
                       gap: '0.3rem',
                     }}
                   >
-                    <span>🎛️</span>
+                    <Icon name="sliders" size={13} />
                     <span>{isHindi ? 'सिम्युलेट' : 'Simulate'}</span>
                   </button>
                 </div>

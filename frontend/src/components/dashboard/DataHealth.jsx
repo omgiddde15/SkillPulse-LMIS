@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import Icon from '../Icon';
 
 export default function DataHealth({
   backendHealth = { status: 'healthy' },
@@ -12,15 +13,15 @@ export default function DataHealth({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>🛡️</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="shield" size={20} /></span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('dataHealth.title', 'Data Governance & Model Health')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: isOnline ? '#ecfdf5' : '#fef2f2', color: isOnline ? '#065f46' : '#991b1b', border: `1px solid ${isOnline ? '#a7f3d0' : '#fecaca'}`, fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: isOnline ? 'var(--status-success-bg)' : 'var(--status-danger-bg)', color: isOnline ? 'var(--status-success-text)' : 'var(--status-danger-text)', border: `1px solid ${isOnline ? 'var(--status-success-border)' : 'var(--status-danger-border)'}`, fontWeight: 700 }}>
                 {isOnline ? (isHindi ? '● सभी सेवाएँ सक्रिय' : '● All Services Healthy') : '● Service Degraded'}
               </span>
             </div>
@@ -42,7 +43,7 @@ export default function DataHealth({
 
       {/* 4 Status Metric Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
             Dataset Coverage
           </div>
@@ -54,7 +55,7 @@ export default function DataHealth({
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
             Ingested Records
           </div>
@@ -66,11 +67,11 @@ export default function DataHealth({
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
             Funnel Invariant Check
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669', margin: '0.3rem 0' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--status-success-text)', margin: '0.3rem 0' }}>
             100% Passed
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>
@@ -78,11 +79,11 @@ export default function DataHealth({
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
             Forecasting Diagnostics
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#2563eb', margin: '0.3rem 0' }}>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--status-supply-text)', margin: '0.3rem 0' }}>
             54 / 54 Series
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>
@@ -92,7 +93,7 @@ export default function DataHealth({
       </div>
 
       {/* Verification Invariants Detail Table */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
         <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--slate-800)', margin: '0 0 1rem 0' }}>
           {isHindi ? 'पाइपलाइन सत्यापन और ऑडिट मेट्रिक्स' : 'Pipeline Verification and Invariant Checks'}
         </h3>
@@ -115,7 +116,7 @@ export default function DataHealth({
                 alignItems: 'center',
                 padding: '0.65rem 0.85rem',
                 borderRadius: '6px',
-                backgroundColor: idx % 2 === 0 ? 'var(--slate-50)' : '#ffffff',
+                backgroundColor: idx % 2 === 0 ? 'var(--slate-50)' : 'var(--bg-surface)',
                 border: '1px solid var(--slate-200)',
                 fontSize: '0.78rem',
               }}
@@ -129,7 +130,7 @@ export default function DataHealth({
                 <span style={{ fontSize: '0.72rem', color: 'var(--slate-600)', fontFamily: 'var(--font-mono)' }}>
                   {item.detail}
                 </span>
-                <span style={{ padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', fontWeight: 800, fontSize: '0.68rem' }}>
+                <span style={{ padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success-text)', border: '1px solid var(--status-success-border)', fontWeight: 800, fontSize: '0.68rem' }}>
                   ✓ {item.status}
                 </span>
               </div>
@@ -139,7 +140,7 @@ export default function DataHealth({
       </div>
 
       {/* Rolling-Origin Walk-Forward Forecasting Diagnostics Table */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--slate-800)', margin: '0 0 0.25rem 0' }}>
@@ -151,7 +152,7 @@ export default function DataHealth({
                 : 'Walk-forward rolling-origin evaluation across 54 monitored series (3M, 6M, 12M horizons) on synthetic pilot observations.'}
             </p>
           </div>
-          <span style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: '#0f766e', border: '1px solid #99f6e4', fontWeight: 700 }}>
+          <span style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
             54 Series Monitored
           </span>
         </div>
@@ -175,43 +176,44 @@ export default function DataHealth({
                   <strong>Linear Trend (OLS Drift)</strong>
                   <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Extrapolates linear slope for trend series</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#ecfdf5', color: '#065f46', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success-text)', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
                 <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>4.55 postings</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>4.85%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>6.08%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-success-text)' }}>4.85%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-success-text)' }}>6.08%</td>
                 <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
-                <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
+                <td><span style={{ color: 'var(--status-success-text)', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
               <tr>
                 <td>
                   <strong>3-Month Moving Average (MA3)</strong>
                   <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>3-month trailing mean for cyclical series</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#eff6ff', color: '#1e40af', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: 'var(--status-supply-bg)', color: 'var(--status-supply-text)', fontWeight: 700, fontSize: '0.68rem' }}>MIN OUT-OF-SAMPLE MAE</span></td>
                 <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>7.34 postings</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#2563eb' }}>7.85%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#2563eb' }}>13.37%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-supply-text)' }}>7.85%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-supply-text)' }}>13.37%</td>
                 <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
-                <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
+                <td><span style={{ color: 'var(--status-success-text)', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
               <tr>
                 <td>
                   <strong>Naive Benchmark</strong>
                   <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Persistence benchmark (last observed value)</div>
                 </td>
-                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '0.68rem' }}>BENCHMARK & TIE-BREAKER</span></td>
+                <td><span style={{ padding: '1px 6px', borderRadius: '4px', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)', fontWeight: 700, fontSize: '0.68rem' }}>BENCHMARK & TIE-BREAKER</span></td>
                 <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>6.74 postings</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#059669' }}>7.21%</td>
-                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#b45309' }}>12.09%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-success-text)' }}>7.21%</td>
+                <td style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-demand-text)' }}>12.09%</td>
                 <td><span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--slate-600)' }}>Nominal 80% (±1.282 × RMSE)</span></td>
-                <td><span style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
+                <td><span style={{ color: 'var(--status-success-text)', fontWeight: 700, fontSize: '0.72rem' }}>✓ PASS (&lt;15% WAPE)</span></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--slate-500)', lineHeight: 1.45 }}>
-          ℹ️ <em>Model selection operates deterministically based on minimum out-of-sample MAE over trailing walk-forward folds (16 folds for 3M horizon, 13 folds for 6M horizon, 7 folds for 12M horizon). Prediction intervals represent a nominal normal error dispersion approximation (±1.282 × out-of-sample RMSE), not an empirical quantile coverage rate. Small-sample limitations apply to the 12-month horizon due to the 24-month synthetic pilot timeline.</em>
+        <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--slate-500)', lineHeight: 1.45, display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
+          <span style={{ marginTop: '0.1rem', flexShrink: 0 }}><Icon name="info" size={14} /></span>
+          <em>Model selection operates deterministically based on minimum out-of-sample MAE over trailing walk-forward folds (16 folds for 3M horizon, 13 folds for 6M horizon, 7 folds for 12M horizon). Prediction intervals represent a nominal normal error dispersion approximation (±1.282 × out-of-sample RMSE), not an empirical quantile coverage rate. Small-sample limitations apply to the 12-month horizon due to the 24-month synthetic pilot timeline.</em>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   getSectorDisplayName,
   formatExplanatoryFactor,
 } from '../i18n/translations';
+import Icon from './Icon';
 
 const STATES = [
   { code: 'KA', name: 'Karnataka' },
@@ -477,9 +478,9 @@ export default function GapAnalysis({
             <div className="stat-card demand-pressure">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('class.demandPressure')}</span>
-                <span className="stat-card-icon">⚡</span>
+                <span className="stat-card-icon"><Icon name="zap" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#c2410c' }}>
+              <div className="stat-card-value" style={{ color: 'var(--status-demand-text)' }}>
                 {summaryMetrics.demandCount}
               </div>
               <div className="stat-card-meta">
@@ -493,9 +494,9 @@ export default function GapAnalysis({
             <div className="stat-card supply-pressure">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('class.supplyPressure')}</span>
-                <span className="stat-card-icon">📦</span>
+                <span className="stat-card-icon"><Icon name="package" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#1d4ed8' }}>
+              <div className="stat-card-value" style={{ color: 'var(--status-supply-text)' }}>
                 {summaryMetrics.supplyCount}
               </div>
               <div className="stat-card-meta">
@@ -509,9 +510,9 @@ export default function GapAnalysis({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('class.balanced')} / Monitor</span>
-                <span className="stat-card-icon">⚖️</span>
+                <span className="stat-card-icon"><Icon name="scale" size={16} /></span>
               </div>
-              <div className="stat-card-value" style={{ color: '#15803d' }}>
+              <div className="stat-card-value" style={{ color: 'var(--status-success-text)' }}>
                 {summaryMetrics.balancedCount}
               </div>
               <div className="stat-card-meta">
@@ -525,7 +526,7 @@ export default function GapAnalysis({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('gap.totalPairs')}</span>
-                <span className="stat-card-icon">📋</span>
+                <span className="stat-card-icon"><Icon name="file-text" size={16} /></span>
               </div>
               <div className="stat-card-value" style={{ fontFamily: 'var(--font-mono)' }}>
                 {summaryMetrics.total}
@@ -557,7 +558,7 @@ export default function GapAnalysis({
                   onClick={handleExportCsv}
                   title={t('common.exportCsv')}
                 >
-                  <span>📥</span>
+                  <Icon name="download" size={14} />
                   <span>{t('common.exportCsv')}</span>
                 </button>
               </div>
@@ -652,10 +653,6 @@ export default function GapAnalysis({
                           <td style={{ textAlign: 'right' }}>
                             <span
                               className={`score-pill ${isPositive ? 'positive' : 'negative'}`}
-                              style={{
-                                backgroundColor: isPositive ? '#fff7ed' : '#eff6ff',
-                                border: `1px solid ${isPositive ? '#ffedd5' : '#dbeafe'}`,
-                              }}
                             >
                               {formatMismatch(row.relative_mismatch_score)}
                             </span>
@@ -678,7 +675,7 @@ export default function GapAnalysis({
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
                                 border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
-                                backgroundColor: isSelected ? 'var(--teal-50)' : '#ffffff',
+                                backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
                                 color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
                               }}
                               onClick={(e) => {
@@ -881,7 +878,7 @@ export default function GapAnalysis({
           {/* Methodology & Threshold Disclosures */}
           <section className="callout-box">
             <h4>
-              <span>ℹ️</span>
+              <Icon name="info" size={16} />
               <span>{t('gap.methodologyTitle')}</span>
             </h4>
             <p>

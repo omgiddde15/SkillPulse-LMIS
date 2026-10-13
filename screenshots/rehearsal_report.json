@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-12T20:33:25.035Z",
+  "timestamp": "2026-10-13T05:25:02.845Z",
   "stages": {
     "Stage A": {
       "name": "Landing Page Live Pilot Observation Card",
@@ -13,7 +13,7 @@
       "hasMismatch": true,
       "hasUnavailable": false,
       "hasLoading": false,
-      "cardSnippet": "DHARWAD · CNC MACHINE OPERATOR · 2026-09 · 6M\nCNC Machine Operator\nDharwad, Karnataka (KA) • Precision Machining\n⚠️\nSevere Shortfall\nDEMAND\n73.1\n0–100 percentile\nEFFECTIVE SUPPLY\n17.0\n0–100 percentile\nSHORTFALL\n+56.1\nDemand > Supply\n📈 88% 6M shortage probability\nGap +56.1/100\nCalculated from 24-mo "
+      "cardSnippet": "PILOT OBSERVATION • CYCLE 2026-09\nCNC Machine Operator\nDharwad, Karnataka (KA) (KA) • Precision Machining\nDemand Pressure\nDEMAND INDEX\n73.1\n0–100 percentile\nSUPPLY OUTPUT\n17.0\n0–100 percentile\nRELATIVE MISMATCH\n+56.1\nDemand − Supply (pts)\n24M Longitudinal Trajectory + 80% Prediction Interval\nLinear "
     },
     "Stage B": {
       "name": "District Map with 6 Markers, Pune & Bengaluru Popups",
@@ -27,14 +27,14 @@
         "hasPune": true,
         "hasStateMH": true,
         "hasMismatch": true,
-        "popupText": "Pune\nMaharashtra (MH)\n⚖️\nBalanced\n(-8.0 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t56.2 pts\nSupply Output Index:\t64.2 pts\nRelative Mismatch:\t-8.0 pts\nCentroid Coordinates:\t18.52°N, 73.86°E\nClick mark"
+        "popupText": "Pune\nMaharashtra (MH)\n[B]\nBalanced\n(-8.0 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t56.2 pts\nSupply Output Index:\t64.2 pts\nRelative Mismatch:\t-8.0 pts\nCentroid Coordinates:\t18.52°N, 73.86°E\nClick mar"
       },
       "blrPopup": {
         "hasPopup": true,
         "hasBlr": true,
         "hasStateKA": true,
         "hasMismatch": true,
-        "popupText": "Bengaluru Urban\nKarnataka (KA)\n⚖️\nBalanced\n(-10.3 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t53.3 pts\nSupply Output Index:\t63.6 pts\nRelative Mismatch:\t-10.3 pts\nCentroid Coordinates:\t12.97°N, 77.59°E"
+        "popupText": "Bengaluru Urban\nKarnataka (KA)\n[B]\nBalanced\n(-10.3 pts)\nReporting Cycle:\t2026-09\nDemand Index:\t53.3 pts\nSupply Output Index:\t63.6 pts\nRelative Mismatch:\t-10.3 pts\nCentroid Coordinates:\t12.97°N, 77.59°"
       }
     },
     "Stage C": {
@@ -56,7 +56,7 @@
         "hasBengaluru": true,
         "allAreCNC": true,
         "hasNonAbsoluteDisclaimer": true,
-        "calloutSnippet": "ℹ️\nGap Analysis Methodology & Governance Disclaimers\n\nCurrent-Period Mismatch Formula: The Relative Mismatch Score is computed as Demand Composite Score (0–100) − Supply Output Percentile Rank (0–100), bounded between −100.0 and +100.0 points. The Demand Composite Score is a weighted multi-signal de"
+        "calloutSnippet": "Gap Analysis Methodology & Governance Disclaimers\n\nCurrent-Period Mismatch Formula: The Relative Mismatch Score is computed as Demand Composite Score (0–100) − Supply Output Percentile Rank (0–100), bounded between −100.0 and +100.0 points. The Demand Composite Score is a weighted multi-signal deman"
       }
     },
     "Stage D": {
@@ -72,7 +72,7 @@
         "hasMAE": true,
         "hasWAPE": true,
         "hasUncertaintyNote": true,
-        "snippet": "Forecast Diagnostics: Warehouse Inventory Coordinator (Mumbai Suburban, Maharashtra (MH))\n\nTarget Period: 2026-12 (+3 Months) • Projected Mismatch: +63.2 pts (Demand Pressure)\n\n✕ Close Diagnostics\n1. Job-Posting Demand Projection\nModel: Linear Trend Model\n+3M (2026-12)\nAdequate Sample (N=16)\nOBSERVED HISTORY (SYNTHETIC)\n133 postings\nBase: 2026-09\nPOINT FORECAST\n136 postings\nTarget: 2026-12 (+3M)\nC"
+        "snippet": "Forecast Diagnostics: Warehouse Inventory Coordinator (Mumbai Suburban, Maharashtra (MH))\n\nTarget Period: 2026-12 (+3 Months) • Projected Mismatch: +63.2 pts (Demand Pressure)\n\n✕ Close Diagnostics\n1. JOB-POSTING DEMAND PROJECTION\nMODEL: LINEAR TREND MODEL\n+3M (2026-12)\nAdequate Sample (N=16)\nOBSERVED HISTORY (SYNTHETIC)\n133 postings\nBase: 2026-09\nPOINT FORECAST\n136 postings\nTarget: 2026-12 (+3M)\nC"
       },
       "drawer6M": {
         "found": true,
@@ -98,7 +98,7 @@
       "hasSuggestedAction": true,
       "hasLimitations": true,
       "hasHumanNotice": true,
-      "snippet": "CRITICAL\nSingle-Horizon Demand Pressure: Cold Chain Logistics Supervisor (Bengaluru Urban)\n\nAlert ID: ALERT-DEM_PRESSURE-KA_BLR_U-OCC_LOG_002-H12-2026-09 • Reporting Period: 2026-09\n\n✕ Close Diagnostics\nPersistence Evaluation & Horizon Support\nSingle-Horizon Signal Only\n\nThis is a single-horizon signal evaluated at the +12-month horizon (2027-09). Persistence rule requires threshold crossing at tw"
+      "snippet": "CRITICAL\nSingle-Horizon Demand Pressure: Cold Chain Logistics Supervisor (Bengaluru Urban)\n\nAlert ID: ALERT-DEM_PRESSURE-KA_BLR_U-OCC_LOG_002-H12-2026-09 • Reporting Period: 2026-09\n\n✕ Close Diagnostics\nPERSISTENCE EVALUATION & HORIZON SUPPORT\nSingle-Horizon Signal Only\n\nThis is a single-horizon signal evaluated at the +12-month horizon (2027-09). Persistence rule requires threshold crossing at tw"
     },
     "Stage F": {
       "name": "Seat Simulator 100-Seat then 180-Seat Comparison & Recalculation",

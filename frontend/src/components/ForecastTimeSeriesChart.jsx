@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import Icon from './Icon';
 
 /**
  * ForecastTimeSeriesChart
@@ -29,14 +30,12 @@ export default function ForecastTimeSeriesChart({
   const isHindi = language === 'hi';
   const [hoveredPoint, setHoveredPoint] = useState(null);
 
-  // SVG canvas dimensions
   const svgWidth = 720;
   const svgHeight = 270;
   const margin = { top: 32, right: 48, bottom: 48, left: 60 };
   const chartWidth = svgWidth - margin.left - margin.right;
   const chartHeight = svgHeight - margin.top - margin.bottom;
 
-  // Build full chronological timeline: historical periods + future forecast periods
   const timelineData = useMemo(() => {
     if (!historicalSeries || historicalSeries.length === 0) return null;
 
@@ -46,7 +45,6 @@ export default function ForecastTimeSeriesChart({
       isForecast: false,
     }));
 
-    // Future target point
     const forecastPt = {
       period: targetPeriod,
       value: pointForecast != null ? Number(pointForecast) : null,
@@ -55,7 +53,6 @@ export default function ForecastTimeSeriesChart({
       upper: predictionIntervalUpper != null ? Number(predictionIntervalUpper) : null,
     };
 
-    // Calculate Y domain bounds
     const histVals = hist.map((d) => d.value);
     const allVals = [...histVals];
     if (forecastPt.value != null) allVals.push(forecastPt.value);
@@ -68,8 +65,6 @@ export default function ForecastTimeSeriesChart({
     const yMin = Math.max(0, Math.floor(minRaw - rangeSpan * 0.15));
     const yMax = Math.ceil(maxRaw + rangeSpan * 0.15);
 
-    // List of period labels for X-axis spacing
-    // Historical periods + any intervening periods up to targetPeriod
     const periodsList = hist.map((d) => d.period);
     if (!periodsList.includes(targetPeriod)) {
       periodsList.push(targetPeriod);
@@ -94,7 +89,6 @@ export default function ForecastTimeSeriesChart({
 
   const { hist, forecastPt, yMin, yMax, periodsList } = timelineData;
 
-  // Coordinate conversion helpers
   const getX = (periodStr) => {
     const idx = periodsList.indexOf(periodStr);
     if (idx === -1) return margin.left;
@@ -107,7 +101,6 @@ export default function ForecastTimeSeriesChart({
     return margin.top + chartHeight - ratio * chartHeight;
   };
 
-  // Historical path coordinates
   const histPoints = hist.map((d) => ({
     ...d,
     x: getX(d.period),
@@ -120,19 +113,15 @@ export default function ForecastTimeSeriesChart({
 
   const lastHistPoint = histPoints[histPoints.length - 1];
 
-  // Area fill under historical curve
   const histAreaPath = `${histLinePath} L ${lastHistPoint.x.toFixed(1)} ${(margin.top + chartHeight).toFixed(1)} L ${histPoints[0].x.toFixed(1)} ${(margin.top + chartHeight).toFixed(1)} Z`;
 
-  // Forecast projection line connecting last history point to target point
   const forecastX = getX(targetPeriod);
   const forecastY = forecastPt.value != null ? getY(forecastPt.value) : null;
   const forecastLowerY = forecastPt.lower != null ? getY(forecastPt.lower) : null;
   const forecastUpperY = forecastPt.upper != null ? getY(forecastPt.upper) : null;
 
-  // History cutoff divider X position
   const cutoffX = getX(basePeriod);
 
-  // Y-axis grid ticks (4 intervals)
   const yTicks = [0, 1, 2, 3, 4].map((step) => {
     const val = yMin + (step / 4) * (yMax - yMin);
     return {
@@ -141,7 +130,6 @@ export default function ForecastTimeSeriesChart({
     };
   });
 
-  // Selected X ticks (every 4th month for clean readability + targetPeriod)
   const xTicks = periodsList
     .map((p, idx) => ({ period: p, idx, x: getX(p) }))
     .filter((d, i) => i % 5 === 0 || d.period === basePeriod || d.period === targetPeriod);
@@ -156,17 +144,18 @@ export default function ForecastTimeSeriesChart({
   };
 
   return (
-    <div className="forecast-timeseries-container" style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)', padding: '1rem', marginTop: '0.75rem' }}>
+    <div className="forecast-timeseries-container" style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', padding: '1rem', marginTop: '0.75rem' }}>
       {/* Chart Top Header Strip */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
         <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>📈 {quantityTitle}</span>
-            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--slate-100)', color: 'var(--slate-600)', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Icon name="trending-up" size={15} style={{ color: 'var(--accent-primary)' }} />
+            <span>{quantityTitle}</span>
+            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)', fontWeight: 600 }}>
               {isHindi ? '24-माह इतिहास + पूर्वानुमान' : '24M History + Forecast'}
             </span>
           </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.15rem' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
             {isHindi ? 'चयनित मॉडल:' : 'Model:'} <strong>{getModelDisplayName(modelSelected)}</strong> • {isHindi ? 'क्षितिज:' : 'Horizon:'} <strong>+{horizonMonths}M ({targetPeriod})</strong>
             {backtestMae != null && (
               <span> • MAE = {Number(backtestMae).toFixed(2)} {unit}</span>
@@ -178,14 +167,14 @@ export default function ForecastTimeSeriesChart({
         </div>
 
         {/* Legend */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.7rem', color: 'var(--slate-600)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
             <span style={{ width: '12px', height: '3px', backgroundColor: color, display: 'inline-block' }} />
             <span>{isHindi ? 'प्रेक्षित इतिहास (सिंथेटिक)' : 'Observed History (Synthetic)'}</span>
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
             <span style={{ width: '12px', height: '2px', borderTop: `2px dashed ${color}`, display: 'inline-block' }} />
-            <span style={{ width: '7px', height: '7px', backgroundColor: '#ffffff', border: `2px solid ${accentColor}`, borderRadius: '50%', display: 'inline-block' }} />
+            <span style={{ width: '7px', height: '7px', backgroundColor: 'var(--bg-surface)', border: `2px solid ${accentColor}`, borderRadius: '50%', display: 'inline-block' }} />
             <span>{isHindi ? 'बिंदु पूर्वानुमान' : 'Point Forecast'}</span>
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
@@ -220,7 +209,7 @@ export default function ForecastTimeSeriesChart({
                 y1={t.y}
                 x2={margin.left + chartWidth}
                 y2={t.y}
-                stroke="#e2e8f0"
+                stroke="var(--border-subtle)"
                 strokeDasharray="3 3"
                 strokeWidth="1"
               />
@@ -230,7 +219,7 @@ export default function ForecastTimeSeriesChart({
                 textAnchor="end"
                 fontSize="10"
                 fontFamily="var(--font-mono)"
-                fill="#64748b"
+                fill="var(--text-muted)"
               >
                 {t.value}
               </text>
@@ -288,8 +277,9 @@ export default function ForecastTimeSeriesChart({
               width="84"
               height="16"
               rx="4"
-              fill="#fffbeb"
-              stroke="#fde68a"
+              fill="#f59e0b"
+              fillOpacity="0.16"
+              stroke="#f59e0b"
               strokeWidth="1"
             />
             <text
@@ -298,7 +288,7 @@ export default function ForecastTimeSeriesChart({
               textAnchor="middle"
               fontSize="9"
               fontWeight="700"
-              fill="#b45309"
+              fill="var(--status-demand-text)"
             >
               {isHindi ? `कटऑफ (${basePeriod})` : `Cutoff (${basePeriod})`}
             </text>
@@ -307,7 +297,6 @@ export default function ForecastTimeSeriesChart({
           {/* Forecast Area / Projection */}
           {forecastY != null && (
             <>
-              {/* Dashed line connecting last historical point to point forecast */}
               <line
                 x1={lastHistPoint.x}
                 y1={lastHistPoint.y}
@@ -318,10 +307,8 @@ export default function ForecastTimeSeriesChart({
                 strokeDasharray="4 4"
               />
 
-              {/* 80% Prediction Interval Vertical Error Bar & Ribbon */}
               {forecastLowerY != null && forecastUpperY != null && (
                 <g>
-                  {/* Shaded interval uncertainty band */}
                   <rect
                     x={forecastX - 8}
                     y={forecastUpperY}
@@ -332,7 +319,6 @@ export default function ForecastTimeSeriesChart({
                     opacity="0.22"
                   />
 
-                  {/* Interval bar */}
                   <line
                     x1={forecastX}
                     y1={forecastLowerY}
@@ -342,7 +328,6 @@ export default function ForecastTimeSeriesChart({
                     strokeWidth="2.5"
                   />
 
-                  {/* Lower horizontal cap */}
                   <line
                     x1={forecastX - 6}
                     y1={forecastLowerY}
@@ -352,7 +337,6 @@ export default function ForecastTimeSeriesChart({
                     strokeWidth="2"
                   />
 
-                  {/* Upper horizontal cap */}
                   <line
                     x1={forecastX - 6}
                     y1={forecastUpperY}
@@ -362,13 +346,12 @@ export default function ForecastTimeSeriesChart({
                     strokeWidth="2"
                   />
 
-                  {/* Bound numeric annotations */}
                   <text
                     x={forecastX + 12}
                     y={forecastUpperY + 3}
                     fontSize="9"
                     fontWeight="600"
-                    fill="#475569"
+                    fill="var(--text-secondary)"
                     fontFamily="var(--font-mono)"
                   >
                     {isPostings ? Math.round(forecastPt.upper) : forecastPt.upper?.toFixed(1)}
@@ -378,7 +361,7 @@ export default function ForecastTimeSeriesChart({
                     y={forecastLowerY + 3}
                     fontSize="9"
                     fontWeight="600"
-                    fill="#475569"
+                    fill="var(--text-secondary)"
                     fontFamily="var(--font-mono)"
                   >
                     {isPostings ? Math.round(forecastPt.lower) : forecastPt.lower?.toFixed(1)}
@@ -386,7 +369,6 @@ export default function ForecastTimeSeriesChart({
                 </g>
               )}
 
-              {/* Point Forecast Marker (Diamond Pin) */}
               <circle
                 cx={forecastX}
                 cy={forecastY}
@@ -409,7 +391,6 @@ export default function ForecastTimeSeriesChart({
                 onMouseLeave={() => setHoveredPoint(null)}
               />
 
-              {/* Point Forecast Callout Pin Label */}
               <g transform={`translate(${forecastX}, ${forecastY - 14})`}>
                 <rect
                   x="-28"
@@ -440,7 +421,7 @@ export default function ForecastTimeSeriesChart({
             y1={margin.top + chartHeight}
             x2={margin.left + chartWidth}
             y2={margin.top + chartHeight}
-            stroke="#94a3b8"
+            stroke="var(--border-strong)"
             strokeWidth="1.5"
           />
 
@@ -450,14 +431,14 @@ export default function ForecastTimeSeriesChart({
             const isBase = t.period === basePeriod;
             return (
               <g key={t.period} transform={`translate(${t.x}, ${margin.top + chartHeight})`}>
-                <line x1="0" y1="0" x2="0" y2="4" stroke="#94a3b8" strokeWidth="1" />
+                <line x1="0" y1="0" x2="0" y2="4" stroke="var(--border-strong)" strokeWidth="1" />
                 <text
                   x="0"
                   y="16"
                   textAnchor="middle"
                   fontSize={isTarget || isBase ? '9.5' : '8.5'}
                   fontWeight={isTarget || isBase ? '700' : '500'}
-                  fill={isTarget ? accentColor : isBase ? '#b45309' : '#64748b'}
+                  fill={isTarget ? 'var(--accent-soft-text)' : isBase ? 'var(--status-demand-text)' : 'var(--text-secondary)'}
                   fontFamily="var(--font-mono)"
                 >
                   {t.period}
@@ -502,9 +483,10 @@ export default function ForecastTimeSeriesChart({
       </div>
 
       {/* Uncertainty and Synthetic Data Disclaimer */}
-      <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--slate-500)', lineHeight: 1.45, borderTop: '1px solid var(--slate-100)', paddingTop: '0.4rem' }}>
+      <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: 1.45, borderTop: '1px solid var(--border-subtle)', paddingTop: '0.4rem', display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
+        <Icon name="shield" size={13} style={{ marginTop: '0.15rem', flexShrink: 0 }} />
         <em>
-          🔬 <strong>{isHindi ? 'सिंथेटिक डेटा अस्वीकरण:' : 'Synthetic Data Disclosure:'}</strong> {isHindi
+          <strong>{isHindi ? 'सिंथेटिक डेटा अस्वीकरण:' : 'Synthetic Data Disclosure:'}</strong> {isHindi
             ? 'ऐतिहासिक 24-माह प्रेक्षण (अक्टूबर 2024 - सितंबर 2026) SIH26246 बेंचमार्क प्रदर्शन डेटा हैं (आधिकारिक आंकड़े नहीं)। 80% प्रेडिक्शन इंटरवल बैकटेस्टिंग अवशिष्टों पर आधारित सांख्यिकीय मॉडल अनिश्चितता को दर्शाता है, गारंटी को नहीं।'
             : 'Historical 24-month observations (Oct 2024 – Sep 2026) are synthetic demonstration data for SIH26246 (not official statistics). The 80% prediction interval represents statistical uncertainty from rolling backtest residuals, not a guaranteed policy or market outcome.'}
         </em>

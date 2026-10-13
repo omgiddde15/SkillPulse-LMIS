@@ -6,6 +6,7 @@ import {
 } from '../../i18n/translations';
 import DistrictGeographicMap from '../DistrictGeographicMap';
 import DistrictComparisonCharts from '../DistrictComparisonCharts';
+import Icon from '../Icon';
 
 const PILOT_COORDINATES = {
   MH_PUN: { lat: 18.52, lon: 73.86 },
@@ -98,15 +99,15 @@ export default function DistrictsExplorer({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header & Controls Card */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.25rem' }}>🗺️</span>
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="map" size={20} /></span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('districts.title', 'Pilot Districts Intelligence')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid #99f6e4', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 6 {isHindi ? 'पायलट ज़िले' : 'Pilot Districts'} • 3 {isHindi ? 'राज्य' : 'States'}
               </span>
             </div>
@@ -124,7 +125,7 @@ export default function DistrictsExplorer({
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--slate-50)' }}
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{t('common.allStates', 'All States (3)')}</option>
               <option value="KA">Karnataka (KA)</option>
@@ -146,9 +147,13 @@ export default function DistrictsExplorer({
                   padding: '0.3rem 0.65rem',
                   borderRadius: '4px',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
                 }}
               >
-                🗺️ {isHindi ? 'मानचित्र' : 'Geographic Map'}
+                <Icon name="map" size={14} />
+                <span>{isHindi ? 'मानचित्र' : 'Geographic Map'}</span>
               </button>
               <button
                 type="button"
@@ -162,9 +167,13 @@ export default function DistrictsExplorer({
                   padding: '0.3rem 0.65rem',
                   borderRadius: '4px',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
                 }}
               >
-                📊 {isHindi ? 'तुलनात्मक चार्ट' : 'Comparison Charts'}
+                <Icon name="chart" size={14} />
+                <span>{isHindi ? 'तुलनात्मक चार्ट' : 'Comparison Charts'}</span>
               </button>
             </div>
           </div>
@@ -172,7 +181,7 @@ export default function DistrictsExplorer({
       </div>
 
       {/* Main View Container */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
         {activeTab === 'map' ? (
           <DistrictGeographicMap
             districts={filteredDistricts}
@@ -206,7 +215,7 @@ export default function DistrictsExplorer({
             <div
               key={d.id}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-surface)',
                 border: isSelected ? '2px solid #0d9488' : '1px solid var(--slate-200)',
                 borderRadius: 'var(--radius-md)',
                 padding: '1.15rem',
@@ -220,8 +229,9 @@ export default function DistrictsExplorer({
             >
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)' }}>
-                    📍 {getDistrictDisplayName(d.name, isHindi)}
+                  <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Icon name="pin" size={15} />
+                    <span>{getDistrictDisplayName(d.name, isHindi)}</span>
                   </span>
                   <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
                     {getStateDisplayName(d.state, isHindi)} • {d.id}
@@ -232,7 +242,7 @@ export default function DistrictsExplorer({
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', textAlign: 'center', fontSize: '0.75rem', marginTop: '0.5rem', padding: '0.5rem 0', borderTop: '1px solid var(--slate-100)', borderBottom: '1px solid var(--slate-100)' }}>
                   <div>
                     <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Demand Avg</div>
-                    <div style={{ fontWeight: 800, color: '#0f766e', fontFamily: 'var(--font-mono)' }}>{d.avgDemand.toFixed(1)}</div>
+                    <div style={{ fontWeight: 800, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)' }}>{d.avgDemand.toFixed(1)}</div>
                   </div>
                   <div>
                     <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Supply Avg</div>
@@ -240,7 +250,7 @@ export default function DistrictsExplorer({
                   </div>
                   <div>
                     <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>Net Mismatch</div>
-                    <div style={{ fontWeight: 800, color: d.mismatch >= 15 ? '#c2410c' : d.mismatch <= -15 ? '#1d4ed8' : '#475569', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ fontWeight: 800, color: d.mismatch >= 15 ? 'var(--status-demand-text)' : d.mismatch <= -15 ? 'var(--status-supply-text)' : 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                       {d.mismatch > 0 ? `+${d.mismatch.toFixed(1)}` : d.mismatch.toFixed(1)} pts
                     </div>
                   </div>
@@ -249,22 +259,24 @@ export default function DistrictsExplorer({
                 {/* Key Corridors Breakdown */}
                 <div style={{ marginTop: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem' }}>
                   {d.topShortage && topShortageScore > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff7ed', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #ffedd5' }}>
-                      <span style={{ color: '#9a3412', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
-                        ⚡ {d.topShortage.occupation_title}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--status-demand-bg)', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid var(--status-demand-border)' }}>
+                      <span style={{ color: 'var(--status-demand-text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Icon name="zap" size={12} />
+                        <span>{d.topShortage.occupation_title}</span>
                       </span>
-                      <strong style={{ color: '#c2410c', fontFamily: 'var(--font-mono)' }}>
+                      <strong style={{ color: 'var(--status-demand-text)', fontFamily: 'var(--font-mono)' }}>
                         +{topShortageScore.toFixed(1)}
                       </strong>
                     </div>
                   )}
 
                   {d.topSurplus && topSurplusScore < 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#eff6ff', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #dbeafe' }}>
-                      <span style={{ color: '#1e40af', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
-                        📦 {d.topSurplus.occupation_title}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--status-supply-bg)', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid var(--status-supply-border)' }}>
+                      <span style={{ color: 'var(--status-supply-text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Icon name="box" size={12} />
+                        <span>{d.topSurplus.occupation_title}</span>
                       </span>
-                      <strong style={{ color: '#1d4ed8', fontFamily: 'var(--font-mono)' }}>
+                      <strong style={{ color: 'var(--status-supply-text)', fontFamily: 'var(--font-mono)' }}>
                         {topSurplusScore.toFixed(1)}
                       </strong>
                     </div>
@@ -279,7 +291,7 @@ export default function DistrictsExplorer({
                   onClick={() => onNavigateWithContext('gap', { district: d.id, state: d.state })}
                   style={{
                     border: '1px solid var(--slate-300)',
-                    backgroundColor: '#ffffff',
+                    backgroundColor: 'var(--bg-surface)',
                     color: 'var(--slate-700)',
                     padding: '0.3rem 0.6rem',
                     borderRadius: '4px',

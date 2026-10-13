@@ -1,46 +1,111 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import Icon from './Icon';
 
-const NAV_GROUPS = [
+const NAV_SECTIONS = [
   {
-    groupId: 'intelligence',
-    groupKey: 'nav.group.intelligence',
-    groupLabel: 'INTELLIGENCE',
+    sectionKey: 'nav.group.intelligence',
+    fallbackTitle: 'INTELLIGENCE',
     items: [
-      { id: 'overview', key: 'nav.overview', label: 'Overview', icon: '📊' },
-      { id: 'demand', key: 'nav.demand', label: 'Labour Intelligence', icon: '📈' },
-      { id: 'forecasts', key: 'nav.forecasts', label: 'Forecasts', icon: '🔮' },
-      { id: 'gap', key: 'nav.gap', label: 'Skill Gaps', icon: '⚖️' },
+      {
+        id: 'overview',
+        labelKey: 'nav.overview',
+        fallbackLabel: 'Overview',
+        icon: 'chart-bar',
+      },
+      {
+        id: 'demand',
+        labelKey: 'nav.demand',
+        fallbackLabel: 'Demand Intelligence',
+        icon: 'trending-up',
+      },
+      {
+        id: 'forecasts',
+        labelKey: 'nav.forecasts',
+        fallbackLabel: 'Forecasts',
+        icon: 'compass',
+      },
+      {
+        id: 'gap',
+        labelKey: 'nav.gap',
+        fallbackLabel: 'Skill Gaps',
+        icon: 'scale',
+      },
     ],
   },
   {
-    groupId: 'action',
-    groupKey: 'nav.group.action',
-    groupLabel: 'ACTION',
+    sectionKey: 'nav.group.action',
+    fallbackTitle: 'ACTION',
     items: [
-      { id: 'alerts', key: 'nav.alerts', label: 'Early Warnings', icon: '🚨', badge: '14' },
-      { id: 'recommendations', key: 'nav.recommendations', label: 'Recommendations', icon: '💡', badge: '4' },
-      { id: 'simulator', key: 'nav.simulator', label: 'Scenario Studio', icon: '🎛️', studioBadge: true },
+      {
+        id: 'alerts',
+        labelKey: 'nav.alerts',
+        fallbackLabel: 'Early-Warning Alerts',
+        icon: 'bell',
+        badgeType: 'alerts',
+      },
+      {
+        id: 'recommendations',
+        labelKey: 'nav.recommendations',
+        fallbackLabel: 'Recommendations',
+        icon: 'lightbulb',
+        badgeType: 'recommendations',
+      },
+      {
+        id: 'simulator',
+        labelKey: 'nav.simulator',
+        fallbackLabel: 'Scenario Studio',
+        icon: 'sliders',
+        badgeType: 'studio',
+      },
     ],
   },
   {
-    groupId: 'explore',
-    groupKey: 'nav.group.explore',
-    groupLabel: 'EXPLORE',
+    sectionKey: 'nav.group.explore',
+    fallbackTitle: 'EXPLORE',
     items: [
-      { id: 'districts', key: 'nav.districts', label: 'Districts', icon: '🗺️' },
-      { id: 'occupations', key: 'nav.occupations', label: 'Occupations', icon: '💼' },
-      { id: 'qualifications', key: 'nav.qualifications', label: 'Qualifications', icon: '🎓' },
+      {
+        id: 'districts',
+        labelKey: 'nav.districts',
+        fallbackLabel: 'Districts',
+        icon: 'map',
+      },
+      {
+        id: 'occupations',
+        labelKey: 'nav.occupations',
+        fallbackLabel: 'Occupations',
+        icon: 'briefcase',
+      },
+      {
+        id: 'qualifications',
+        labelKey: 'nav.qualifications',
+        fallbackLabel: 'Qualifications',
+        icon: 'award',
+      },
     ],
   },
   {
-    groupId: 'system',
-    groupKey: 'nav.group.system',
-    groupLabel: 'SYSTEM',
+    sectionKey: 'nav.group.system',
+    fallbackTitle: 'SYSTEM',
     items: [
-      { id: 'data-health', key: 'nav.dataHealth', label: 'Data & Model Health', icon: '🛡️' },
-      { id: 'api', key: 'nav.apiExports', label: 'API & Exports', icon: '⚡' },
-      { id: 'settings', key: 'nav.settings', label: 'Settings', icon: '⚙️' },
+      {
+        id: 'data-health',
+        labelKey: 'nav.dataHealth',
+        fallbackLabel: 'Data & Model Health',
+        icon: 'shield',
+      },
+      {
+        id: 'api',
+        labelKey: 'nav.apiExports',
+        fallbackLabel: 'API & Exports',
+        icon: 'zap',
+      },
+      {
+        id: 'settings',
+        labelKey: 'nav.settings',
+        fallbackLabel: 'Settings',
+        icon: 'settings',
+      },
     ],
   },
 ];
@@ -48,248 +113,126 @@ const NAV_GROUPS = [
 export default function Sidebar({
   activeTab,
   onSelectTab,
-  backendHealth = { status: 'healthy' },
+  onNavigateHome,
+  onNavigateToHome,
   onOpenCopilot,
+  onToggleCopilot,
   alertsCount,
+  alertCount,
+  backendHealth = { status: 'healthy' },
 }) {
   const { t, isHindi } = useLanguage();
-
-  const getStatusClass = () => {
-    if (backendHealth.status === 'healthy') return 'online';
-    if (backendHealth.status === 'checking') return 'checking';
-    return 'offline';
-  };
-
-  const getStatusLabel = () => {
-    if (backendHealth.status === 'healthy') return t('app.statusHealthy', 'Backend Online');
-    if (backendHealth.status === 'checking') return t('app.statusChecking', 'Checking API...');
-    return t('app.statusOffline', 'Backend Offline');
-  };
+  const isOnline = backendHealth?.status === 'healthy';
+  const handleHomeClick = onNavigateHome || onNavigateToHome || (() => onSelectTab('home'));
+  const handleCopilotClick = onOpenCopilot || onToggleCopilot;
+  const resolvedAlertCount = alertsCount ?? alertCount ?? 143;
 
   return (
-    <aside className="app-sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', backgroundColor: '#090a0c', borderRight: '1px solid rgba(255, 255, 255, 0.08)' }}>
-      {/* Brand & Home Navigation */}
-      <div className="sidebar-header" style={{ padding: '1.15rem 1rem 0.85rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+    <aside className="sidebar app-sidebar" aria-label="Main Navigation">
+      {/* Brand Identity */}
+      <div className="sidebar-brand">
         <div
-          className="brand-emblem"
-          onClick={() => onSelectTab('overview')}
-          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          className="brand-title-row"
+          onClick={handleHomeClick}
+          style={{ cursor: 'pointer' }}
+          title="Return to SkillPulse Landing Page"
         >
-          <div
-            className="brand-icon"
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #0d9488 0%, #2563eb 100%)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '15px',
-              boxShadow: '0 4px 12px rgba(13, 148, 136, 0.35)',
-              flexShrink: 0,
-            }}
-          >
-            SP
-          </div>
+          <div className="brand-logo">SP</div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
-                SkillPulse
-              </span>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
-            </div>
-            <div style={{ fontSize: '0.62rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-              LABOUR MARKET INTELLIGENCE
-            </div>
+            <div className="brand-name">{t('app.brandName', 'SkillPulse')}</div>
+            <div className="brand-subtitle">{t('app.brandSubtitle', 'LMIS Engine')}</div>
           </div>
         </div>
+      </div>
 
-        {/* Home Landing Link Button */}
+      {/* Return to Home Link */}
+      <div className="sidebar-home-row">
         <button
           type="button"
-          onClick={() => onSelectTab('home')}
-          style={{
-            marginTop: '0.85rem',
-            width: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            color: '#94a3b8',
-            fontSize: '0.72rem',
-            fontWeight: 600,
-            padding: '0.35rem 0.65rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-            transition: 'all 0.15s',
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            e.currentTarget.style.color = '#ffffff';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-            e.currentTarget.style.color = '#94a3b8';
-          }}
+          onClick={handleHomeClick}
+          className="sidebar-home-btn"
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span>←</span>
-            <span>{t('nav.home', 'SkillPulse Home')}</span>
-          </span>
-          <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', opacity: 0.7, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.06)' }}>PUBLIC</span>
+          <span>&larr; {t('nav.home', isHindi ? 'स्किलपल्स होम' : 'SkillPulse Home')}</span>
+          <span className="sidebar-home-tag">PUBLIC</span>
         </button>
       </div>
 
-      {/* 4 Grouped Navigation Sections */}
-      <nav className="sidebar-nav" style={{ flex: 1, padding: '0.75rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {NAV_GROUPS.map((group) => (
-          <div key={group.groupId} className="nav-group">
-            <div
-              className="nav-section-title"
-              style={{
-                fontSize: '0.68rem',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 800,
-                color: '#64748b',
-                letterSpacing: '0.08em',
-                padding: '0.2rem 0.75rem',
-                marginBottom: '0.25rem',
-              }}
-            >
-              {t(group.groupKey, group.groupLabel)}
+      {/* Grouped Navigation Sections */}
+      <nav className="sidebar-nav">
+        {NAV_SECTIONS.map((group) => (
+          <div key={group.sectionKey} className="sidebar-group">
+            <div className="sidebar-section-label">
+              {t(group.sectionKey, group.fallbackTitle)}
             </div>
-
-            <ul className="nav-menu" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {group.items.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <li key={item.id} className="nav-item">
-                    <button
-                      type="button"
-                      data-tab={item.id}
-                      className={`nav-button ${isActive ? 'active' : ''}`}
-                      onClick={() => onSelectTab(item.id)}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0.45rem 0.75rem',
-                        borderRadius: '6px',
-                        border: 'none',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        fontSize: '0.78rem',
-                        fontWeight: isActive ? 700 : 500,
-                        backgroundColor: isActive ? 'var(--navy-800)' : 'transparent',
-                        color: isActive ? '#ffffff' : '#cbd5e1',
-                        borderLeft: isActive ? '3px solid #0d9488' : '3px solid transparent',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      <span className="nav-item-content" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <span className="nav-icon" style={{ fontSize: '0.95rem' }}>{item.icon}</span>
-                        <span>{t(item.key, item.label)}</span>
-                      </span>
-
-                      {item.badge && (
-                        <span
-                          style={{
-                            fontSize: '0.65rem',
-                            fontFamily: 'var(--font-mono)',
-                            fontWeight: 700,
-                            padding: '1px 6px',
-                            borderRadius: '10px',
-                            backgroundColor: item.id === 'alerts' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(13, 148, 136, 0.2)',
-                            color: item.id === 'alerts' ? '#f87171' : '#2dd4bf',
-                            border: `1px solid ${item.id === 'alerts' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(13, 148, 136, 0.35)'}`,
-                          }}
-                        >
-                          {item.id === 'alerts' && alertsCount != null ? alertsCount : item.badge}
-                        </span>
-                      )}
-
-                      {item.studioBadge && (
-                        <span
-                          style={{
-                            fontSize: '0.62rem',
-                            fontFamily: 'var(--font-mono)',
-                            fontWeight: 800,
-                            padding: '1px 5px',
-                            borderRadius: '4px',
-                            background: 'linear-gradient(90deg, #f59e0b, #ea580c)',
-                            color: '#ffffff',
-                          }}
-                        >
-                          STUDIO
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            {group.items.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  data-tab={item.id}
+                  className={`nav-item ${isActive ? 'active' : ''}`}
+                  onClick={() => onSelectTab(item.id)}
+                >
+                  <span className="nav-icon">
+                    <Icon name={item.icon} size={15} />
+                  </span>
+                  <span className="nav-item-label">{t(item.labelKey, item.fallbackLabel)}</span>
+                  {item.badgeType === 'alerts' && resolvedAlertCount > 0 && (
+                    <span className="nav-badge-pill alerts">
+                      {resolvedAlertCount}
+                    </span>
+                  )}
+                  {item.badgeType === 'recommendations' && (
+                    <span className="nav-badge-pill recommendations">
+                      4
+                    </span>
+                  )}
+                  {item.badgeType === 'studio' && (
+                    <span className="nav-badge-pill studio">
+                      STUDIO
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         ))}
       </nav>
 
-      {/* Grounded Copilot Drawer Trigger Box */}
-      {onOpenCopilot && (
-        <div
-          style={{
-            margin: '0.5rem 0.75rem',
-            padding: '0.75rem',
-            background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%)',
-            border: '1px solid rgba(13, 148, 136, 0.35)',
-            borderRadius: '8px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span>✨</span> {isHindi ? 'स्किल कोपायलट' : 'SkillPulse Copilot'}
-            </span>
-            <span style={{ fontSize: '0.6rem', padding: '1px 5px', borderRadius: '4px', background: 'rgba(13, 148, 136, 0.4)', color: '#2dd4bf', fontWeight: 700 }}>
-              Grounded
-            </span>
+      {/* SkillPulse Copilot Card + API Status Footer */}
+      <div className="sidebar-footer">
+        {handleCopilotClick && (
+          <div className="sidebar-copilot-card">
+            <div className="sidebar-copilot-header">
+              <span className="sidebar-copilot-title">
+                <Icon name="sparkles" size={13} />
+                <span>{isHindi ? 'स्किलपल्स कोपायलट' : 'SkillPulse Copilot'}</span>
+              </span>
+              <span className="sidebar-copilot-tag">Grounded</span>
+            </div>
+            <div className="sidebar-copilot-desc">
+              {isHindi
+                ? 'लाइव एपीआई पर आधारित द्विभाषी नीति एवं पूर्वानुमान सहायक'
+                : 'Bilingual policy & forecast assistant grounded on live API.'}
+            </div>
+            <button
+              type="button"
+              onClick={handleCopilotClick}
+              className="sidebar-copilot-cta"
+            >
+              {isHindi ? 'कोपायलट से पूछें' : 'Ask Skill Copilot'}
+            </button>
           </div>
-          <p style={{ fontSize: '0.68rem', color: '#94a3b8', margin: '0 0 0.5rem 0', lineHeight: 1.35 }}>
-            {isHindi ? 'वर्तमान एपीआई डेटा पर आधारित द्विभाषी नीति सहायक।' : 'Bilingual policy & forecast assistant grounded on live API.'}
-          </p>
-          <button
-            type="button"
-            onClick={onOpenCopilot}
-            style={{
-              width: '100%',
-              padding: '0.45rem 0.6rem',
-              backgroundColor: '#4f46e5',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
-              transition: 'background-color 0.15s ease',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#4338ca')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#4f46e5')}
-          >
-            {isHindi ? '✨ कोपायलट से पूछें' : '✨ Ask Skill Copilot'}
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* Sidebar Footer with API Status */}
-      <div className="sidebar-footer" style={{ padding: '0.75rem 1rem', borderTop: '1px solid var(--navy-800)' }}>
-        <div className="backend-status-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-          <span style={{ color: '#64748b' }}>{t('app.apiStatus', 'API Status')}</span>
-          <span className={`status-pill ${getStatusClass()}`}>
-            <span className="status-dot"></span>
-            {getStatusLabel()}
+        <div className="sidebar-api-status-row">
+          <span>{t('app.apiStatus', isHindi ? 'एपीआई स्थिति' : 'API Status')}</span>
+          <span className={`sidebar-api-pill ${isOnline ? 'online' : 'offline'}`}>
+            <span className="sidebar-api-dot" />
+            {isOnline
+              ? t('app.statusHealthy', isHindi ? 'बैकएंड सक्रिय' : 'Backend Online')
+              : t('app.statusOffline', isHindi ? 'ऑफ़लाइन' : 'Offline')}
           </span>
         </div>
       </div>

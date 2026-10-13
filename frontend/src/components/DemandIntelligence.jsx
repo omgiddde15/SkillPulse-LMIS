@@ -9,6 +9,7 @@ import {
   getStateDisplayName,
   getSectorDisplayName,
 } from '../i18n/translations';
+import Icon from './Icon';
 
 const STATES = [
   { code: 'KA', name: 'Karnataka' },
@@ -331,7 +332,7 @@ export default function DemandIntelligence({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('demand.matchingPairsTitle', 'Matching Pairs')}</span>
-                <span className="stat-card-icon">📋</span>
+                <span className="stat-card-icon"><Icon name="file-text" size={16} /></span>
               </div>
               <div className="stat-card-value" style={{ fontFamily: 'var(--font-mono)' }}>
                 {summaryMetrics.total}
@@ -347,7 +348,7 @@ export default function DemandIntelligence({
             <div className="stat-card">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('overview.highestDemandTitle', 'Highest Demand Intensity')}</span>
-                <span className="stat-card-icon">🔥</span>
+                <span className="stat-card-icon"><Icon name="zap" size={16} /></span>
               </div>
               {summaryMetrics.highestItem ? (
                 <>
@@ -372,7 +373,7 @@ export default function DemandIntelligence({
             <div className="stat-card neutral">
               <div className="stat-card-header">
                 <span className="stat-card-title">{t('demand.avgDemandScoreTitle', 'Average Demand Score')}</span>
-                <span className="stat-card-icon">📊</span>
+                <span className="stat-card-icon"><Icon name="chart-bar" size={16} /></span>
               </div>
               <div className="stat-card-value" style={{ fontFamily: 'var(--font-mono)' }}>
                 {summaryMetrics.total > 0 ? summaryMetrics.avgScore.toFixed(1) : t('common.na', 'N/A')}
@@ -486,7 +487,7 @@ export default function DemandIntelligence({
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
                                 border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
-                                backgroundColor: isSelected ? 'var(--teal-50)' : '#ffffff',
+                                backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
                                 color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
                               }}
                               onClick={(e) => {
@@ -703,7 +704,7 @@ export default function DemandIntelligence({
           {/* Methodology & Policy Disclosure */}
           <section className="callout-box">
             <h4>
-              <span>ℹ️</span>
+              <Icon name="info" size={16} />
               <span>{t('demand.methodologyTitle', 'Demand Index Methodology & Assumptions')}</span>
             </h4>
             <p>

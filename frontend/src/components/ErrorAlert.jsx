@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import Icon from './Icon';
 
 export default function ErrorAlert({ message, onRetry }) {
   const { t } = useLanguage();
@@ -7,7 +8,7 @@ export default function ErrorAlert({ message, onRetry }) {
   return (
     <div className="error-banner" role="alert">
       <div className="error-title">
-        <span>⚠️</span>
+        <Icon name="warning" size={16} />
         <span>{t('error.backendConnection', 'Backend Connection Error')}</span>
       </div>
       <div className="error-message">

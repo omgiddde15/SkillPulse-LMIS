@@ -1,0 +1,1095 @@
+{
+  "timestamp": "2026-10-13T07:00:59.090Z",
+  "checks": [
+    {
+      "name": "1. Default theme is Dark on Home with accessible toggle state",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "hasToggle": true,
+        "darkAriaPressed": "true",
+        "lightAriaPressed": "false"
+      }
+    },
+    {
+      "name": "2. Light theme activates on Home and changes surfaces & text colors",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "stored": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "heroCardBg": "rgb(255, 255, 255)",
+        "darkAriaPressed": "false",
+        "lightAriaPressed": "true"
+      }
+    },
+    {
+      "name": "3. Selected Light theme persists after full browser reload",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "stored": "light",
+        "bodyBg": "rgb(248, 250, 252)"
+      }
+    },
+    {
+      "name": "4. ThemeToggle supports keyboard operation (ArrowRight -> dark, ArrowLeft -> light)",
+      "status": "PASS",
+      "details": {
+        "afterArrowRight": "dark",
+        "afterArrowLeft": "light"
+      }
+    },
+    {
+      "name": "5. Home page (EN, Light) has zero emojis, zero unsupported claims, and no stuck dark panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "•",
+          "→",
+          "—",
+          "●",
+          "–",
+          "−",
+          "±",
+          "×",
+          "≥"
+        ]
+      }
+    },
+    {
+      "name": "6. Theme stays consistent (Light) when navigating from Home into Dashboard Overview",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "headerHasToggle": true,
+        "lightPressed": "true"
+      }
+    },
+    {
+      "name": "Route [Overview] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "±",
+          "≥",
+          "•",
+          "·",
+          "→",
+          "≤",
+          "−"
+        ]
+      }
+    },
+    {
+      "name": "Route [Demand Intelligence] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "▼",
+          "✕"
+        ]
+      }
+    },
+    {
+      "name": "Route [Supply & Gaps] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "≥",
+          "±",
+          "≤",
+          "−",
+          "▼",
+          "•",
+          "✕",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Forecasts] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "−",
+          "•",
+          "≥",
+          "▼",
+          "✕",
+          "±",
+          "×"
+        ]
+      }
+    },
+    {
+      "name": "Route [Early Warnings] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "✕",
+          "≥",
+          "±",
+          "▲",
+          "•",
+          "≤",
+          "−"
+        ]
+      }
+    },
+    {
+      "name": "Route [Recommendations] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "·",
+          "→"
+        ]
+      }
+    },
+    {
+      "name": "Route [Scenario Studio] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "−",
+          "→",
+          "•",
+          "Δ",
+          "α",
+          "×",
+          "η",
+          "±"
+        ]
+      }
+    },
+    {
+      "name": "Route [Districts] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "−",
+          "©"
+        ]
+      }
+    },
+    {
+      "name": "Route [Occupations] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Qualifications] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Data & Model Health] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "●",
+          "≤",
+          "✓",
+          "±",
+          "×"
+        ]
+      }
+    },
+    {
+      "name": "Route [API & Exports] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "±"
+        ]
+      }
+    },
+    {
+      "name": "Route [Settings] (EN, Light): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—"
+        ]
+      }
+    },
+    {
+      "name": "Copilot Drawer (EN, Light): 0 emojis, 0 unsupported claims, readable light surface",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "light",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyColor": "rgb(15, 23, 42)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "✕",
+          "✓",
+          "→"
+        ]
+      }
+    },
+    {
+      "name": "7. Dark theme activates from Header and persists across reload",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "stored": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)"
+      }
+    },
+    {
+      "name": "Route [Overview] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "±",
+          "≥",
+          "•",
+          "·",
+          "→",
+          "≤",
+          "−"
+        ]
+      }
+    },
+    {
+      "name": "Route [Demand Intelligence] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "▼",
+          "✕"
+        ]
+      }
+    },
+    {
+      "name": "Route [Supply & Gaps] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "≥",
+          "±",
+          "≤",
+          "−",
+          "▼",
+          "•",
+          "✕",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Forecasts] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "−",
+          "•",
+          "≥",
+          "▼",
+          "✕",
+          "±",
+          "×"
+        ]
+      }
+    },
+    {
+      "name": "Route [Early Warnings] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "✕",
+          "≥",
+          "±",
+          "▲",
+          "•",
+          "≤",
+          "−"
+        ]
+      }
+    },
+    {
+      "name": "Route [Recommendations] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "·",
+          "→"
+        ]
+      }
+    },
+    {
+      "name": "Route [Scenario Studio] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–",
+          "−",
+          "→",
+          "•",
+          "Δ",
+          "α",
+          "×",
+          "η",
+          "±"
+        ]
+      }
+    },
+    {
+      "name": "Route [Districts] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "−",
+          "©"
+        ]
+      }
+    },
+    {
+      "name": "Route [Occupations] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Qualifications] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "–"
+        ]
+      }
+    },
+    {
+      "name": "Route [Data & Model Health] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "●",
+          "≤",
+          "✓",
+          "±",
+          "×"
+        ]
+      }
+    },
+    {
+      "name": "Route [API & Exports] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "•",
+          "±"
+        ]
+      }
+    },
+    {
+      "name": "Route [Settings] (EN, Dark): theme active, 0 emojis, 0 unsupported claims, 0 stuck panels",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—"
+        ]
+      }
+    },
+    {
+      "name": "Copilot Drawer (EN, Dark): 0 emojis, 0 unsupported claims, readable dark surface",
+      "status": "PASS",
+      "details": {
+        "htmlTheme": "dark",
+        "bodyBg": "rgb(9, 10, 12)",
+        "bodyColor": "rgb(248, 250, 252)",
+        "emojisFound": [],
+        "unsupportedFound": [],
+        "stuckCount": 0,
+        "stuckSamples": [],
+        "nonAscii": [
+          "←",
+          "—",
+          "✕",
+          "✓",
+          "→"
+        ]
+      }
+    },
+    {
+      "name": "Route [Overview] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Demand Intelligence] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Supply & Gaps] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Forecasts] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Early Warnings] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Recommendations] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Scenario Studio] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Districts] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Occupations] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Qualifications] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Data & Model Health] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [API & Exports] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Settings] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    },
+    {
+      "name": "Route [Home] (HI, Dark): 0 emojis in Hindi",
+      "status": "PASS",
+      "details": {
+        "emojisFound": []
+      }
+    }
+  ],
+  "routesChecked": [
+    {
+      "route": "overview",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "demand",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "gap",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "forecasts",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "alerts",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "recommendations",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "simulator",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "districts",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "occupations",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "qualifications",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "data-health",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "api",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "settings",
+      "lang": "en",
+      "theme": "light",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "overview",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "demand",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "gap",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "forecasts",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "alerts",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "recommendations",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "simulator",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "districts",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "occupations",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "qualifications",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "data-health",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "api",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "settings",
+      "lang": "en",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "overview",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "demand",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "gap",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "forecasts",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "alerts",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "recommendations",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "simulator",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "districts",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "occupations",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "qualifications",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "data-health",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "api",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "settings",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    },
+    {
+      "route": "home",
+      "lang": "hi",
+      "theme": "dark",
+      "emojis": 0,
+      "stuckPanels": 0
+    }
+  ],
+  "intentionalUnicodeSummary": {
+    "•": "U+2022",
+    "→": "U+2192",
+    "—": "U+2014",
+    "●": "U+25CF",
+    "–": "U+2013",
+    "−": "U+2212",
+    "±": "U+00B1",
+    "×": "U+00D7",
+    "≥": "U+2265",
+    "←": "U+2190",
+    "·": "U+00B7",
+    "≤": "U+2264",
+    "▼": "U+25BC",
+    "✕": "U+2715",
+    "▲": "U+25B2",
+    "Δ": "U+0394",
+    "α": "U+03B1",
+    "η": "U+03B7",
+    "©": "U+00A9",
+    "✓": "U+2713",
+    "​": "U+200B"
+  },
+  "passed": 49,
+  "failed": 0
+}

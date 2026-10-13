@@ -5,6 +5,7 @@ import {
   getSectorDisplayName,
 } from '../i18n/translations';
 import DistrictGeographicMap from './DistrictGeographicMap';
+import Icon from './Icon';
 
 // Master pilot geographies from data/sample/geographies.csv with verified coordinates
 const PILOT_DISTRICTS = [
@@ -101,45 +102,75 @@ export default function DistrictComparisonCharts({
   const getClassificationBadge = (classification) => {
     if (classification === 'Demand Pressure') {
       return {
-        icon: '⚡',
+        iconName: 'zap',
         label: isHindi ? 'मांग दबाव' : 'Demand Pressure',
-        color: '#fb923c',
-        bg: 'rgba(234, 88, 12, 0.15)',
-        border: 'rgba(234, 88, 12, 0.35)',
+        color: 'var(--status-demand-text)',
+        bg: 'var(--status-demand-bg)',
+        border: 'var(--status-demand-border)',
       };
     }
     if (classification === 'Supply Pressure') {
       return {
-        icon: '📦',
+        iconName: 'package',
         label: isHindi ? 'आपूर्ति दबाव' : 'Supply Pressure',
-        color: '#93c5fd',
-        bg: 'rgba(59, 130, 246, 0.15)',
-        border: 'rgba(59, 130, 246, 0.35)',
+        color: 'var(--status-supply-text)',
+        bg: 'var(--status-supply-bg)',
+        border: 'var(--status-supply-border)',
       };
     }
     return {
-      icon: '⚖️',
+      iconName: 'scale',
       label: isHindi ? 'संतुलित' : 'Balanced',
-      color: '#cbd5e1',
-      bg: 'rgba(255, 255, 255, 0.08)',
-      border: 'rgba(255, 255, 255, 0.14)',
+      color: 'var(--text-secondary)',
+      bg: 'var(--bg-subtle)',
+      border: 'var(--border-subtle)',
     };
   };
 
   return (
-    <section className="card-panel glass-strong" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #0d9488', backgroundColor: 'rgba(255, 255, 255, 0.04)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', color: '#e9ecf1' }}>
+    <section
+      className="card-panel glass-strong"
+      style={{
+        marginBottom: '1.5rem',
+        borderLeft: '4px solid #0d9488',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: '16px',
+        color: 'var(--text-primary)',
+      }}
+    >
       {/* Top Header & Filter Bar */}
-      <div className="card-panel-header" style={{ flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-start', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', backgroundColor: 'transparent' }}>
+      <div
+        className="card-panel-header"
+        style={{
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          alignItems: 'flex-start',
+          borderBottom: '1px solid var(--border-subtle)',
+          backgroundColor: 'transparent',
+        }}
+      >
         <div className="card-title-group">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h2 style={{ fontSize: '1.05rem', margin: 0, color: '#ffffff', fontWeight: 800 }}>
+            <h2 style={{ fontSize: '1.05rem', margin: 0, color: 'var(--text-primary)', fontWeight: 800 }}>
               {t('overview.districtComparisonTitle', isHindi ? 'ज़िला-स्तरीय कार्यबल विश्लेषण एवं तुलना' : 'District-Wise Workforce Comparison Pack')}
             </h2>
-            <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.5rem', borderRadius: '4px', backgroundColor: 'rgba(13, 148, 136, 0.15)', color: '#2dd4bf', border: '1px solid rgba(13, 148, 136, 0.35)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '4px',
+                backgroundColor: 'var(--accent-soft-bg)',
+                color: 'var(--accent-soft-text)',
+                border: '1px solid var(--accent-soft-border)',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
               {t('overview.districtComparisonScope', isHindi ? '6 पायलट ज़िले • 3 राज्य' : '6 Pilot Districts • 3 States')} • {period}
             </span>
           </div>
-          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
             {isHindi
               ? 'कर्नाटक, महाराष्ट्र और तेलंगाना में औसत मांग सूचकांक, आपूर्ति सूचकांक और सापेक्ष असंतुलन की तुलना।'
               : 'Cross-district comparative intelligence evaluating average demand index, TVET supply output index, and relative mismatch scores.'}
@@ -149,7 +180,7 @@ export default function DistrictComparisonCharts({
         {/* View and Sector Filter Controls */}
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Sector Filter Pills */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--bg-subtle)', padding: '0.2rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
             {SECTORS.map((sec) => (
               <button
                 key={sec}
@@ -157,9 +188,9 @@ export default function DistrictComparisonCharts({
                 style={{
                   border: 'none',
                   backgroundColor: activeSector === sec ? '#4f46e5' : 'transparent',
-                  color: activeSector === sec ? '#ffffff' : '#94a3b8',
+                  color: activeSector === sec ? '#ffffff' : 'var(--text-secondary)',
                   fontWeight: activeSector === sec ? 700 : 500,
-                  boxShadow: activeSector === sec ? '0 2px 8px rgba(79, 70, 229, 0.4)' : 'none',
+                  boxShadow: activeSector === sec ? '0 2px 8px rgba(79, 70, 229, 0.35)' : 'none',
                   padding: '0.25rem 0.55rem',
                   fontSize: '0.72rem',
                   borderRadius: '6px',
@@ -176,42 +207,50 @@ export default function DistrictComparisonCharts({
           </div>
 
           {/* View Mode Toggle: Charts vs Map */}
-          <div style={{ display: 'inline-flex', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '0.2rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ display: 'inline-flex', backgroundColor: 'var(--bg-subtle)', padding: '0.2rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: activeView === 'charts' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                color: activeView === 'charts' ? '#ffffff' : '#94a3b8',
+                backgroundColor: activeView === 'charts' ? 'var(--bg-surface)' : 'transparent',
+                color: activeView === 'charts' ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontWeight: activeView === 'charts' ? 700 : 500,
-                boxShadow: activeView === 'charts' ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
+                boxShadow: activeView === 'charts' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.65rem',
                 fontSize: '0.72rem',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
               }}
               onClick={() => setActiveView('charts')}
             >
-              📊 {isHindi ? 'तुलनात्मक चार्ट (A & B)' : 'Comparison Charts (A & B)'}
+              <Icon name="chart-bar" size={13} />
+              <span>{isHindi ? 'तुलनात्मक चार्ट (A & B)' : 'Comparison Charts (A & B)'}</span>
             </button>
             <button
               type="button"
               style={{
                 border: 'none',
-                backgroundColor: activeView === 'map' ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                color: activeView === 'map' ? '#ffffff' : '#94a3b8',
+                backgroundColor: activeView === 'map' ? 'var(--bg-surface)' : 'transparent',
+                color: activeView === 'map' ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontWeight: activeView === 'map' ? 700 : 500,
-                boxShadow: activeView === 'map' ? '0 2px 8px rgba(0, 0, 0, 0.3)' : 'none',
+                boxShadow: activeView === 'map' ? 'var(--shadow-sm)' : 'none',
                 padding: '0.25rem 0.65rem',
                 fontSize: '0.72rem',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
               }}
               onClick={() => setActiveView('map')}
             >
-              🗺️ {isHindi ? 'स्थानिक पायलट मानचित्र' : 'Pilot Geographic Map'}
+              <Icon name="map" size={13} />
+              <span>{isHindi ? 'स्थानिक पायलट मानचित्र' : 'Pilot Geographic Map'}</span>
             </button>
           </div>
         </div>
@@ -219,14 +258,28 @@ export default function DistrictComparisonCharts({
 
       {/* Selected District Filter Reset Pill if active */}
       {selectedDistrictId && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0.75rem', margin: '0 1rem 0.75rem 1rem', backgroundColor: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem' }}>
-          <span>
-            📍 {isHindi ? 'सक्रिय ज़िला फ़िल्टर:' : 'Active District Filter:'}{' '}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.4rem 0.75rem',
+            margin: '0.75rem 1rem 0 1rem',
+            backgroundColor: 'var(--accent-soft-bg)',
+            border: '1px solid var(--accent-soft-border)',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '0.75rem',
+            color: 'var(--accent-soft-text)',
+          }}
+        >
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Icon name="map-pin" size={13} />
+            <span>{isHindi ? 'सक्रिय ज़िला फ़िल्टर:' : 'Active District Filter:'}</span>
             <strong>{getDistrictDisplayName(PILOT_DISTRICTS.find((d) => d.id === selectedDistrictId)?.name, isHindi)}</strong> ({PILOT_DISTRICTS.find((d) => d.id === selectedDistrictId)?.state})
           </span>
           <button
             type="button"
-            style={{ border: 'none', background: 'none', color: 'var(--teal-800)', fontWeight: 700, cursor: 'pointer', fontSize: '0.72rem' }}
+            style={{ border: 'none', background: 'none', color: 'var(--accent-soft-text)', fontWeight: 700, cursor: 'pointer', fontSize: '0.72rem' }}
             onClick={() => onSelectDistrict(null)}
           >
             ✕ {isHindi ? 'फ़िल्टर हटाएं' : 'Reset Filter'}
@@ -238,40 +291,40 @@ export default function DistrictComparisonCharts({
       {activeView === 'charts' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem', padding: '1rem' }}>
           {/* CHART A: Ranked Horizontal Bar Chart Comparing Demand and Supply Indices */}
-          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.4rem' }}>
               <div>
-                <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                   {t('overview.chartATitle', isHindi ? 'चार्ट A: मांग एवं आपूर्ति सूचकांक तुलना' : 'Chart A: Demand vs. Supply Index Comparison')}
                 </h3>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                   {isHindi ? '0 से 100 अंक पर्सेंटाइल स्केल पर रैंक की गई तुलना' : 'Ranked cross-sectional percentile comparison (0 to 100 pts)'}
                 </span>
               </div>
 
               {/* Sort Switcher */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.68rem', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
                 <span>{isHindi ? 'क्रम:' : 'Sort:'}</span>
                 <select
                   value={sortField}
                   onChange={(e) => setSortField(e.target.value)}
-                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#ffffff' }}
+                  style={{ fontSize: '0.7rem', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
                 >
-                  <option value="demand" style={{ background: '#090a0c', color: '#ffffff' }}>{isHindi ? 'मांग सूचकांक' : 'Demand Index'}</option>
-                  <option value="supply" style={{ background: '#090a0c', color: '#ffffff' }}>{isHindi ? 'आपूर्ति सूचकांक' : 'Supply Index'}</option>
-                  <option value="mismatch" style={{ background: '#090a0c', color: '#ffffff' }}>{isHindi ? 'असंतुलन स्कोर' : 'Mismatch Score'}</option>
+                  <option value="demand">{isHindi ? 'मांग सूचकांक' : 'Demand Index'}</option>
+                  <option value="supply">{isHindi ? 'आपूर्ति सूचकांक' : 'Supply Index'}</option>
+                  <option value="mismatch">{isHindi ? 'असंतुलन स्कोर' : 'Mismatch Score'}</option>
                 </select>
               </div>
             </div>
 
             {/* Legend for Chart A */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.7rem', color: '#94a3b8' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: '12px', height: '10px', backgroundColor: '#2dd4bf', borderRadius: '2px', display: 'inline-block' }} />
+                <span style={{ width: '12px', height: '10px', backgroundColor: '#0d9488', borderRadius: '2px', display: 'inline-block' }} />
                 <span>{isHindi ? 'नियोक्ता मांग सूचकांक (0–100 अंक)' : 'Employer Demand Index (0–100 pts)'}</span>
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: '12px', height: '10px', backgroundColor: '#818cf8', borderRadius: '2px', display: 'inline-block' }} />
+                <span style={{ width: '12px', height: '10px', backgroundColor: '#6366f1', borderRadius: '2px', display: 'inline-block' }} />
                 <span>{isHindi ? 'TVET आपूर्ति आउटपुट सूचकांक (0–100 अंक)' : 'TVET Supply Output Index (0–100 pts)'}</span>
               </span>
             </div>
@@ -286,8 +339,8 @@ export default function DistrictComparisonCharts({
                     style={{
                       padding: '0.55rem',
                       borderRadius: '8px',
-                      backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                      border: `1px solid ${isSelected ? '#0d9488' : 'rgba(255, 255, 255, 0.08)'}`,
+                      backgroundColor: isSelected ? 'var(--accent-soft-bg)' : 'var(--bg-surface)',
+                      border: `1px solid ${isSelected ? '#0d9488' : 'var(--border-subtle)'}`,
                       cursor: 'pointer',
                       transition: 'background-color 0.15s ease, border-color 0.15s ease',
                     }}
@@ -295,53 +348,53 @@ export default function DistrictComparisonCharts({
                     title={isHindi ? `${d.name} फ़िल्टर करने के लिए क्लिक करें` : `Click to filter rankings by ${d.name}`}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         {getDistrictDisplayName(d.name, isHindi)}{' '}
-                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#94a3b8' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)' }}>
                           ({d.state})
                         </span>
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                         D: {formatScore(d.avgDemand)} | S: {formatScore(d.avgSupply)}
                       </span>
                     </div>
 
                     {/* Bar 1: Demand Index */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <span style={{ width: '42px', fontSize: '0.65rem', color: '#2dd4bf', fontWeight: 600 }}>
+                      <span style={{ width: '42px', fontSize: '0.65rem', color: 'var(--accent-soft-text)', fontWeight: 600 }}>
                         {isHindi ? 'मांग:' : 'Demand:'}
                       </span>
-                      <div style={{ flexGrow: 1, height: '8px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ flexGrow: 1, height: '8px', backgroundColor: 'var(--bg-muted)', borderRadius: '4px', overflow: 'hidden' }}>
                         <div
                           style={{
                             width: `${Math.min(100, Math.max(0, d.avgDemand))}%`,
                             height: '100%',
-                            backgroundColor: '#2dd4bf',
+                            backgroundColor: '#0d9488',
                             borderRadius: '4px',
                           }}
                         />
                       </div>
-                      <span style={{ width: '48px', fontSize: '0.68rem', fontWeight: 700, color: '#2dd4bf', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
+                      <span style={{ width: '48px', fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent-soft-text)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
                         {formatScore(d.avgDemand)} pts
                       </span>
                     </div>
 
                     {/* Bar 2: Supply Output Index */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ width: '42px', fontSize: '0.65rem', color: '#818cf8', fontWeight: 600 }}>
+                      <span style={{ width: '42px', fontSize: '0.65rem', color: 'var(--accent-indigo-text)', fontWeight: 600 }}>
                         {isHindi ? 'आपूर्ति:' : 'Supply:'}
                       </span>
-                      <div style={{ flexGrow: 1, height: '8px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ flexGrow: 1, height: '8px', backgroundColor: 'var(--bg-muted)', borderRadius: '4px', overflow: 'hidden' }}>
                         <div
                           style={{
                             width: `${Math.min(100, Math.max(0, d.avgSupply))}%`,
                             height: '100%',
-                            backgroundColor: '#818cf8',
+                            backgroundColor: '#6366f1',
                             borderRadius: '4px',
                           }}
                         />
                       </div>
-                      <span style={{ width: '48px', fontSize: '0.68rem', fontWeight: 700, color: '#818cf8', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
+                      <span style={{ width: '48px', fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent-indigo-text)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
                         {formatScore(d.avgSupply)} pts
                       </span>
                     </div>
@@ -351,34 +404,34 @@ export default function DistrictComparisonCharts({
             </div>
 
             {/* Axis Title */}
-            <div style={{ marginTop: '0.75rem', fontSize: '0.68rem', color: '#94a3b8', textAlign: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.35rem' }}>
+            <div style={{ marginTop: '0.75rem', fontSize: '0.68rem', color: 'var(--text-muted)', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.35rem' }}>
               {isHindi ? 'अक्ष इकाई: क्रॉस-सेक्शनल पर्सेंटाइल सूचकांक स्कोर (0 से 100 अंक)' : 'Axis Unit: Cross-Sectional Percentile Index Score (0 to 100 pts)'}
             </div>
           </div>
 
           {/* CHART B: Centered Diverging Relative-Mismatch Chart (-100 to +100 with zero center) */}
-          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
             <div style={{ marginBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
+              <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {t('overview.chartBTitle', isHindi ? 'चार्ट B: सापेक्ष मांग-आपूर्ति असंतुलन (शून्य-केंद्रित)' : 'Chart B: Relative Demand-Supply Mismatch (Zero-Centered)')}
               </h3>
-              <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                 {isHindi ? 'शून्य (0.0) पर आधारित विचलन चार्ट: बायीं ओर आपूर्ति दबाव | दायीं ओर मांग दबाव' : 'Diverging chart centered at zero (0.0): Left = Supply Pressure | Right = Demand Pressure'}
               </span>
             </div>
 
             {/* Legend & Threshold Annotation for Chart B */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.68rem', color: '#94a3b8' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#93c5fd' }}>
-                <span>📦</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--status-supply-text)' }}>
+                <Icon name="package" size={12} />
                 <span>{isHindi ? 'आपूर्ति दबाव (≤ −15)' : 'Supply Pressure (≤ −15)'}</span>
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#cbd5e1' }}>
-                <span>⚖️</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--text-secondary)' }}>
+                <Icon name="scale" size={12} />
                 <span>{isHindi ? 'संतुलित (−15 से +15)' : 'Balanced Corridor (±15)'}</span>
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#fb923c' }}>
-                <span>⚡</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--status-demand-text)' }}>
+                <Icon name="zap" size={12} />
                 <span>{isHindi ? 'मांग दबाव (≥ +15)' : 'Demand Pressure (≥ +15)'}</span>
               </span>
             </div>
@@ -388,7 +441,6 @@ export default function DistrictComparisonCharts({
               {sortedDistricts.map((d) => {
                 const badge = getClassificationBadge(d.classification);
                 const isSelected = selectedDistrictId === d.id;
-                // Clamp display width to 50 pts half-span for visual contrast
                 const maxHalfScale = 50;
                 const absVal = Math.min(maxHalfScale, Math.abs(d.mismatch));
                 const barWidthPct = (absVal / maxHalfScale) * 100;
@@ -401,8 +453,8 @@ export default function DistrictComparisonCharts({
                     style={{
                       padding: '0.55rem',
                       borderRadius: '8px',
-                      backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                      border: `1px solid ${isSelected ? '#0d9488' : 'rgba(255, 255, 255, 0.08)'}`,
+                      backgroundColor: isSelected ? 'var(--accent-soft-bg)' : 'var(--bg-surface)',
+                      border: `1px solid ${isSelected ? '#0d9488' : 'var(--border-subtle)'}`,
                       cursor: 'pointer',
                       transition: 'background-color 0.15s ease, border-color 0.15s ease',
                     }}
@@ -410,9 +462,9 @@ export default function DistrictComparisonCharts({
                     title={isHindi ? `${d.name} फ़िल्टर करने के लिए क्लिक करें` : `Click to filter rankings by ${d.name}`}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#ffffff' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         {getDistrictDisplayName(d.name, isHindi)}{' '}
-                        <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>({d.state})</span>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>({d.state})</span>
                       </span>
                       <span
                         style={{
@@ -428,14 +480,14 @@ export default function DistrictComparisonCharts({
                           gap: '0.25rem',
                         }}
                       >
-                        <span>{badge.icon}</span>
+                        <Icon name={badge.iconName} size={11} />
                         <span>{badge.label}</span>
                         <span>({formatMismatch(d.mismatch)} pts)</span>
                       </span>
                     </div>
 
                     {/* Zero-Centered Track */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2px 1fr', alignItems: 'center', height: '14px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2px 1fr', alignItems: 'center', height: '14px', backgroundColor: 'var(--bg-muted)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
                       {/* Left Side (Negative Mismatch: Supply Pressure) */}
                       <div style={{ display: 'flex', justifyContent: 'flex-end', height: '100%', width: '100%' }}>
                         {!isPositive && d.mismatch !== 0 && (
@@ -452,7 +504,7 @@ export default function DistrictComparisonCharts({
                       </div>
 
                       {/* Center Zero Axis Divider */}
-                      <div style={{ width: '2px', height: '100%', backgroundColor: 'rgba(255, 255, 255, 0.3)', zIndex: 2 }} />
+                      <div style={{ width: '2px', height: '100%', backgroundColor: 'var(--border-strong)', zIndex: 2 }} />
 
                       {/* Right Side (Positive Mismatch: Demand Pressure) */}
                       <div style={{ display: 'flex', justifyContent: 'flex-start', height: '100%', width: '100%' }}>
@@ -475,7 +527,7 @@ export default function DistrictComparisonCharts({
             </div>
 
             {/* Axis Title & Interpretation */}
-            <div style={{ marginTop: '0.75rem', fontSize: '0.68rem', color: '#94a3b8', textAlign: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.35rem' }}>
+            <div style={{ marginTop: '0.75rem', fontSize: '0.68rem', color: 'var(--text-muted)', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.35rem' }}>
               {isHindi
                 ? 'सापेक्ष असंतुलन स्कोर = मांग रैंक − आपूर्ति रैंक (−100 से +100 अंक, शून्य = संतुलन)'
                 : 'Relative Mismatch Score = Demand Rank − Supply Rank (−100 to +100 pts, 0.0 = Neutral)'}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { LanguageContext } from '../context/LanguageContext';
+import Icon from './Icon';
 
 /**
  * Page-Level Error Boundary for SkillPulse LMIS
@@ -37,17 +38,17 @@ export default class ErrorBoundary extends React.Component {
       const moduleName = this.props.moduleName || 'Page';
 
       return (
-        <div className="card-panel" style={{ margin: '1.5rem 0', borderColor: '#fca5a5' }}>
+        <div className="card-panel" style={{ margin: '1.5rem 0', borderColor: 'var(--status-danger-border)' }}>
           <div className="error-banner" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div className="error-title" style={{ fontSize: '1.05rem', color: '#991b1b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>⚠️</span>
+            <div className="error-title" style={{ fontSize: '1.05rem', color: 'var(--status-danger-text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Icon name="warning" size={18} />
               <span>{t('error.moduleRenderNotice', { module: moduleName }, `Module Rendering Notice: ${moduleName} encountered an unexpected runtime error.`)}</span>
             </div>
-            <p style={{ fontSize: '0.875rem', color: '#7f1d1d', margin: 0 }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: 0 }}>
               {t('error.appActive', 'The application dashboard and sidebar navigation remain fully active. You may switch to another module or retry rendering this page.')}
             </p>
             {this.state.error?.message && (
-              <div style={{ backgroundColor: '#fee2e2', padding: '0.6rem 0.8rem', borderRadius: 'var(--radius-sm)', border: '1px solid #fecaca', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#991b1b' }}>
+              <div style={{ backgroundColor: 'var(--status-danger-bg)', padding: '0.6rem 0.8rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--status-danger-border)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--status-danger-text)' }}>
                 {t('error.detail', 'Error Detail:')} {this.state.error.message}
               </div>
             )}
@@ -55,10 +56,11 @@ export default class ErrorBoundary extends React.Component {
               <button
                 type="button"
                 className="btn-refresh"
-                style={{ backgroundColor: '#dc2626', color: '#ffffff', borderColor: '#b91c1c', cursor: 'pointer' }}
+                style={{ backgroundColor: '#dc2626', color: '#ffffff', borderColor: '#b91c1c', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                 onClick={this.handleRetry}
               >
-                {t('error.retryModule', { module: moduleName }, `🔄 Retry ${moduleName}`)}
+                <Icon name="refresh" size={14} />
+                <span>{t('error.retryModule', { module: moduleName }, `Retry ${moduleName}`)}</span>
               </button>
             </div>
           </div>

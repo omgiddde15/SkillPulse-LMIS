@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { getOccupationDisplayName } from '../../i18n/translations';
 import LoadingSpinner from '../LoadingSpinner';
 import ErrorAlert from '../ErrorAlert';
+import Icon from '../Icon';
 
 const SSC_MAPPING = {
   'IT/ITeS': 'IT-ITeS Sector Skill Council (NASSCOM)',
@@ -57,15 +58,15 @@ export default function QualificationsExplorer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>🎓</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="graduation" size={20} /></span>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
                 {t('qualifications.title', 'TVET Qualifications & NSQF Alignment')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: '#f0fdfa', color: 'var(--teal-800)', border: '1px solid #99f6e4', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 NSQF Levels 3.0 to 6.0
               </span>
             </div>
@@ -86,7 +87,7 @@ export default function QualificationsExplorer() {
               id="nsqf-filter"
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--slate-50)' }}
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{isHindi ? 'सभी एनएसक्यूएफ स्तर' : 'All NSQF Levels'}</option>
               <option value="3.0">Level 3.0</option>
@@ -104,7 +105,7 @@ export default function QualificationsExplorer() {
           <div
             key={occ.occupation_id}
             style={{
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-surface)',
               border: '1px solid var(--slate-200)',
               borderRadius: 'var(--radius-md)',
               padding: '1.25rem',
@@ -117,11 +118,11 @@ export default function QualificationsExplorer() {
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 700, color: '#1e40af', backgroundColor: '#eff6ff', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--status-supply-text)', backgroundColor: 'var(--status-supply-bg)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid var(--status-supply-border)' }}>
                   {occ.qp_code || 'QP Code Pending'}
                 </span>
 
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.6rem', borderRadius: '100px', backgroundColor: '#f0fdfa', color: '#0f766e', border: '1px solid #99f6e4' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.6rem', borderRadius: '100px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)' }}>
                   NSQF {occ.nsqf_level != null ? occ.nsqf_level : 'N/A'}
                 </span>
               </div>
