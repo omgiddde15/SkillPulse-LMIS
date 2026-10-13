@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import Icon from './Icon';
 
@@ -15,8 +16,10 @@ export default function Header({
   onNavigateToHome,
   onOpenCopilot,
   onToggleCopilot,
+  onNavigate,
 }) {
   const { language, setLanguage, t, isHindi } = useLanguage();
+  const { user, isAuthenticated, logout } = useAuth();
   const isOnline = backendHealth?.status === 'healthy';
   const handleRefreshClick = onRefresh || onRefreshData;
   const handleHomeClick = onNavigateHome || onNavigateToHome;
@@ -24,6 +27,8 @@ export default function Header({
 
   const getActiveSectionLabel = (tabId) => {
     switch (tabId) {
+      case 'workspace':
+        return t('nav.workspace', isHindi ? 'मेरा कार्यक्षेत्र' : 'My Workspace');
       case 'overview':
         return t('nav.overview', 'Overview');
       case 'demand':
@@ -167,6 +172,54 @@ export default function Header({
           <Icon name="refresh" size={13} />
           <span>{isRefreshing ? t('common.refreshing', 'Refreshing...') : t('common.refresh', 'Refresh')}</span>
         </button>
+
+        {/* User Account / Workspace Menu */}
+        {isAuthenticated ? (
+          <div className="header-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <button
+              type="button"
+              className={`header-user-btn ${activeTab === 'workspace' ? 'active' : ''}`}
+              onClick={() => onNavigate?.('workspace')}
+              title={`Logged in as ${user?.full_name || 'User'} (${user?.email || ''})`}
+            >
+              <Icon name="user" size={13} />
+              <span className="header-user-name">{user?.full_name || 'My Workspace'}</span>
+            </button>
+            <button
+              type="button"
+              className="header-logout-btn"
+              onClick={async () => {
+                await logout();
+                if (onNavigate) onNavigate('login');
+              }}
+              title={isHindi ? 'लॉग आउट करें' : 'Sign Out'}
+              aria-label="Sign Out"
+            >
+              <Icon name="log-out" size={13} />
+              <span>{isHindi ? 'लॉग आउट' : 'Sign Out'}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="header-auth-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <button
+              type="button"
+              className="header-signin-btn"
+              onClick={() => onNavigate?.('login')}
+              title="Sign in to your account"
+            >
+              <Icon name="lock" size={12} />
+              <span>{isHindi ? 'साइन इन' : 'Sign In'}</span>
+            </button>
+            <button
+              type="button"
+              className="header-signup-btn"
+              onClick={() => onNavigate?.('signup')}
+              title="Create a new account"
+            >
+              <span>{isHindi ? 'खाता बनाएं' : 'Sign Up'}</span>
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

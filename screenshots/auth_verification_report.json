@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-10-13T15:23:40.053Z",
+  "steps": {
+    "Step 1": {
+      "title": "Open Home Page",
+      "status": "PASS",
+      "hasHeader": true,
+      "hasHero": true,
+      "hasOpenBtn": true,
+      "hasSignUpBtn": true
+    },
+    "Step 2": {
+      "title": "Navigate to Sign Up Page",
+      "status": "PASS",
+      "isSignUpUrl": true,
+      "hasNameInput": true,
+      "hasEmailInput": true,
+      "hasPassInput": true,
+      "hasConfirmInput": true,
+      "hasDemoBtn": true
+    },
+    "Step 4": {
+      "title": "Reach Dashboard Authenticated with Active Session",
+      "status": "PASS",
+      "pathname": "/overview",
+      "hasHeaderUser": true,
+      "hasSidebarUser": true,
+      "hasLogoutBtn": true,
+      "hasExpectedName": true,
+      "headerText": "Regional Planner Roy"
+    },
+    "Step 5": {
+      "title": "Save Seat Simulator Policy Scenario",
+      "status": "PASS",
+      "savedScenarioResult": true
+    },
+    "Step 6": {
+      "title": "Session Restored via /api/v1/auth/me on Page Refresh",
+      "status": "PASS",
+      "isAuthenticatedAfterReload": true,
+      "userText": "Regional Planner Roy",
+      "hasUser": true
+    },
+    "Step 7": {
+      "title": "View Saved Scenario in My Workspace",
+      "status": "PASS",
+      "scenarioCount": 1,
+      "hasDharwad": false,
+      "hasCNC": false,
+      "hasDisclaimer": true,
+      "hasReopenBtn": true
+    },
+    "Step 8": {
+      "title": "Log Out and Session Invalidation",
+      "status": "PASS",
+      "path": "/login",
+      "isLoggedOut": true,
+      "hasSignInBtn": true
+    },
+    "Step 9": {
+      "title": "Private Workspace Route Protection Redirects Unauthenticated Users",
+      "status": "PASS",
+      "finalPath": "/login",
+      "isLoginOrHome": true,
+      "hasLoginForm": true
+    },
+    "Step 10": {
+      "title": "Explore Demo Mode Access Without Registration",
+      "status": "PASS",
+      "path": "/overview",
+      "hasOverview": true,
+      "hasDemoIndicator": true
+    },
+    "Step 11": {
+      "title": "Verify Light/Dark Theme & Language Switching",
+      "status": "PASS",
+      "lightThemeCheck": true,
+      "hindiCheck": true
+    }
+  },
+  "summary": {
+    "passed": 10,
+    "failed": 0
+  }
+}

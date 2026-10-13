@@ -23,6 +23,10 @@ import ErrorAlert from './components/ErrorAlert';
 import ErrorBoundary from './components/ErrorBoundary';
 import { fetchHealth, fetchDemandIndex, fetchGapAnalysis, fetchAlerts } from './api/client';
 import { useLanguage } from './context/LanguageContext';
+import { useAuth } from './context/AuthContext';
+import LoginPage from './components/auth/LoginPage';
+import SignUpPage from './components/auth/SignUpPage';
+import MyWorkspace from './components/dashboard/MyWorkspace';
 
 const FILTERABLE_TABS = ['overview', 'demand', 'gap', 'forecasts', 'alerts'];
 
@@ -49,6 +53,9 @@ const PILOT_OCCUPATIONS = [
 
 const ROUTE_TO_PATH = {
   home: '/',
+  login: '/login',
+  signup: '/signup',
+  workspace: '/workspace',
   overview: '/overview',
   demand: '/demand',
   forecasts: '/forecasts',
@@ -67,6 +74,12 @@ const ROUTE_TO_PATH = {
 const PATH_TO_ROUTE = {
   '/': 'home',
   '': 'home',
+  '/login': 'login',
+  '/signin': 'login',
+  '/signup': 'signup',
+  '/register': 'signup',
+  '/workspace': 'workspace',
+  '/my-workspace': 'workspace',
   '/overview': 'overview',
   '/demand': 'demand',
   '/intelligence': 'demand',
@@ -93,6 +106,8 @@ function getRouteFromLocation() {
 
 export default function App() {
   const { t } = useLanguage();
+  const { user, isAuthenticated, isDemo, isLoadingAuth, enterDemo } = useAuth();
+  const [reopenedScenario, setReopenedScenario] = useState(null);
   const [activeTab, setActiveTab] = useState(getRouteFromLocation);
   const [period, setPeriod] = useState('2026-09');
   const [backendHealth, setBackendHealth] = useState({ status: 'checking' });
@@ -167,6 +182,21 @@ export default function App() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // Redirect authenticated user away from login/signup
+  useEffect(() => {
+    if ((activeTab === 'login' || activeTab === 'signup') && isAuthenticated) {
+      handleNavigate('overview');
+    }
+  }, [activeTab, isAuthenticated, handleNavigate]);
+
+  // Protect private workspace routes
+  useEffect(() => {
+    if (activeTab === 'workspace' && !isLoadingAuth && !isAuthenticated && !isDemo) {
+      handleNavigate('login');
+    }
+  }, [activeTab, isLoadingAuth, isAuthenticated, isDemo, handleNavigate]);
+
 
   // Initial and reactive data load on period change
   useEffect(() => {
@@ -270,12 +300,41 @@ export default function App() {
     return (
       <LandingPage
         onNavigate={handleNavigate}
-        onEnterDashboard={() => handleNavigate('overview')}
+        onEnterDashboard={() => {
+          enterDemo();
+          handleNavigate('overview');
+        }}
         onNavigateToModule={handleNavigate}
         onNavigateToSimulatorWithContext={(district, occupation) =>
           handleNavigateWithContext('simulator', { district, occupation })
         }
         backendHealth={backendHealth}
+      />
+    );
+  }
+
+  // If activeTab is 'login', render dedicated Login page
+  if (activeTab === 'login') {
+    return (
+      <LoginPage
+        onNavigate={handleNavigate}
+        onEnterDemo={() => {
+          enterDemo();
+          handleNavigate('overview');
+        }}
+      />
+    );
+  }
+
+  // If activeTab is 'signup', render dedicated Sign Up page
+  if (activeTab === 'signup') {
+    return (
+      <SignUpPage
+        onNavigate={handleNavigate}
+        onEnterDemo={() => {
+          enterDemo();
+          handleNavigate('overview');
+        }}
       />
     );
   }
@@ -307,6 +366,7 @@ export default function App() {
           onOpenCopilot={() => setIsCopilotOpen(true)}
           isRefreshing={isRefreshing}
           backendHealth={backendHealth}
+          onNavigate={handleNavigate}
         />
 
         {/* Dynamic Page Content */}
@@ -452,6 +512,20 @@ export default function App() {
                 initialDistrict={simulatorTarget?.district}
                 initialOccupation={simulatorTarget?.occupation}
                 initialHorizon={simulatorTarget?.horizon}
+                initialScenario={reopenedScenario}
+                onNavigate={handleNavigate}
+              />
+            </ErrorBoundary>
+          )}
+
+          {activeTab === 'workspace' && (
+            <ErrorBoundary moduleName="My Workspace">
+              <MyWorkspace
+                onNavigate={handleNavigate}
+                onReopenScenario={(scenario) => {
+                  setReopenedScenario(scenario);
+                  handleNavigate('simulator');
+                }}
               />
             </ErrorBoundary>
           )}
@@ -506,6 +580,7 @@ export default function App() {
             activeTab !== 'alerts' &&
             activeTab !== 'recommendations' &&
             activeTab !== 'simulator' &&
+            activeTab !== 'workspace' &&
             activeTab !== 'districts' &&
             activeTab !== 'occupations' &&
             activeTab !== 'qualifications' &&

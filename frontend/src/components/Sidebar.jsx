@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import Icon from './Icon';
 
 const NAV_SECTIONS = [
@@ -57,6 +58,13 @@ const NAV_SECTIONS = [
         fallbackLabel: 'Scenario Studio',
         icon: 'sliders',
         badgeType: 'studio',
+      },
+      {
+        id: 'workspace',
+        labelKey: 'nav.workspace',
+        fallbackLabel: 'My Workspace',
+        icon: 'folder',
+        badgeType: 'workspace',
       },
     ],
   },
@@ -122,6 +130,7 @@ export default function Sidebar({
   backendHealth = { status: 'healthy' },
 }) {
   const { t, isHindi } = useLanguage();
+  const { user, isAuthenticated, logout } = useAuth();
   const isOnline = backendHealth?.status === 'healthy';
   const handleHomeClick = onNavigateHome || onNavigateToHome || (() => onSelectTab('home'));
   const handleCopilotClick = onOpenCopilot || onToggleCopilot;
@@ -225,6 +234,54 @@ export default function Sidebar({
             </button>
           </div>
         )}
+
+        {/* Authenticated User / Session Info */}
+        <div className="sidebar-account-box">
+          {isAuthenticated ? (
+            <div className="sidebar-account-inner">
+              <div
+                className="sidebar-user-info"
+                onClick={() => onSelectTab('workspace')}
+                style={{ cursor: 'pointer' }}
+                title="View My Workspace"
+              >
+                <div className="sidebar-user-avatar">
+                  <Icon name="user" size={13} />
+                </div>
+                <div className="sidebar-user-text">
+                  <div className="sidebar-user-name">{user?.full_name || 'Planner'}</div>
+                  <div className="sidebar-user-role">{isHindi ? 'सक्रिय सत्र' : 'Active Session'}</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="sidebar-logout-btn"
+                onClick={async () => {
+                  await logout();
+                  onSelectTab('login');
+                }}
+                title={isHindi ? 'लॉग आउट' : 'Sign Out'}
+                aria-label="Sign Out"
+              >
+                <Icon name="log-out" size={13} />
+              </button>
+            </div>
+          ) : (
+            <div className="sidebar-demo-info">
+              <div className="sidebar-demo-badge">
+                <span className="sidebar-demo-dot" />
+                <span>{isHindi ? 'डेमो अन्वेषक' : 'Demo Visitor'}</span>
+              </div>
+              <button
+                type="button"
+                className="sidebar-auth-link"
+                onClick={() => onSelectTab('login')}
+              >
+                {isHindi ? 'साइन इन करें' : 'Sign In'}
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="sidebar-api-status-row">
           <span>{t('app.apiStatus', isHindi ? 'एपीआई स्थिति' : 'API Status')}</span>

@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 
 from app.api.v1.alerts import router as alerts_router
+from app.api.v1.auth import router as auth_router
 from app.api.v1.demand import router as demand_router
 from app.api.v1.forecasts import router as forecasts_router
 from app.api.v1.gap_analysis import router as gap_router
 from app.api.v1.metadata import router as metadata_router
+from app.api.v1.scenarios import router as scenarios_router
 from app.api.v1.seat_simulator import router as simulator_router
+from app.db import init_db
+
+init_db()
 
 app = FastAPI(
     title="SkillPulse LMIS",
@@ -13,6 +18,8 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(scenarios_router, prefix="/api/v1")
 app.include_router(demand_router, prefix="/api/v1")
 app.include_router(gap_router, prefix="/api/v1")
 app.include_router(forecasts_router, prefix="/api/v1")

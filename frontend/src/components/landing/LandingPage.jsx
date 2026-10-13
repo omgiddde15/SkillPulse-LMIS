@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { fetchGapAnalysis, fetchMetadata } from '../../api/client';
 import {
   getDistrictDisplayName,
@@ -16,7 +17,11 @@ export default function LandingPage({
   onNavigateToSimulatorWithContext: onNavigateToSimulatorWithContextProp,
   backendHealth = { status: 'healthy' },
 }) {
-  const onEnterDashboard = onEnterDashboardProp || (() => onNavigate?.('overview'));
+  const { user, isAuthenticated, enterDemo, logout } = useAuth();
+  const onEnterDashboard = onEnterDashboardProp || (() => {
+    enterDemo();
+    onNavigate?.('overview');
+  });
   const onNavigateToModule = onNavigateToModuleProp || ((mod) => onNavigate?.(mod));
   const onNavigateToSimulatorWithContext =
     onNavigateToSimulatorWithContextProp || (() => onNavigate?.('simulator'));
@@ -178,6 +183,49 @@ export default function LandingPage({
                 हिन्दी
               </button>
             </div>
+
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => onNavigate('workspace')}
+                className="auth-ghost-btn"
+                style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                title={`Signed in as ${user?.full_name}`}
+              >
+                <Icon name="user" size={13} />
+                <span>{user?.full_name || 'My Workspace'}</span>
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('login')}
+                  className="auth-ghost-btn"
+                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                  title="Sign in to your account"
+                >
+                  <Icon name="lock" size={12} />
+                  <span>{isHindi ? 'साइन इन' : 'Sign In'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('signup')}
+                  style={{
+                    background: 'var(--bg-surface)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-strong)',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.85rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                  title="Create a new account"
+                >
+                  <span>{isHindi ? 'खाता बनाएं' : 'Sign Up'}</span>
+                </button>
+              </>
+            )}
 
             <button
               type="button"
@@ -348,6 +396,31 @@ export default function LandingPage({
             >
               <Icon name="sliders" size={15} />
               <span>{isHindi ? 'सीट सिम्युलेटर आज़माएं' : 'Try Seat Simulator'}</span>
+            </button>
+          </div>
+
+          {/* Explore Demo CTA Pill for SIH Judges */}
+          <div style={{ marginTop: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={onEnterDashboard}
+              style={{
+                background: 'none',
+                border: '1px dashed var(--accent-primary)',
+                borderRadius: '6px',
+                padding: '0.4rem 0.85rem',
+                fontSize: '0.78rem',
+                color: 'var(--accent-primary)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontWeight: 600,
+              }}
+              title="Explore live analytical platform without registering"
+            >
+              <Icon name="compass" size={13} />
+              <span>{isHindi ? 'निर्णायक डेमो मोड: बिना पंजीकरण के संपूर्ण प्लेटफ़ॉर्म देखें' : 'Explore Demo Mode: Instant Judge Access Without Registration'}</span>
             </button>
           </div>
         </div>

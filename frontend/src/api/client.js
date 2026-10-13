@@ -8,6 +8,7 @@
 async function request(url, options = {}) {
   try {
     const res = await fetch(url, {
+      credentials: 'include',
       headers: {
         'Accept': 'application/json',
         ...options.headers,
@@ -158,6 +159,86 @@ export async function postSeatAllocation(payload) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Register a new user account
+ * @param {Object} data { email, full_name, password, confirm_password }
+ */
+export async function registerUser(data) {
+  return request('/api/v1/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Log in an existing user
+ * @param {Object} data { email, password, remember_me }
+ */
+export async function loginUser(data) {
+  return request('/api/v1/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Restore current session profile on load/refresh
+ */
+export async function fetchCurrentUser() {
+  return request('/api/v1/auth/me');
+}
+
+/**
+ * Invalidate server session and log out
+ */
+export async function logoutUser() {
+  return request('/api/v1/auth/logout', {
+    method: 'POST',
+  });
+}
+
+/**
+ * List saved Seat Simulator scenarios for authenticated user
+ */
+export async function fetchSavedScenarios() {
+  return request('/api/v1/scenarios');
+}
+
+/**
+ * Save Seat Simulator scenario for authenticated user
+ */
+export async function createSavedScenario(payload) {
+  return request('/api/v1/scenarios', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Get single saved scenario detail
+ */
+export async function fetchScenarioDetail(scenarioId) {
+  return request(`/api/v1/scenarios/${scenarioId}`);
+}
+
+/**
+ * Delete saved scenario by ID
+ */
+export async function deleteSavedScenario(scenarioId) {
+  return request(`/api/v1/scenarios/${scenarioId}`, {
+    method: 'DELETE',
   });
 }
 

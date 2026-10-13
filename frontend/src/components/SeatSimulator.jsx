@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorAlert from './ErrorAlert';
 import Icon from './Icon';
-import { postSeatAllocation } from '../api/client';
+import { postSeatAllocation, createSavedScenario } from '../api/client';
 import { exportSimulationPlanCsv } from '../utils/exportCsv';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 const STATES = [
   { code: 'KA', name: 'Karnataka' },
@@ -58,8 +59,20 @@ export default function SeatSimulator({
   initialDistrict,
   initialOccupation,
   initialHorizon,
+  initialScenario,
+  onNavigate,
 }) {
   const { t, isHindi } = useLanguage();
+  const { isAuthenticated } = useAuth();
+
+  // Save Scenario State
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
+  const [saveTitle, setSaveTitle] = useState('');
+  const [saveNotes, setSaveNotes] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState(null);
+  const [saveError, setSaveError] = useState(null);
 
   // Form State
   const [basePeriod, setBasePeriod] = useState(period);
@@ -110,6 +123,7 @@ export default function SeatSimulator({
     }
   }, [initialHorizon]);
 
+
   // Localization display helpers
   const getStateDisplayName = (s) => {
     if (!isHindi) return `${s.name} (${s.code})`;
@@ -157,6 +171,36 @@ export default function SeatSimulator({
   const [errorMessage, setErrorMessage] = useState(null);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [previousScenario, setPreviousScenario] = useState(null);
+
+  // Load external saved scenario if reopened from My Workspace
+  useEffect(() => {
+    if (initialScenario) {
+      if (initialScenario.period) setBasePeriod(initialScenario.period);
+      if (initialScenario.horizon_months) setHorizonMonths(Number(initialScenario.horizon_months));
+      if (initialScenario.district_id) {
+        setSelectedDistrict(initialScenario.district_id);
+        const match = DISTRICTS.find((d) => d.id === initialScenario.district_id);
+        if (match) setSelectedState(match.state);
+      }
+      if (initialScenario.occupation_id) {
+        setSelectedOccupation(initialScenario.occupation_id);
+        const match = OCCUPATIONS.find((o) => o.id === initialScenario.occupation_id);
+        if (match) setSelectedSector(match.sector);
+      }
+      if (initialScenario.proposed_seats_per_cohort) {
+        setProposedSeats(initialScenario.proposed_seats_per_cohort);
+      }
+      if (initialScenario.posting_to_opening_multiplier != null) {
+        setKMultiplier(initialScenario.posting_to_opening_multiplier);
+      }
+      if (initialScenario.local_availability_factor != null) {
+        setAlphaFactor(initialScenario.local_availability_factor);
+      }
+      if (initialScenario.results) {
+        setCurrentScenario(initialScenario.results);
+      }
+    }
+  }, [initialScenario]);
 
   // Sync prop period if changed externally during render
   if (period !== prevPeriodProp) {
@@ -349,6 +393,68 @@ export default function SeatSimulator({
       isHindi,
     });
   }, [currentScenario, kMultiplier, alphaFactor, scenarioCoverage, isHindi]);
+
+  const handleOpenSaveModal = () => {
+    if (!isAuthenticated) {
+      setIsAuthPromptOpen(true);
+      return;
+    }
+    const distName = currentDistrictObj?.name || selectedDistrict;
+    const occTitle = currentOccupationObj?.title || selectedOccupation;
+    setSaveTitle(`${distName} — ${occTitle} (+${proposedSeats} seats)`);
+    setSaveNotes('');
+    setSaveError(null);
+    setIsSaveModalOpen(true);
+  };
+
+  const handleConfirmSave = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!saveTitle.trim()) {
+      setSaveError(isHindi ? 'परिदृश्य शीर्षक आवश्यक है।' : 'Scenario title is required.');
+      return;
+    }
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const payload = {
+        title: saveTitle.trim(),
+        notes: saveNotes.trim(),
+        period: basePeriod,
+        district_id: selectedDistrict,
+        district_name: currentDistrictObj?.name || selectedDistrict,
+        state_code: selectedState,
+        occupation_id: selectedOccupation,
+        occupation_title: currentOccupationObj?.title || selectedOccupation,
+        horizon_months: Number(horizonMonths),
+        proposed_seats_per_cohort: Number(proposedSeats),
+        posting_to_opening_multiplier: Number(kMultiplier),
+        local_availability_factor: Number(alphaFactor),
+        inputs: {
+          period: basePeriod,
+          district_id: selectedDistrict,
+          occupation_id: selectedOccupation,
+          horizon_months: Number(horizonMonths),
+          target_period: projectedTargetMonth,
+          proposed_seats_per_cohort: Number(proposedSeats),
+          posting_to_opening_multiplier: Number(kMultiplier),
+          local_availability_factor: Number(alphaFactor),
+        },
+        results: currentScenario,
+      };
+      await createSavedScenario(payload);
+      setSaveFeedback(
+        isHindi
+          ? 'परिदृश्य आपके व्यक्तिगत कार्यक्षेत्र में सहेजा गया!'
+          : 'Scenario saved to your personal workspace successfully!'
+      );
+      setIsSaveModalOpen(false);
+      setTimeout(() => setSaveFeedback(null), 5000);
+    } catch (err) {
+      setSaveError(err.message || 'Failed to save scenario.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Automatically execute default simulation on initial component mount
   useEffect(() => {
@@ -698,8 +804,38 @@ export default function SeatSimulator({
                 <Icon name="download" size={14} />
                 <span>{t('simulator.exportBtn')}</span>
               </button>
+
+              <button
+                type="button"
+                className="btn-save-scenario"
+                onClick={handleOpenSaveModal}
+                title={isAuthenticated ? (isHindi ? 'परिदृश्य सहेजें' : 'Save Scenario to Workspace') : (isHindi ? 'सहेजने के लिए साइन इन करें' : 'Sign In to Save Scenario')}
+              >
+                <Icon name="bookmark" size={14} />
+                <span>{isHindi ? 'परिदृश्य सहेजें' : 'Save Scenario'}</span>
+              </button>
             </div>
           </div>
+
+          {/* Save Scenario Feedback Alert */}
+          {saveFeedback && (
+            <div className="auth-alert success" style={{ margin: '0.25rem 0' }}>
+              <Icon name="check-circle" size={16} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span>{saveFeedback}</span>
+                {onNavigate && (
+                  <button
+                    type="button"
+                    className="auth-link-btn"
+                    style={{ fontSize: '0.8rem', fontWeight: 700 }}
+                    onClick={() => onNavigate('workspace')}
+                  >
+                    {isHindi ? 'कार्यक्षेत्र में देखें →' : 'View in My Workspace →'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Previous Run Comparison Diff Banner (if user iterated) */}
           {previousScenario && previousScenario.scenario_id !== currentScenario.scenario_id && (
@@ -1390,6 +1526,217 @@ export default function SeatSimulator({
             <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
               <strong>{t('simulator.calloutLimitations')}</strong> {currentScenario.limitations}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Save Scenario Modal for Authenticated Users */}
+      {isSaveModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsSaveModalOpen(false)}>
+          <div
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '520px' }}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div className="auth-icon-badge" style={{ width: '32px', height: '32px' }}>
+                  <Icon name="bookmark" size={16} />
+                </div>
+                <h3 className="modal-title">
+                  {isHindi ? 'परिदृश्य सहेजें' : 'Save Scenario to Workspace'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setIsSaveModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmSave} className="auth-form" style={{ padding: '1.25rem' }}>
+              {saveError && (
+                <div className="auth-alert error" style={{ marginBottom: '1rem' }}>
+                  <Icon name="alert-triangle" size={15} />
+                  <span>{saveError}</span>
+                </div>
+              )}
+
+              <div className="auth-field-group">
+                <label className="auth-label">
+                  {isHindi ? 'परिदृश्य शीर्षक *' : 'Scenario Title *'}
+                </label>
+                <input
+                  type="text"
+                  className="auth-input"
+                  value={saveTitle}
+                  onChange={(e) => setSaveTitle(e.target.value)}
+                  placeholder="e.g. Dharwad CNC Machining Q4 Expansion"
+                  maxLength={150}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="auth-field-group">
+                <label className="auth-label">
+                  {isHindi ? 'विवरण / योजना नोट्स (वैकल्पिक)' : 'Notes / Policy Rationale (Optional)'}
+                </label>
+                <textarea
+                  className="auth-input"
+                  rows={3}
+                  value={saveNotes}
+                  onChange={(e) => setSaveNotes(e.target.value)}
+                  placeholder={
+                    isHindi
+                      ? 'परिकल्पनाओं, बजट अनुमोदन या साझेदार आईटीआई का संदर्भ...'
+                      : 'Reference target ITIs, budget allocation phase, or employer consortium agreements...'
+                  }
+                  maxLength={1000}
+                  style={{ resize: 'vertical' }}
+                />
+              </div>
+
+              {/* Summary tags */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.45rem',
+                  fontSize: '0.75rem',
+                  padding: '0.75rem',
+                  background: 'var(--bg-surface-elevated)',
+                  borderRadius: '6px',
+                  marginBottom: '1rem',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <span><strong>District:</strong> {currentDistrictObj?.name || selectedDistrict}</span>
+                <span>•</span>
+                <span><strong>Occupation:</strong> {currentOccupationObj?.title || selectedOccupation}</span>
+                <span>•</span>
+                <span><strong>Seats:</strong> +{proposedSeats}</span>
+                <span>•</span>
+                <span><strong>Horizon:</strong> {horizonMonths}M</span>
+              </div>
+
+              {/* Scientific Disclaimer Note */}
+              <div
+                style={{
+                  fontSize: '0.7rem',
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.4,
+                  marginBottom: '1.25rem',
+                }}
+              >
+                <em>
+                  Note: Saved scenarios represent mathematical training capacity projections based on pilot parameters, not verified real-world operational changes.
+                </em>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="auth-ghost-btn"
+                  onClick={() => setIsSaveModalOpen(false)}
+                  disabled={isSaving}
+                >
+                  {isHindi ? 'रद्द करें' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  className="auth-primary-btn"
+                  style={{ padding: '0.55rem 1.25rem' }}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Icon name="refresh" size={14} className="spinning-icon" />
+                      <span>{isHindi ? 'सहेजा जा रहा है...' : 'Saving...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="bookmark" size={14} />
+                      <span>{isHindi ? 'सहेजें' : 'Save Scenario'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Prompt Modal for Demo Visitors */}
+      {isAuthPromptOpen && (
+        <div className="modal-backdrop" onClick={() => setIsAuthPromptOpen(false)}>
+          <div
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '460px' }}
+          >
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div className="auth-icon-badge" style={{ width: '32px', height: '32px' }}>
+                  <Icon name="lock" size={16} />
+                </div>
+                <h3 className="modal-title">
+                  {isHindi ? 'साइन इन आवश्यक है' : 'Sign In Required'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setIsAuthPromptOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: '1.25rem' }}>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: '0 0 1.25rem' }}>
+                {isHindi
+                  ? 'आप वर्तमान में डेमो मोड में अन्वेषण कर रहे हैं। अनुकूलित परिदृश्यों को नाम देने, सहेजने और अपने व्यक्तिगत कार्यक्षेत्र में ट्रैक करने के लिए कृपया साइन इन करें।'
+                  : 'You are currently testing the platform in Demo Mode. To save, name, compare, and preserve custom policy scenarios in your personal workspace, please sign in or create an account.'}
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                <button
+                  type="button"
+                  className="auth-primary-btn"
+                  onClick={() => {
+                    setIsAuthPromptOpen(false);
+                    if (onNavigate) onNavigate('login');
+                  }}
+                >
+                  <Icon name="lock" size={14} />
+                  <span>{isHindi ? 'साइन इन करें' : 'Sign In'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="auth-demo-btn"
+                  onClick={() => {
+                    setIsAuthPromptOpen(false);
+                    if (onNavigate) onNavigate('signup');
+                  }}
+                >
+                  <Icon name="user" size={14} />
+                  <span>{isHindi ? 'नया खाता बनाएं' : 'Create Free Account'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="auth-ghost-btn"
+                  style={{ alignSelf: 'center', marginTop: '0.25rem', fontSize: '0.78rem' }}
+                  onClick={() => setIsAuthPromptOpen(false)}
+                >
+                  {isHindi ? 'डेमो मोड जारी रखें' : 'Continue in Demo Mode'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
