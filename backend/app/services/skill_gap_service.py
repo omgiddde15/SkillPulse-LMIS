@@ -83,19 +83,19 @@ class SkillGapService:
 
                 if ev_status == "evidenced":
                     status = "evidenced"
-                    status_label = "Demonstrated with Evidence"
+                    status_label = "Supported by Context"
                     if source_ctx:
-                        explanation = f"Supported by user evidence reference: \"{source_ctx}\"."
+                        explanation = f"Supported by candidate-supplied context: \"{source_ctx}\". (Reflects user documentation, not third-party verified competence)."
                     else:
-                        explanation = "Verified by candidate with supporting project or work experience."
+                        explanation = "Supported by candidate-supplied project or work experience reference."
                 elif ev_status == "claimed":
                     status = "claimed"
                     status_label = "Self-Claimed"
-                    explanation = "Self-reported in candidate profile. Consider attaching a project reference or certificate to substantiate."
+                    explanation = "Self-reported in candidate profile without attached project context."
                 else:  # unconfirmed
                     status = "unconfirmed"
                     status_label = "Extracted / Unconfirmed"
-                    explanation = "Extracted from uploaded resume. Pending user confirmation and validation."
+                    explanation = "Extracted from uploaded resume. Pending candidate review and verification."
 
                 return {
                     "skill_key": req["skill_key"],
@@ -118,13 +118,13 @@ class SkillGapService:
                     "category": req["category"],
                     "importance_level": importance,
                     "status": "missing",
-                    "status_label": "Not Yet Demonstrated",
+                    "status_label": "Not Yet Documented",
                     "role_justification": req["role_justification"],
                     "user_skill_id": None,
                     "user_evidence_status": None,
                     "source_type": None,
                     "source_context": None,
-                    "explanation": f"Not currently documented in your profile. {req['role_justification']}",
+                    "explanation": f"Not currently documented in candidate profile. {req['role_justification']}",
                 }
 
         # 3. Match required skills
@@ -166,7 +166,7 @@ class SkillGapService:
             "evidence_coverage_percentage": coverage_pct,
             "coverage_formula": f"{req_evidenced} evidenced / {req_total} required * 100",
             "metric_explanation": f"{req_evidenced} of {req_total} required skills have supporting evidence ({coverage_pct}%). {req_claimed} self-claimed; {req_missing} not yet demonstrated.",
-            "disclaimer": "Deterministic qualification gap analysis based on current profile evidence. Not an employability score, hiring likelihood, or job-readiness certification.",
+            "disclaimer": "Deterministic benchmark comparison based on user-supplied profile documentation. Not an independently verified competence assessment, employability score, or hiring prediction.",
         }
 
         # 6. Unmatched user skills
@@ -180,6 +180,7 @@ class SkillGapService:
             "description": role["description"],
             "sector": role["sector"],
             "benchmark_occupation_id": role.get("benchmark_occupation_id"),
+            "broad_occupational_reference": role.get("broad_occupational_reference"),
             "source_type": role["source_type"],
             "source_title": role["source_title"],
             "source_url": role.get("source_url"),

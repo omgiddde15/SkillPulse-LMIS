@@ -202,7 +202,7 @@ export default function CareerProfilePage({ onNavigate }) {
         // Pick default role: match user target occupation if possible, or first role
         let initialRoleId = roles[0]?.role_id || '';
         if (profRes?.profile?.target_occupation_id) {
-          const matchedRole = roles.find((r) => r.benchmark_occupation_id === profRes.profile.target_occupation_id);
+          const matchedRole = roles.find((r) => r.benchmark_occupation_id && r.benchmark_occupation_id === profRes.profile.target_occupation_id);
           if (matchedRole) {
             initialRoleId = matchedRole.role_id;
           }
@@ -711,8 +711,10 @@ export default function CareerProfilePage({ onNavigate }) {
         >
           <Icon name="target" size={15} />
           <span>{t('career.tab.gapAnalysis')}</span>
-          {gapAnalysis?.coverage_metrics && (
-            <span className="career-tab-badge">{gapAnalysis.coverage_metrics.evidence_coverage_percentage}%</span>
+          {(gapAnalysis?.metrics || gapAnalysis?.coverage_metrics) && (
+            <span className="career-tab-badge">
+              {(gapAnalysis.metrics || gapAnalysis.coverage_metrics).evidence_coverage_percentage}%
+            </span>
           )}
         </button>
       </div>
@@ -1474,7 +1476,7 @@ export default function CareerProfilePage({ onNavigate }) {
                 >
                   {supportedRoles.map((r) => (
                     <option key={r.role_id} value={r.role_id}>
-                      {r.role_title} ({r.role_family} • {r.sector})
+                      {r.title || r.role_title} ({r.sector || r.role_family})
                     </option>
                   ))}
                 </select>
@@ -1486,18 +1488,29 @@ export default function CareerProfilePage({ onNavigate }) {
               <div className="gaps-provenance-box">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                    {gapAnalysis.role_title} ({gapAnalysis.role_id})
+                    {gapAnalysis.role?.title || gapAnalysis.role_title} ({gapAnalysis.role?.role_id || gapAnalysis.role_id})
                   </div>
                   <div className="gaps-provenance-tags">
-                    <span className="provenance-tag">{gapAnalysis.provenance?.sector}</span>
-                    <span className="provenance-tag">NSQF Level {gapAnalysis.provenance?.nsqf_level}</span>
-                    <span className="provenance-tag">{gapAnalysis.provenance?.benchmark_occupation_title}</span>
-                    <span className="provenance-tag">v{gapAnalysis.provenance?.version}</span>
+                    <span className="provenance-tag">{gapAnalysis.role?.sector || gapAnalysis.provenance?.sector}</span>
+                    <span className="provenance-tag">{gapAnalysis.role?.source_type || 'SkillPulse-curated'}</span>
+                    {gapAnalysis.role?.broad_occupational_reference && (
+                      <span className="provenance-tag">{gapAnalysis.role.broad_occupational_reference}</span>
+                    )}
+                    {gapAnalysis.role?.benchmark_occupation_id && (
+                      <span className="provenance-tag">{gapAnalysis.role.benchmark_occupation_id}</span>
+                    )}
+                    <span className="provenance-tag">v{gapAnalysis.role?.version || gapAnalysis.provenance?.version || '2026.2'}</span>
                   </div>
                 </div>
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-                  <strong>{isHindi ? 'मानक संदर्भ:' : 'Curriculum Provenance:'}</strong> {gapAnalysis.provenance?.reference_standard} • {gapAnalysis.provenance?.attribution}
+                  <strong>{isHindi ? 'मानक संदर्भ:' : 'Curriculum Provenance:'}</strong> {gapAnalysis.role?.source_title || gapAnalysis.provenance?.reference_standard}
+                  {gapAnalysis.role?.review_date ? ` • ${isHindi ? 'समीक्षा:' : 'Reviewed:'} ${gapAnalysis.role.review_date}` : ''}
                 </div>
+                {gapAnalysis.role?.provenance_notes && (
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.35rem', fontStyle: 'italic' }}>
+                    {gapAnalysis.role.provenance_notes}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1505,212 +1518,234 @@ export default function CareerProfilePage({ onNavigate }) {
           {/* Coverage KPI & Metric Strip */}
           {isLoadingGaps ? (
             <LoadingSpinner message={isHindi ? 'कौशल अंतर विश्लेषण की गणना की जा रही है...' : 'Evaluating candidate skill evidence against target role...'} />
-          ) : gapAnalysis?.coverage_metrics ? (
-            <>
-              <div className="coverage-metric-banner">
-                <div className="coverage-metric-top">
-                  <div>
-                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      {t('career.gaps.covScore')}
+          ) : (gapAnalysis?.metrics || gapAnalysis?.coverage_metrics) ? (
+            (() => {
+              const metrics = gapAnalysis.metrics || gapAnalysis.coverage_metrics;
+              const covPct = metrics.evidence_coverage_percentage ?? 0;
+              const reqEv = metrics.required_evidenced ?? metrics.required_evidenced_count ?? 0;
+              const reqTot = metrics.required_total ?? metrics.total_required_skills ?? 0;
+              const reqCl = metrics.required_claimed ?? metrics.required_claimed_count ?? 0;
+              const reqUn = metrics.required_unconfirmed ?? metrics.required_unconfirmed_count ?? 0;
+              const reqMis = metrics.required_missing ?? metrics.required_missing_count ?? 0;
+
+              return (
+                <>
+                  <div className="coverage-metric-banner">
+                    <div className="coverage-metric-top">
+                      <div>
+                        <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          {t('career.gaps.covScore')}
+                        </div>
+                        <div className="coverage-percentage-huge">
+                          {covPct}%
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                          <strong>{reqEv}</strong> {isHindi ? 'में से' : 'of'}{' '}
+                          <strong>{reqTot}</strong> {isHindi ? 'मूल आवश्यक योग्यताएं प्रमाणित' : 'core required competencies evidenced'}
+                        </div>
+                      </div>
+
+                      <div className="coverage-tally-strip">
+                        <span className="badge-status evidenced">
+                          <Icon name="check-circle" size={11} />
+                          <span>{reqEv} {t('career.gaps.badgeEvidenced')}</span>
+                        </span>
+                        <span className="badge-status claimed">
+                          <Icon name="user" size={11} />
+                          <span>{reqCl} {t('career.gaps.badgeClaimed')}</span>
+                        </span>
+                        <span className="badge-status unconfirmed">
+                          <Icon name="clock" size={11} />
+                          <span>{reqUn} {t('career.gaps.badgeUnconfirmed')}</span>
+                        </span>
+                        <span className="badge-status missing">
+                          <Icon name="x" size={11} />
+                          <span>{reqMis} {t('career.gaps.badgeMissing')}</span>
+                        </span>
+                      </div>
                     </div>
-                    <div className="coverage-percentage-huge">
-                      {gapAnalysis.coverage_metrics.evidence_coverage_percentage}%
+
+                    {/* Progress bar */}
+                    <div className="coverage-progress-track">
+                      <div
+                        className="coverage-progress-fill"
+                        style={{ width: `${Math.min(covPct, 100)}%` }}
+                      />
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                      <strong>{gapAnalysis.coverage_metrics.required_evidenced_count}</strong> {isHindi ? 'में से' : 'of'}{' '}
-                      <strong>{gapAnalysis.coverage_metrics.total_required_skills}</strong> {isHindi ? 'मूल आवश्यक योग्यताएं प्रमाणित' : 'core required competencies evidenced'}
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <span>{metrics.coverage_formula || t('career.gaps.covFormula')}</span>
+                      <span>{t('career.gaps.covNotice')}</span>
                     </div>
                   </div>
 
-                  <div className="coverage-tally-strip">
-                    <span className="badge-status evidenced">
-                      <Icon name="check-circle" size={11} />
-                      <span>{gapAnalysis.coverage_metrics.required_evidenced_count} {t('career.gaps.badgeEvidenced')}</span>
-                    </span>
-                    <span className="badge-status claimed">
-                      <Icon name="user" size={11} />
-                      <span>{gapAnalysis.coverage_metrics.required_claimed_count} {t('career.gaps.badgeClaimed')}</span>
-                    </span>
-                    <span className="badge-status unconfirmed">
-                      <Icon name="clock" size={11} />
-                      <span>{gapAnalysis.coverage_metrics.required_unconfirmed_count} {t('career.gaps.badgeUnconfirmed')}</span>
-                    </span>
-                    <span className="badge-status missing">
-                      <Icon name="x" size={11} />
-                      <span>{gapAnalysis.coverage_metrics.required_missing_count} {t('career.gaps.badgeMissing')}</span>
-                    </span>
-                  </div>
-                </div>
+                  {/* Core Required Competencies Card */}
+                  <div className="career-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <h3 style={{ fontSize: '0.96rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Icon name="shield" size={16} />
+                        <span>{t('career.gaps.reqSkillsTitle')}</span>
+                      </h3>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0 }}>
+                        {isHindi
+                          ? 'इस भूमिका के लिए आवश्यक मुख्य दक्षताएं। यदि आपने इन कौशलों का उपयोग किया है, तो "कौशल एवं साक्ष्य" टैब में परियोजना संदर्भ संलग्न करें।'
+                          : 'Essential competencies defined by the curriculum. Evidenced requires citing specific project or experience context.'}
+                      </p>
+                    </div>
 
-                {/* Progress bar */}
-                <div className="coverage-progress-track">
-                  <div
-                    className="coverage-progress-fill"
-                    style={{ width: `${Math.min(gapAnalysis.coverage_metrics.evidence_coverage_percentage, 100)}%` }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span>{t('career.gaps.covFormula')}</span>
-                  <span>{t('career.gaps.covNotice')}</span>
-                </div>
-              </div>
-
-              {/* Core Required Competencies Card */}
-              <div className="career-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '0.96rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Icon name="shield" size={16} />
-                    <span>{t('career.gaps.reqSkillsTitle')}</span>
-                  </h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0 }}>
-                    {isHindi
-                      ? 'इस भूमिका के लिए आवश्यक मुख्य दक्षताएं। यदि आपने इन कौशलों का उपयोग किया है, तो "कौशल एवं साक्ष्य" टैब में परियोजना संदर्भ संलग्न करें।'
-                      : 'Essential competencies defined by the curriculum. Evidenced requires citing specific project or experience context.'}
-                  </p>
-                </div>
-
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="gaps-table">
-                    <thead>
-                      <tr>
-                        <th>{t('career.gaps.thReqSkill')}</th>
-                        <th>{t('career.gaps.thMatch')}</th>
-                        <th>{t('career.gaps.thRoleRationale')}</th>
-                        <th>{t('career.gaps.thEvidenceSummary')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {gapAnalysis.required_skills?.map((item) => (
-                        <tr key={item.skill_key}>
-                          <td style={{ fontWeight: 600 }}>
-                            <div>{item.skill_name}</div>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                              {item.category || 'Core'}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`badge-status ${item.match_status}`}>
-                              {item.match_status === 'evidenced' && <Icon name="check-circle" size={11} />}
-                              {item.match_status === 'claimed' && <Icon name="user" size={11} />}
-                              {item.match_status === 'unconfirmed' && <Icon name="clock" size={11} />}
-                              {item.match_status === 'missing' && <Icon name="x" size={11} />}
-                              <span>{t(`career.gaps.badge${item.match_status.charAt(0).toUpperCase() + item.match_status.slice(1)}`)}</span>
-                            </span>
-                          </td>
-                          <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
-                            {item.role_justification}
-                          </td>
-                          <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
-                            {item.match_status === 'missing' ? (
-                              <span style={{ color: 'var(--status-danger-text)', fontStyle: 'italic' }}>
-                                {isHindi ? 'कोई उम्मीदवार साक्ष्य नहीं मिला' : 'No candidate evidence found'}
-                              </span>
-                            ) : (
-                              <div>
-                                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                                  {item.matched_user_skill_name}
-                                </div>
-                                {item.supporting_context ? (
-                                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                                    "{item.supporting_context}"
-                                  </div>
-                                ) : (
-                                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '0.15rem' }}>
-                                    {isHindi ? 'स्व-दावाकृत (कोई परियोजना संदर्भ नहीं)' : 'Self-claimed without project context'}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Preferred & Secondary Competencies Card */}
-              {gapAnalysis.preferred_skills && gapAnalysis.preferred_skills.length > 0 && (
-                <div className="career-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '0.96rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Icon name="sparkles" size={16} />
-                      <span>{t('career.gaps.prefSkillsTitle')}</span>
-                    </h3>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0 }}>
-                      {isHindi
-                        ? 'पूरक योग्यताएं जो उम्मीदवार की प्रोफाइल को मजबूत करती हैं (कवरेज स्कोर में शामिल नहीं)।'
-                        : 'Complementary advantages and advanced tool competencies (tracked separately from core coverage).'}
-                    </p>
-                  </div>
-
-                  <div style={{ overflowX: 'auto' }}>
-                    <table className="gaps-table">
-                      <thead>
-                        <tr>
-                          <th>{t('career.gaps.thReqSkill')}</th>
-                          <th>{t('career.gaps.thMatch')}</th>
-                          <th>{t('career.gaps.thRoleRationale')}</th>
-                          <th>{t('career.gaps.thEvidenceSummary')}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {gapAnalysis.preferred_skills.map((item) => (
-                          <tr key={item.skill_key}>
-                            <td style={{ fontWeight: 600 }}>
-                              <div>{item.skill_name}</div>
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                                {item.category || 'Preferred'}
-                              </span>
-                            </td>
-                            <td>
-                              <span className={`badge-status ${item.match_status}`}>
-                                {item.match_status === 'evidenced' && <Icon name="check-circle" size={11} />}
-                                {item.match_status === 'claimed' && <Icon name="user" size={11} />}
-                                {item.match_status === 'unconfirmed' && <Icon name="clock" size={11} />}
-                                {item.match_status === 'missing' && <Icon name="x" size={11} />}
-                                <span>{t(`career.gaps.badge${item.match_status.charAt(0).toUpperCase() + item.match_status.slice(1)}`)}</span>
-                              </span>
-                            </td>
-                            <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
-                              {item.role_justification}
-                            </td>
-                            <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
-                              {item.match_status === 'missing' ? (
-                                <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                                  {isHindi ? 'अनुपलब्ध' : 'Not yet demonstrated'}
-                                </span>
-                              ) : (
-                                <div>
-                                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                                    {item.matched_user_skill_name}
-                                  </div>
-                                  {item.supporting_context && (
-                                    <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                                      "{item.supporting_context}"
+                    <div style={{ overflowX: 'auto' }}>
+                      <table className="gaps-table">
+                        <thead>
+                          <tr>
+                            <th>{t('career.gaps.thReqSkill')}</th>
+                            <th>{t('career.gaps.thMatch')}</th>
+                            <th>{t('career.gaps.thRoleRationale')}</th>
+                            <th>{t('career.gaps.thEvidenceSummary')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {gapAnalysis.required_skills?.map((item) => {
+                            const mStatus = item.status || item.match_status || 'missing';
+                            const mCtx = item.source_context || item.supporting_context;
+                            const mName = item.matched_user_skill_name || item.skill_name;
+                            return (
+                              <tr key={item.skill_key}>
+                                <td style={{ fontWeight: 600 }}>
+                                  <div>{item.skill_name}</div>
+                                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                                    {item.category || 'Core'}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className={`badge-status ${mStatus}`}>
+                                    {mStatus === 'evidenced' && <Icon name="check-circle" size={11} />}
+                                    {mStatus === 'claimed' && <Icon name="user" size={11} />}
+                                    {mStatus === 'unconfirmed' && <Icon name="clock" size={11} />}
+                                    {mStatus === 'missing' && <Icon name="x" size={11} />}
+                                    <span>{t(`career.gaps.badge${mStatus.charAt(0).toUpperCase() + mStatus.slice(1)}`)}</span>
+                                  </span>
+                                </td>
+                                <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
+                                  {item.role_justification}
+                                </td>
+                                <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
+                                  {mStatus === 'missing' ? (
+                                    <span style={{ color: 'var(--status-danger-text)', fontStyle: 'italic' }}>
+                                      {isHindi ? 'कोई उम्मीदवार साक्ष्य नहीं मिला' : 'No candidate evidence found'}
+                                    </span>
+                                  ) : (
+                                    <div>
+                                      <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                                        {mName}
+                                      </div>
+                                      {mCtx ? (
+                                        <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                                          "{mCtx}"
+                                        </div>
+                                      ) : (
+                                        <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '0.15rem' }}>
+                                          {isHindi ? 'स्व-दावाकृत (कोई परियोजना संदर्भ नहीं)' : 'Self-claimed without project context'}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              )}
 
-              {/* Methodology & Policy Disclaimer */}
-              <div className="resume-notice-box">
-                <Icon name="shield" size={16} />
-                <div>
-                  <strong>{isHindi ? 'पारदर्शी पद्धति प्रकटीकरण:' : 'Methodology & Policy Transparency:'}</strong>{' '}
-                  {gapAnalysis.disclaimer || t('career.gaps.disclaimer')}
-                </div>
-              </div>
-            </>
+                  {/* Preferred & Secondary Competencies Card */}
+                  {gapAnalysis.preferred_skills && gapAnalysis.preferred_skills.length > 0 && (
+                    <div className="career-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <h3 style={{ fontSize: '0.96rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <Icon name="sparkles" size={16} />
+                          <span>{t('career.gaps.prefSkillsTitle')}</span>
+                        </h3>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0 }}>
+                          {isHindi
+                            ? 'पूरक योग्यताएं जो उम्मीदवार की प्रोफाइल को मजबूत करती हैं (कवरेज स्कोर में शामिल नहीं)।'
+                            : 'Complementary advantages and advanced tool competencies (tracked separately from core coverage).'}
+                        </p>
+                      </div>
+
+                      <div style={{ overflowX: 'auto' }}>
+                        <table className="gaps-table">
+                          <thead>
+                            <tr>
+                              <th>{t('career.gaps.thReqSkill')}</th>
+                              <th>{t('career.gaps.thMatch')}</th>
+                              <th>{t('career.gaps.thRoleRationale')}</th>
+                              <th>{t('career.gaps.thEvidenceSummary')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {gapAnalysis.preferred_skills.map((item) => {
+                              const mStatus = item.status || item.match_status || 'missing';
+                              const mCtx = item.source_context || item.supporting_context;
+                              const mName = item.matched_user_skill_name || item.skill_name;
+                              return (
+                                <tr key={item.skill_key}>
+                                  <td style={{ fontWeight: 600 }}>
+                                    <div>{item.skill_name}</div>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                                      {item.category || 'Preferred'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span className={`badge-status ${mStatus}`}>
+                                      {mStatus === 'evidenced' && <Icon name="check-circle" size={11} />}
+                                      {mStatus === 'claimed' && <Icon name="user" size={11} />}
+                                      {mStatus === 'unconfirmed' && <Icon name="clock" size={11} />}
+                                      {mStatus === 'missing' && <Icon name="x" size={11} />}
+                                      <span>{t(`career.gaps.badge${mStatus.charAt(0).toUpperCase() + mStatus.slice(1)}`)}</span>
+                                    </span>
+                                  </td>
+                                  <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
+                                    {item.role_justification}
+                                  </td>
+                                  <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
+                                    {mStatus === 'missing' ? (
+                                      <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                                        {isHindi ? 'अनुपलब्ध' : 'Not yet demonstrated'}
+                                      </span>
+                                    ) : (
+                                      <div>
+                                        <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                                          {mName}
+                                        </div>
+                                        {mCtx && (
+                                          <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                                            "{mCtx}"
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Methodology & Policy Disclaimer */}
+                  <div className="resume-notice-box">
+                    <Icon name="shield" size={16} />
+                    <div>
+                      <strong>{isHindi ? 'पारदर्शी पद्धति प्रकटीकरण:' : 'Methodology & Policy Transparency:'}</strong>{' '}
+                      {metrics.disclaimer || gapAnalysis.disclaimer || t('career.gaps.disclaimer')}
+                    </div>
+                  </div>
+                </>
+              );
+            })()
           ) : (
             <div className="workspace-empty-state" style={{ padding: '2.5rem 1rem' }}>
               <div className="workspace-empty-icon">

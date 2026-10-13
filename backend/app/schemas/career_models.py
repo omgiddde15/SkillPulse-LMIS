@@ -175,6 +175,7 @@ class TargetRoleSummaryResponse(BaseModel):
     description: str
     sector: str
     benchmark_occupation_id: Optional[str] = None
+    broad_occupational_reference: Optional[str] = None
     source_type: str
     source_title: str
     source_url: Optional[str] = None

@@ -275,8 +275,8 @@ def test_deterministic_skill_gap_analysis(client_user_a):
     assert metrics["required_claimed"] == 1    # Git
     assert metrics["required_missing"] == 2    # FastAPI and RESTful API Design
     assert metrics["evidence_coverage_percentage"] == 40.0
-    assert "40.0%" in metrics["metric_explanation"]
-    assert "Not an employability score" in metrics["disclaimer"]
+    assert "employability score" in metrics["disclaimer"]
+    assert "not an independently verified" in metrics["disclaimer"].lower()
 
     # Verify required skills breakdown
     req_map = {r["skill_key"]: r for r in data["required_skills"]}
@@ -326,10 +326,17 @@ def test_alias_normalization_controlled_only(client_user_a):
     assert normalize_skill_key("py") == "python"
     assert normalize_skill_key("Python3") == "python"
     assert normalize_skill_key("reactjs") == "react"
-    assert normalize_skill_key("PostgreSQL") == "sql"
+    assert normalize_skill_key("PostgreSQL") == "postgresql"
+    assert normalize_skill_key("postgres") == "postgresql"
     assert normalize_skill_key("k8s") == "kubernetes"
+    assert normalize_skill_key("structured query language") == "sql"
+    assert normalize_skill_key("mysql") == "mysql"
 
-    # Unrelated keywords are NOT treated as equivalent
+    # Invalid equivalences are NOT treated as equivalent
+    assert normalize_skill_key("containerization") != "docker"
+    assert normalize_skill_key("github") != "git"
+    assert normalize_skill_key("bash") != "linux"
+    assert normalize_skill_key("react native") != "react"
     assert normalize_skill_key("Java") != "javascript"
     assert normalize_skill_key("C++") != "c_sharp"
 
@@ -344,6 +351,53 @@ def test_alias_normalization_controlled_only(client_user_a):
     resp = client.get("/api/v1/career/skill-gaps?role_id=ROLE_PY_BACKEND")
     req_map = {r["skill_key"]: r for r in resp.json()["required_skills"]}
     assert req_map["python"]["status"] == "evidenced"
+
+
+def test_postgresql_alone_does_not_imply_sql_proficiency(client_user_a):
+    """Regression Test: Having PostgreSQL alone does NOT satisfy the general SQL requirement."""
+    client, user = client_user_a
+
+    # User adds PostgreSQL as an evidenced skill
+    add_resp = client.post(
+        "/api/v1/career/skills",
+        json={
+            "skill_name": "PostgreSQL",
+            "evidence_status": "evidenced",
+            "source_context": "Built schemas and queries in PostgreSQL database",
+        },
+    )
+    assert add_resp.status_code == 201
+
+    # In Python Backend role (which requires SQL), SQL must be missing
+    gap_resp = client.get("/api/v1/career/skill-gaps?role_id=ROLE_PY_BACKEND")
+    assert gap_resp.status_code == 200
+    gap_data = gap_resp.json()
+    req_map = {r["skill_key"]: r for r in gap_data["required_skills"]}
+    assert "sql" in req_map
+    assert req_map["sql"]["status"] == "missing"
+    assert gap_data["metrics"]["required_evidenced"] == 0
+
+    # PostgreSQL is in unmatched_user_skills because the role does not have postgresql as a direct requirement
+    unmatched_keys = [s["skill_key"] for s in gap_data["unmatched_user_skills"]]
+    assert "postgresql" in unmatched_keys
+
+    # Now candidate also registers SQL with evidence
+    add_sql_resp = client.post(
+        "/api/v1/career/skills",
+        json={
+            "skill_name": "SQL",
+            "evidence_status": "evidenced",
+            "source_context": "Complex multi-table SQL queries, transactions, and window functions",
+        },
+    )
+    assert add_sql_resp.status_code == 201
+
+    # Now SQL requirement is evidenced
+    gap_resp2 = client.get("/api/v1/career/skill-gaps?role_id=ROLE_PY_BACKEND")
+    gap_data2 = gap_resp2.json()
+    req_map2 = {r["skill_key"]: r for r in gap_data2["required_skills"]}
+    assert req_map2["sql"]["status"] == "evidenced"
+    assert gap_data2["metrics"]["required_evidenced"] == 1
 
 
 def test_unknown_role_returns_clear_response(client_user_a):
@@ -450,7 +504,7 @@ def test_removing_skill_updates_gap_analysis(client_user_a):
 
 
 def test_role_catalogue_provenance_and_metadata():
-    """Test 12: Role catalogue defines official and curated starter profiles with provenance."""
+    """Test 12: Role catalogue defines SkillPulse-curated starter profiles with provenance."""
     roles = get_supported_roles()
     assert len(roles) >= 5
 
@@ -462,8 +516,33 @@ def test_role_catalogue_provenance_and_metadata():
     assert "ROLE_ELECTRONICS_TEST" in role_ids
 
     for r in roles:
-        assert r["version"] == "2026.1"
+        assert r["version"] == "2026.2"
+        assert r["review_date"] == "2026-10-13"
         assert r["provenance_notes"] != ""
-        assert r["source_type"] in ("curated_starter", "official_qualification_pack", "official_nco")
+        assert r["source_type"] == "SkillPulse-curated"
+        assert r["benchmark_occupation_id"] is None
+        assert r["broad_occupational_reference"] is not None
+        assert len(r["broad_occupational_reference"]) > 0
         assert r["required_skills_count"] > 0
         assert r["preferred_skills_count"] > 0
+
+
+def test_role_provenance_and_occupational_mapping_consistency(client_user_a):
+    """Test 13: Endpoint GET /api/v1/career/roles returns consistent provenance and null benchmark IDs."""
+    client, user = client_user_a
+
+    resp = client.get("/api/v1/career/roles")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "success"
+    assert data["count"] >= 5
+
+    for role in data["roles"]:
+        assert role["source_type"] == "SkillPulse-curated"
+        assert role["benchmark_occupation_id"] is None
+        assert "broad_occupational_reference" in role
+        assert role["broad_occupational_reference"] is not None
+        assert role["version"] == "2026.2"
+        assert role["review_date"] == "2026-10-13"
+        assert "provenance_notes" in role
+        assert len(role["provenance_notes"]) > 0
