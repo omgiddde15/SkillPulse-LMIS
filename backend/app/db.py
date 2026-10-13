@@ -131,6 +131,26 @@ def init_db(db_path: str = None) -> None:
             );
         """)
 
+        # User Skills table (Phase 2)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_skills (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                skill_key TEXT NOT NULL,
+                skill_name TEXT NOT NULL,
+                category TEXT NOT NULL DEFAULT 'technical',
+                evidence_status TEXT NOT NULL DEFAULT 'unconfirmed',
+                source_type TEXT NOT NULL DEFAULT 'self_reported',
+                source_context TEXT,
+                confidence_score REAL DEFAULT 1.0,
+                verified_by_user INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                UNIQUE(user_id, skill_key)
+            );
+        """)
+
         # Indexes for fast lookup and integrity
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);")
@@ -139,6 +159,8 @@ def init_db(db_path: str = None) -> None:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_career_profiles_user_id ON career_profiles(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_resumes_user_id ON user_resumes(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_resumes_storage_key ON user_resumes(storage_key);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_user_id ON user_skills(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_user_skill ON user_skills(user_id, skill_key);")
         conn.commit()
 
 

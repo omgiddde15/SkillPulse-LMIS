@@ -314,3 +314,79 @@ export async function deleteResume(resumeId) {
   });
 }
 
+/**
+ * Fetch authenticated user's confirmed/claimed/evidenced skills
+ * @returns {Promise<{ total_skills: number, verified_skills_count: number, skills: Array }>}
+ */
+export async function fetchUserSkills() {
+  return request('/api/v1/career/skills');
+}
+
+/**
+ * Add a new user-claimed or user-evidenced skill
+ * @param {Object} skillData
+ * @returns {Promise<{ status: string, message: string, skill: Object }>}
+ */
+export async function addUserSkill(skillData) {
+  return request('/api/v1/career/skills', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(skillData),
+  });
+}
+
+/**
+ * Update an existing user skill (evidence status, source context, etc.)
+ * @param {number} skillId
+ * @param {Object} updateData
+ * @returns {Promise<{ status: string, message: string, skill: Object }>}
+ */
+export async function updateUserSkill(skillId, updateData) {
+  return request(`/api/v1/career/skills/${skillId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateData),
+  });
+}
+
+/**
+ * Delete a user skill record
+ * @param {number} skillId
+ * @returns {Promise<{ status: string, message: string }>}
+ */
+export async function deleteUserSkill(skillId) {
+  return request(`/api/v1/career/skills/${skillId}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
+ * Fetch list of supported benchmark target roles with skill profiles
+ * @returns {Promise<{ total_roles: number, roles: Array }>}
+ */
+export async function fetchSupportedRoles() {
+  return request('/api/v1/career/roles');
+}
+
+/**
+ * Fetch full profile and requirements for a target role
+ * @param {string} roleId
+ * @returns {Promise<Object>}
+ */
+export async function fetchRoleDetails(roleId) {
+  return request(`/api/v1/career/roles/${roleId}`);
+}
+
+/**
+ * Deterministically compute candidate skill-gap analysis against target role
+ * @param {string} roleId
+ * @returns {Promise<Object>}
+ */
+export async function fetchSkillGapAnalysis(roleId) {
+  return request(`/api/v1/career/skill-gaps?role_id=${encodeURIComponent(roleId)}`);
+}
+

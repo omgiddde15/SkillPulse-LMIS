@@ -116,3 +116,115 @@ class ResumeMetadataResponse(BaseModel):
     is_reviewed: bool
     uploaded_at: str
     updated_at: str
+
+
+# -----------------------------------------------------------------------------
+# Phase 2: User Skill Evidence & Explainable Skill-Gap Schemas
+# -----------------------------------------------------------------------------
+
+class UserSkillCreate(BaseModel):
+    """Payload to claim or register a skill with optional evidence."""
+    skill_name: str = Field(..., min_length=1, max_length=100, description="Display name of the skill (e.g., Python, Docker, Fast API)")
+    category: str = Field(default="technical", pattern="^(technical|domain|tool|soft)$", description="Taxonomy category")
+    evidence_status: str = Field(default="claimed", pattern="^(unconfirmed|claimed|evidenced)$", description="Evidence status")
+    source_type: str = Field(default="self_reported", max_length=50, description="Source of the skill claim")
+    source_context: Optional[str] = Field(None, max_length=500, description="Supporting project excerpt, job experience, or certificate context")
+    confidence_score: float = Field(default=1.0, ge=0.0, le=1.0, description="Extraction or claim confidence score (not user competence)")
+    verified_by_user: bool = Field(default=True, description="Whether the user explicitly affirmed this skill entry")
+
+    @field_validator("skill_name")
+    @classmethod
+    def clean_skill_name(cls, v: str) -> str:
+        clean = v.strip()
+        if len(clean) < 1:
+            raise ValueError("Skill name cannot be empty.")
+        return clean
+
+
+class UserSkillUpdate(BaseModel):
+    """Payload to update an existing user skill entry."""
+    skill_name: Optional[str] = Field(None, min_length=1, max_length=100)
+    category: Optional[str] = Field(None, pattern="^(technical|domain|tool|soft)$")
+    evidence_status: Optional[str] = Field(None, pattern="^(unconfirmed|claimed|evidenced)$")
+    source_type: Optional[str] = Field(None, max_length=50)
+    source_context: Optional[str] = Field(None, max_length=500)
+    confidence_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    verified_by_user: Optional[bool] = None
+
+
+class UserSkillResponse(BaseModel):
+    """Envelope for a user skill record."""
+    id: int
+    user_id: int
+    skill_key: str
+    skill_name: str
+    category: str
+    evidence_status: str
+    source_type: str
+    source_context: Optional[str] = None
+    confidence_score: float
+    verified_by_user: bool
+    created_at: str
+    updated_at: str
+
+
+class TargetRoleSummaryResponse(BaseModel):
+    """Summary of a supported starter role profile."""
+    role_id: str
+    title: str
+    description: str
+    sector: str
+    benchmark_occupation_id: Optional[str] = None
+    source_type: str
+    source_title: str
+    source_url: Optional[str] = None
+    version: str
+    review_date: str
+    provenance_notes: str
+    required_skills_count: int
+    preferred_skills_count: int
+
+
+class SkillEvidenceMatch(BaseModel):
+    """Comparison result for a single required or preferred skill."""
+    skill_key: str
+    skill_name: str
+    category: str
+    importance_level: str  # "required" or "preferred"
+    status: str  # "evidenced", "claimed", "unconfirmed", "missing"
+    status_label: str
+    role_justification: str
+    user_skill_id: Optional[int] = None
+    user_evidence_status: Optional[str] = None
+    source_type: Optional[str] = None
+    source_context: Optional[str] = None
+    explanation: str
+
+
+class SkillGapMetrics(BaseModel):
+    """Deterministic coverage statistics for a selected role profile."""
+    required_total: int
+    required_evidenced: int
+    required_claimed: int
+    required_unconfirmed: int
+    required_missing: int
+    preferred_total: int
+    preferred_evidenced: int
+    preferred_claimed: int
+    preferred_unconfirmed: int
+    preferred_missing: int
+    evidence_coverage_percentage: float
+    coverage_formula: str
+    metric_explanation: str
+    disclaimer: str
+
+
+class SkillGapAnalysisResponse(BaseModel):
+    """Full explainable skill-gap analysis envelope."""
+    role: TargetRoleSummaryResponse
+    metrics: SkillGapMetrics
+    required_skills: List[SkillEvidenceMatch]
+    preferred_skills: List[SkillEvidenceMatch]
+    unmatched_user_skills: List[UserSkillResponse]
+    generated_at: str
+

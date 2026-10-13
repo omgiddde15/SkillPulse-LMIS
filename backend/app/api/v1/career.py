@@ -13,6 +13,11 @@ from app.schemas.career_models import (
     CareerProfileResponse,
     ResumeMetadataResponse,
     ResumeReviewRequest,
+    UserSkillCreate,
+    UserSkillUpdate,
+    UserSkillResponse,
+    TargetRoleSummaryResponse,
+    SkillGapAnalysisResponse,
 )
 from app.services.career_service import CareerService, CareerServiceError
 from app.services.resume_parser import (
@@ -20,9 +25,12 @@ from app.services.resume_parser import (
     ResumeParsingError,
     MAX_FILE_SIZE,
 )
+from app.services.role_catalogue import get_supported_roles, get_role_by_id
+from app.services.skill_gap_service import SkillGapService
 
 router = APIRouter(prefix="/career", tags=["Career Guidance"])
 career_service = CareerService()
+skill_gap_service = SkillGapService(career_service)
 
 
 @router.get("/profile")
@@ -206,3 +214,162 @@ def delete_resume(
         "status": "success",
         "message": "Resume deleted successfully.",
     }
+
+
+# -----------------------------------------------------------------------------
+# Phase 2: User Skill Evidence Endpoints
+# -----------------------------------------------------------------------------
+
+@router.get("/skills", status_code=status.HTTP_200_OK)
+def list_user_skills(
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves all registered skills and evidence statuses for the authenticated user."""
+    skills = career_service.get_user_skills(current_user["id"])
+    return {
+        "status": "success",
+        "count": len(skills),
+        "skills": skills,
+    }
+
+
+@router.post("/skills", status_code=status.HTTP_201_CREATED)
+def create_user_skill(
+    payload: UserSkillCreate,
+    current_user: dict = Depends(get_current_user),
+):
+    """Adds a new self-claimed or evidenced skill to the authenticated user's profile."""
+    try:
+        skill = career_service.add_user_skill(current_user["id"], payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except CareerServiceError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to save user skill.",
+        )
+    return {
+        "status": "success",
+        "message": f"Skill '{skill['skill_name']}' registered successfully.",
+        "skill": skill,
+    }
+
+
+@router.put("/skills/{skill_id}", status_code=status.HTTP_200_OK)
+def update_user_skill(
+    skill_id: int,
+    payload: UserSkillUpdate,
+    current_user: dict = Depends(get_current_user),
+):
+    """Updates an existing skill claim or evidence context for the authenticated user."""
+    update_data = {k: v for k, v in payload.model_dump().items() if v is not None}
+    try:
+        updated = career_service.update_user_skill(current_user["id"], skill_id, update_data)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except CareerServiceError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user skill.",
+        )
+
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill record not found.",
+        )
+
+    return {
+        "status": "success",
+        "message": "Skill evidence updated successfully.",
+        "skill": updated,
+    }
+
+
+@router.delete("/skills/{skill_id}", status_code=status.HTTP_200_OK)
+def delete_user_skill(
+    skill_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Removes a skill from the authenticated user's profile."""
+    deleted = career_service.delete_user_skill(current_user["id"], skill_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill record not found.",
+        )
+    return {
+        "status": "success",
+        "message": "Skill removed successfully.",
+    }
+
+
+# -----------------------------------------------------------------------------
+# Phase 2: Role Catalogue & Skill-Gap Endpoints
+# -----------------------------------------------------------------------------
+
+@router.get("/roles", status_code=status.HTTP_200_OK)
+def list_supported_roles():
+    """Lists all supported starter role profiles with required/preferred counts and provenance."""
+    roles = get_supported_roles()
+    return {
+        "status": "success",
+        "count": len(roles),
+        "roles": roles,
+    }
+
+
+@router.get("/roles/{role_id}", status_code=status.HTTP_200_OK)
+def get_role_details(role_id: str):
+    """Retrieves full specification and required skills for a supported role profile."""
+    role = get_role_by_id(role_id)
+    if not role:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Role profile '{role_id}' not found in the supported catalogue.",
+        )
+    return {
+        "status": "success",
+        "role": role,
+    }
+
+
+@router.get("/skill-gaps", status_code=status.HTTP_200_OK)
+def get_skill_gap_analysis(
+    role_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Calculates deterministic explainable skill-gap analysis for the authenticated user.
+    
+    If role_id is not specified, attempts to use the user's benchmark occupation or defaults to ROLE_PY_BACKEND.
+    """
+    selected_role_id = role_id
+    if not selected_role_id:
+        profile = career_service.get_profile(current_user["id"])
+        if profile and profile.get("target_occupation_id"):
+            occ_id = profile["target_occupation_id"]
+            for r in get_supported_roles():
+                if r.get("benchmark_occupation_id") == occ_id:
+                    selected_role_id = r["role_id"]
+                    break
+        if not selected_role_id:
+            selected_role_id = "ROLE_PY_BACKEND"
+
+    analysis = skill_gap_service.analyze_gap_for_user(
+        user_id=current_user["id"],
+        role_id=selected_role_id,
+    )
+    if not analysis:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Role profile '{selected_role_id}' is not in the supported role catalogue. Custom roles are preserved in your profile; pre-configured skill benchmarks are available for supported starter roles.",
+        )
+
+    return analysis
+
