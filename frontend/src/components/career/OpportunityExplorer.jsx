@@ -146,6 +146,11 @@ export default function OpportunityExplorer({ onNavigate }) {
                 <span>Fee Unspecified</span>
               </span>
             )}
+            {item.verification_status === 'unconfirmed' && (
+              <span className="opp-fee-badge" style={{ backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
+                <span>Unconfirmed</span>
+              </span>
+            )}
           </div>
 
           {matchMeta && matchMeta.match_score > 0 && (

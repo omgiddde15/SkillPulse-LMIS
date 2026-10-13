@@ -144,24 +144,28 @@ def test_portal_directory_vs_individual_listing_separation(client_anon):
     assert resp.status_code == 200
     data = resp.json()
     items = data["items"]
-    assert len(items) >= 10
+    assert len(items) == 12
 
     portal_dirs = [it for it in items if it["record_kind"] == "portal_directory"]
     individual_listings = [it for it in items if it["record_kind"] == "individual_listing"]
 
-    assert len(portal_dirs) >= 4
-    assert len(individual_listings) >= 5
+    assert len(portal_dirs) == 5
+    assert len(individual_listings) == 7
 
     # Portal directories must have listing_status 'portal_search' and never masquerade as open single vacancies
     for pd in portal_dirs:
         assert pd["listing_status"] == "portal_search"
         assert is_safe_https_url(pd["official_url"])
 
-    # Individual listings have specific providers, types, and verification metadata
+    # Individual listings have specific providers, types, and honest verification metadata
     for ind in individual_listings:
         assert ind["opportunity_type"] in ("course", "internship", "apprenticeship", "job", "scheme")
-        assert ind["verification_status"] == "verified_official"
+        assert ind["verification_status"] in ("verified_official", "unconfirmed")
         assert is_safe_https_url(ind["official_url"])
+
+    # Exactly 2 unconfirmed listings (Frontend Web Dev without direct URL and NAPS without employer)
+    unconfirmed = [it for it in individual_listings if it["verification_status"] == "unconfirmed"]
+    assert len(unconfirmed) == 2
 
 
 def test_catalogue_filtering_and_search(client_anon):
@@ -328,9 +332,11 @@ def test_recommendations_use_authenticated_user_profile_and_skills(client_user_a
     assert recs_b["status"] == "success"
     assert recs_b["user_target_role_id"] == "ROLE_ELECTRONICS_TEST"
 
-    # User B should see electronics apprenticeship highly ranked
+    # User B targets Electronics Testing: unconfirmed NAPS curriculum standard must NOT be recommended
     opps_b = recs_b["recommended_opportunities"]
-    assert any(o["opportunity"]["id"] == "OPP_APP_NAPS_ELECTRONICS_TEST" for o in opps_b)
+    assert not any(o["opportunity"]["id"] == "OPP_APP_NAPS_ELECTRONICS_TEST" for o in opps_b)
+    # But User B has the official Apprenticeship India directory in portal_directories
+    assert any(d["id"] == "OPP_DIR_APPRENTICESHIP_INDIA" for d in recs_b["portal_directories"])
 
 
 def test_course_matching_prioritizes_missing_required_skill_gaps(client_user_a):
@@ -356,8 +362,11 @@ def test_course_matching_prioritizes_missing_required_skill_gaps(client_user_a):
     courses = recs["recommended_courses"]
     assert len(courses) > 0
 
-    # DBMS course from SWAYAM (addresses missing required skill 'sql')
-    dbms_match = next((c for c in courses if c["opportunity"]["id"] == "OPP_CRS_SWAYAM_NPTEL_DBMS"), None)
+    # The concluded Jul-Sep 2026 run OPP_CRS_SWAYAM_NPTEL_DBMS must NOT be recommended
+    assert not any(c["opportunity"]["id"] == "OPP_CRS_SWAYAM_NPTEL_DBMS" for c in courses)
+
+    # The evergreen self-paced reference OPP_CRS_SWAYAM_NPTEL_DBMS_EVERGREEN IS recommended for SQL gap
+    dbms_match = next((c for c in courses if c["opportunity"]["id"] == "OPP_CRS_SWAYAM_NPTEL_DBMS_EVERGREEN"), None)
     assert dbms_match is not None
     assert "sql" in dbms_match["addressed_gaps"]
     assert dbms_match["score_breakdown"]["gap_skill_points"] > 0
@@ -476,3 +485,55 @@ def test_transparent_reasons_scores_and_disclaimer(client_user_a):
         for r in c["reasons"]:
             assert "code" in r
             assert "message" in r
+
+
+def test_unverified_listings_never_appear_in_recommendations(client_user_a):
+    """Test 15: Unverified listings and closed runs are strictly excluded from recommendations."""
+    client_a, _ = client_user_a
+
+    # User A targets Frontend Web Developer
+    client_a.put(
+        "/api/v1/career/profile",
+        json={"target_role_title": "Frontend Web Developer"},
+    )
+
+    recs = client_a.get("/api/v1/career/recommendations").json()
+    all_rec_ids = {c["opportunity"]["id"] for c in recs["recommended_courses"]}.union(
+        {o["opportunity"]["id"] for o in recs["recommended_opportunities"]}
+    )
+
+    # Unconfirmed frontend course must NOT appear
+    assert "OPP_CRS_SIDH_FRONTEND_REACT" not in all_rec_ids
+    # Unconfirmed apprenticeship must NOT appear
+    assert "OPP_APP_NAPS_ELECTRONICS_TEST" not in all_rec_ids
+    # Concluded DBMS run must NOT appear
+    assert "OPP_CRS_SWAYAM_NPTEL_DBMS" not in all_rec_ids
+
+
+def test_catalogue_filtering_by_verification_status(client_anon):
+    """Test 16: Filtering catalogue by verification_status separates verified and unconfirmed."""
+    resp_verified = client_anon.get("/api/v1/career/opportunities?verification_status=verified_official")
+    assert resp_verified.status_code == 200
+    items_v = resp_verified.json()["items"]
+    assert len(items_v) >= 9
+    assert all(it["verification_status"] == "verified_official" for it in items_v)
+
+    resp_unconf = client_anon.get("/api/v1/career/opportunities?verification_status=unconfirmed")
+    assert resp_unconf.status_code == 200
+    items_u = resp_unconf.json()["items"]
+    assert len(items_u) == 2
+    assert all(it["verification_status"] == "unconfirmed" for it in items_u)
+
+
+def test_unlocking_ai_course_attributes_and_no_false_python_claim(client_anon):
+    """Test 17: Unlocking AI course attributes reflect official page and do not claim Python coding."""
+    resp = client_anon.get("/api/v1/career/opportunities/OPP_CRS_SIDH_UNLOCKING_AI")
+    assert resp.status_code == 200
+    item = resp.json()["opportunity"]
+    assert item["title"] == "Unlocking AI for Everyone"
+    assert item["fee_status"] == "free"
+    assert item["fee_amount"] is None
+    # Material claims: does NOT claim Python
+    assert "python" not in item["skill_keys"]
+    assert item["verification_status"] == "verified_official"
+    assert item["listing_status"] == "open"

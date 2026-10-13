@@ -293,6 +293,7 @@ class OpportunityService:
         work_mode: Optional[str] = None,
         fee_status: Optional[str] = None,
         listing_status: Optional[str] = None,
+        verification_status: Optional[str] = None,
         limit: int = 50,
         offset: int = 0,
     ) -> Dict[str, Any]:
@@ -324,6 +325,10 @@ class OpportunityService:
         if listing_status:
             conditions.append("o.listing_status = ?")
             params.append(listing_status.strip().lower())
+
+        if verification_status:
+            conditions.append("o.verification_status = ?")
+            params.append(verification_status.strip().lower())
 
         if search:
             search_pattern = f"%{search.strip().lower()}%"

@@ -120,6 +120,16 @@ class OpportunityMatchingEngine:
                 portal_directories.append(item)
                 continue
 
+            # Phase 3.1 Availability & Verification Safety:
+            # Only sufficiently verified, active individual listings may be recommended.
+            # Closed, stale, expired, or availability-unconfirmed listings are strictly excluded.
+            if item.get("verification_status") != "verified_official":
+                continue
+            if item.get("listing_status") in ("closed", "stale", "unconfirmed"):
+                continue
+            if item.get("is_deadline_passed", False):
+                continue
+
             item_type = item["opportunity_type"]
             item_roles = [r.upper() for r in item.get("role_ids", [])]
             item_skills = [normalize_skill_key(k) for k in item.get("skill_keys", []) if normalize_skill_key(k)]
@@ -306,11 +316,18 @@ class OpportunityMatchingEngine:
                 "message": "Aligned with candidate's target industry sector.",
             })
 
-        # Check if opportunity has substantive skill, role, or sector relevance
-        has_substantive_relevance = (
-            score_breakdown["evidenced_skill_points"] > 0
-            or score_breakdown["role_or_sector_points"] > 0
-        )
+        is_flagship_scheme = (opp.get("opportunity_type") == "scheme")
+
+        # Substantive relevance check:
+        # For custom unmapped roles without matching skills/sector, do not force schemes.
+        if is_custom_role and not (score_breakdown["evidenced_skill_points"] > 0 or score_breakdown["role_or_sector_points"] > 0):
+            has_substantive_relevance = False
+        else:
+            has_substantive_relevance = (
+                score_breakdown["evidenced_skill_points"] > 0
+                or score_breakdown["role_or_sector_points"] > 0
+                or is_flagship_scheme
+            )
 
         # 3. Location compatibility (up to 15 pts) - bonus if substantively relevant
         if has_substantive_relevance:
@@ -329,9 +346,9 @@ class OpportunityMatchingEngine:
                     "message": f"Located in candidate's specified state ({opp_state}).",
                 })
 
-            # 4. Flagship Government Scheme / Portal backing (15 pts)
-            if opp.get("opportunity_type") == "scheme":
-                score_breakdown["flagship_scheme_points"] = 15.0
+            # 4. Flagship Government Scheme / Portal backing
+            if is_flagship_scheme:
+                score_breakdown["flagship_scheme_points"] = 25.0
                 reasons.append({
                     "code": "OFFICIAL_FLAGSHIP_SCHEME",
                     "message": "Official Government of India youth skilling and stipend initiative.",
