@@ -28,6 +28,7 @@ import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
 import MyWorkspace from './components/dashboard/MyWorkspace';
 import CareerProfilePage from './components/career/CareerProfilePage';
+import OpportunityExplorer from './components/career/OpportunityExplorer';
 
 const FILTERABLE_TABS = ['overview', 'demand', 'gap', 'forecasts', 'alerts'];
 
@@ -58,6 +59,7 @@ const ROUTE_TO_PATH = {
   signup: '/signup',
   workspace: '/workspace',
   career: '/career',
+  opportunities: '/opportunities',
   overview: '/overview',
   demand: '/demand',
   forecasts: '/forecasts',
@@ -84,6 +86,7 @@ const PATH_TO_ROUTE = {
   '/my-workspace': 'workspace',
   '/career': 'career',
   '/profile': 'career',
+  '/opportunities': 'opportunities',
   '/overview': 'overview',
   '/demand': 'demand',
   '/intelligence': 'demand',
@@ -537,6 +540,12 @@ export default function App() {
           {activeTab === 'career' && (
             <ErrorBoundary moduleName="Career Profile">
               <CareerProfilePage onNavigate={handleNavigate} />
+            </ErrorBoundary>
+          )}
+
+          {activeTab === 'opportunities' && (
+            <ErrorBoundary moduleName="Opportunity Explorer">
+              <OpportunityExplorer onNavigate={handleNavigate} />
             </ErrorBoundary>
           )}
 

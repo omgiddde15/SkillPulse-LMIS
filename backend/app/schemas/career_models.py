@@ -229,3 +229,88 @@ class SkillGapAnalysisResponse(BaseModel):
     unmatched_user_skills: List[UserSkillResponse]
     generated_at: str
 
+
+# -----------------------------------------------------------------------------
+# Phase 3: Opportunity Catalogue & Recommendation Models
+# -----------------------------------------------------------------------------
+
+class OpportunitySourceResponse(BaseModel):
+    """Registered trusted official source directory."""
+    source_id: str
+    name: str
+    home_url: str
+    approved_domain: str
+    managing_agency: str
+    category: str
+    supported_types: List[str]
+    verification_status: str
+    data_access_method: str
+    last_verified_at: str
+    refresh_interval: str
+    provenance_notes: Optional[str] = None
+
+
+class OpportunityItemResponse(BaseModel):
+    """Specific listing or official portal search destination."""
+    id: str
+    record_kind: str  # "portal_directory" or "individual_listing"
+    title: str
+    description: str
+    opportunity_type: str  # "course", "job", "internship", "apprenticeship", "scheme"
+    provider_name: str
+    source_id: str
+    source_name: Optional[str] = None
+    official_url: str
+    role_ids: List[str] = []
+    skill_keys: List[str] = []
+    eligibility: Dict[str, Any] = {}
+    eligibility_status: str = "not_specified"
+    location_state: Optional[str] = None
+    location_district: Optional[str] = None
+    work_mode: str = "online"
+    fee_status: str = "unknown"
+    fee_amount: Optional[float] = None
+    fee_currency: str = "INR"
+    stipend_min: Optional[float] = None
+    stipend_max: Optional[float] = None
+    stipend_period: Optional[str] = None
+    application_deadline: Optional[str] = None
+    published_at: Optional[str] = None
+    published_contact_name: Optional[str] = None
+    published_contact_email: Optional[str] = None
+    published_contact_phone: Optional[str] = None
+    listing_status: str = "source_listed"
+    verification_status: str = "verified_official"
+    verified_at: str
+    source_last_updated_at: Optional[str] = None
+    provenance_notes: Optional[str] = None
+    is_deadline_passed: bool = False
+
+
+class OpportunityRecommendationReason(BaseModel):
+    """Individual transparent rationale for why an item was recommended."""
+    code: str
+    message: str
+
+
+class OpportunityRecommendationItem(BaseModel):
+    """Personalized opportunity match with score breakdown and reason codes."""
+    opportunity: OpportunityItemResponse
+    match_score: float
+    score_breakdown: Dict[str, float]
+    reasons: List[OpportunityRecommendationReason]
+    matching_skills: List[str] = []
+    addressed_gaps: List[str] = []
+
+
+class OpportunityRecommendationsResponse(BaseModel):
+    """Personalized recommendations response for authenticated user."""
+    recommended_courses: List[OpportunityRecommendationItem]
+    recommended_opportunities: List[OpportunityRecommendationItem]
+    portal_directories: List[OpportunityItemResponse]
+    user_target_role_id: Optional[str] = None
+    user_target_role_title: Optional[str] = None
+    user_gaps_addressed_count: int = 0
+    disclaimer: str
+
+

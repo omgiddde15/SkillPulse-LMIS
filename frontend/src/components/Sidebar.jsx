@@ -73,6 +73,13 @@ const NAV_SECTIONS = [
         icon: 'briefcase',
         badgeType: 'career',
       },
+      {
+        id: 'opportunities',
+        labelKey: 'nav.opportunities',
+        fallbackLabel: 'Opportunity Explorer',
+        icon: 'compass',
+        badgeType: 'opportunities',
+      },
     ],
   },
   {

@@ -27,10 +27,14 @@ from app.services.resume_parser import (
 )
 from app.services.role_catalogue import get_supported_roles, get_role_by_id
 from app.services.skill_gap_service import SkillGapService
+from app.services.opportunity_service import OpportunityService
+from app.services.opportunity_matching import OpportunityMatchingEngine
 
 router = APIRouter(prefix="/career", tags=["Career Guidance"])
 career_service = CareerService()
 skill_gap_service = SkillGapService(career_service)
+opportunity_service = OpportunityService()
+opportunity_matcher = OpportunityMatchingEngine(career_service, skill_gap_service, opportunity_service)
 
 
 @router.get("/profile")
@@ -372,4 +376,85 @@ def get_skill_gap_analysis(
         )
 
     return analysis
+
+
+# -----------------------------------------------------------------------------
+# Phase 3: Verified Opportunity Catalogue & Recommendations Endpoints
+# -----------------------------------------------------------------------------
+
+@router.get("/sources", status_code=status.HTTP_200_OK)
+def list_opportunity_sources():
+    """Retrieves all registered trusted official source directories."""
+    sources = opportunity_service.get_sources()
+    return {
+        "status": "success",
+        "count": len(sources),
+        "sources": sources,
+    }
+
+
+@router.get("/opportunities", status_code=status.HTTP_200_OK)
+def list_opportunities(
+    opportunity_type: Optional[str] = None,
+    record_kind: Optional[str] = None,
+    search: Optional[str] = None,
+    role_id: Optional[str] = None,
+    skill_key: Optional[str] = None,
+    location_state: Optional[str] = None,
+    work_mode: Optional[str] = None,
+    fee_status: Optional[str] = None,
+    listing_status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+):
+    """Searches and filters the opportunity catalogue with pagination and freshness checks."""
+    results = opportunity_service.get_opportunities(
+        opportunity_type=opportunity_type,
+        record_kind=record_kind,
+        search=search,
+        role_id=role_id,
+        skill_key=skill_key,
+        location_state=location_state,
+        work_mode=work_mode,
+        fee_status=fee_status,
+        listing_status=listing_status,
+        limit=limit,
+        offset=offset,
+    )
+    return {
+        "status": "success",
+        **results,
+    }
+
+
+@router.get("/opportunities/{opportunity_id}", status_code=status.HTTP_200_OK)
+def get_opportunity_detail(opportunity_id: str):
+    """Retrieves full specification for an opportunity catalogue item."""
+    item = opportunity_service.get_opportunity_by_id(opportunity_id)
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Opportunity record '{opportunity_id}' not found in the catalogue.",
+        )
+    return {
+        "status": "success",
+        "opportunity": item,
+    }
+
+
+@router.get("/recommendations", status_code=status.HTTP_200_OK)
+def get_personalized_recommendations(
+    target_role_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Calculates deterministic personalized recommendations for the authenticated candidate."""
+    recs = opportunity_matcher.get_recommendations_for_user(
+        user_id=current_user["id"],
+        target_role_id=target_role_id,
+    )
+    return {
+        "status": "success",
+        **recs,
+    }
+
 

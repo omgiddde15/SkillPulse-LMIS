@@ -390,3 +390,47 @@ export async function fetchSkillGapAnalysis(roleId) {
   return request(`/api/v1/career/skill-gaps?role_id=${encodeURIComponent(roleId)}`);
 }
 
+/**
+ * Fetch list of registered trusted official source directories
+ * @returns {Promise<{ status: string, count: number, sources: Array }>}
+ */
+export async function fetchOpportunitySources() {
+  return request('/api/v1/career/sources');
+}
+
+/**
+ * Search and filter opportunities and portal directories
+ * @param {Object} params
+ * @returns {Promise<{ status: string, total: number, count: number, items: Array }>}
+ */
+export async function fetchOpportunities(params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, val]) => {
+    if (val !== undefined && val !== null && val !== '') {
+      query.append(key, String(val));
+    }
+  });
+  const qs = query.toString();
+  return request(`/api/v1/career/opportunities${qs ? `?${qs}` : ''}`);
+}
+
+/**
+ * Fetch single opportunity or portal directory by ID
+ * @param {string} opportunityId
+ * @returns {Promise<{ status: string, opportunity: Object }>}
+ */
+export async function fetchOpportunityDetails(opportunityId) {
+  return request(`/api/v1/career/opportunities/${encodeURIComponent(opportunityId)}`);
+}
+
+/**
+ * Fetch personalized recommendations for the authenticated candidate
+ * @param {string} [roleId]
+ * @returns {Promise<Object>}
+ */
+export async function fetchOpportunityRecommendations(roleId = null) {
+  const qs = roleId ? `?target_role_id=${encodeURIComponent(roleId)}` : '';
+  return request(`/api/v1/career/recommendations${qs}`);
+}
+
+

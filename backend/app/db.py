@@ -151,6 +151,66 @@ def init_db(db_path: str = None) -> None:
             );
         """)
 
+        # Opportunity Sources Registry (Phase 3)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS opportunity_sources (
+                source_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                home_url TEXT NOT NULL,
+                approved_domain TEXT NOT NULL,
+                managing_agency TEXT NOT NULL,
+                category TEXT NOT NULL,
+                supported_types_json TEXT NOT NULL DEFAULT '[]',
+                verification_status TEXT NOT NULL DEFAULT 'verified_official',
+                data_access_method TEXT NOT NULL DEFAULT 'public_directory_link',
+                last_verified_at TEXT NOT NULL,
+                refresh_interval TEXT NOT NULL DEFAULT 'monthly',
+                provenance_notes TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+        """)
+
+        # Opportunity Catalogue (Phase 3)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS opportunity_catalogue (
+                id TEXT PRIMARY KEY,
+                record_kind TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                opportunity_type TEXT NOT NULL,
+                provider_name TEXT NOT NULL,
+                source_id TEXT NOT NULL,
+                official_url TEXT NOT NULL,
+                role_ids_json TEXT NOT NULL DEFAULT '[]',
+                skill_keys_json TEXT NOT NULL DEFAULT '[]',
+                eligibility_json TEXT NOT NULL DEFAULT '{}',
+                eligibility_status TEXT NOT NULL DEFAULT 'not_specified',
+                location_state TEXT,
+                location_district TEXT,
+                work_mode TEXT NOT NULL DEFAULT 'online',
+                fee_status TEXT NOT NULL DEFAULT 'unknown',
+                fee_amount REAL,
+                fee_currency TEXT NOT NULL DEFAULT 'INR',
+                stipend_min REAL,
+                stipend_max REAL,
+                stipend_period TEXT,
+                application_deadline TEXT,
+                published_at TEXT,
+                published_contact_name TEXT,
+                published_contact_email TEXT,
+                published_contact_phone TEXT,
+                listing_status TEXT NOT NULL DEFAULT 'source_listed',
+                verification_status TEXT NOT NULL DEFAULT 'verified_official',
+                verified_at TEXT NOT NULL,
+                source_last_updated_at TEXT,
+                provenance_notes TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (source_id) REFERENCES opportunity_sources (source_id) ON DELETE CASCADE
+            );
+        """)
+
         # Indexes for fast lookup and integrity
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);")
@@ -161,6 +221,12 @@ def init_db(db_path: str = None) -> None:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_resumes_storage_key ON user_resumes(storage_key);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_user_id ON user_skills(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_skills_user_skill ON user_skills(user_id, skill_key);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_record_kind ON opportunity_catalogue(record_kind);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_type ON opportunity_catalogue(opportunity_type);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_source_id ON opportunity_catalogue(source_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_listing_status ON opportunity_catalogue(listing_status);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_fee_status ON opportunity_catalogue(fee_status);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_location ON opportunity_catalogue(location_state, location_district);")
         conn.commit()
 
 
