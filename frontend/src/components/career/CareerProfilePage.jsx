@@ -148,8 +148,24 @@ export default function CareerProfilePage({ onNavigate }) {
   // Profile save
   const handleSaveProfile = async (e) => {
     e.preventDefault();
-    if (!targetRoleTitle.trim()) {
-      setErrorMessage(isHindi ? 'कृपया लक्षित भूमिका शीर्षक दर्ज करें।' : 'Please enter your target role title.');
+    const hasAnyDetail =
+      Boolean(targetRoleTitle.trim()) ||
+      Boolean(targetSector) ||
+      Boolean(targetOccupationId) ||
+      Boolean(currentEducationLevel) ||
+      Boolean(institutionName.trim()) ||
+      Boolean(graduationYear) ||
+      Boolean(parseFloat(yearsExperience) > 0) ||
+      Boolean(currentState) ||
+      Boolean(currentDistrict) ||
+      preferredLocations.length > 0;
+
+    if (!hasAnyDetail) {
+      setErrorMessage(
+        isHindi
+          ? 'कृपया प्रोफ़ाइल सहेजने से पहले कम से कम एक विवरण (भूमिका, शिक्षा, अनुभव या स्थान) दर्ज करें।'
+          : 'Please enter at least one detail (role, education, experience, or location) before saving.'
+      );
       return;
     }
 
@@ -159,7 +175,7 @@ export default function CareerProfilePage({ onNavigate }) {
 
     try {
       const payload = {
-        target_role_title: targetRoleTitle.trim(),
+        target_role_title: targetRoleTitle.trim() || null,
         target_occupation_id: targetOccupationId || null,
         target_sector: targetSector || null,
         current_education_level: currentEducationLevel || null,
@@ -475,7 +491,7 @@ export default function CareerProfilePage({ onNavigate }) {
             {/* Target Role Title */}
             <div className="form-group">
               <label htmlFor="target-role-title" className="form-label">
-                {isHindi ? 'लक्षित करियर भूमिका' : 'Target Career Role'} <span className="required-star">*</span>
+                {isHindi ? 'लक्षित करियर भूमिका (वैकल्पिक)' : 'Target Career Role (Optional)'}
               </label>
               <input
                 id="target-role-title"
@@ -484,13 +500,12 @@ export default function CareerProfilePage({ onNavigate }) {
                 placeholder={isHindi ? 'उदा. Embedded Software Engineer, Python Developer' : 'e.g. Embedded Software Engineer, Python Developer'}
                 value={targetRoleTitle}
                 onChange={(e) => setTargetRoleTitle(e.target.value)}
-                required
                 disabled={!isAuthenticated || isSavingProfile}
               />
               <span className="field-hint">
                 {isHindi
-                  ? 'आप किसी भी तकनीकी या औद्योगिक पदनाम को स्वतंत्र रूप से दर्ज कर सकते हैं।'
-                  : 'Free-text title representing your primary career goal.'}
+                  ? 'वैकल्पिक। आप पहले शिक्षा और स्थान सहेज सकते हैं, या एक विशिष्ट लक्ष्य भूमिका दर्ज कर सकते हैं।'
+                  : 'Optional for partial profiles. You can save your education and location first, and define target role anytime.'}
               </span>
             </div>
 

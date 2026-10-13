@@ -169,7 +169,7 @@ def review_resume(
     if not updated:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume not found or access denied.",
+            detail="Resume not found.",
         )
 
     return {
@@ -199,7 +199,7 @@ def delete_resume(
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume not found or access denied.",
+            detail="Resume not found.",
         )
 
     return {

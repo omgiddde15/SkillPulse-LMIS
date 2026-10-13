@@ -98,7 +98,7 @@ def init_db(db_path: str = None) -> None:
             CREATE TABLE IF NOT EXISTS career_profiles (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL UNIQUE,
-                target_role_title TEXT NOT NULL,
+                target_role_title TEXT NOT NULL DEFAULT '',
                 target_occupation_id TEXT,
                 target_sector TEXT,
                 current_education_level TEXT,

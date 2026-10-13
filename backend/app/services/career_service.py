@@ -57,7 +57,7 @@ class CareerService:
         return {
             "id": row["id"],
             "user_id": row["user_id"],
-            "target_role_title": row["target_role_title"],
+            "target_role_title": row["target_role_title"] if row["target_role_title"] else None,
             "target_occupation_id": row["target_occupation_id"],
             "target_sector": row["target_sector"],
             "current_education_level": row["current_education_level"],
@@ -74,9 +74,10 @@ class CareerService:
 
     def save_or_update_profile(self, user_id: int, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Creates or updates a user's career profile."""
-        target_role = (payload.get("target_role_title") or "").strip()
-        if not target_role or len(target_role) < 2:
-            raise ValueError("Target role title is required and must be at least 2 characters.")
+        raw_role = payload.get("target_role_title")
+        target_role = raw_role.strip() if raw_role else ""
+        if target_role and len(target_role) < 2:
+            raise ValueError("Target role title must be at least 2 characters if provided.")
 
         target_occ_id = payload.get("target_occupation_id")
         if target_occ_id:

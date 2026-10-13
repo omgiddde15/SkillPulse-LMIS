@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class CareerProfileCreateOrUpdate(BaseModel):
     """Payload for creating or updating a candidate's personal career profile."""
-    target_role_title: str = Field(..., min_length=2, max_length=150, description="Target career role title (e.g., Embedded Software Engineer)")
+    target_role_title: Optional[str] = Field(None, max_length=150, description="Target career role title (optional for partial profiles)")
     target_occupation_id: Optional[str] = Field(None, max_length=64, description="Optional canonical occupation reference ID (e.g., OCC_IT_001)")
     target_sector: Optional[str] = Field(None, max_length=64, description="Primary industry sector (e.g., IT/ITeS, Manufacturing, Logistics)")
     current_education_level: Optional[str] = Field(None, max_length=64, description="Highest qualification level (e.g., B.Tech, ITI, Diploma)")
@@ -20,10 +20,14 @@ class CareerProfileCreateOrUpdate(BaseModel):
 
     @field_validator("target_role_title")
     @classmethod
-    def clean_title(cls, v: str) -> str:
+    def clean_title(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
         clean = v.strip()
+        if not clean:
+            return None
         if len(clean) < 2:
-            raise ValueError("Target role title must be at least 2 characters.")
+            raise ValueError("Target role title must be at least 2 characters if provided.")
         return clean
 
     @field_validator("preferred_locations", mode="before")
@@ -40,7 +44,7 @@ class CareerProfileResponse(BaseModel):
     """API response envelope for user's career profile."""
     id: int
     user_id: int
-    target_role_title: str
+    target_role_title: Optional[str] = None
     target_occupation_id: Optional[str] = None
     target_occupation_title: Optional[str] = None
     target_sector: Optional[str] = None

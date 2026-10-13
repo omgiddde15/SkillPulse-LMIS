@@ -203,20 +203,48 @@ def test_authenticated_profile_crud(client_user_a):
 
 
 def test_partial_profile_and_custom_target_role(client_user_a):
-    """Test 2: Partial profile save with free-text custom role not in canonical 9 occupations."""
+    """Test 2: Partial profile save before deciding target role, and custom role updates."""
     client, user = client_user_a
 
-    payload = {
-        "target_role_title": "Embedded Linux Firmware Engineer",
-        "years_experience": 0.0,
+    # User saves education, location and experience before deciding on target role
+    payload_partial = {
+        "current_education_level": "B.Tech",
+        "institution_name": "Pune Institute of Computer Technology",
+        "graduation_year": 2024,
+        "years_experience": 1.5,
+        "current_state": "MH",
+        "current_district": "MH_PUN",
+        "preferred_locations": ["MH_MUM"],
     }
-    resp = client.put("/api/v1/career/profile", json=payload)
+    resp = client.put("/api/v1/career/profile", json=payload_partial)
     assert resp.status_code == 200
     profile = resp.json()["profile"]
-    assert profile["target_role_title"] == "Embedded Linux Firmware Engineer"
+    assert profile["target_role_title"] is None
+    assert profile["current_education_level"] == "B.Tech"
+    assert profile["institution_name"] == "Pune Institute of Computer Technology"
+    assert profile["graduation_year"] == 2024
+    assert profile["years_experience"] == 1.5
+    assert profile["current_state"] == "MH"
+    assert profile["current_district"] == "MH_PUN"
+    assert profile["preferred_locations"] == ["MH_MUM"]
     assert profile["target_occupation_id"] is None
-    assert profile["preferred_locations"] == []
     assert profile["consent_ai_processing"] is False
+
+    # Fetch to verify persistence
+    get_resp = client.get("/api/v1/career/profile")
+    assert get_resp.status_code == 200
+    assert get_resp.json()["has_profile"] is True
+    assert get_resp.json()["profile"]["target_role_title"] is None
+    assert get_resp.json()["profile"]["current_district"] == "MH_PUN"
+
+    # User later decides and defines a custom target role
+    payload_partial["target_role_title"] = "Embedded Linux Firmware Engineer"
+    resp2 = client.put("/api/v1/career/profile", json=payload_partial)
+    assert resp2.status_code == 200
+    profile2 = resp2.json()["profile"]
+    assert profile2["target_role_title"] == "Embedded Linux Firmware Engineer"
+    assert profile2["current_education_level"] == "B.Tech"
+    assert profile2["current_district"] == "MH_PUN"
 
 
 def test_unauthenticated_profile_access_rejected(client_anon):
@@ -385,10 +413,21 @@ def test_resume_review_and_edit(client_user_a):
     assert reviewed_resume["parsed_data"]["experience_years"] == 3.0
 
 
-def test_cross_user_isolation(client_user_a, client_user_b):
-    """Test 8: Strict tenant isolation — User A cannot be accessed or mutated by User B."""
+def test_cross_user_isolation(client_user_a, client_user_b, client_anon, temp_environment):
+    """Test 8: Strict tenant isolation — User A cannot be accessed, modified or deleted by User B.
+    
+    Verifies:
+    - User B attempting to review User A's resume returns 404 with non-disclosing message.
+    - User B attempting to review non-existent resume returns identical 404.
+    - User B attempting to delete User A's resume returns 404 with non-disclosing message.
+    - User B attempting to delete non-existent resume returns identical 404.
+    - Unauthenticated requests return 401.
+    - User A's database record and parsed data remain untouched after unauthorized review attempt.
+    - User A's database record and disk file remain untouched after unauthorized delete attempt.
+    """
     client_a, user_a = client_user_a
     client_b, user_b = client_user_b
+    _, upload_dir = temp_environment
 
     # User A creates profile and uploads resume
     client_a.put("/api/v1/career/profile", json={"target_role_title": "Architect A"})
@@ -398,6 +437,12 @@ def test_cross_user_isolation(client_user_a, client_user_b):
     )
     resume_a_id = up_resp.json()["resume"]["id"]
 
+    # Verify User A's file exists on disk
+    initial_files = list(upload_dir.glob("*.pdf"))
+    assert len(initial_files) == 1
+    user_a_file = initial_files[0]
+    assert user_a_file.exists()
+
     # User B checks their profile (must be empty, not User A's)
     b_prof_resp = client_b.get("/api/v1/career/profile")
     assert b_prof_resp.json()["has_profile"] is False
@@ -406,21 +451,55 @@ def test_cross_user_isolation(client_user_a, client_user_b):
     b_res_resp = client_b.get("/api/v1/career/resume/latest")
     assert b_res_resp.json()["has_resume"] is False
 
-    # User B attempts to review User A's resume -> 404
+    # User B attempts to review User A's resume -> 404 non-disclosing
     b_review_resp = client_b.put(
         f"/api/v1/career/resume/{resume_a_id}/review",
-        json={"candidate_name": "Hacked Name"},
+        json={"candidate_name": "Hacked Name", "detected_skills": ["MaliciousSkill"]},
     )
     assert b_review_resp.status_code == 404
+    assert b_review_resp.json()["detail"] == "Resume not found."
 
-    # User B attempts to delete User A's resume -> 404
-    b_del_resp = client_b.delete(f"/api/v1/career/resume/{resume_a_id}")
-    assert b_del_resp.status_code == 404
+    # User B attempts to review a non-existent resume -> identical 404
+    b_nonexistent_review = client_b.put(
+        "/api/v1/career/resume/999999/review",
+        json={"candidate_name": "Ghost Name"},
+    )
+    assert b_nonexistent_review.status_code == 404
+    assert b_nonexistent_review.json()["detail"] == "Resume not found."
 
-    # User A's resume still exists and is untouched
+    # Verify User A's resume data was NOT modified by unauthorized review attempt
     a_latest = client_a.get("/api/v1/career/resume/latest")
     assert a_latest.json()["has_resume"] is True
+    assert a_latest.json()["resume"]["is_reviewed"] is False
     assert a_latest.json()["resume"]["parsed_data"]["candidate_name"] == "Priya Sharma"
+    assert "MaliciousSkill" not in a_latest.json()["resume"]["parsed_data"].get("detected_skills", [])
+
+    # User B attempts to delete User A's resume -> 404 non-disclosing
+    b_del_resp = client_b.delete(f"/api/v1/career/resume/{resume_a_id}")
+    assert b_del_resp.status_code == 404
+    assert b_del_resp.json()["detail"] == "Resume not found."
+
+    # User B attempts to delete a non-existent resume -> identical 404
+    b_nonexistent_del = client_b.delete("/api/v1/career/resume/999999")
+    assert b_nonexistent_del.status_code == 404
+    assert b_nonexistent_del.json()["detail"] == "Resume not found."
+
+    # Anonymous user review attempt -> 401
+    anon_review = client_anon.put(
+        f"/api/v1/career/resume/{resume_a_id}/review",
+        json={"candidate_name": "Anon"},
+    )
+    assert anon_review.status_code == 401
+
+    # Anonymous user delete attempt -> 401
+    anon_del = client_anon.delete(f"/api/v1/career/resume/{resume_a_id}")
+    assert anon_del.status_code == 401
+
+    # Verify User A's resume still exists in database and on disk
+    a_after_del_attempts = client_a.get("/api/v1/career/resume/latest")
+    assert a_after_del_attempts.json()["has_resume"] is True
+    assert a_after_del_attempts.json()["resume"]["id"] == resume_a_id
+    assert user_a_file.exists()
 
 
 def test_resume_deletion(client_user_a, temp_environment):
