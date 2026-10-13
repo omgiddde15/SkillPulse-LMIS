@@ -18,6 +18,10 @@ from app.schemas.career_models import (
     UserSkillResponse,
     TargetRoleSummaryResponse,
     SkillGapAnalysisResponse,
+    RoadmapGenerateRequest,
+    MilestoneStatusUpdateRequest,
+    RoadmapDetailResponse,
+    RoadmapSummaryResponse,
 )
 from app.services.career_service import CareerService, CareerServiceError
 from app.services.resume_parser import (
@@ -29,12 +33,14 @@ from app.services.role_catalogue import get_supported_roles, get_role_by_id
 from app.services.skill_gap_service import SkillGapService
 from app.services.opportunity_service import OpportunityService
 from app.services.opportunity_matching import OpportunityMatchingEngine
+from app.services.roadmap_service import RoadmapService
 
 router = APIRouter(prefix="/career", tags=["Career Guidance"])
 career_service = CareerService()
 skill_gap_service = SkillGapService(career_service)
 opportunity_service = OpportunityService()
 opportunity_matcher = OpportunityMatchingEngine(career_service, skill_gap_service, opportunity_service)
+roadmap_service = RoadmapService(career_service, skill_gap_service, opportunity_service)
 
 
 @router.get("/profile")
@@ -458,5 +464,125 @@ def get_personalized_recommendations(
         "status": "success",
         **recs,
     }
+
+
+# -----------------------------------------------------------------------------
+# Phase 4: Personalized Career Roadmap Endpoints
+# -----------------------------------------------------------------------------
+
+@router.post("/roadmaps/generate", status_code=status.HTTP_201_CREATED, response_model=RoadmapDetailResponse)
+def generate_and_save_roadmap(
+    payload: RoadmapGenerateRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Generates and persists an explainable personalized career roadmap.
+    
+    Uses deterministic gap analysis and verified catalogue items, enriched with
+    Gemini 3.8 Flash assistance when AI consent is active and the API key is configured.
+    """
+    try:
+        generated = roadmap_service.generate_roadmap(
+            user_id=current_user["id"],
+            target_role_id=payload.target_role_id,
+            horizon_days=payload.horizon_days,
+        )
+        saved = roadmap_service.save_roadmap(
+            user_id=current_user["id"],
+            roadmap_data=generated,
+            client_request_token=payload.client_request_token,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate career roadmap.",
+        )
+
+    return saved
+
+
+@router.get("/roadmaps", status_code=status.HTTP_200_OK)
+def list_user_roadmaps(
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves list of all saved career roadmaps for the authenticated candidate."""
+    roadmaps = roadmap_service.get_user_roadmaps(current_user["id"])
+    return {
+        "status": "success",
+        "count": len(roadmaps),
+        "roadmaps": roadmaps,
+    }
+
+
+@router.get("/roadmaps/{roadmap_id}", status_code=status.HTTP_200_OK, response_model=RoadmapDetailResponse)
+def get_roadmap_detail(
+    roadmap_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves full details of a saved roadmap including milestones and verified resources.
+    
+    Enforces user ownership. Does not disclose other users' roadmaps (returns 404).
+    """
+    roadmap = roadmap_service.get_roadmap_by_id(current_user["id"], roadmap_id)
+    if not roadmap:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Career roadmap not found.",
+        )
+    return roadmap
+
+
+@router.delete("/roadmaps/{roadmap_id}", status_code=status.HTTP_200_OK)
+def delete_user_roadmap(
+    roadmap_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Deletes a career roadmap and cascaded milestones.
+    
+    Enforces user ownership. Does not disclose other users' roadmaps (returns 404).
+    """
+    success = roadmap_service.delete_roadmap(current_user["id"], roadmap_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Career roadmap not found.",
+        )
+    return {
+        "status": "success",
+        "message": "Career roadmap deleted successfully.",
+    }
+
+
+@router.patch("/roadmaps/{roadmap_id}/milestones/{milestone_id}", status_code=status.HTTP_200_OK)
+def update_milestone_completion(
+    roadmap_id: int,
+    milestone_id: int,
+    payload: MilestoneStatusUpdateRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Updates the completion state of a specific milestone in the user's roadmap.
+    
+    Enforces user ownership. Returns 404 if the roadmap or milestone is not found or unauthorized.
+    """
+    updated = roadmap_service.update_milestone_status(
+        user_id=current_user["id"],
+        roadmap_id=roadmap_id,
+        milestone_id=milestone_id,
+        is_completed=payload.is_completed,
+    )
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Roadmap milestone not found.",
+        )
+    return {
+        "status": "success",
+        "milestone": updated,
+    }
+
 
 

@@ -314,3 +314,90 @@ class OpportunityRecommendationsResponse(BaseModel):
     disclaimer: str
 
 
+# -----------------------------------------------------------------------------
+# Phase 4: Personalized Career Roadmap Schemas
+# -----------------------------------------------------------------------------
+
+class RoadmapGenerateRequest(BaseModel):
+    """Payload to request deterministic or AI-assisted career roadmap generation."""
+    target_role_id: str = Field(..., min_length=2, max_length=64, description="Supported target role ID from role catalogue")
+    horizon_days: int = Field(default=30, description="Planning horizon in days: 30, 60, or 90")
+    client_request_token: Optional[str] = Field(None, max_length=128, description="Optional client idempotency token")
+
+    @field_validator("horizon_days")
+    @classmethod
+    def validate_horizon(cls, v: int) -> int:
+        if v not in (30, 60, 90):
+            raise ValueError("Planning horizon must be 30, 60, or 90 days.")
+        return v
+
+    @field_validator("target_role_id")
+    @classmethod
+    def clean_role_id(cls, v: str) -> str:
+        clean = v.strip().upper()
+        if not clean:
+            raise ValueError("Target role ID must be provided.")
+        return clean
+
+
+class MilestoneStatusUpdateRequest(BaseModel):
+    """Payload to update completion state of a roadmap milestone."""
+    is_completed: bool = Field(..., description="Milestone completion status")
+
+
+class MilestoneItemResponse(BaseModel):
+    """Structured milestone in a personalized career roadmap."""
+    id: int
+    roadmap_id: int
+    milestone_order: int
+    title: str
+    description: str
+    target_skill_keys: List[str] = Field(default_factory=list)
+    action_type: str = Field(..., description="Action type: learn, practise, build_project, review, apply")
+    suggested_duration_days: int = Field(default=7, ge=1, le=90)
+    prerequisites: List[str] = Field(default_factory=list)
+    linked_opportunity_id: Optional[str] = None
+    linked_opportunity: Optional[OpportunityItemResponse] = None
+    is_completed: bool = False
+    completed_at: Optional[str] = None
+
+
+class RoadmapSummaryResponse(BaseModel):
+    """List summary for saved user roadmaps."""
+    id: int
+    user_id: int
+    target_role_id: str
+    role_title: str
+    horizon_days: int
+    summary: str
+    generation_mode: str  # "ai_assisted" or "deterministic"
+    methodology_note: str
+    total_milestones: int
+    completed_milestones: int
+    progress_percentage: float
+    generated_at: str
+    created_at: str
+    updated_at: str
+
+
+class RoadmapDetailResponse(BaseModel):
+    """Complete roadmap response envelope with sequenced milestones."""
+    id: int
+    user_id: int
+    target_role_id: str
+    role_title: str
+    horizon_days: int
+    summary: str
+    generation_mode: str  # "ai_assisted" or "deterministic"
+    methodology_note: str
+    total_milestones: int
+    completed_milestones: int
+    progress_percentage: float
+    generated_at: str
+    created_at: str
+    updated_at: str
+    milestones: List[MilestoneItemResponse]
+    disclaimer: str
+
+
+

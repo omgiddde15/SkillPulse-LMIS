@@ -211,6 +211,45 @@ def init_db(db_path: str = None) -> None:
             );
         """)
 
+        # Career Roadmaps table (Phase 4)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS career_roadmaps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                target_role_id TEXT NOT NULL,
+                role_title TEXT NOT NULL,
+                horizon_days INTEGER NOT NULL,
+                summary TEXT NOT NULL,
+                generation_mode TEXT NOT NULL,
+                methodology_note TEXT NOT NULL,
+                client_request_token TEXT,
+                generated_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            );
+        """)
+
+        # Roadmap Milestones table (Phase 4)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS roadmap_milestones (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                roadmap_id INTEGER NOT NULL,
+                milestone_order INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                target_skill_keys_json TEXT NOT NULL DEFAULT '[]',
+                action_type TEXT NOT NULL,
+                suggested_duration_days INTEGER NOT NULL DEFAULT 7,
+                linked_opportunity_id TEXT,
+                is_completed INTEGER NOT NULL DEFAULT 0,
+                completed_at TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (roadmap_id) REFERENCES career_roadmaps (id) ON DELETE CASCADE
+            );
+        """)
+
         # Indexes for fast lookup and integrity
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);")
@@ -227,6 +266,10 @@ def init_db(db_path: str = None) -> None:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_listing_status ON opportunity_catalogue(listing_status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_fee_status ON opportunity_catalogue(fee_status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_location ON opportunity_catalogue(location_state, location_district);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_user_id ON career_roadmaps(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_target_role ON career_roadmaps(target_role_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_token ON career_roadmaps(client_request_token);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_milestones_roadmap_id ON roadmap_milestones(roadmap_id);")
         conn.commit()
 
 

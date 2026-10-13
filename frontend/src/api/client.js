@@ -433,4 +433,68 @@ export async function fetchOpportunityRecommendations(roleId = null) {
   return request(`/api/v1/career/recommendations${qs}`);
 }
 
+/**
+ * Generate a personalized or deterministic career roadmap
+ * @param {Object} payload
+ * @param {string} payload.target_role_id
+ * @param {number} [payload.horizon_days]
+ * @param {string} [payload.client_request_token]
+ * @returns {Promise<Object>}
+ */
+export async function generateCareerRoadmap(payload) {
+  return request('/api/v1/career/roadmaps/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Fetch list of saved career roadmaps for authenticated user
+ * @returns {Promise<{ status: string, count: number, roadmaps: Array }>}
+ */
+export async function fetchCareerRoadmaps() {
+  return request('/api/v1/career/roadmaps');
+}
+
+/**
+ * Fetch complete details of a specific saved roadmap
+ * @param {number|string} roadmapId
+ * @returns {Promise<Object>}
+ */
+export async function fetchCareerRoadmapDetails(roadmapId) {
+  return request(`/api/v1/career/roadmaps/${encodeURIComponent(roadmapId)}`);
+}
+
+/**
+ * Delete a saved career roadmap
+ * @param {number|string} roadmapId
+ * @returns {Promise<{ status: string, message: string }>}
+ */
+export async function deleteCareerRoadmap(roadmapId) {
+  return request(`/api/v1/career/roadmaps/${encodeURIComponent(roadmapId)}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
+ * Toggle or update completion status of a roadmap milestone
+ * @param {number|string} roadmapId
+ * @param {number|string} milestoneId
+ * @param {boolean} isCompleted
+ * @returns {Promise<{ status: string, milestone: Object }>}
+ */
+export async function updateRoadmapMilestoneStatus(roadmapId, milestoneId, isCompleted) {
+  return request(`/api/v1/career/roadmaps/${encodeURIComponent(roadmapId)}/milestones/${encodeURIComponent(milestoneId)}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ is_completed: isCompleted }),
+  });
+}
+
+
 

@@ -18,6 +18,7 @@ import {
 } from '../../api/client';
 import Icon from '../Icon';
 import LoadingSpinner from '../LoadingSpinner';
+import CareerRoadmap from './CareerRoadmap';
 
 const SECTORS = [
   'IT/ITeS',
@@ -716,6 +717,15 @@ export default function CareerProfilePage({ onNavigate }) {
               {(gapAnalysis.metrics || gapAnalysis.coverage_metrics).evidence_coverage_percentage}%
             </span>
           )}
+        </button>
+
+        <button
+          type="button"
+          className={`career-tab-btn ${activeTab === 'roadmap' ? 'active' : ''}`}
+          onClick={() => setActiveTab('roadmap')}
+        >
+          <Icon name="compass" size={15} />
+          <span>{t('career.tab.roadmap')}</span>
         </button>
       </div>
 
@@ -1757,6 +1767,16 @@ export default function CareerProfilePage({ onNavigate }) {
             </div>
           )}
         </div>
+      )}
+
+      {/* TAB 4: Personalized Career Roadmap */}
+      {activeTab === 'roadmap' && (
+        <CareerRoadmap
+          onNavigate={onNavigate}
+          isHindi={isHindi}
+          t={t}
+          isAuthenticated={isAuthenticated}
+        />
       )}
 
       {/* Modal: Add or Edit Skill */}
