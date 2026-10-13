@@ -404,3 +404,143 @@ def test_unauthenticated_requests_return_401(client: TestClient):
     assert client.get("/api/v1/career/roadmaps/1").status_code == 401
     assert client.delete("/api/v1/career/roadmaps/1").status_code == 401
     assert client.patch("/api/v1/career/roadmaps/1/milestones/1", json={"is_completed": True}).status_code == 401
+
+
+# -----------------------------------------------------------------------------
+# 5. Complete 10-Step End-to-End Integration Audit Flow
+# -----------------------------------------------------------------------------
+
+def test_complete_10_step_integration_audit(tmp_path, monkeypatch):
+    """Audits the full user lifecycle: profile setup, skills, consent, safe fallback, and isolation."""
+    test_db = str(tmp_path / "audit_test.db")
+    monkeypatch.setenv("SKILLPULSE_DB_PATH", test_db)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    init_db(test_db)
+
+    client_a = TestClient(app)
+    client_b = TestClient(app)
+
+    # 1. Register User A
+    reg_a = client_a.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "auditor_a@skillpulse.org",
+            "full_name": "Auditor Alpha",
+            "password": "Password123!",
+            "confirm_password": "Password123!",
+        },
+    )
+    assert reg_a.status_code == 201
+
+    # 2. Set supported role
+    prof_res = client_a.put(
+        "/api/v1/career/profile",
+        json={
+            "target_role_title": "Python / Backend Developer",
+            "target_occupation_id": None,
+            "consent_ai_processing": False,
+        },
+    )
+    assert prof_res.status_code == 200
+
+    # 3. Add synthetic skills with distinct evidence statuses
+    s1 = client_a.post(
+        "/api/v1/career/skills",
+        json={
+            "skill_name": "Python",
+            "category": "technical",
+            "evidence_status": "evidenced",
+            "source_context": "FastAPI microservices",
+        },
+    )
+    s2 = client_a.post(
+        "/api/v1/career/skills",
+        json={
+            "skill_name": "SQL",
+            "category": "technical",
+            "evidence_status": "claimed",
+        },
+    )
+    s3 = client_a.post(
+        "/api/v1/career/skills",
+        json={
+            "skill_name": "Docker",
+            "category": "tool",
+            "evidence_status": "unconfirmed",
+        },
+    )
+    assert s1.status_code == 201
+    assert s2.status_code == 201
+    assert s3.status_code == 201
+
+    # 4. Generate 30-day roadmap with AI consent disabled
+    rm_res = client_a.post(
+        "/api/v1/career/roadmaps/generate",
+        json={"target_role_id": "ROLE_PY_BACKEND", "horizon_days": 30},
+    )
+    assert rm_res.status_code == 201
+    rm_data = rm_res.json()
+    assert rm_data["generation_mode"] == "deterministic"
+    assert "consent is disabled" in rm_data["methodology_note"].lower()
+    roadmap_a_id = rm_data["id"]
+
+    # 5. Enable AI consent
+    prof_res2 = client_a.put(
+        "/api/v1/career/profile",
+        json={"consent_ai_processing": True},
+    )
+    assert prof_res2.status_code == 200
+
+    # 6. Generate roadmap again without API key (offline safe fallback)
+    rm_res2 = client_a.post(
+        "/api/v1/career/roadmaps/generate",
+        json={"target_role_id": "ROLE_PY_BACKEND", "horizon_days": 30},
+    )
+    assert rm_res2.status_code == 201
+    rm_data2 = rm_res2.json()
+    assert rm_data2["generation_mode"] == "deterministic"
+    assert "gemini api key is not configured" in rm_data2["methodology_note"].lower()
+
+    # 7 & 8. Check milestones and catalogue verification rules
+    assert len(rm_data["milestones"]) > 0
+    for m in rm_data["milestones"]:
+        opp_id = m.get("linked_opportunity_id")
+        if opp_id:
+            assert opp_id != "OPP_CRS_SWAYAM_NPTEL_DBMS", "Closed exam cycle was linked!"
+            assert opp_id != "OPP_CRS_SIDH_FRONTEND_REACT", "Unconfirmed SIDH course was linked!"
+            assert opp_id != "OPP_APP_NAPS_ELECTRONICS_TEST", "Unconfirmed NAPS was linked!"
+
+    # 9. Reopen and toggle milestone
+    m1_id = rm_data["milestones"][0]["id"]
+    patch_res = client_a.patch(
+        f"/api/v1/career/roadmaps/{roadmap_a_id}/milestones/{m1_id}",
+        json={"is_completed": True},
+    )
+    assert patch_res.status_code == 200
+    assert patch_res.json()["milestone"]["is_completed"] is True
+    reopen_res = client_a.get(f"/api/v1/career/roadmaps/{roadmap_a_id}")
+    assert reopen_res.status_code == 200
+    assert reopen_res.json()["completed_milestones"] == 1
+    assert reopen_res.json()["progress_percentage"] > 0
+
+    # 10. User B isolation check
+    reg_b = client_b.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "auditor_b@skillpulse.org",
+            "full_name": "Auditor Beta",
+            "password": "Password123!",
+            "confirm_password": "Password123!",
+        },
+    )
+    assert reg_b.status_code == 201
+    b_get = client_b.get(f"/api/v1/career/roadmaps/{roadmap_a_id}")
+    assert b_get.status_code == 404
+    b_patch = client_b.patch(
+        f"/api/v1/career/roadmaps/{roadmap_a_id}/milestones/{m1_id}",
+        json={"is_completed": False},
+    )
+    assert b_patch.status_code == 404
+    b_del = client_b.delete(f"/api/v1/career/roadmaps/{roadmap_a_id}")
+    assert b_del.status_code == 404
+

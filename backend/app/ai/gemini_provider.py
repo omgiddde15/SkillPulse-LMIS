@@ -91,8 +91,18 @@ class GeminiProvider(AIProvider):
                 config=config,
             )
 
-            if not response or not response.text:
+            if not response:
                 raise AISchemaValidationError("Gemini returned an empty response.", provider="gemini")
+
+            # Check if SDK returned structured parsed object directly
+            if hasattr(response, "parsed") and response.parsed is not None:
+                if isinstance(response.parsed, dict):
+                    return response.parsed
+                if hasattr(response.parsed, "model_dump"):
+                    return response.parsed.model_dump()
+
+            if not getattr(response, "text", None):
+                raise AISchemaValidationError("Gemini returned an empty response text.", provider="gemini")
 
             try:
                 data = json.loads(response.text)
