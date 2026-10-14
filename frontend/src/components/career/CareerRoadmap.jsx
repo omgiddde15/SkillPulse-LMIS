@@ -53,25 +53,31 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
       const roles = rolesRes?.roles || [];
       setSupportedRoles(roles);
 
-      // 2. Fetch career profile for AI consent
+      // 2. Fetch career profile for AI consent & target role
+      let initialRoleId = roles[0]?.role_id || 'ROLE_PY_BACKEND';
       const profRes = await fetchCareerProfile();
       if (profRes?.has_profile && profRes.profile) {
         setConsentAiProcessing(Boolean(profRes.profile.consent_ai_processing));
         if (profRes.profile.target_occupation_id) {
-          const matched = roles.find(r => r.benchmark_occupation_id === profRes.profile.target_occupation_id);
-          if (matched) setSelectedRoleId(matched.role_id);
+          const matched = roles.find((r) => r.benchmark_occupation_id === profRes.profile.target_occupation_id);
+          if (matched) {
+            initialRoleId = matched.role_id;
+          }
         }
       }
+      setSelectedRoleId(initialRoleId);
 
       // 3. Fetch user's saved roadmaps
       const listRes = await fetchCareerRoadmaps();
       const userRoadmaps = listRes?.roadmaps || [];
       setRoadmaps(userRoadmaps);
 
-      // Load latest active roadmap if available
-      if (userRoadmaps.length > 0) {
-        const detailRes = await fetchCareerRoadmapDetails(userRoadmaps[0].id);
+      // 4. Synchronize active roadmap: match target role if saved roadmap exists
+      const matchingSaved = userRoadmaps.find((r) => r.target_role_id === initialRoleId);
+      if (matchingSaved) {
+        const detailRes = await fetchCareerRoadmapDetails(matchingSaved.id);
         setActiveRoadmap(detailRes);
+        setHorizonDays(matchingSaved.horizon_days);
       } else {
         setActiveRoadmap(null);
       }
@@ -140,12 +146,71 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
     }
   };
 
-  // Select a saved roadmap
+  // Helper for dynamic truthful provider attribution badge
+  const getProviderBadgeLabel = (roadmap) => {
+    if (!roadmap || roadmap.generation_mode !== 'ai_assisted') {
+      return t('roadmap.modeDeterministic') || (isHindi ? 'नियम-आधारित इंजन' : 'Deterministic Rules Engine');
+    }
+    const prov = (roadmap.ai_provider || '').toLowerCase();
+    const note = (roadmap.methodology_note || '').toLowerCase();
+    if (prov === 'watsonx' || note.includes('watsonx') || note.includes('ibm')) {
+      return isHindi ? 'एआई-सहायता प्राप्त (IBM watsonx.ai)' : 'AI-Assisted (IBM watsonx.ai)';
+    }
+    if (prov === 'gemini' || note.includes('gemini')) {
+      return isHindi ? 'एआई-सहायता प्राप्त (Gemini)' : 'AI-Assisted (Gemini)';
+    }
+    return t('roadmap.modeAi') || (isHindi ? 'एआई-सहायता प्राप्त' : 'AI-Assisted');
+  };
+
+  // Change role in dropdown and synchronize roadmap view
+  const handleRoleChange = async (newRoleId) => {
+    setSelectedRoleId(newRoleId);
+    setErrorMessage(null);
+    setFeedback(null);
+    const matching = roadmaps.find((r) => r.target_role_id === newRoleId);
+    if (matching) {
+      try {
+        setIsLoadingRoadmaps(true);
+        const detail = await fetchCareerRoadmapDetails(matching.id);
+        setActiveRoadmap(detail);
+        setHorizonDays(matching.horizon_days);
+      } catch (err) {
+        setErrorMessage(err.message || 'Failed to load saved roadmap.');
+      } finally {
+        setIsLoadingRoadmaps(false);
+      }
+    } else {
+      setActiveRoadmap(null);
+    }
+  };
+
+  // Change horizon and check for matching saved roadmap for current role
+  const handleHorizonChange = async (newHorizon) => {
+    setHorizonDays(newHorizon);
+    const exactMatch = roadmaps.find(
+      (r) => r.target_role_id === selectedRoleId && r.horizon_days === newHorizon
+    );
+    if (exactMatch && exactMatch.id !== activeRoadmap?.id) {
+      try {
+        setIsLoadingRoadmaps(true);
+        const detail = await fetchCareerRoadmapDetails(exactMatch.id);
+        setActiveRoadmap(detail);
+      } catch (err) {
+        // preserve current
+      } finally {
+        setIsLoadingRoadmaps(false);
+      }
+    }
+  };
+
+  // Select a saved roadmap and synchronize selectors
   const handleSelectRoadmap = async (roadmapId) => {
     try {
       setIsLoadingRoadmaps(true);
       const detail = await fetchCareerRoadmapDetails(roadmapId);
       setActiveRoadmap(detail);
+      setSelectedRoleId(detail.target_role_id);
+      setHorizonDays(detail.horizon_days);
     } catch (err) {
       setErrorMessage(err.message || 'Failed to load selected roadmap.');
     } finally {
@@ -298,7 +363,7 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
             <select
               className="auth-input"
               value={selectedRoleId}
-              onChange={(e) => setSelectedRoleId(e.target.value)}
+              onChange={(e) => handleRoleChange(e.target.value)}
               disabled={isGenerating}
             >
               {supportedRoles.map((role) => (
@@ -318,7 +383,7 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
                   key={days}
                   type="button"
                   className={`roadmap-horizon-pill ${horizonDays === days ? 'active' : ''}`}
-                  onClick={() => setHorizonDays(days)}
+                  onClick={() => handleHorizonChange(days)}
                   disabled={isGenerating}
                 >
                   <Icon name="clock" size={13} />
@@ -343,14 +408,18 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
             </div>
             <div className="roadmap-active-selection-callout-content">
               <span className="roadmap-active-selection-callout-label">
-                {isHindi ? 'वर्तमान में चयनित सहेजी गई योजना:' : 'Currently Inspected Saved Plan:'}
+                {isHindi ? 'सहेजी गई योजना:' : 'Active Saved Plan:'}
               </span>
               <strong> {activeRoadmap.role_title} ({activeRoadmap.horizon_days} {isHindi ? 'दिन' : 'Days'})</strong>
               <span className="roadmap-active-selection-callout-hint">
                 {' — '}
-                {isHindi
-                  ? 'ऊपर दिए गए चयन को बदलने से सहेजी गई योजना पर तब तक कोई प्रभाव नहीं पड़ेगा जब तक आप नया रोडमैप तैयार नहीं करते।'
-                  : 'Changing generator inputs above will not alter this saved plan until you click Generate.'}
+                {activeRoadmap.target_role_id === selectedRoleId && activeRoadmap.horizon_days === horizonDays
+                  ? (isHindi
+                      ? 'वर्तमान में ऊपर चयनित भूमिका एवं समय-सीमा से मेल खाता है।'
+                      : 'Matches current role and horizon inputs above.')
+                  : (isHindi
+                      ? `ऊपर चयनित इनपुट भिन्न हैं (${supportedRoles.find((r) => r.role_id === selectedRoleId)?.title || selectedRoleId}, ${horizonDays} दिन)। नई योजना के लिए 'योजना बनाएं' पर क्लिक करें।`
+                      : `Generator inputs above differ (${supportedRoles.find((r) => r.role_id === selectedRoleId)?.title || selectedRoleId}, ${horizonDays}d). Click Generate Plan to create a roadmap for current inputs.`)}
               </span>
             </div>
           </div>
@@ -458,7 +527,11 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
                           {rm.horizon_days}d
                         </span>
                         <span className={`roadmap-mini-pill mode ${rm.generation_mode}`}>
-                          {rm.generation_mode === 'ai_assisted' ? 'AI' : 'Rules'}
+                          {rm.generation_mode === 'ai_assisted'
+                            ? (rm.ai_provider === 'watsonx' || (rm.methodology_note && rm.methodology_note.toLowerCase().includes('watsonx'))
+                                ? 'watsonx'
+                                : 'AI')
+                            : 'Rules'}
                         </span>
                         <span className="roadmap-mini-pill progress">
                           {rm.completed_milestones}/{rm.total_milestones} ({rm.progress_percentage}%)
@@ -488,9 +561,26 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
           ) : !activeRoadmap ? (
             <div className="career-card" style={{ padding: '3rem', textAlign: 'center' }}>
               <Icon name="compass" size={36} style={{ color: 'var(--text-tertiary)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.05rem', color: 'var(--text-secondary)' }}>
-                {t('roadmap.noSaved')}
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                {isHindi
+                  ? `चयनित भूमिका के लिए कोई रोडमैप नहीं है: ${supportedRoles.find((r) => r.role_id === selectedRoleId)?.title || selectedRoleId}`
+                  : `No saved roadmap for ${supportedRoles.find((r) => r.role_id === selectedRoleId)?.title || selectedRoleId} (${horizonDays} Days)`}
               </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', maxWidth: '450px', margin: '0 auto 1.25rem' }}>
+                {isHindi
+                  ? 'अपनी कौशल साक्ष्य स्थिति और आधिकारिक अवसरों के आधार पर एक व्यक्तिगत योजना बनाने के लिए नीचे दिए गए बटन पर क्लिक करें।'
+                  : 'Click "Generate Plan" below to create a personalized, milestone-driven roadmap grounded in your verified skill evidence.'}
+              </p>
+              <button
+                type="button"
+                className="auth-primary-btn"
+                style={{ padding: '0.5rem 1.2rem', margin: '0 auto' }}
+                onClick={handleGenerateRoadmap}
+                disabled={isGenerating}
+              >
+                <Icon name="zap" size={14} />
+                <span>{t('roadmap.generateBtn')}</span>
+              </button>
             </div>
           ) : (
             <div className="career-card">
@@ -509,11 +599,7 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
                     </h3>
                     <span className={`roadmap-mode-badge ${activeRoadmap.generation_mode}`}>
                       <Icon name={activeRoadmap.generation_mode === 'ai_assisted' ? 'zap' : 'sliders'} size={12} />
-                      <span>
-                        {activeRoadmap.generation_mode === 'ai_assisted'
-                          ? t('roadmap.modeAi')
-                          : t('roadmap.modeDeterministic')}
-                      </span>
+                      <span>{getProviderBadgeLabel(activeRoadmap)}</span>
                     </span>
                     <span className="roadmap-horizon-badge">
                       <Icon name="clock" size={12} />

@@ -122,10 +122,16 @@ export default function App() {
   const [gapData, setGapData] = useState(null);
   const [alertsData, setAlertsData] = useState(null);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [copilotInitialQuery, setCopilotInitialQuery] = useState(null);
   const [simulatorTarget, setSimulatorTarget] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const handleOpenCopilot = useCallback((initialQuery = null) => {
+    setCopilotInitialQuery(initialQuery);
+    setIsCopilotOpen(true);
+  }, []);
 
   // Global Context Filter State
   const [stateFilter, setStateFilter] = useState('');
@@ -302,21 +308,38 @@ export default function App() {
     }
   }, [period]);
 
-  // If activeTab is 'home', render the full public Landing Page
+  // If activeTab is 'home', render the full public Landing Page with Saarthi Assistant access
   if (activeTab === 'home') {
     return (
-      <LandingPage
-        onNavigate={handleNavigate}
-        onEnterDashboard={() => {
-          enterDemo();
-          handleNavigate('overview');
-        }}
-        onNavigateToModule={handleNavigate}
-        onNavigateToSimulatorWithContext={(district, occupation) =>
-          handleNavigateWithContext('simulator', { district, occupation })
-        }
-        backendHealth={backendHealth}
-      />
+      <>
+        <LandingPage
+          onNavigate={handleNavigate}
+          onEnterDashboard={() => {
+            enterDemo();
+            handleNavigate('overview');
+          }}
+          onNavigateToModule={handleNavigate}
+          onNavigateToSimulatorWithContext={(district, occupation) =>
+            handleNavigateWithContext('simulator', { district, occupation })
+          }
+          onOpenCopilot={handleOpenCopilot}
+          backendHealth={backendHealth}
+        />
+        <CopilotDrawer
+          isOpen={isCopilotOpen}
+          onClose={() => {
+            setIsCopilotOpen(false);
+            setCopilotInitialQuery(null);
+          }}
+          gapData={gapData}
+          demandData={demandData}
+          alertsData={alertsData}
+          period={period}
+          onNavigateToTab={handleNavigate}
+          onNavigateWithContext={handleNavigateWithContext}
+          initialQuery={copilotInitialQuery}
+        />
+      </>
     );
   }
 
@@ -601,6 +624,7 @@ export default function App() {
             activeTab !== 'simulator' &&
             activeTab !== 'workspace' &&
             activeTab !== 'career' &&
+            activeTab !== 'opportunities' &&
             activeTab !== 'districts' &&
             activeTab !== 'occupations' &&
             activeTab !== 'qualifications' &&
@@ -614,16 +638,20 @@ export default function App() {
         </main>
       </div>
 
-      {/* Grounded Analytical Policy Copilot Drawer */}
+      {/* SkillPulse Saarthi Assistant Drawer */}
       <CopilotDrawer
         isOpen={isCopilotOpen}
-        onClose={() => setIsCopilotOpen(false)}
+        onClose={() => {
+          setIsCopilotOpen(false);
+          setCopilotInitialQuery(null);
+        }}
         gapData={gapData}
         demandData={demandData}
         alertsData={alertsData}
         period={period}
         onNavigateToTab={handleNavigate}
         onNavigateWithContext={handleNavigateWithContext}
+        initialQuery={copilotInitialQuery}
       />
     </div>
   );

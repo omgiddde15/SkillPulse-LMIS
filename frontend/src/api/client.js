@@ -631,5 +631,25 @@ export async function sendCopilotMessage(conversationId, content) {
   });
 }
 
-
+/**
+ * Send query to Policy Copilot Grounded Analytical Engine
+ * @param {Object} payload
+ * @param {string} payload.query
+ * @param {string} [payload.period]
+ * @param {string} [payload.state_code]
+ * @param {string} [payload.district_id]
+ * @param {string} [payload.sector]
+ * @param {Array<Object>} [payload.history]
+ * @param {string} [payload.language]
+ * @returns {Promise<Object>}
+ */
+export async function sendPolicyCopilotQuery(payload) {
+  return request('/api/v1/policy-copilot/query', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
 

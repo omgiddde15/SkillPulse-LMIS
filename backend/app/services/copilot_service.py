@@ -30,6 +30,38 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+GREETING_WORDS = {
+    "hi", "hello", "hey", "hola", "namaste", "greetings", "good morning",
+    "good afternoon", "good evening"
+}
+THANKS_WORDS = {"thanks", "thank you", "thx", "many thanks", "appreciate it"}
+
+
+def is_social_greeting(question: str) -> tuple[bool, str]:
+    """Returns (is_social, category) where category is 'greeting', 'thanks', or ''."""
+    clean = question.strip().lower().rstrip("!.,?:;~")
+    if not clean:
+        return False, ""
+    if clean in GREETING_WORDS:
+        return True, "greeting"
+    if clean in THANKS_WORDS:
+        return True, "thanks"
+
+    words = clean.split()
+    if len(words) <= 3:
+        substantive = {
+            "gap", "gaps", "skill", "skills", "role", "roadmap", "course", "courses",
+            "job", "jobs", "internship", "learn", "how", "what", "why", "where",
+            "prioritize", "priority", "profile", "evidence"
+        }
+        if not any(w in substantive for w in words):
+            if any(w in GREETING_WORDS for w in words):
+                return True, "greeting"
+            if any(w in THANKS_WORDS for w in words):
+                return True, "thanks"
+    return False, ""
+
+
 class CopilotService:
     def __init__(
         self,
@@ -73,7 +105,7 @@ class CopilotService:
 
             # Add welcome message
             welcome_text = (
-                "Hello! I am your SkillPulse Career Copilot. I can help answer questions about your "
+                "Hello! I am your SkillPulse Career Navigator. I can help answer questions about your "
                 "target role, skill gaps, roadmap progress, and verified government or educational opportunities. "
                 "What would you like to explore today?"
             )
@@ -335,8 +367,26 @@ class CopilotService:
         sources = []
         suggested_followups = []
 
+        # Intent 0: Simple social greeting or courtesy message
+        is_social, social_cat = is_social_greeting(user_question)
+        if is_social:
+            if social_cat == "thanks":
+                answer = (
+                    f"You are very welcome! Let me know if you would like to explore your skill gaps, study plan, or verified opportunities for **{role['title']}**."
+                )
+                suggested_followups = [
+                    "What should I do this week based on my roadmap?",
+                ]
+            else:
+                answer = (
+                    f"Hello! I am your SkillPulse Career Navigator. How can I assist you with your career goals for **{role['title']}** today?"
+                )
+                suggested_followups = [
+                    "Which skill gaps should I prioritize?",
+                ]
+
         # Intent 1: Skill gaps / prioritization
-        if any(w in q_lower for w in ("gap", "prioritize", "priority", "missing", "require")):
+        elif any(w in q_lower for w in ("gap", "prioritize", "priority", "missing", "require")):
             if missing_req:
                 total_missing = len(missing_req)
                 if total_missing <= 3:
@@ -583,11 +633,18 @@ class CopilotService:
         ]
         history.append({"sender": "user", "content": clean_content})
 
-        # 4. Check AI consent
+        # 4. Check for social greetings or AI consent
+        is_social, _ = is_social_greeting(clean_content)
         has_ai_consent = context.get("consent_ai_processing", False)
         assistant_result = None
 
-        if not has_ai_consent:
+        if is_social:
+            # Simple social greetings receive immediate, concise natural response without unsolicited skill dumps
+            assistant_result = self.generate_deterministic_guidance(
+                context=context,
+                user_question=clean_content,
+            )
+        elif not has_ai_consent:
             note = (
                 "*(Note: External AI consent is disabled in your Career Profile. "
                 "This response is grounded using SkillPulse's deterministic rules engine.)*"

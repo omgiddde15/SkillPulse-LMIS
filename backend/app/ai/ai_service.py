@@ -189,6 +189,8 @@ class AIService:
             ),
             "generation_mode": "ai_assisted",
             "milestones": valid_milestones,
+            "ai_provider": provider_id,
+            "ai_model": getattr(self.provider, "model", None),
         }
 
     def generate_copilot_response(

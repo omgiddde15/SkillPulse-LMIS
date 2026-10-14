@@ -84,7 +84,7 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
         }
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to load Copilot conversations.');
+      setErrorMessage(err.message || 'Failed to load Career Navigator conversations.');
     } finally {
       setIsLoadingList(false);
     }
@@ -208,7 +208,7 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
         setConversations(listRes.conversations);
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to obtain answer from Copilot.');
+      setErrorMessage(err.message || 'Failed to obtain answer from Career Navigator.');
     } finally {
       setIsSending(false);
     }
@@ -228,8 +228,8 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
         <h3>{isHindi ? 'प्रमाणीकरण आवश्यक है' : 'Candidate Authentication Required'}</h3>
         <p>
           {isHindi
-            ? 'करियर कोपायलट मार्गदर्शन के लिए कृपया अपने उम्मीदवार खाते में साइन इन करें।'
-            : 'Please sign in to access personalized, grounded Career Copilot guidance.'}
+            ? 'करियर नेविगेटर मार्गदर्शन के लिए कृपया अपने उम्मीदवार खाते में साइन इन करें।'
+            : 'Please sign in to access personalized, grounded SkillPulse Career Navigator guidance.'}
         </p>
         <button
           type="button"
@@ -252,7 +252,7 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
           <div className="copilot-title-row">
             <h2 className="copilot-title">
               <Icon name="message-square" size={18} />
-              <span>{isHindi ? 'करियर कोपायलट (मार्गदर्शन सहायक)' : 'SkillPulse Career Copilot'}</span>
+              <span>{isHindi ? 'स्किलपल्स करियर नेविगेटर (मार्गदर्शन सहायक)' : 'SkillPulse Career Navigator'}</span>
             </h2>
             <span className={`copilot-consent-badge ${consentAiProcessing ? 'ai-active' : 'deterministic'}`}>
               <Icon name={consentAiProcessing ? 'sparkles' : 'shield'} size={12} />
@@ -382,7 +382,7 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
                         <div className="copilot-message-header">
                           <span className="copilot-sender-tag">
                             <Icon name={msg.sender === 'user' ? 'user' : 'compass'} size={12} />
-                            <span>{msg.sender === 'user' ? (isHindi ? 'आप (उम्मीदवार)' : 'Candidate') : 'Career Copilot'}</span>
+                            <span>{msg.sender === 'user' ? (isHindi ? 'आप (उम्मीदवार)' : 'Candidate') : (isHindi ? 'करियर नेविगेटर' : 'Career Navigator')}</span>
                           </span>
 
                           {msg.sender === 'assistant' && msg.generation_mode && (
@@ -524,8 +524,8 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
         <div>
           <strong>{isHindi ? 'डेटा अखंडता एवं सुरक्षा आश्वासन:' : 'Integrity & Data Protection Assurance:'}</strong>{' '}
           {isHindi
-            ? 'करियर कोपायलट केवल सत्यापित डेटा स्रोतों और उम्मीदवार की सहेजी गई प्रोफ़ाइल का उपयोग करता है। व्यक्तिगत पहचान योग्य जानकारी (PII) कभी भी बाहरी मॉडल को प्रेषित नहीं की जाती।'
-            : 'Career Copilot strictly verifies responses against official schemes, catalogued openings, and deterministic skill benchmarks. PII is scrubbed before processing and responses never fabricate unverified vacancies.'}
+            ? 'स्किलपल्स करियर नेविगेटर केवल सत्यापित डेटा स्रोतों और उम्मीदवार की सहेजी गई प्रोफ़ाइल का उपयोग करता है। व्यक्तिगत पहचान योग्य जानकारी (PII) कभी भी बाहरी मॉडल को प्रेषित नहीं की जाती।'
+            : 'SkillPulse Career Navigator strictly verifies responses against official schemes, catalogued openings, and deterministic skill benchmarks. PII is scrubbed before processing and responses never fabricate unverified vacancies.'}
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ from app.api.v1.demand import router as demand_router
 from app.api.v1.forecasts import router as forecasts_router
 from app.api.v1.gap_analysis import router as gap_router
 from app.api.v1.metadata import router as metadata_router
+from app.api.v1.policy_copilot import router as policy_copilot_router
 from app.api.v1.scenarios import router as scenarios_router
 from app.api.v1.seat_simulator import router as simulator_router
 from app.db import init_db
@@ -37,6 +38,7 @@ app.include_router(gap_router, prefix="/api/v1")
 app.include_router(forecasts_router, prefix="/api/v1")
 app.include_router(alerts_router, prefix="/api/v1")
 app.include_router(simulator_router, prefix="/api/v1")
+app.include_router(policy_copilot_router, prefix="/api/v1")
 app.include_router(metadata_router, prefix="/api/v1")
 
 

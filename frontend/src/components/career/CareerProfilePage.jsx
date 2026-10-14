@@ -736,7 +736,7 @@ export default function CareerProfilePage({ onNavigate }) {
           onClick={() => setActiveTab('copilot')}
         >
           <Icon name="message-square" size={15} />
-          <span>{isHindi ? 'करियर कोपायलट' : 'Career Copilot'}</span>
+          <span>{isHindi ? 'करियर नेविगेटर' : 'Career Navigator'}</span>
         </button>
 
         <button
@@ -1016,12 +1016,12 @@ export default function CareerProfilePage({ onNavigate }) {
                   />
                   <div>
                     <div className="consent-title">
-                      {isHindi ? 'एआई करियर सहायक प्रसंस्करण की अनुमति दें (पूर्वावलोकन)' : 'Enable AI Career Copilot Assistance (Phase 4+ Preview)'}
+                      {isHindi ? 'एआई करियर नेविगेटर सहायता सक्षम करें' : 'Enable AI Career Navigator Assistance'}
                     </div>
                     <div className="consent-desc">
                       {isHindi
-                        ? 'भविष्य के व्यक्तिगत कौशल रोडमैप के लिए स्पष्ट ऑप्ट-इन सहमति। डिफ़ॉल्ट: बंद। फ़ेज़ 2 में कोई बाहरी एआई कॉल नहीं होती।'
-                        : 'Explicit user opt-in consent for future AI skill-roadmap recommendations. Default: Off. No external AI processing occurs in Phase 2.'}
+                        ? 'व्यक्तिगत कौशल रोडमैप और करियर नेविगेटर के लिए स्पष्ट ऑप्ट-इन सहमति। डिफ़ॉल्ट: बंद।'
+                        : 'Explicit user opt-in consent for personalized skill roadmaps and Career Navigator recommendations. Default: Off.'}
                     </div>
                   </div>
                 </label>

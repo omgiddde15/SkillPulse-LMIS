@@ -149,16 +149,16 @@ export default function Header({
           </button>
         </div>
 
-        {/* Copilot Assistant Trigger */}
+        {/* SkillPulse Saarthi Assistant Trigger */}
         {handleCopilotClick && (
           <button
             type="button"
             onClick={handleCopilotClick}
             className="header-copilot-btn"
-            title="Open SkillPulse Grounded Policy Copilot"
+            title="Open SkillPulse Saarthi (Platform Guide & Policy Analytics)"
           >
-            <Icon name="sparkles" size={13} />
-            <span>{language === 'hi' ? 'कोपायलट' : 'Copilot'}</span>
+            <Icon name="compass" size={13} />
+            <span>{language === 'hi' ? 'सारथी' : 'Saarthi'}</span>
             <span className="header-copilot-live-pill">LIVE</span>
           </button>
         )}

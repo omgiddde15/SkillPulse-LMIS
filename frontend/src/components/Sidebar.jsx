@@ -223,28 +223,28 @@ export default function Sidebar({
         ))}
       </nav>
 
-      {/* SkillPulse Copilot Card + API Status Footer */}
+      {/* SkillPulse Saarthi Assistant Card + API Status Footer */}
       <div className="sidebar-footer">
         {handleCopilotClick && (
           <div className="sidebar-copilot-card">
             <div className="sidebar-copilot-header">
               <span className="sidebar-copilot-title">
-                <Icon name="sparkles" size={13} />
-                <span>{isHindi ? 'स्किलपल्स कोपायलट' : 'SkillPulse Copilot'}</span>
+                <Icon name="compass" size={13} />
+                <span>{isHindi ? 'स्किलपल्स सारथी' : 'SkillPulse Saarthi'}</span>
               </span>
-              <span className="sidebar-copilot-tag">Grounded</span>
+              <span className="sidebar-copilot-tag">Saarthi</span>
             </div>
             <div className="sidebar-copilot-desc">
               {isHindi
-                ? 'लाइव एपीआई पर आधारित द्विभाषी नीति एवं पूर्वानुमान सहायक'
-                : 'Bilingual policy & forecast assistant grounded on live API.'}
+                ? 'प्लेटफ़ॉर्म और श्रम बाज़ार विश्लेषण के लिए आपका मार्गदर्शक।'
+                : 'Your guide to the platform and labour-market intelligence.'}
             </div>
             <button
               type="button"
               onClick={handleCopilotClick}
               className="sidebar-copilot-cta"
             >
-              {isHindi ? 'कोपायलट से पूछें' : 'Ask Skill Copilot'}
+              {isHindi ? 'सारथी से पूछें' : 'Ask Saarthi'}
             </button>
           </div>
         )}

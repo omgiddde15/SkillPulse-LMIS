@@ -33,8 +33,30 @@ DISCLAIMER_TEXT = (
 )
 
 
+import re
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _extract_ai_attribution(generation_mode: str, methodology_note: str) -> tuple[Optional[str], Optional[str]]:
+    if generation_mode != "ai_assisted" or not methodology_note:
+        return None, None
+    lower = methodology_note.lower()
+    provider = None
+    model = None
+    if "watsonx" in lower or "ibm" in lower:
+        provider = "watsonx"
+    elif "gemini" in lower:
+        provider = "gemini"
+
+    match = re.search(r'\(([^)]+)\)', methodology_note)
+    if match:
+        model = match.group(1).strip()
+    elif provider == "gemini":
+        model = "gemini-3.8-flash"
+    return provider, model
 
 
 class RoadmapService:
@@ -391,6 +413,8 @@ class RoadmapService:
                 "generation_mode": "ai_assisted",
                 "methodology_note": ai_result["methodology_note"],
                 "milestones": ai_result["milestones"],
+                "ai_provider": ai_result.get("ai_provider"),
+                "ai_model": ai_result.get("ai_model"),
             }
 
         # 5. Fallback if AI generation failed or timed out
@@ -515,6 +539,7 @@ class RoadmapService:
             tot = row["total_milestones"] or 0
             comp = row["completed_milestones"] or 0
             prog = round((comp / tot * 100.0), 1) if tot > 0 else 0.0
+            ai_provider, ai_model = _extract_ai_attribution(row["generation_mode"], row["methodology_note"])
 
             results.append({
                 "id": row["id"],
@@ -531,6 +556,8 @@ class RoadmapService:
                 "generated_at": row["generated_at"],
                 "created_at": row["created_at"],
                 "updated_at": row["updated_at"],
+                "ai_provider": ai_provider,
+                "ai_model": ai_model,
             })
 
         return results
@@ -590,6 +617,7 @@ class RoadmapService:
 
         tot = len(milestones)
         prog = round((comp_count / tot * 100.0), 1) if tot > 0 else 0.0
+        ai_provider, ai_model = _extract_ai_attribution(rm["generation_mode"], rm["methodology_note"])
 
         return {
             "id": rm["id"],
@@ -608,6 +636,8 @@ class RoadmapService:
             "updated_at": rm["updated_at"],
             "milestones": milestones,
             "disclaimer": DISCLAIMER_TEXT,
+            "ai_provider": ai_provider,
+            "ai_model": ai_model,
         }
 
     def delete_roadmap(self, user_id: int, roadmap_id: int) -> bool:

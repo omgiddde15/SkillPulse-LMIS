@@ -379,6 +379,8 @@ class RoadmapSummaryResponse(BaseModel):
     generated_at: str
     created_at: str
     updated_at: str
+    ai_provider: Optional[str] = None
+    ai_model: Optional[str] = None
 
 
 class RoadmapDetailResponse(BaseModel):
@@ -399,6 +401,8 @@ class RoadmapDetailResponse(BaseModel):
     updated_at: str
     milestones: List[MilestoneItemResponse]
     disclaimer: str
+    ai_provider: Optional[str] = None
+    ai_model: Optional[str] = None
 
 
 # -----------------------------------------------------------------------------

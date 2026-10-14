@@ -1,12 +1,49 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../context/LanguageContext';
-import {
-  getDistrictDisplayName,
-  getStateDisplayName,
-} from '../../i18n/translations';
+import { sendPolicyCopilotQuery } from '../../api/client';
 import Icon from '../Icon';
 
-const INQUIRIES = [
+const GUIDE_INQUIRIES = [
+  {
+    id: 'how_to_use',
+    icon: 'compass',
+    labelEn: 'How do I use this site?',
+    labelHi: 'इस साइट का उपयोग कैसे करें?',
+  },
+  {
+    id: 'where_skill_gaps',
+    icon: 'search',
+    labelEn: 'Where can I find skill gaps?',
+    labelHi: 'कौशल अंतर कहाँ खोजें?',
+  },
+  {
+    id: 'how_simulate_seats',
+    icon: 'sliders',
+    labelEn: 'How do I simulate changing training seats?',
+    labelHi: 'प्रशिक्षण सीटों का सिमुलेशन कैसे करें?',
+  },
+  {
+    id: 'explain_mismatch',
+    icon: 'file-text',
+    labelEn: 'Explain the relative mismatch score.',
+    labelHi: 'सापेक्ष असंतुलन स्कोर का विवरण दें।',
+  },
+  {
+    id: 'check_data_quality',
+    icon: 'check-circle',
+    labelEn: 'How do I check data quality & health?',
+    labelHi: 'डेटा गुणवत्ता एवं स्वास्थ्य की जांच कैसे करें?',
+  },
+  {
+    id: 'find_opportunities',
+    icon: 'award',
+    labelEn: 'How do I find learning opportunities & apprenticeships?',
+    labelHi: 'सीखने के अवसर एवं अप्रेन्टिसशिप कैसे खोजें?',
+  },
+];
+
+const ANALYTICS_INQUIRIES = [
   {
     id: 'highest_pressure',
     icon: 'zap',
@@ -15,25 +52,25 @@ const INQUIRIES = [
   },
   {
     id: 'top_alerts',
-    icon: 'alert',
+    icon: 'alert-triangle',
     labelEn: 'What are the top persistent alerts across the pilot corridors?',
     labelHi: 'पायलट गलियारों में प्रमुख निरंतर अलर्ट कौन से हैं?',
   },
   {
     id: 'dharwad_cnc',
-    icon: 'search',
+    icon: 'activity',
     labelEn: 'Explain the CNC Machine Operator skill gap in Dharwad.',
     labelHi: 'धारवाड़ में सीएनसी मशीन ऑपरेटर कौशल अंतर का विवरण दें।',
   },
   {
     id: 'bengaluru_logistics',
-    icon: 'sliders',
+    icon: 'layers',
     labelEn: 'What seat planning scenario can be evaluated for Bengaluru Urban Logistics?',
     labelHi: 'बेंगलुरु शहरी लॉजिस्टिक्स के लिए किस सीट योजना परिदृश्य का मूल्यांकन किया जा सकता है?',
   },
   {
     id: 'forecast_comparison',
-    icon: 'chart',
+    icon: 'chart-bar',
     labelEn: 'Compare forecast accuracy across forecasting models.',
     labelHi: 'पूर्वानुमान मॉडलों में सटीकता की तुलना करें।',
   },
@@ -54,144 +91,189 @@ export default function CopilotDrawer({
   period = '2026-09',
   onNavigateToTab,
   onNavigateWithContext,
+  initialQuery = null,
 }) {
   const { isHindi } = useLanguage();
-  const [selectedInquiryId, setSelectedInquiryId] = useState('highest_pressure');
+  const [messages, setMessages] = useState([]);
+  const [inputQuery, setInputQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPresets, setShowPresets] = useState(true);
+  const [presetCategory, setPresetCategory] = useState('guide'); // 'guide' | 'analytics'
 
-  // Compute live answers deterministically from data
-  const responseContent = useMemo(() => {
-    const gapList = gapData?.results || [];
-    const alertsList = alertsData?.results || [];
+  const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
+  const hasExecutedInitialRef = useRef(false);
 
-    // Highest demand pressure case
-    const highestPressure = gapList.length > 0
-      ? gapList.reduce((max, r) => (r.relative_mismatch_score > max.relative_mismatch_score ? r : max), gapList[0])
-      : null;
+  // Initialize initial welcome message
+  const getInitialAssistantMessage = () => ({
+    id: 'msg-init',
+    role: 'assistant',
+    title: isHindi ? 'स्किलपल्स सारथी (SkillPulse Saarthi)' : 'SkillPulse Saarthi',
+    badge: 'PLATFORM GUIDE & ANALYTICS',
+    badge_color: 'var(--accent-primary)',
+    intent: 'platform_guide',
+    answer: isHindi
+      ? 'नमस्ते! मैं **स्किलपल्स सारथी** हूँ — 6 पायलट ज़िलों में प्लेटफ़ॉर्म नेविगेशन और श्रम बाज़ार विश्लेषण के लिए आपका मार्गदर्शक।\n\n' +
+        '**मेरी दो प्रमुख क्षमताएं हैं:**\n' +
+        '1. **प्लेटफ़ॉर्म गाइड:** साइट के सभी 18 मॉड्यूल, नेविगेशन पथ, परिदृश्य सीट सिमुलेशन, और मेट्रिक सूत्रों (जैसे सापेक्ष असंतुलन) को समझें।\n' +
+        '2. **नीतिगत विश्लेषण:** वास्तविक मांग दबाव, कौशल अंतर, पूर्वानुमान मॉडल और प्रारंभिक चेतावनी अलर्ट पर नियतात्मक उत्तर प्राप्त करें।\n\n' +
+        'नीचे दिए गए त्वरित प्रश्नों में से चुनें या अपना प्रश्न टाइप करें।'
+      : 'Hello! I am **SkillPulse Saarthi** — your guide to the platform and labour-market intelligence across our 6 pilot districts.\n\n' +
+        '**I provide two primary capabilities:**\n' +
+        '1. **Platform Guide:** Learn how to navigate all 18 modules, run TVET seat simulations in Scenario Studio, and understand metric formulas.\n' +
+        '2. **Policy Analytics:** Get factually grounded answers on regional demand pressure, occupational skill gaps, early-warning alerts, and forecasting models.\n\n' +
+        'Select a starter question below or type your inquiry in the composer.',
+    evidence: {
+      pilot_districts: 6,
+      active_period: period,
+      capabilities: 'Dual-Engine Platform Guide & Policy Analytics',
+    },
+    action_label: isHindi ? 'कार्यकारी अवलोकन खोलें' : 'Explore Executive Overview',
+    action_route: 'overview',
+    action_tab: 'overview',
+    guide_topic: 'getting_started',
+    suggested_followups: [
+      isHindi ? 'इस साइट का उपयोग कैसे करें?' : 'How do I use this site?',
+      isHindi ? 'इस चक्र में किस ज़िले में सबसे अधिक मांग दबाव है?' : 'Which district has the highest demand pressure this cycle?',
+      isHindi ? 'प्रशिक्षण सीटों का सिमुलेशन कैसे करें?' : 'How do I simulate changing training seats?',
+      isHindi ? 'सापेक्ष असंतुलन स्कोर का विवरण दें।' : 'Explain the relative mismatch score.',
+    ],
+    sources: [
+      { kind: 'metadata', title: 'SkillPulse Reference Architecture', url: '/api/v1/metadata' },
+    ],
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  });
 
-    if (selectedInquiryId === 'highest_pressure') {
-      if (!highestPressure) {
-        return {
-          title: isHindi ? 'कोई सक्रिय अंतर डेटा नहीं' : 'No Active Gap Data Available',
-          body: isHindi ? 'वर्तमान चक्र के लिए कोई अंतर रिकॉर्ड लोड नहीं हुआ।' : 'No gap records loaded for the active period.',
-        };
-      }
-      return {
-        title: isHindi
-          ? `शीर्ष मांग दबाव: ${highestPressure.occupation_title} (${getDistrictDisplayName(highestPressure.district_name, isHindi)})`
-          : `Top Demand Pressure: ${highestPressure.occupation_title} (${getDistrictDisplayName(highestPressure.district_name, false)}, ${getStateDisplayName(highestPressure.state_code, false)})`,
-        badge: `+${highestPressure.relative_mismatch_score.toFixed(1)} PTS MISMATCH`,
-        badgeColor: 'var(--status-demand)',
-        body: isHindi
-          ? `रिपोर्टिंग चक्र ${period} में, ${getDistrictDisplayName(highestPressure.district_name, isHindi)} में ${highestPressure.occupation_title} का मांग सूचकांक ${highestPressure.demand_index_score.toFixed(1)}/100 है, जबकि प्रमाणीकरण आपूर्ति केवल ${highestPressure.supply_output_index.toFixed(1)}/100 है। सापेक्ष असंतुलन +${highestPressure.relative_mismatch_score.toFixed(1)} अंक है। यह श्रेणी स्थानीय कार्यबल की उच्च मांग और सीमित टीवीईटी प्रमाणन को दर्शाती है।`
-          : `In reporting cycle ${period}, ${highestPressure.occupation_title} in ${highestPressure.district_name} (${highestPressure.state_code}) registers a composite demand index of ${highestPressure.demand_index_score.toFixed(1)}/100 against a certification throughput output rank of ${highestPressure.supply_output_index.toFixed(1)}/100, resulting in a peak relative mismatch of +${highestPressure.relative_mismatch_score.toFixed(1)} points. Local industrial hiring volume and vacancy persistence substantially exceed trainee graduation rates.`,
-        actionLabel: isHindi ? 'परिदृश्य स्टूडियो में सिमुलेशन का मूल्यांकन करें' : 'Simulate Planning Scenario in Scenario Studio',
-        onAction: () => {
-          onNavigateWithContext?.('simulator', {
-            district: highestPressure.district_id,
-            occupation: highestPressure.occupation_id,
-            state: highestPressure.state_code,
-          });
-          onClose?.();
-        },
-      };
+  // Reset or setup initial message on mount
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([getInitialAssistantMessage()]);
     }
+  }, [period, isHindi]);
 
-    if (selectedInquiryId === 'top_alerts') {
-      const persistentAlerts = alertsList.filter((a) => a.key_values?.is_persistent);
-      return {
-        title: isHindi
-          ? `सक्रिय प्रारंभिक चेतावनी संकेत (${alertsList.length} कुल, ${persistentAlerts.length} निरंतर)`
-          : `Active Early-Warning Signals (${alertsList.length} Total, ${persistentAlerts.length} Persistent)`,
-        badge: `${alertsList.length} ALERTS ACTIVE`,
-        badgeColor: 'var(--status-danger)',
-        body: isHindi
-          ? `इंजन ने वर्तमान में ${alertsList.length} सक्रिय विसंगतियां पाई हैं। इनमें से प्रमुख निरंतर अलर्ट में बेंगलुरु शहरी में कोल्ड चेन लॉजिस्टिक्स सुपरवाइजर (3m, 6m, 12m तीनों क्षितिजों पर सीमा रेखा पार) और धारवाड़ में सीएनसी ऑपरेटर शामिल हैं। एकल-क्षितिज संकेतों की तुलना में निरंतर विसंगतियों को प्राथमिकता दी जाती है।`
-          : `The early-warning engine currently tracks ${alertsList.length} verified anomalies. Top persistent alerts include Cold Chain Logistics Supervisor in Bengaluru Urban (crossed threshold across 3m, 6m, and 12m horizons simultaneously) and CNC Machine Operator in Dharwad. Multi-horizon persistence rules prevent premature intervention by confirming cross-horizon trajectory agreement.`,
-        actionLabel: isHindi ? 'अलर्ट कमांड सेंटर खोलें' : 'Open Early Warnings Center',
-        onAction: () => {
-          onNavigateToTab?.('alerts');
-          onClose?.();
-        },
-      };
+  // Handle incoming initialQuery
+  useEffect(() => {
+    if (isOpen && initialQuery && !hasExecutedInitialRef.current) {
+      hasExecutedInitialRef.current = true;
+      handleSend(initialQuery);
     }
-
-    if (selectedInquiryId === 'dharwad_cnc') {
-      return {
-        title: isHindi
-          ? 'धारवाड़ सीएनसी ऑपरेटर कौशल अंतर विश्लेषण'
-          : 'Dharwad CNC Machine Operator Gap Diagnostics',
-        badge: 'PRECISION MACHINING',
-        badgeColor: 'var(--accent-primary)',
-        body: isHindi
-          ? `धारवाड़ में मांग सूचकांक 73.1 अंक (148 ऑनलाइन विज्ञापन, 70.8 रिक्ति दृढ़ता, 42 नियोक्ता) है। इसके विपरीत, 3-माह का प्रमाणीकरण थ्रूपुट केवल 17.0 अंक है, जिससे +56.1 अंक का सापेक्ष असंतुलन बनता है। ऑटोमोटिव एवं प्रिसिजन इंजीनियरिंग क्लस्टर स्थानीय रूप से प्रशिक्षित ऑपरेटरों की तुलना में तेजी से नियुक्तियां कर रहे हैं।`
-          : `In Dharwad (KA_DHA), the demand composite score is 73.1 pts driven by high posting volume (148 online postings, score 83.0), vacancy persistence (70.8 pts, score 77.4), and employer recruitment breadth (42 employers, score 70.8). Trailing 3-month certification throughput stands at percentile 17.0, producing a +56.1 pt relative mismatch. Industrial machining clusters in the Belur-Hubballi corridor outpace ITI trainee output.`,
-        actionLabel: isHindi ? 'अंतर विश्लेषण विवरण देखें' : 'View Gap Diagnostics',
-        onAction: () => {
-          onNavigateToTab?.('gap');
-          onClose?.();
-        },
-      };
+    if (!isOpen) {
+      hasExecutedInitialRef.current = false;
     }
+  }, [isOpen, initialQuery]);
 
-    if (selectedInquiryId === 'bengaluru_logistics') {
-      return {
-        title: isHindi
-          ? 'बेंगलुरु शहरी लॉजिस्टिक्स सीट योजना परिदृश्य'
-          : 'Bengaluru Urban Logistics Seat Planning Scenario',
-        badge: 'SCENARIO STUDIO PLANNING EVALUATION',
-        badgeColor: 'var(--status-supply)',
-        body: isHindi
-          ? `वेयरहाउस इन्वेंटरी समन्वयक (OCC_LOG_001) के लिए वर्तमान आधार 80 सीटें/बैच (55.3 प्रमाणित/माह) है। परिदृश्य स्टूडियो में सीटों को 100 (+25%) या 180 (+125%) तक बढ़ाने का मूल्यांकन करने से प्रमाणित थ्रूपुट क्रमशः 69.1 या 124.4/माह तक बढ़ जाता है, जिससे अनुमानित 6-माह का असंतुलन +15.1 से घटकर संतुलित या पर्याप्त आपूर्ति स्थिति में आ जाता है (ध्यान दें: यह एक खोजपूर्ण नियोजन परिदृश्य है, स्वीकृत आवंटन नहीं)।`
-          : `For Warehouse Inventory Coordinator (OCC_LOG_001) in Bengaluru Urban, the baseline is 80 seats per cohort yielding 55.3 certified graduates/month. Evaluating exploratory scenarios in Scenario Studio—such as scaling sanctioned seats to 100 (+25%, yielding 69.1/mo) or 180 (+125%, delivering 124.4/mo)—shifts the projected 6-month mismatch from +15.1 pts into an ample supply rank position (-39.6 pts). (Note: Proposed seat adjustments represent exploratory planning scenarios evaluated against facility capacity, not approved or binding quotas).`,
-        actionLabel: isHindi ? 'परिदृश्य स्टूडियो में परीक्षण करें' : 'Open in Scenario Studio',
-        onAction: () => {
-          onNavigateWithContext?.('simulator', {
-            district: 'KA_BLR_U',
-            occupation: 'OCC_LOG_001',
-            state: 'KA',
-          });
-          onClose?.();
-        },
-      };
+  // Focus textarea when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 150);
     }
+  }, [isOpen]);
 
-    if (selectedInquiryId === 'forecast_comparison') {
-      return {
-        title: isHindi
-          ? 'पूर्वानुमान मॉडल मूल्यांकन (रैखिक प्रवृत्ति बनाम मूविंग एवरेज बनाम नेव)'
-          : 'Forecasting Model Benchmark Evaluation',
-        badge: 'ROLLING-ORIGIN BACKTEST',
-        badgeColor: 'var(--accent-indigo)',
-        body: isHindi
-          ? `कौशलपल्स 16 रोलिंग-ओरिजिन परीक्षणों पर तीन गैर-फैब्रिकेटेड मॉडलों (Naive, 3-Month Moving Average, Linear Trend) का मूल्यांकन करता है। मजबूत रैखिक वृद्धि वाले व्यवसायों के लिए Linear Trend मॉडल न्यूनतम बैकटेस्ट MAE प्राप्त करता है। स्थिर श्रृंखलाओं के लिए Naive या MA3 को प्राथमिकता दी जाती है। 80% प्रेडिक्शन इंटरवल आउट-ऑफ़-सैंपल RMSE पर आधारित हैं।`
-          : `SkillPulse evaluates 3 genuine statistical models across 16 rolling-origin walk-forward splits: Naive Benchmark, 3-Month Moving Average (MA3), and Linear Trend. The model with the lowest out-of-sample backtest MAE is automatically selected per series. Linear Trend outperforms on sustained expansion trajectories, while Naive/MA3 minimize error on stationary cyclical series. 80% prediction intervals represent statistical uncertainty (±1.282 × RMSE).`,
-        actionLabel: isHindi ? 'डेटा एवं मॉडल स्वास्थ्य देखें' : 'View Data & Model Health',
-        onAction: () => {
-          onNavigateToTab?.('data-health');
-          onClose?.();
-        },
-      };
-    }
+  // Auto-scroll to bottom of conversation
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
 
-    // pilot limitations
-    return {
-      title: isHindi
-        ? 'पायलट डेटासेट पद्धतिगत सीमाएं एवं पारदर्शिता'
-        : 'Methodological Limitations & Synthetic Transparency',
-      badge: 'GOVERNANCE & TRANSPARENCY',
-      badgeColor: 'var(--text-secondary)',
-      body: isHindi
-        ? `1. डेटासेट प्रकृति: सभी अवलोकन SIH26246 के लिए सिंथेटिक प्रदर्शन डेटा हैं (आधिकारिक राष्ट्रीय जनगणना आंकड़े नहीं)। 2. समय सीमा: 24 मासिक अवधि (2024-10 से 2026-09)। 3. निर्णय सीमाएं: ±15 अंक की सीमाएं प्रोटोटाइप ह्युरिस्टिक हैं। 4. प्रमाणीकरण अनुवर्ती: टीवीईटी मानकों के तहत 90-दिन का अनुवर्ती समय आवश्यक है; अपरिपक्व बैचों को लंबित चिह्नित किया गया है।`
-        : `1. Synthetic Data: 100% of observations in this pilot are synthetic demonstration data for SIH26246 benchmark evaluation (not official government census statistics). 2. Time Horizon: 24 monthly periods (2024-10 to 2026-09). 3. Heuristic Thresholds: The ±15.0 score thresholds are prototype heuristics for decision support, not empirical policy mandates. 4. Follow-up Guardrail: TVET candidate placement tracking enforces a strict 90-day post-certification maturity window; immature cohorts are left null.`,
-      actionLabel: isHindi ? 'एपीआई एवं डेटा दस्तावेज़ीकरण' : 'API & Data Documentation',
-      onAction: () => {
-        onNavigateToTab?.('api');
-        onClose?.();
-      },
+  const handleResetConversation = () => {
+    setMessages([getInitialAssistantMessage()]);
+    setInputQuery('');
+    setShowPresets(true);
+  };
+
+  const handleSend = async (queryText) => {
+    const textToSend = (queryText !== undefined ? queryText : inputQuery).trim();
+    if (!textToSend || isLoading) return;
+
+    const userMessage = {
+      id: `usr-${Date.now()}`,
+      role: 'user',
+      content: textToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
-  }, [selectedInquiryId, gapData, demandData, alertsData, period, isHindi, onNavigateToTab, onNavigateWithContext, onClose]);
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputQuery('');
+    setIsLoading(true);
+
+    try {
+      // Build conversation history for entity memory
+      const historyPayload = messages
+        .filter((m) => m.role === 'user' || m.role === 'assistant')
+        .slice(-6)
+        .map((m) => ({
+          role: m.role,
+          content: m.role === 'user' ? m.content : m.answer || m.content || m.title || '',
+        }));
+
+      const response = await sendPolicyCopilotQuery({
+        query: textToSend,
+        period,
+        history: historyPayload,
+        language: isHindi ? 'hi' : 'en',
+      });
+
+      const assistantMessage = {
+        id: `ast-${Date.now()}`,
+        role: 'assistant',
+        title: response.title,
+        badge: response.badge,
+        badge_color: response.badge_color || 'var(--accent-primary)',
+        intent: response.intent,
+        guide_topic: response.guide_topic,
+        answer: response.answer,
+        evidence: response.evidence || {},
+        action_label: response.action_label,
+        action_route: response.action_route || response.action_tab,
+        action_tab: response.action_tab || response.action_route,
+        action_context: response.action_context,
+        sources: response.sources || [],
+        suggested_followups: response.suggested_followups || [],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err) {
+      const errorMessage = {
+        id: `err-${Date.now()}`,
+        role: 'assistant',
+        title: isHindi ? 'विश्लेषणात्मक त्रुटि' : 'Assistant Query Error',
+        badge: 'QUERY ERROR',
+        badge_color: 'var(--status-danger)',
+        answer: isHindi
+          ? `अनुरोध संसाधित करने में त्रुटि: ${err.message || 'अज्ञात सर्वर त्रुटि'}`
+          : `Failed to evaluate inquiry: ${err.message || 'Unknown server error'}. Please verify the FastAPI backend server is accessible.`,
+        isError: true,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleActionClick = (msg) => {
+    const targetRoute = msg.action_route || msg.action_tab;
+    if (!targetRoute) return;
+    if (msg.action_context) {
+      onNavigateWithContext?.(targetRoute, msg.action_context);
+    } else {
+      onNavigateToTab?.(targetRoute);
+    }
+    onClose?.();
+  };
 
   if (!isOpen) return null;
+
+  const currentPresets = presetCategory === 'guide' ? GUIDE_INQUIRIES : ANALYTICS_INQUIRIES;
 
   return (
     <div
@@ -211,7 +293,7 @@ export default function CopilotDrawer({
         className="copilot-drawer"
         style={{
           width: '100%',
-          maxWidth: '460px',
+          maxWidth: '540px',
           height: '100%',
           backgroundColor: 'var(--bg-surface)',
           color: 'var(--text-primary)',
@@ -220,28 +302,37 @@ export default function CopilotDrawer({
           display: 'flex',
           flexDirection: 'column',
           zIndex: 1001,
+          position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {/* Header with Saarthi identity and dual-role subtitle */}
         <div
           style={{
-            padding: '1.25rem',
+            padding: '1rem 1.25rem',
             borderBottom: '1px solid var(--slate-200)',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
             backgroundColor: 'var(--slate-50)',
+            flexShrink: 0,
           }}
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="bot" size={20} /></span>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
-                {isHindi ? 'स्किलपल्स नीतिगत सह-पायलट' : 'SkillPulse Policy Copilot'}
+              <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}>
+                <Icon name="compass" size={22} />
+              </span>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+                {isHindi ? 'स्किलपल्स सारथी' : 'SkillPulse Saarthi'}
               </h2>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.25rem' }}>
+            <p style={{ margin: '0.2rem 0 0.35rem 0', fontSize: '0.72rem', color: 'var(--slate-600)', lineHeight: 1.3 }}>
+              {isHindi
+                ? 'प्लेटफ़ॉर्म और श्रम बाज़ार विश्लेषण के लिए आपका मार्गदर्शक।'
+                : 'Your guide to the platform and labour-market intelligence.'}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span
                 style={{
                   fontSize: '0.62rem',
@@ -254,36 +345,60 @@ export default function CopilotDrawer({
                   border: '1px solid var(--accent-soft-border)',
                 }}
               >
-                GROUNDED ANALYTICAL ENGINE
+                DUAL-ENGINE ASSISTANT
               </span>
-              <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)' }}>
-                {period}
+              <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                Cycle {period}
               </span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '1.25rem',
-              color: 'var(--slate-400)',
-              cursor: 'pointer',
-              padding: '0.25rem',
-              lineHeight: 1,
-            }}
-            title={isHindi ? 'बंद करें' : 'Close'}
-          >
-            ✕
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button
+              type="button"
+              onClick={handleResetConversation}
+              style={{
+                background: 'none',
+                border: '1px solid var(--slate-300)',
+                borderRadius: '4px',
+                fontSize: '0.72rem',
+                color: 'var(--slate-600)',
+                cursor: 'pointer',
+                padding: '0.25rem 0.5rem',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+              title={isHindi ? 'नई बातचीत शुरू करें' : 'Reset Conversation'}
+            >
+              <Icon name="refresh" size={12} />
+              <span>{isHindi ? 'रीसेट' : 'Clear'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1.25rem',
+                color: 'var(--slate-400)',
+                cursor: 'pointer',
+                padding: '0.25rem',
+                lineHeight: 1,
+              }}
+              title={isHindi ? 'बंद करें' : 'Close'}
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Governance Transparency Banner */}
         <div
           style={{
-            padding: '0.65rem 1.25rem',
+            padding: '0.6rem 1.25rem',
             backgroundColor: 'var(--accent-soft-bg)',
             borderBottom: '1px solid var(--accent-soft-border)',
             fontSize: '0.72rem',
@@ -291,138 +406,554 @@ export default function CopilotDrawer({
             lineHeight: 1.4,
             display: 'flex',
             alignItems: 'flex-start',
-            gap: '0.4rem',
+            gap: '0.45rem',
+            flexShrink: 0,
           }}
         >
-          <span style={{ marginTop: '0.1rem', flexShrink: 0 }}><Icon name="shield" size={14} /></span>
+          <span style={{ marginTop: '0.1rem', flexShrink: 0 }}>
+            <Icon name="shield" size={14} />
+          </span>
           <div>
             <strong>{isHindi ? 'पारदर्शिता गारंटी:' : 'Deterministic, Source-Grounded Responses:'}</strong>{' '}
             {isHindi
-              ? 'सभी उत्तर वर्तमान एपीआई प्रेक्षणों से नियम-आधारित रूप से व्युत्पन्न हैं।'
-              : 'Responses are deterministically computed from verified backend API analytics, grounded directly in live system observations.'}
+              ? 'प्लेटफ़ॉर्म निर्देश सत्यापित विनिर्देशों से हैं। विश्लेषण 6 पायलट ज़िलों के डेटाबेस मॉडलों से सीधे व्युत्पन्न हैं। कोई काल्पनिक निष्कर्ष नहीं।'
+              : 'Platform guidance is synthesized from verified module specifications. Analytics are computed directly from backend database models across 6 pilot corridors without LLM hallucination.'}
           </div>
         </div>
 
-        {/* Content Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem' }}>
-          {/* Quick Inquiry Selector */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-700)', display: 'block', marginBottom: '0.5rem' }}>
-              {isHindi ? 'विश्लेषणात्मक प्रश्न चुनें:' : 'Select Grounded Policy Inquiry:'}
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              {INQUIRIES.map((inq) => {
-                const isSelected = selectedInquiryId === inq.id;
-                return (
+        {/* Scrollable Conversation Body */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
+          {/* Quick Presets Section with Dual Category Switcher */}
+          <div
+            style={{
+              backgroundColor: 'var(--slate-50)',
+              border: '1px solid var(--slate-200)',
+              borderRadius: '8px',
+              padding: '0.75rem',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                marginBottom: showPresets ? '0.5rem' : 0,
+              }}
+              onClick={() => setShowPresets((p) => !p)}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-700)' }}>
+                  {isHindi ? 'त्वरित प्रश्न:' : 'Starter Inquiries:'}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>
+                {showPresets ? '▲' : '▼'}
+              </span>
+            </div>
+
+            {showPresets && (
+              <div>
+                {/* Category Switcher Tabs */}
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.35rem',
+                    marginBottom: '0.6rem',
+                    borderBottom: '1px solid var(--slate-200)',
+                    paddingBottom: '0.4rem',
+                  }}
+                >
                   <button
-                    key={inq.id}
                     type="button"
-                    onClick={() => setSelectedInquiryId(inq.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPresetCategory('guide');
+                    }}
                     style={{
-                      textAlign: 'left',
-                      padding: '0.55rem 0.75rem',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: isSelected ? 700 : 500,
-                      backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-elevated)',
-                      color: isSelected ? 'var(--teal-900)' : 'var(--slate-700)',
-                      border: `1px solid ${isSelected ? 'var(--teal-500)' : 'var(--slate-200)'}`,
+                      padding: '0.3rem 0.6rem',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      fontWeight: presetCategory === 'guide' ? 700 : 500,
+                      backgroundColor: presetCategory === 'guide' ? 'var(--teal-600)' : 'transparent',
+                      color: presetCategory === 'guide' ? '#ffffff' : 'var(--slate-600)',
+                      border: 'none',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
+                      gap: '0.25rem',
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    <Icon name={inq.icon} size={14} />
-                    <span style={{ flex: 1 }}>{isHindi ? inq.labelHi : inq.labelEn}</span>
-                    {isSelected && <span style={{ color: 'var(--teal-600)', fontSize: '0.8rem' }}>✓</span>}
+                    <Icon name="compass" size={11} />
+                    <span>{isHindi ? 'प्लेटफ़ॉर्म गाइड' : 'Platform Guide'}</span>
                   </button>
-                );
-              })}
-            </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPresetCategory('analytics');
+                    }}
+                    style={{
+                      padding: '0.3rem 0.6rem',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      fontWeight: presetCategory === 'analytics' ? 700 : 500,
+                      backgroundColor: presetCategory === 'analytics' ? 'var(--teal-600)' : 'transparent',
+                      color: presetCategory === 'analytics' ? '#ffffff' : 'var(--slate-600)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <Icon name="activity" size={11} />
+                    <span>{isHindi ? 'नीतिगत विश्लेषण' : 'Policy Analytics'}</span>
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  {currentPresets.map((inq) => {
+                    const label = isHindi ? inq.labelHi : inq.labelEn;
+                    return (
+                      <button
+                        key={inq.id}
+                        type="button"
+                        disabled={isLoading}
+                        onClick={() => handleSend(label)}
+                        style={{
+                          textAlign: 'left',
+                          padding: '0.45rem 0.65rem',
+                          borderRadius: '6px',
+                          fontSize: '0.72rem',
+                          fontWeight: 500,
+                          backgroundColor: 'var(--bg-elevated)',
+                          color: 'var(--slate-700)',
+                          border: '1px solid var(--slate-200)',
+                          cursor: isLoading ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.45rem',
+                          transition: 'all 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isLoading) {
+                            e.currentTarget.style.backgroundColor = 'var(--teal-50)';
+                            e.currentTarget.style.borderColor = 'var(--teal-400)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                          e.currentTarget.style.borderColor = 'var(--slate-200)';
+                        }}
+                      >
+                        <Icon name={inq.icon} size={13} />
+                        <span style={{ flex: 1 }}>{label}</span>
+                        <span style={{ color: 'var(--slate-400)', fontSize: '0.75rem' }}>→</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Response Card */}
+          {/* Messages Stream */}
+          {messages.map((msg) => {
+            if (msg.role === 'user') {
+              return (
+                <div
+                  key={msg.id}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    marginLeft: '2rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: '#0f766e',
+                      color: '#ffffff',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '12px 12px 2px 12px',
+                      fontSize: '0.82rem',
+                      lineHeight: 1.5,
+                      boxShadow: 'var(--shadow-sm)',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {msg.content}
+                  </div>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)', marginTop: '0.2rem', paddingRight: '0.25rem' }}>
+                    {msg.timestamp}
+                  </span>
+                </div>
+              );
+            }
+
+            // Assistant Response Card
+            const isGuide = msg.intent === 'platform_guide' || Boolean(msg.guide_topic);
+            const isClarification = msg.intent === 'clarification';
+
+            return (
+              <div
+                key={msg.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  marginRight: '0.5rem',
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: `1px solid ${
+                      msg.isError
+                        ? 'var(--status-danger)'
+                        : isGuide
+                        ? 'var(--accent-soft-border)'
+                        : 'var(--slate-200)'
+                    }`,
+                    borderRadius: '8px',
+                    padding: '1.1rem',
+                    boxShadow: 'var(--shadow-sm)',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {/* Top Badge & Capability Indicator */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <span
+                        style={{
+                          fontSize: '0.62rem',
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 700,
+                          color: isGuide ? '#0d9488' : msg.badge_color || 'var(--accent-primary)',
+                          backgroundColor: isGuide ? '#f0fdfa' : 'var(--accent-soft-bg)',
+                          border: `1px solid ${isGuide ? '#99f6e4' : 'var(--accent-soft-border)'}`,
+                          padding: '2px 8px',
+                          borderRadius: '100px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                        }}
+                      >
+                        <Icon name={isGuide ? 'compass' : isClarification ? 'info' : 'activity'} size={11} />
+                        <span>{msg.badge || (isGuide ? 'PLATFORM GUIDE' : 'ANALYTICS')}</span>
+                      </span>
+                    </div>
+
+                    <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>
+                      {msg.timestamp}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3
+                    style={{
+                      fontSize: '0.94rem',
+                      fontWeight: 700,
+                      color: 'var(--slate-900)',
+                      marginTop: 0,
+                      marginBottom: '0.6rem',
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    {msg.title}
+                  </h3>
+
+                  {/* Formatted Markdown Body */}
+                  <div
+                    style={{
+                      fontSize: '0.8rem',
+                      color: 'var(--slate-700)',
+                      lineHeight: 1.6,
+                      marginBottom: msg.evidence && Object.keys(msg.evidence).length > 0 ? '0.75rem' : '0.5rem',
+                    }}
+                  >
+                    <ReactMarkdown>{msg.answer || msg.content}</ReactMarkdown>
+                  </div>
+
+                  {/* Grounded Evidence Box (if available) */}
+                  {msg.evidence && Object.keys(msg.evidence).length > 0 && (
+                    <div
+                      style={{
+                        backgroundColor: 'var(--slate-50)',
+                        border: '1px solid var(--slate-200)',
+                        borderRadius: '6px',
+                        padding: '0.65rem 0.85rem',
+                        marginBottom: '0.75rem',
+                        fontSize: '0.72rem',
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, color: 'var(--slate-700)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <Icon name="check-circle" size={12} />
+                        <span>{isHindi ? 'सत्यापित साक्ष्य मीट्रिक:' : 'Grounded Evidence Attributes:'}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        {Object.entries(msg.evidence).map(([k, v]) => {
+                          if (v === null || v === undefined || typeof v === 'object') return null;
+                          const formattedKey = k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+                          return (
+                            <div
+                              key={k}
+                              style={{
+                                backgroundColor: 'var(--bg-surface)',
+                                border: '1px solid var(--slate-200)',
+                                borderRadius: '4px',
+                                padding: '3px 6px',
+                              }}
+                            >
+                              <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>{formattedKey}</div>
+                              <div style={{ fontWeight: 700, color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                                {String(v)}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Navigation Action Pill */}
+                  {msg.action_label && (
+                    <button
+                      type="button"
+                      onClick={() => handleActionClick(msg)}
+                      style={{
+                        width: '100%',
+                        padding: '0.6rem 0.9rem',
+                        backgroundColor: '#0d9488',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.45rem',
+                        marginBottom: msg.suggested_followups?.length ? '0.75rem' : 0,
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#0f766e';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#0d9488';
+                      }}
+                    >
+                      <Icon name="compass" size={13} />
+                      <span>{msg.action_label}</span>
+                      <span>→</span>
+                    </button>
+                  )}
+
+                  {/* Sources List */}
+                  {msg.sources && msg.sources.length > 0 && (
+                    <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--slate-500)' }}>
+                      <span style={{ fontWeight: 600 }}>{isHindi ? 'स्रोत दस्तावेज़: ' : 'Sources: '}</span>
+                      {msg.sources.map((src, idx) => (
+                        <span key={idx} style={{ marginRight: '0.4rem' }}>
+                          <code style={{ fontSize: '0.65rem', backgroundColor: 'var(--slate-100)', padding: '1px 4px', borderRadius: '3px' }}>
+                            {src.title}
+                          </code>
+                          {idx < msg.sources.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Suggested Follow-ups */}
+                  {msg.suggested_followups && msg.suggested_followups.length > 0 && (
+                    <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--slate-100)', paddingTop: '0.65rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.35rem' }}>
+                        {isHindi ? 'सुझाए गए अनुवर्ती प्रश्न:' : 'Suggested Follow-up Inquiries:'}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                        {msg.suggested_followups.map((followup, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            disabled={isLoading}
+                            onClick={() => handleSend(followup)}
+                            style={{
+                              textAlign: 'left',
+                              background: 'none',
+                              border: '1px solid var(--slate-200)',
+                              borderRadius: '4px',
+                              padding: '0.35rem 0.55rem',
+                              fontSize: '0.7rem',
+                              color: 'var(--teal-700)',
+                              cursor: isLoading ? 'not-allowed' : 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              backgroundColor: 'var(--slate-50)',
+                              transition: 'all 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isLoading) {
+                                e.currentTarget.style.backgroundColor = 'var(--teal-50)';
+                                e.currentTarget.style.borderColor = 'var(--teal-400)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'var(--slate-50)';
+                              e.currentTarget.style.borderColor = 'var(--slate-200)';
+                            }}
+                          >
+                            <span>{followup}</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--teal-600)' }}>+</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.25rem', color: 'var(--slate-500)', fontSize: '0.78rem' }}>
+              <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>
+                <Icon name="refresh" size={14} />
+              </span>
+              <span>{isHindi ? 'सत्यापित मॉडलों से उत्तर तैयार किया जा रहा है...' : 'Evaluating grounded specifications and analytics...'}</span>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Sticky Chat Composer at Bottom */}
+        <div
+          style={{
+            flexShrink: 0,
+            padding: '0.85rem 1.25rem',
+            borderTop: '1px solid var(--slate-200)',
+            backgroundColor: 'var(--bg-surface)',
+            boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.03)',
+          }}
+        >
+          <div style={{ position: 'relative' }}>
+            <textarea
+              ref={textareaRef}
+              rows={2}
+              maxLength={1000}
+              value={inputQuery}
+              onChange={(e) => setInputQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isLoading}
+              placeholder={
+                isHindi
+                  ? 'सारथी से प्लेटफ़ॉर्म नेविगेशन, मेट्रिक सूत्रों या श्रम बाज़ार विश्लेषण के बारे में पूछें...'
+                  : 'Ask Saarthi about platform navigation, metric formulas, or labour market analytics...'
+              }
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                fontSize: '0.82rem',
+                borderRadius: '6px',
+                border: '1px solid var(--slate-300)',
+                backgroundColor: 'var(--bg-elevated)',
+                color: 'var(--text-primary)',
+                resize: 'none',
+                outline: 'none',
+                fontFamily: 'inherit',
+                lineHeight: 1.4,
+                boxSizing: 'border-box',
+                transition: 'border-color 0.15s ease',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--teal-600)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--slate-300)';
+              }}
+            />
+          </div>
+
           <div
             style={{
-              backgroundColor: 'var(--bg-elevated)',
-              border: '1px solid var(--slate-200)',
-              borderRadius: '8px',
-              padding: '1.25rem',
-              boxShadow: 'var(--shadow-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: '0.45rem',
             }}
           >
-            {responseContent.badge && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  fontSize: '0.62rem',
-                  fontFamily: 'var(--font-mono)',
-                  fontWeight: 700,
-                  color: responseContent.badgeColor || 'var(--accent-primary)',
-                  backgroundColor: 'var(--accent-soft-bg)',
-                  border: '1px solid var(--accent-soft-border)',
-                  padding: '2px 8px',
-                  borderRadius: '100px',
-                  marginBottom: '0.65rem',
-                }}
-              >
-                {responseContent.badge}
+            <div style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>
+              <span>{inputQuery.length}/1000</span>
+              <span style={{ marginLeft: '0.4rem', display: 'inline-block' }}>
+                {isHindi ? 'Enter से भेजें, Shift+Enter से नई पंक्ति' : 'Enter to send, Shift+Enter for newline'}
               </span>
-            )}
+            </div>
 
-            <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--slate-900)', marginTop: 0, marginBottom: '0.65rem', lineHeight: 1.35 }}>
-              {responseContent.title}
-            </h3>
-
-            <p style={{ fontSize: '0.8rem', color: 'var(--slate-700)', lineHeight: 1.6, margin: '0 0 1rem 0' }}>
-              {responseContent.body}
-            </p>
-
-            {responseContent.actionLabel && (
-              <button
-                type="button"
-                onClick={responseContent.onAction}
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 0.85rem',
-                  backgroundColor: '#0d9488',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.4rem',
-                  transition: 'background-color 0.15s ease',
-                }}
-              >
-                <span>{responseContent.actionLabel}</span>
-                <span>→</span>
-              </button>
-            )}
+            <button
+              type="button"
+              disabled={!inputQuery.trim() || isLoading}
+              onClick={() => handleSend()}
+              style={{
+                padding: '0.45rem 0.95rem',
+                backgroundColor: !inputQuery.trim() || isLoading ? 'var(--slate-300)' : '#0d9488',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: !inputQuery.trim() || isLoading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'background-color 0.15s ease',
+              }}
+            >
+              <span>{isHindi ? 'भेजें' : 'Send'}</span>
+              <Icon name="send" size={13} />
+            </button>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer info banner */}
         <div
           style={{
-            padding: '0.85rem 1.25rem',
-            borderTop: '1px solid var(--slate-200)',
+            padding: '0.5rem 1.25rem',
+            borderTop: '1px solid var(--slate-100)',
             backgroundColor: 'var(--slate-50)',
-            fontSize: '0.68rem',
+            fontSize: '0.65rem',
             color: 'var(--slate-500)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexShrink: 0,
           }}
         >
-          <span>SkillPulse LMIS v2.4</span>
-          <span>Deterministic Policy Intelligence</span>
+          <span>SkillPulse LMIS • SIH26246</span>
+          <span>SkillPulse Saarthi v2.0</span>
         </div>
       </div>
     </div>

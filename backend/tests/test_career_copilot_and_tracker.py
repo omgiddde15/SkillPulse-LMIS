@@ -441,7 +441,7 @@ def test_copilot_conversation_thread_lifecycle():
     assert conv["title"] == "Target Role Advisory"
     assert len(conv["messages"]) == 1
     assert conv["messages"][0]["sender"] == "assistant"
-    assert "Career Copilot" in conv["messages"][0]["content"]
+    assert "Career Navigator" in conv["messages"][0]["content"]
 
     # 2. List conversations
     list_res = client.get("/api/v1/career/copilot/conversations")
@@ -781,3 +781,87 @@ def test_copilot_message_validation():
         json={"content": "A" * 1050},
     )
     assert long_res.status_code in (400, 422)
+
+
+def test_copilot_social_greetings_behavior():
+    """Verify simple social greetings like 'hi' or 'thanks' return concise 1-2 sentence replies with 1 suggested followup, without dumping skill gaps."""
+    client = TestClient(app)
+    register_user(client, "candidate_greetings@example.com")
+
+    # Set up career profile with Python backend role
+    client.post(
+        "/api/v1/career/profile",
+        json={
+            "target_occupation_id": "OCC_BACKEND_PY",
+            "current_education_level": "bachelors",
+            "consent_ai_processing": False,
+        },
+    )
+
+    conv = client.post(
+        "/api/v1/career/copilot/conversations",
+        json={"title": "Greetings Test"},
+    ).json()
+    conv_id = conv["id"]
+
+    # 1. Send 'hi'
+    hi_res = client.post(
+        f"/api/v1/career/copilot/conversations/{conv_id}/messages",
+        json={"content": "hi"},
+    )
+    assert hi_res.status_code == 201
+    hi_data = hi_res.json()
+    hi_answer = hi_data["content"]
+
+    # Must be brief and not dump all missing required skills or courses
+    assert "Career Navigator" in hi_answer
+    assert "missing required competencies" not in hi_answer.lower()
+    assert len(hi_answer.splitlines()) <= 3
+
+    # 2. Send 'thanks'
+    thanks_res = client.post(
+        f"/api/v1/career/copilot/conversations/{conv_id}/messages",
+        json={"content": "thanks!"},
+    )
+    assert thanks_res.status_code == 201
+    thanks_data = thanks_res.json()
+    thanks_answer = thanks_data["content"]
+
+    assert "welcome" in thanks_answer.lower()
+    assert "missing required competencies" not in thanks_answer.lower()
+
+
+def test_roadmap_provider_attribution_metadata():
+    """Roadmaps return ai_provider and ai_model metadata correctly for both AI and deterministic modes."""
+    client = TestClient(app)
+    register_user(client, "candidate_attribution@example.com")
+
+    # Generate deterministic roadmap
+    gen_res = client.post(
+        "/api/v1/career/roadmaps/generate",
+        json={"target_role_id": "ROLE_PY_BACKEND", "horizon_days": 30},
+    )
+    assert gen_res.status_code == 201
+    roadmap_data = gen_res.json()
+
+    assert roadmap_data["target_role_id"] == "ROLE_PY_BACKEND"
+    assert roadmap_data["horizon_days"] == 30
+    assert roadmap_data["generation_mode"] == "deterministic"
+    # Deterministic mode has None for ai_provider
+    assert roadmap_data.get("ai_provider") is None
+
+    # Test attribution parser on saved AI roadmap
+    from app.services.roadmap_service import _extract_ai_attribution
+    p_watsonx, m_watsonx = _extract_ai_attribution(
+        "ai_assisted",
+        "Personalized with IBM watsonx.ai (meta-llama/llama-3-3-70b-instruct) based on your verified skill evidence.",
+    )
+    assert p_watsonx == "watsonx"
+    assert m_watsonx == "meta-llama/llama-3-3-70b-instruct"
+
+    p_gemini, m_gemini = _extract_ai_attribution(
+        "ai_assisted",
+        "Personalized with Gemini 3.8 Flash based on your verified skill evidence.",
+    )
+    assert p_gemini == "gemini"
+    assert "gemini" in m_gemini.lower()

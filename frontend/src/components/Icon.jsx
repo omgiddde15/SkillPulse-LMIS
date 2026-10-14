@@ -328,6 +328,20 @@ const ICON_PATHS = {
       <line x1="6" y1="6" x2="18" y2="18" />
     </>
   ),
+  bot: (
+    <>
+      <rect width="18" height="12" x="3" y="6" rx="2" />
+      <line x1="12" y1="2" x2="12" y2="6" />
+      <line x1="8" y1="12" x2="8" y2="12.01" />
+      <line x1="16" y1="12" x2="16" y2="12.01" />
+    </>
+  ),
+  send: (
+    <>
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+    </>
+  ),
 };
 
 export default function Icon({

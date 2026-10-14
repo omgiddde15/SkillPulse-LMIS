@@ -789,3 +789,39 @@ class SeatSimulationResponse(BaseModel):
     limitations: str = Field(..., description="Human decision-support disclaimers and constraints.")
     policy_disclaimer: str = Field(..., description="Notice that outputs do not represent physical headcount shortages.")
 
+
+class PolicyCopilotQueryRequest(BaseModel):
+    """Request payload for Policy Copilot analytics query."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    query: str = Field(..., min_length=1, max_length=1000, description="User query text or preset question identifier")
+    period: Optional[str] = Field(None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="Target reporting period (YYYY-MM)")
+    state_code: Optional[str] = Field(None, max_length=10, description="Optional state filter (e.g., MH, KA, TS)")
+    district_id: Optional[str] = Field(None, max_length=32, description="Optional district filter (e.g., MH_PUN, KA_DHA)")
+    sector: Optional[str] = Field(None, max_length=64, description="Optional sector filter")
+    history: Optional[List[Dict[str, str]]] = Field(default_factory=list, description="Recent conversation turns for follow-up context")
+    language: Optional[str] = Field("en", max_length=10, description="Language preference ('en' or 'hi')")
+
+
+class PolicyCopilotQueryResponse(BaseModel):
+    """Response payload for Policy Copilot analytics query."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    query: str
+    period: str
+    intent: str
+    title: str
+    badge: Optional[str] = None
+    badge_color: Optional[str] = None
+    answer: str
+    evidence: Dict[str, Any] = Field(default_factory=dict)
+    action_label: Optional[str] = None
+    action_tab: Optional[str] = None
+    action_route: Optional[str] = None
+    action_context: Optional[Dict[str, Any]] = None
+    guide_topic: Optional[str] = None
+    sources: List[Dict[str, Any]] = Field(default_factory=list)
+    suggested_followups: List[str] = Field(default_factory=list)
+
