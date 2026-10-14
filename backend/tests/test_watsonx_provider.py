@@ -65,7 +65,7 @@ def test_watsonx_missing_configuration_handled_safely(monkeypatch):
 
 def test_watsonx_partial_configuration_is_unconfigured(monkeypatch):
     """Verifies that having only some variables set still leaves provider unconfigured."""
-    provider = WatsonxProvider(api_key="key123", url="https://us-south.ml.cloud.ibm.com")
+    provider = WatsonxProvider(api_key="key123", url="https://eu-gb.ml.cloud.ibm.com")
     assert provider.is_configured() is False
 
 
@@ -74,13 +74,13 @@ def test_watsonx_complete_configuration_recognized():
     provider = WatsonxProvider(
         api_key="test-api-key",
         project_id="test-proj-uuid-1234",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
     assert provider.is_configured() is True
     assert provider.provider_name == "IBM watsonx.ai"
     assert provider.provider_id == "watsonx"
-    assert provider.model == "ibm/granite-3-3-8b-instruct"
+    assert provider.model == "meta-llama/llama-3-3-70b-instruct"
 
 
 # -----------------------------------------------------------------------------
@@ -92,8 +92,8 @@ def test_watsonx_iam_token_request_format():
     provider = WatsonxProvider(
         api_key="secret-api-key-xyz",
         project_id="pid-123",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "token-abc-123", "expires_in": 3600})
@@ -113,8 +113,8 @@ def test_watsonx_iam_token_caching_and_refresh_near_expiration():
     provider = WatsonxProvider(
         api_key="test-key",
         project_id="pid-123",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     resp_1 = create_mock_response(200, {"access_token": "token-1", "expires_in": 3600})
@@ -149,8 +149,8 @@ def test_watsonx_successful_inference_json_parsing():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "valid-token", "expires_in": 3600})
@@ -185,8 +185,8 @@ def test_watsonx_successful_inference_with_markdown_code_fences():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "valid-token", "expires_in": 3600})
@@ -222,8 +222,8 @@ def test_watsonx_invalid_json_raises_schema_validation_error():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "valid-token", "expires_in": 3600})
@@ -241,8 +241,8 @@ def test_watsonx_authentication_failure_401_maps_to_provider_error():
     provider = WatsonxProvider(
         api_key="bad-key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_fail = create_mock_response(401, {"error": "unauthorized"})
@@ -258,8 +258,8 @@ def test_watsonx_rate_limit_429_maps_to_rate_limit_error_and_never_retried():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "token", "expires_in": 3600})
@@ -276,8 +276,8 @@ def test_watsonx_timeout_maps_to_ai_timeout_error():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "token", "expires_in": 3600})
@@ -291,8 +291,8 @@ def test_watsonx_transient_503_retry_succeeds_on_attempt_2():
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     iam_resp = create_mock_response(200, {"access_token": "token", "expires_in": 3600})
@@ -318,8 +318,8 @@ def test_watsonx_credentials_scrubbed_from_errors_and_logs():
     provider = WatsonxProvider(
         api_key="super_secret_watsonx_api_key_value_99999",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
 
     # Force connection error
@@ -340,8 +340,8 @@ def test_ai_service_watsonx_provider_selection_when_env_set(monkeypatch):
     monkeypatch.setenv("AI_PROVIDER", "watsonx")
     monkeypatch.setenv("WATSONX_API_KEY", "env-key")
     monkeypatch.setenv("WATSONX_PROJECT_ID", "env-pid")
-    monkeypatch.setenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
-    monkeypatch.setenv("WATSONX_MODEL_ID", "ibm/granite-3-3-8b-instruct")
+    monkeypatch.setenv("WATSONX_URL", "https://eu-gb.ml.cloud.ibm.com")
+    monkeypatch.setenv("WATSONX_MODEL_ID", "meta-llama/llama-3-3-70b-instruct")
 
     service = AIService()
     assert service.provider.provider_id == "watsonx"
@@ -375,8 +375,8 @@ def test_watsonx_full_roadmap_generation_pipeline(monkeypatch):
     provider = WatsonxProvider(
         api_key="key",
         project_id="pid",
-        url="https://us-south.ml.cloud.ibm.com",
-        model="ibm/granite-3-3-8b-instruct",
+        url="https://eu-gb.ml.cloud.ibm.com",
+        model="meta-llama/llama-3-3-70b-instruct",
     )
     service = AIService(provider=provider)
 
@@ -426,7 +426,7 @@ def test_watsonx_full_roadmap_generation_pipeline(monkeypatch):
 
         assert result is not None
         assert result["generation_mode"] == "ai_assisted"
-        assert "IBM watsonx.ai (ibm/granite-3-3-8b-instruct)" in result["methodology_note"]
+        assert "IBM watsonx.ai (meta-llama/llama-3-3-70b-instruct)" in result["methodology_note"]
         assert len(result["milestones"]) == 2
         assert result["milestones"][0]["linked_opportunity_id"] == "OPP_CRS_1"
 
