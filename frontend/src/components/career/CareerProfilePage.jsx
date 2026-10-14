@@ -19,6 +19,8 @@ import {
 import Icon from '../Icon';
 import LoadingSpinner from '../LoadingSpinner';
 import CareerRoadmap from './CareerRoadmap';
+import CareerCopilot from './CareerCopilot';
+import ApplicationTracker from './ApplicationTracker';
 
 const SECTORS = [
   'IT/ITeS',
@@ -726,6 +728,24 @@ export default function CareerProfilePage({ onNavigate }) {
         >
           <Icon name="compass" size={15} />
           <span>{t('career.tab.roadmap')}</span>
+        </button>
+
+        <button
+          type="button"
+          className={`career-tab-btn ${activeTab === 'copilot' ? 'active' : ''}`}
+          onClick={() => setActiveTab('copilot')}
+        >
+          <Icon name="message-square" size={15} />
+          <span>{isHindi ? 'करियर कोपायलट' : 'Career Copilot'}</span>
+        </button>
+
+        <button
+          type="button"
+          className={`career-tab-btn ${activeTab === 'tracker' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tracker')}
+        >
+          <Icon name="clipboard-list" size={15} />
+          <span>{isHindi ? 'आवेदन ट्रैकर' : 'Application Tracker'}</span>
         </button>
       </div>
 
@@ -1772,6 +1792,26 @@ export default function CareerProfilePage({ onNavigate }) {
       {/* TAB 4: Personalized Career Roadmap */}
       {activeTab === 'roadmap' && (
         <CareerRoadmap
+          onNavigate={onNavigate}
+          isHindi={isHindi}
+          t={t}
+          isAuthenticated={isAuthenticated}
+        />
+      )}
+
+      {/* TAB 5: Career Copilot */}
+      {activeTab === 'copilot' && (
+        <CareerCopilot
+          onNavigate={onNavigate}
+          isHindi={isHindi}
+          t={t}
+          isAuthenticated={isAuthenticated}
+        />
+      )}
+
+      {/* TAB 6: Application Tracker */}
+      {activeTab === 'tracker' && (
+        <ApplicationTracker
           onNavigate={onNavigate}
           isHindi={isHindi}
           t={t}

@@ -22,6 +22,15 @@ from app.schemas.career_models import (
     MilestoneStatusUpdateRequest,
     RoadmapDetailResponse,
     RoadmapSummaryResponse,
+    TrackerItemCreate,
+    TrackerItemUpdate,
+    TrackerItemResponse,
+    TrackerListResponse,
+    CopilotConversationCreate,
+    CopilotConversationSummaryResponse,
+    CopilotMessageCreate,
+    CopilotMessageResponse,
+    CopilotConversationDetailResponse,
 )
 from app.services.career_service import CareerService, CareerServiceError
 from app.services.resume_parser import (
@@ -34,6 +43,8 @@ from app.services.skill_gap_service import SkillGapService
 from app.services.opportunity_service import OpportunityService
 from app.services.opportunity_matching import OpportunityMatchingEngine
 from app.services.roadmap_service import RoadmapService
+from app.services.tracker_service import TrackerService
+from app.services.copilot_service import CopilotService
 
 router = APIRouter(prefix="/career", tags=["Career Guidance"])
 career_service = CareerService()
@@ -41,6 +52,13 @@ skill_gap_service = SkillGapService(career_service)
 opportunity_service = OpportunityService()
 opportunity_matcher = OpportunityMatchingEngine(career_service, skill_gap_service, opportunity_service)
 roadmap_service = RoadmapService(career_service, skill_gap_service, opportunity_service)
+tracker_service = TrackerService(opportunity_service)
+copilot_service = CopilotService(
+    career_service=career_service,
+    skill_gap_service=skill_gap_service,
+    opportunity_service=opportunity_service,
+    roadmap_service=roadmap_service,
+)
 
 
 @router.get("/profile")
@@ -583,6 +601,177 @@ def update_milestone_completion(
         "status": "success",
         "milestone": updated,
     }
+
+
+# -----------------------------------------------------------------------------
+# Phase 5: Application Tracker Endpoints
+# -----------------------------------------------------------------------------
+
+@router.get("/tracker", status_code=status.HTTP_200_OK, response_model=TrackerListResponse)
+def list_tracked_opportunities(
+    stage: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves all tracked opportunities for the authenticated candidate."""
+    items = tracker_service.get_tracked_items(current_user["id"], stage=stage)
+    return {
+        "count": len(items),
+        "items": items,
+    }
+
+
+@router.post("/tracker", status_code=status.HTTP_201_CREATED, response_model=TrackerItemResponse)
+def create_tracked_opportunity(
+    payload: TrackerItemCreate,
+    current_user: dict = Depends(get_current_user),
+):
+    """Tracks a curated catalogue opportunity or adds an external application record."""
+    try:
+        item = tracker_service.create_tracked_item(current_user["id"], payload.model_dump())
+        return item
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+
+@router.get("/tracker/{tracker_id}", status_code=status.HTTP_200_OK, response_model=TrackerItemResponse)
+def get_tracked_opportunity(
+    tracker_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves a single tracked opportunity record. Enforces user ownership."""
+    item = tracker_service.get_tracked_item(current_user["id"], tracker_id)
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tracked opportunity not found.",
+        )
+    return item
+
+
+@router.put("/tracker/{tracker_id}", status_code=status.HTTP_200_OK, response_model=TrackerItemResponse)
+def update_tracked_opportunity(
+    tracker_id: int,
+    payload: TrackerItemUpdate,
+    current_user: dict = Depends(get_current_user),
+):
+    """Updates stage, dates, or notes of a tracked opportunity. Enforces user ownership."""
+    try:
+        item = tracker_service.update_tracked_item(
+            current_user["id"], tracker_id, payload.model_dump(exclude_unset=True)
+        )
+        if not item:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tracked opportunity not found.",
+            )
+        return item
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+
+@router.delete("/tracker/{tracker_id}", status_code=status.HTTP_200_OK)
+def delete_tracked_opportunity(
+    tracker_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Deletes a tracked opportunity record. Enforces user ownership."""
+    success = tracker_service.delete_tracked_item(current_user["id"], tracker_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tracked opportunity not found.",
+        )
+    return {
+        "status": "success",
+        "message": "Tracked opportunity deleted successfully.",
+    }
+
+
+# -----------------------------------------------------------------------------
+# Phase 5: Career Copilot Endpoints
+# -----------------------------------------------------------------------------
+
+@router.post("/copilot/conversations", status_code=status.HTTP_201_CREATED, response_model=CopilotConversationDetailResponse)
+def create_copilot_conversation(
+    payload: Optional[CopilotConversationCreate] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Creates a new Career Copilot conversation thread."""
+    title = payload.title if payload else None
+    conv = copilot_service.create_conversation(current_user["id"], title=title)
+    return conv
+
+
+@router.get("/copilot/conversations", status_code=status.HTTP_200_OK)
+def list_copilot_conversations(
+    current_user: dict = Depends(get_current_user),
+):
+    """Lists all Copilot guidance conversations for the candidate."""
+    conversations = copilot_service.get_conversations(current_user["id"])
+    return {
+        "status": "success",
+        "count": len(conversations),
+        "conversations": conversations,
+    }
+
+
+@router.get("/copilot/conversations/{conversation_id}", status_code=status.HTTP_200_OK, response_model=CopilotConversationDetailResponse)
+def get_copilot_conversation(
+    conversation_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Retrieves full conversation with message history. Enforces user ownership."""
+    conv = copilot_service.get_conversation(current_user["id"], conversation_id)
+    if not conv:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found.",
+        )
+    return conv
+
+
+@router.delete("/copilot/conversations/{conversation_id}", status_code=status.HTTP_200_OK)
+def delete_copilot_conversation(
+    conversation_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    """Deletes a Copilot conversation and message history. Enforces user ownership."""
+    success = copilot_service.delete_conversation(current_user["id"], conversation_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found.",
+        )
+    return {
+        "status": "success",
+        "message": "Conversation deleted successfully.",
+    }
+
+
+@router.post("/copilot/conversations/{conversation_id}/messages", status_code=status.HTTP_201_CREATED, response_model=CopilotMessageResponse)
+def send_copilot_message(
+    conversation_id: int,
+    payload: CopilotMessageCreate,
+    current_user: dict = Depends(get_current_user),
+):
+    """Sends a question to Career Copilot and receives grounded career advice."""
+    try:
+        reply = copilot_service.send_message(
+            user_id=current_user["id"],
+            conversation_id=conversation_id,
+            content=payload.content,
+        )
+        return reply
+    except ValueError as exc:
+        err_msg = str(exc)
+        if "not found" in err_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err_msg)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate guidance response.",
+        )
 
 
 

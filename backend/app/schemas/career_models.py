@@ -400,4 +400,149 @@ class RoadmapDetailResponse(BaseModel):
     disclaimer: str
 
 
+# -----------------------------------------------------------------------------
+# Phase 5: Career Copilot Schemas
+# -----------------------------------------------------------------------------
+
+class CopilotSourceRef(BaseModel):
+    """Reference to an authoritative source, catalogue item, or skill evidence."""
+    kind: str = Field(..., description="Source kind: opportunity, skill_gap, roadmap_milestone, role_benchmark")
+    id: Optional[str] = None
+    title: str
+    url: Optional[str] = None
+    verification_status: Optional[str] = None
+
+
+class CopilotConversationCreate(BaseModel):
+    """Payload to start a new Copilot career guidance conversation."""
+    title: Optional[str] = Field(None, max_length=120)
+
+
+class CopilotConversationSummaryResponse(BaseModel):
+    """Summary of a user conversation."""
+    id: int
+    user_id: int
+    title: str
+    message_count: int = 0
+    last_message_preview: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+
+class CopilotMessageCreate(BaseModel):
+    """User message payload for Copilot."""
+    content: str = Field(..., min_length=1, max_length=1000)
+
+    @field_validator("content")
+    @classmethod
+    def clean_content(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("Message content cannot be empty.")
+        return stripped
+
+
+class CopilotMessageResponse(BaseModel):
+    """Message in a Copilot conversation."""
+    id: int
+    conversation_id: int
+    sender: str  # "user" or "assistant"
+    content: str
+    sources: List[CopilotSourceRef] = Field(default_factory=list)
+    generation_mode: str  # "ai_assisted" or "deterministic"
+    created_at: str
+
+
+class CopilotConversationDetailResponse(BaseModel):
+    """Full conversation history with messages."""
+    id: int
+    user_id: int
+    title: str
+    messages: List[CopilotMessageResponse]
+    created_at: str
+    updated_at: str
+
+
+class AICopilotOutput(BaseModel):
+    """Structured response expected from AI provider for Copilot guidance."""
+    answer: str = Field(..., max_length=2000)
+    sources: List[CopilotSourceRef] = Field(default_factory=list)
+    suggested_followups: List[str] = Field(default_factory=list)
+
+
+# -----------------------------------------------------------------------------
+# Phase 5: Application Tracker Schemas
+# -----------------------------------------------------------------------------
+
+VALID_TRACKER_STAGES = (
+    "saved",
+    "planning",
+    "applied",
+    "assessment",
+    "interview",
+    "offer",
+    "rejected",
+    "withdrawn",
+)
+
+
+class TrackerItemCreate(BaseModel):
+    """Payload to track a catalogue opportunity or add an external application record."""
+    opportunity_id: Optional[str] = Field(None, max_length=64)
+    custom_title: Optional[str] = Field(None, max_length=200)
+    custom_organization: Optional[str] = Field(None, max_length=200)
+    stage: str = Field(default="saved")
+    date_applied: Optional[str] = Field(None, max_length=32)
+    notes: Optional[str] = Field(None, max_length=2000)
+
+    @field_validator("stage")
+    @classmethod
+    def validate_stage(cls, v: str) -> str:
+        clean = (v or "saved").strip().lower()
+        if clean not in VALID_TRACKER_STAGES:
+            raise ValueError(f"Invalid stage '{v}'. Must be one of: {', '.join(VALID_TRACKER_STAGES)}")
+        return clean
+
+
+class TrackerItemUpdate(BaseModel):
+    """Payload to update an existing application tracker record."""
+    stage: Optional[str] = None
+    custom_title: Optional[str] = Field(None, max_length=200)
+    custom_organization: Optional[str] = Field(None, max_length=200)
+    date_applied: Optional[str] = Field(None, max_length=32)
+    notes: Optional[str] = Field(None, max_length=2000)
+
+    @field_validator("stage")
+    @classmethod
+    def validate_stage(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        clean = v.strip().lower()
+        if clean not in VALID_TRACKER_STAGES:
+            raise ValueError(f"Invalid stage '{v}'. Must be one of: {', '.join(VALID_TRACKER_STAGES)}")
+        return clean
+
+
+class TrackerItemResponse(BaseModel):
+    """Full detail of a tracked opportunity record."""
+    id: int
+    user_id: int
+    opportunity_id: Optional[str] = None
+    custom_title: Optional[str] = None
+    custom_organization: Optional[str] = None
+    stage: str
+    date_saved: str
+    date_applied: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: str
+    updated_at: str
+    linked_opportunity: Optional[OpportunityItemResponse] = None
+
+
+class TrackerListResponse(BaseModel):
+    """List response for application tracker items."""
+    count: int
+    items: List[TrackerItemResponse]
+
+
 

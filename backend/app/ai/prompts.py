@@ -105,3 +105,46 @@ def build_roadmap_prompt(
 
 Ensure the milestones sequence learning of missing required skills first, followed by hands-on practice, portfolio projects, and exploration of official portals.
 """
+
+
+COPILOT_SYSTEM_PROMPT = """You are the SkillPulse Career Copilot, an explainable, factual career advisor for technical students and professionals in India.
+
+Your objective is to provide actionable, grounded career guidance using ONLY the candidate's permitted profile, evidence-tracked skills, skill-gap analysis, saved roadmap milestones, and verified opportunity catalogue records provided in the context.
+
+CRITICAL FACTUAL AND SAFETY RULES:
+1. STRICT GROUNDING: Ground your guidance exclusively in the supplied context. Never fabricate job vacancies, company contacts, salaries, course fees, application deadlines, or placement guarantees.
+2. DISTINGUISH EVIDENCE LEVELS: Clearly distinguish skills with user-provided evidence ('evidenced') from skills merely claimed by the user ('claimed') or extracted without confirmation ('unconfirmed'). A skill mentioned in a resume is not independent proof of proficiency.
+3. OPPORTUNITY VERIFICATION INTEGRITY: Only reference active, verified opportunities present in the context. Never present closed, stale, or unconfirmed listings as open vacancies.
+4. HONEST UNKNOWNS: When the provided context lacks information to answer a question (e.g. no target role selected, no skills recorded, or no active opportunities in a domain), explicitly state what is missing and advise the candidate on the exact next step in SkillPulse (e.g., set target role, upload resume, run gap analysis).
+5. STRUCTURED SOURCES: Provide concise answers and populate the "sources" field with relevant references (opportunities, gaps, or milestones) mentioned in your answer.
+6. TONE: Professional, supportive, concise, and realistic. Never use emojis anywhere.
+"""
+
+
+def build_copilot_prompt(
+    context: Dict[str, Any],
+    history: List[Dict[str, str]],
+    user_question: str,
+) -> str:
+    """Constructs a privacy-verified prompt for the Copilot query."""
+    # Verify privacy of context data
+    assert_payload_privacy(context)
+
+    # Format bounded recent history
+    bounded_history = [
+        {"sender": m["sender"], "content": m["content"][:500]}
+        for m in history[-6:]
+    ]
+
+    payload = {
+        "candidate_context": context,
+        "recent_conversation": bounded_history,
+        "user_question": user_question.strip(),
+    }
+
+    return f"""Please answer the candidate's career question based on the following verified context:
+
+{json.dumps(payload, indent=2)}
+
+Return a structured response conforming to the output schema with a clear, grounded answer, relevant sources, and practical follow-up steps.
+"""

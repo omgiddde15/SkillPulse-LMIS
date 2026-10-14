@@ -250,6 +250,51 @@ def init_db(db_path: str = None) -> None:
             );
         """)
 
+        # Copilot Conversations table (Phase 5)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS copilot_conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                title TEXT NOT NULL DEFAULT 'Career Guidance',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            );
+        """)
+
+        # Copilot Messages table (Phase 5)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS copilot_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                conversation_id INTEGER NOT NULL,
+                sender TEXT NOT NULL CHECK(sender IN ('user', 'assistant')),
+                content TEXT NOT NULL,
+                sources_json TEXT NOT NULL DEFAULT '[]',
+                generation_mode TEXT NOT NULL DEFAULT 'deterministic',
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (conversation_id) REFERENCES copilot_conversations (id) ON DELETE CASCADE
+            );
+        """)
+
+        # Application Tracker table (Phase 5)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS application_tracker (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                opportunity_id TEXT,
+                custom_title TEXT,
+                custom_organization TEXT,
+                stage TEXT NOT NULL DEFAULT 'saved' CHECK(stage IN ('saved', 'planning', 'applied', 'assessment', 'interview', 'offer', 'rejected', 'withdrawn')),
+                date_saved TEXT NOT NULL,
+                date_applied TEXT,
+                notes TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                FOREIGN KEY (opportunity_id) REFERENCES opportunity_catalogue (id) ON DELETE SET NULL
+            );
+        """)
+
         # Indexes for fast lookup and integrity
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);")
@@ -270,6 +315,11 @@ def init_db(db_path: str = None) -> None:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_target_role ON career_roadmaps(target_role_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_token ON career_roadmaps(client_request_token);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_milestones_roadmap_id ON roadmap_milestones(roadmap_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_copilot_conv_user ON copilot_conversations(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_copilot_msg_conv ON copilot_messages(conversation_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tracker_user ON application_tracker(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tracker_stage ON application_tracker(user_id, stage);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tracker_opp ON application_tracker(opportunity_id);")
         conn.commit()
 
 

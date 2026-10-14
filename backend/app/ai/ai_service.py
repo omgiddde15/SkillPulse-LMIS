@@ -11,7 +11,14 @@ from pydantic import BaseModel, Field
 
 from app.ai.base import AIProvider, AIProviderError
 from app.ai.gemini_provider import GeminiProvider, get_bounded_timeout_ms
-from app.ai.prompts import SYSTEM_PROMPT, build_roadmap_prompt, assert_payload_privacy
+from app.ai.prompts import (
+    SYSTEM_PROMPT,
+    build_roadmap_prompt,
+    COPILOT_SYSTEM_PROMPT,
+    build_copilot_prompt,
+    assert_payload_privacy,
+)
+from app.schemas.career_models import AICopilotOutput
 from app.services.role_catalogue import normalize_skill_key
 
 logger = logging.getLogger(__name__)
@@ -155,4 +162,66 @@ class AIService:
             ),
             "generation_mode": "ai_assisted",
             "milestones": valid_milestones,
+        }
+
+    def generate_copilot_response(
+        self,
+        context: Dict[str, Any],
+        history: List[Dict[str, str]],
+        user_question: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Generates a grounded, schema-validated career copilot answer via configured AI provider."""
+        if not self.is_ai_available():
+            logger.info("AI provider not configured for Copilot. Falling back to deterministic guidance.")
+            return None
+
+        # 1. Build prompt and verify privacy
+        try:
+            prompt = build_copilot_prompt(
+                context=context,
+                history=history,
+                user_question=user_question,
+            )
+        except Exception as exc:
+            logger.warning("Copilot prompt building or privacy check failed: %s", exc)
+            return None
+
+        # 2. Call provider with bounded timeout
+        try:
+            raw_result = self.provider.generate_structured_content(
+                system_instruction=COPILOT_SYSTEM_PROMPT,
+                user_prompt=prompt,
+                response_schema=AICopilotOutput,
+                timeout_ms=get_bounded_timeout_ms(),
+            )
+        except AIProviderError as exc:
+            logger.warning("Copilot AI provider failed (%s): %s", exc.provider, str(exc))
+            return None
+        except Exception as exc:
+            logger.warning("Unexpected error during Copilot generation: %s", exc)
+            return None
+
+        # 3. Validate against Pydantic schema
+        try:
+            validated = AICopilotOutput.model_validate(raw_result)
+        except Exception as exc:
+            logger.warning("Copilot output failed Pydantic validation: %s", exc)
+            return None
+
+        # 4. Strict grounding check on referenced opportunity IDs
+        allowed_opp_ids = {opp["id"] for opp in context.get("verified_opportunities", [])}
+        filtered_sources = []
+        for src in validated.sources:
+            s_dict = src.model_dump()
+            if s_dict.get("kind") == "opportunity" and s_dict.get("id"):
+                if s_dict["id"] not in allowed_opp_ids:
+                    logger.info("Copilot referenced unverified/unknown opp '%s'; omitting source link.", s_dict["id"])
+                    continue
+            filtered_sources.append(s_dict)
+
+        return {
+            "answer": validated.answer,
+            "sources": filtered_sources,
+            "suggested_followups": validated.suggested_followups,
+            "generation_mode": "ai_assisted",
         }

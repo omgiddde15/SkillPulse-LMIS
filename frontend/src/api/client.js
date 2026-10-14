@@ -496,5 +496,140 @@ export async function updateRoadmapMilestoneStatus(roadmapId, milestoneId, isCom
   });
 }
 
+// ============================================================================
+// Phase 5: Application Tracker API
+// ============================================================================
+
+/**
+ * Fetch candidate's tracked applications, optionally filtered by stage
+ * @param {string} [stage]
+ * @returns {Promise<{ count: number, items: Array }>}
+ */
+export async function fetchTrackedApplications(stage = null) {
+  const qs = stage ? `?stage=${encodeURIComponent(stage)}` : '';
+  return request(`/api/v1/career/tracker${qs}`);
+}
+
+/**
+ * Fetch detail of a single tracked application
+ * @param {number|string} trackerId
+ * @returns {Promise<Object>}
+ */
+export async function fetchTrackedApplicationDetails(trackerId) {
+  return request(`/api/v1/career/tracker/${encodeURIComponent(trackerId)}`);
+}
+
+/**
+ * Track a catalogue opportunity or add an external application
+ * @param {Object} payload
+ * @param {string} [payload.opportunity_id]
+ * @param {string} [payload.custom_title]
+ * @param {string} [payload.custom_organization]
+ * @param {string} [payload.stage]
+ * @param {string} [payload.date_applied]
+ * @param {string} [payload.notes]
+ * @returns {Promise<Object>}
+ */
+export async function createTrackedApplication(payload) {
+  return request('/api/v1/career/tracker', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Update stage, dates, or notes of a tracked application
+ * @param {number|string} trackerId
+ * @param {Object} payload
+ * @returns {Promise<Object>}
+ */
+export async function updateTrackedApplication(trackerId, payload) {
+  return request(`/api/v1/career/tracker/${encodeURIComponent(trackerId)}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Remove an opportunity from the application tracker
+ * @param {number|string} trackerId
+ * @returns {Promise<{ status: string, message: string }>}
+ */
+export async function deleteTrackedApplication(trackerId) {
+  return request(`/api/v1/career/tracker/${encodeURIComponent(trackerId)}`, {
+    method: 'DELETE',
+  });
+}
+
+// ============================================================================
+// Phase 5: Career Copilot API
+// ============================================================================
+
+/**
+ * List all Copilot guidance conversations for candidate
+ * @returns {Promise<{ status: string, count: number, conversations: Array }>}
+ */
+export async function fetchCopilotConversations() {
+  return request('/api/v1/career/copilot/conversations');
+}
+
+/**
+ * Start a new Career Copilot conversation thread
+ * @param {Object} [payload]
+ * @param {string} [payload.title]
+ * @returns {Promise<Object>}
+ */
+export async function createCopilotConversation(payload = {}) {
+  return request('/api/v1/career/copilot/conversations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Fetch full conversation history and message stream
+ * @param {number|string} conversationId
+ * @returns {Promise<Object>}
+ */
+export async function fetchCopilotConversation(conversationId) {
+  return request(`/api/v1/career/copilot/conversations/${encodeURIComponent(conversationId)}`);
+}
+
+/**
+ * Delete a Copilot conversation
+ * @param {number|string} conversationId
+ * @returns {Promise<{ status: string, message: string }>}
+ */
+export async function deleteCopilotConversation(conversationId) {
+  return request(`/api/v1/career/copilot/conversations/${encodeURIComponent(conversationId)}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
+ * Send a question to Career Copilot and receive grounded response
+ * @param {number|string} conversationId
+ * @param {string} content
+ * @returns {Promise<Object>}
+ */
+export async function sendCopilotMessage(conversationId, content) {
+  return request(`/api/v1/career/copilot/conversations/${encodeURIComponent(conversationId)}/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ content }),
+  });
+}
+
 
 

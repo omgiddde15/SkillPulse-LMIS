@@ -7,6 +7,8 @@ import ErrorAlert from '../ErrorAlert';
 import {
   fetchOpportunities,
   fetchOpportunityRecommendations,
+  fetchTrackedApplications,
+  createTrackedApplication,
 } from '../../api/client';
 
 export default function OpportunityExplorer({ onNavigate }) {
@@ -32,8 +34,25 @@ export default function OpportunityExplorer({ onNavigate }) {
   const [selectedMode, setSelectedMode] = useState('all');
   const [selectedKind, setSelectedKind] = useState('all');
 
-  // Error state
+  // Error and feedback state
   const [errorMessage, setErrorMessage] = useState(null);
+  const [trackerFeedback, setTrackerFeedback] = useState(null);
+
+  // Tracked opportunities set
+  const [trackedOppIds, setTrackedOppIds] = useState(new Set());
+  const [trackingId, setTrackingId] = useState(null);
+
+  // Load candidate's tracked opportunities
+  const loadTrackedList = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await fetchTrackedApplications();
+      const ids = new Set((res?.items || []).map(i => i.opportunity_id).filter(Boolean));
+      setTrackedOppIds(ids);
+    } catch {
+      // Ignore background fetch error
+    }
+  }, [isAuthenticated]);
 
   // Load recommendations for authenticated user
   const loadRecommendations = useCallback(async () => {
@@ -51,6 +70,29 @@ export default function OpportunityExplorer({ onNavigate }) {
       setIsLoadingRecs(false);
     }
   }, [isAuthenticated]);
+
+  const handleTrackOpportunity = async (opp) => {
+    if (!isAuthenticated) {
+      if (onNavigate) onNavigate('login');
+      return;
+    }
+    if (!opp?.id || trackedOppIds.has(opp.id)) return;
+
+    setTrackingId(opp.id);
+    try {
+      await createTrackedApplication({
+        opportunity_id: opp.id,
+        stage: 'saved',
+      });
+      setTrackedOppIds(prev => new Set([...prev, opp.id]));
+      setTrackerFeedback(isHindi ? `"${opp.title}" को आवेदन ट्रैकर में सहेजा गया!` : `"${opp.title}" saved to Application Tracker!`);
+      setTimeout(() => setTrackerFeedback(null), 3500);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to track opportunity.');
+    } finally {
+      setTrackingId(null);
+    }
+  };
 
   // Load catalogue items
   const loadCatalogue = useCallback(async () => {
@@ -80,8 +122,9 @@ export default function OpportunityExplorer({ onNavigate }) {
   useEffect(() => {
     if (isAuthenticated) {
       loadRecommendations();
+      loadTrackedList();
     }
-  }, [isAuthenticated, loadRecommendations]);
+  }, [isAuthenticated, loadRecommendations, loadTrackedList]);
 
   useEffect(() => {
     loadCatalogue();
@@ -252,15 +295,30 @@ export default function OpportunityExplorer({ onNavigate }) {
             {item.listing_status.replace('_', ' ')}
           </span>
 
-          <a
-            href={item.official_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`opp-cta-button ${isDirectory ? 'directory' : 'listing'}`}
-          >
-            <span>{isDirectory ? t('opp.openPortal') : t('opp.viewSource')}</span>
-            <Icon name="arrow-up-right" size={13} />
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            {isAuthenticated && item.id && (
+              <button
+                type="button"
+                className={`opp-track-btn ${trackedOppIds.has(item.id) ? 'tracked' : ''}`}
+                onClick={() => handleTrackOpportunity(item)}
+                disabled={trackedOppIds.has(item.id) || trackingId === item.id}
+                title={trackedOppIds.has(item.id) ? 'Already tracked' : 'Save to Application Tracker'}
+              >
+                <Icon name={trackedOppIds.has(item.id) ? 'check' : 'clipboard-list'} size={11} />
+                <span>{trackedOppIds.has(item.id) ? 'Tracked' : (trackingId === item.id ? 'Saving...' : 'Track')}</span>
+              </button>
+            )}
+
+            <a
+              href={item.official_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`opp-cta-button ${isDirectory ? 'directory' : 'listing'}`}
+            >
+              <span>{isDirectory ? t('opp.openPortal') : t('opp.viewSource')}</span>
+              <Icon name="arrow-up-right" size={13} />
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -329,6 +387,14 @@ export default function OpportunityExplorer({ onNavigate }) {
           <span className="career-tab-badge">{totalCount}</span>
         </button>
       </div>
+
+      {/* Tracker Feedback Banner */}
+      {trackerFeedback && (
+        <div className="auth-alert success" style={{ marginBottom: '1.25rem' }}>
+          <Icon name="check-circle" size={16} />
+          <span>{trackerFeedback}</span>
+        </div>
+      )}
 
       {/* Error Banner */}
       {errorMessage && (
