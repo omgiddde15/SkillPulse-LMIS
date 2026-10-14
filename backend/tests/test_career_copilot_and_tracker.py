@@ -303,11 +303,12 @@ def test_copilot_deterministic_mode_when_consent_disabled():
         },
     )
 
-    # Add evidenced skill Python, claimed Docker
-    client.post(
+    # Add evidenced skill Python (category: technical)
+    res_py = client.post(
         "/api/v1/career/skills",
-        json={"skill_name": "Python", "category": "Programming Languages", "evidence_status": "evidenced"},
+        json={"skill_name": "Python", "category": "technical", "evidence_status": "evidenced"},
     )
+    assert res_py.status_code == 201
 
     # Create conversation
     conv = client.post(
@@ -334,9 +335,57 @@ def test_copilot_deterministic_mode_when_consent_disabled():
         assert "External AI consent is disabled" in data["content"]
         assert "Python / Backend Developer" in data["content"]
         assert "missing required competencies" in data["content"].lower()
+        assert "No claimed-but-unverified skills are currently recorded in your profile." in data["content"]
+        assert "include: None." not in data["content"]
 
         # Sources include grounded benchmark or gap references
         assert len(data["sources"]) > 0
+
+
+def test_copilot_deterministic_mode_with_claimed_skills():
+    """Verify deterministic guidance properly notes claimed skills when present."""
+    client = TestClient(app)
+    register_user(client, "candidate_copilot_claimed@example.com")
+
+    # Set up career profile with consent_ai_processing = False
+    client.put(
+        "/api/v1/career/profile",
+        json={
+            "target_role_title": "Python Developer",
+            "target_occupation_id": "OCC_DEV_PY_01",
+            "consent_ai_processing": False,
+        },
+    )
+
+    # Add evidenced skill Python, claimed skill FastAPI (which is a required benchmark skill for Python backend)
+    res1 = client.post(
+        "/api/v1/career/skills",
+        json={"skill_name": "Python", "category": "technical", "evidence_status": "evidenced"},
+    )
+    assert res1.status_code == 201
+    res2 = client.post(
+        "/api/v1/career/skills",
+        json={"skill_name": "FastAPI", "category": "technical", "evidence_status": "claimed"},
+    )
+    assert res2.status_code == 201
+
+    # Create conversation
+    conv = client.post(
+        "/api/v1/career/copilot/conversations",
+        json={"title": "Claimed Skills Check"},
+    ).json()
+    conv_id = conv["id"]
+
+    msg_res = client.post(
+        f"/api/v1/career/copilot/conversations/{conv_id}/messages",
+        json={"content": "What are my missing skills for Python / Backend Developer?"},
+    )
+    assert msg_res.status_code == 201
+    data = msg_res.json()
+
+    assert data["generation_mode"] == "deterministic"
+    assert "Skills you have claimed but not yet verified with evidence include:" in data["content"]
+    assert "FastAPI" in data["content"]
 
 
 def test_copilot_ai_assisted_mode_when_consent_enabled():

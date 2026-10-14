@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import {
   fetchCopilotConversations,
   createCopilotConversation,
@@ -392,12 +393,36 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
                         </div>
 
                         <div className="copilot-message-text">
-                          {msg.content.split('\n').map((line, idx) => (
-                            <React.Fragment key={idx}>
-                              {line}
-                              {idx < msg.content.split('\n').length - 1 && <br />}
-                            </React.Fragment>
-                          ))}
+                          {msg.sender === 'assistant' ? (
+                            <div className="copilot-message-markdown">
+                              <ReactMarkdown
+                                components={{
+                                  a: ({ href, children }) => {
+                                    const isSafe = href && (href.startsWith('https://') || href.startsWith('http://'));
+                                    if (!isSafe) {
+                                      return <span>{children}</span>;
+                                    }
+                                    return (
+                                      <a
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="copilot-md-link"
+                                      >
+                                        {children}
+                                      </a>
+                                    );
+                                  },
+                                }}
+                              >
+                                {msg.content}
+                              </ReactMarkdown>
+                            </div>
+                          ) : (
+                            <div className="copilot-user-text">
+                              {msg.content}
+                            </div>
+                          )}
                         </div>
 
                         {/* Grounded Source References */}

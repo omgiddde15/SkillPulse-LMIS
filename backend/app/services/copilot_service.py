@@ -221,8 +221,14 @@ class CopilotService:
         role_title = matched_role["title"] if matched_role else target_role_title
 
         # 2. Candidate skills with distinct evidence levels
-        skills_resp = self.career_service.get_user_skills(user_id) or {}
-        all_skills = skills_resp.get("skills", [])
+        skills_raw = self.career_service.get_user_skills(user_id)
+        if isinstance(skills_raw, dict):
+            all_skills = skills_raw.get("skills", [])
+        elif isinstance(skills_raw, list):
+            all_skills = skills_raw
+        else:
+            all_skills = []
+
         evidenced_skills = [s["skill_name"] for s in all_skills if s.get("evidence_status") == "evidenced"]
         claimed_skills = [s["skill_name"] for s in all_skills if s.get("evidence_status") == "claimed"]
         unconfirmed_skills = [s["skill_name"] for s in all_skills if s.get("evidence_status") == "unconfirmed"]
@@ -334,12 +340,22 @@ class CopilotService:
             if missing_req:
                 top_missing = missing_req[:3]
                 names = [m["name"] for m in top_missing]
+                if claimed_req:
+                    claimed_note = (
+                        f"Skills you have claimed but not yet verified with evidence include: "
+                        f"{', '.join(s['name'] for s in claimed_req)}. "
+                        f"Remember that skills mentioned on a resume are treated as unconfirmed until supported by portfolio evidence or verified assessments."
+                    )
+                else:
+                    claimed_note = (
+                        "No claimed-but-unverified skills are currently recorded in your profile. "
+                        "Remember that skills mentioned on a resume are treated as unconfirmed until supported by portfolio evidence or verified assessments."
+                    )
+
                 answer = (
                     f"For your target role as **{role['title']}**, you have {len(missing_req)} missing required competencies. "
                     f"You should prioritize these first: **{', '.join(names)}**.\n\n"
-                    f"Skills you have claimed but not yet verified with evidence include: "
-                    f"{', '.join(s['name'] for s in claimed_req) if claimed_req else 'None'}. "
-                    f"Remember that skills mentioned on a resume are treated as unconfirmed until supported by portfolio evidence or verified assessments."
+                    f"{claimed_note}"
                 )
                 for m in top_missing:
                     sources.append({
@@ -485,7 +501,7 @@ class CopilotService:
                 f"**{claimed_count} claimed skills**, and **{len(missing_req)} missing required competencies**.\n\n"
                 f"To advance toward your target role:\n"
                 f"1. Prioritize learning missing requirements: {', '.join(m['name'] for m in missing_req[:2]) if missing_req else 'None'}.\n"
-                f"2. Convert claimed skills into evidenced proficiencies by completing practical portfolio projects.\n"
+                f"{'2. Convert claimed skills into evidenced proficiencies by completing practical portfolio projects.' if claimed_count > 0 else '2. No claimed-but-unverified skills are currently recorded in your profile. Continue evidencing new competencies through practical projects.'}\n"
                 f"3. Track your target applications and milestones in the Application Tracker and Roadmap."
             )
             suggested_followups = [
