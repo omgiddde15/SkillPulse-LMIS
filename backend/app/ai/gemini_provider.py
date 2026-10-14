@@ -99,23 +99,16 @@ class GeminiProvider(AIProvider):
         max_attempts = 2
         response = None
 
-        # Build thinking configuration: use lower thinking budget/level to minimize latency
+        # Build thinking configuration: use documented thinking_level=LOW to minimize latency
         # while preserving structured JSON roadmap generation
         thinking_config = None
         try:
-            budget_env = os.getenv("GEMINI_THINKING_BUDGET")
-            if budget_env is not None:
-                budget_val = int(budget_env)
-                thinking_config = types.ThinkingConfig(
-                    thinking_budget=budget_val,
-                    include_thoughts=False,
-                )
-            else:
-                # Default thinking budget=0 minimizes latency for deterministic schema generation
-                thinking_config = types.ThinkingConfig(
-                    thinking_budget=0,
-                    include_thoughts=False,
-                )
+            level_str = os.getenv("GEMINI_THINKING_LEVEL", "LOW").strip().upper()
+            level_enum = getattr(types.ThinkingLevel, level_str, types.ThinkingLevel.LOW)
+            thinking_config = types.ThinkingConfig(
+                thinking_level=level_enum,
+                include_thoughts=False,
+            )
         except Exception as exc:
             logger.debug("ThinkingConfig not supported or failed to build: %s", exc)
             thinking_config = None

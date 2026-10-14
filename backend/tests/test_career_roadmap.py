@@ -585,9 +585,11 @@ def test_get_bounded_timeout_ms(monkeypatch):
 
 
 def test_gemini_provider_thinking_config_and_token_bounds(monkeypatch):
-    """Verifies that GenerateContentConfig configures lower thinking budget and max token limits."""
+    """Verifies that GenerateContentConfig configures ThinkingLevel.LOW and max token limits."""
     from app.ai.gemini_provider import GeminiProvider
+    from google.genai import types
 
+    monkeypatch.delenv("GEMINI_THINKING_LEVEL", raising=False)
     provider = GeminiProvider(api_key="fake-test-key")
 
     mock_client = MagicMock()
@@ -614,8 +616,20 @@ def test_gemini_provider_thinking_config_and_token_bounds(monkeypatch):
         assert config.max_output_tokens == 3072
         assert config.response_mime_type == "application/json"
         assert config.thinking_config is not None
-        assert config.thinking_config.thinking_budget == 0
+        assert config.thinking_config.thinking_level == types.ThinkingLevel.LOW
         assert config.thinking_config.include_thoughts is False
+
+    # Also verify that GEMINI_THINKING_LEVEL can configure MEDIUM
+    monkeypatch.setenv("GEMINI_THINKING_LEVEL", "MEDIUM")
+    with patch("google.genai.Client", return_value=mock_client):
+        provider.generate_structured_content(
+            system_instruction="System",
+            user_prompt="Prompt",
+            response_schema=dict,
+            timeout_ms=10000,
+        )
+        config2 = mock_client.models.generate_content.call_args.kwargs["config"]
+        assert config2.thinking_config.thinking_level == types.ThinkingLevel.MEDIUM
 
 
 def test_gemini_provider_transient_503_retry_succeeds_on_attempt_2(monkeypatch):
