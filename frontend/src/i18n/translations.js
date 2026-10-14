@@ -715,10 +715,10 @@ export const translations = {
     'roadmap.targetSkills': 'Target Competencies:',
     'roadmap.linkedResource': 'Verified Learning Resource / Opportunity:',
     'roadmap.sourceProvenance': 'Source Provenance:',
-    'roadmap.aiConsentTitle': 'AI Personalization Consent',
-    'roadmap.aiConsentActive': 'AI Personalization Active (Gemini 3.8 Flash enabled with strict privacy filtering).',
-    'roadmap.aiConsentDisabled': 'AI Processing Consent is Disabled. Plans are generated using deterministic rules.',
-    'roadmap.enableConsent': 'Enable AI Personalization',
+    'roadmap.aiConsentTitle': 'AI Processing Consent',
+    'roadmap.aiConsentActive': 'AI Processing Consent Granted. Personalization enabled when AI provider is reachable (clean deterministic fallback preserved).',
+    'roadmap.aiConsentDisabled': 'AI Processing Consent Revoked. Plans are generated using deterministic rules.',
+    'roadmap.enableConsent': 'Grant AI Consent',
     'roadmap.deleteConfirm': 'Are you sure you want to delete this saved roadmap?',
 
     // Opportunity Explorer (Phase 3)
@@ -1476,10 +1476,10 @@ export const translations = {
     'roadmap.targetSkills': 'लक्षित क्षमताएं:',
     'roadmap.linkedResource': 'सत्यापित शिक्षण संसाधन / अवसर:',
     'roadmap.sourceProvenance': 'स्रोत प्रामाणिकता:',
-    'roadmap.aiConsentTitle': 'एआई वैयक्तिकरण सहमति',
-    'roadmap.aiConsentActive': 'एआई वैयक्तिकरण सक्रिय है (कड़े गोपनीयता फ़िल्टरिंग के साथ सक्षम)।',
-    'roadmap.aiConsentDisabled': 'एआई प्रसंस्करण सहमति अक्षम है। योजनाएं वस्तुनिष्ठ नियमों से उत्पन्न होती हैं।',
-    'roadmap.enableConsent': 'एआई वैयक्तिकरण सक्षम करें',
+    'roadmap.aiConsentTitle': 'एआई प्रसंस्करण सहमति',
+    'roadmap.aiConsentActive': 'एआई प्रसंस्करण सहमति: स्वीकृत। प्रदाता उपलब्ध होने पर वैयक्तिकरण सक्षम (नियतात्मक फ़ॉलबैक सुरक्षित)।',
+    'roadmap.aiConsentDisabled': 'एआई प्रसंस्करण सहमति: अस्वीकृत। सभी योजनाएं वस्तुनिष्ठ नियमों से उत्पन्न की जाती हैं।',
+    'roadmap.enableConsent': 'एआई सहमति प्रदान करें',
     'roadmap.deleteConfirm': 'क्या आप वाकई इस सहेजे गए रोडमैप को हटाना चाहते हैं?',
 
     // Opportunity Explorer (Phase 3)

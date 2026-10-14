@@ -708,3 +708,34 @@ def test_gemini_provider_permanent_errors_never_retried(monkeypatch):
         assert mock_client_429.models.generate_content.call_count == 1
         mock_sleep.assert_not_called()
 
+
+def test_python_fundamentals_milestone_excludes_genai_course(client: TestClient):
+    """Ensure Python fundamentals milestone does not attach unrelated SmartBridge GenAI course, retaining hands-on exercise."""
+    cookie = register_and_login(client, "roadmap_relevance_check@example.com")
+    res = client.post(
+        "/api/v1/career/roadmaps/generate",
+        json={"target_role_id": "ROLE_PY_BACKEND", "horizon_days": 30},
+        cookies={"session_id": cookie},
+    )
+    assert res.status_code == 201
+    data = res.json()
+
+    # Locate milestones touching Python
+    python_milestones = [
+        m for m in data["milestones"]
+        if "python" in [s.lower() for s in m.get("target_skills", [])] or "python" in m.get("title", "").lower()
+    ]
+    assert len(python_milestones) > 0
+
+    for m in python_milestones:
+        # Must not attach the advanced GenAI course to Python fundamentals
+        assert m.get("linked_opportunity_id") != "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE"
+
+    # Verify a practical hands-on or core competency milestone exists without a misleading paid course
+    hands_on_or_core = [
+        m for m in python_milestones
+        if "exercise" in m.get("title", "").lower() or "core" in m.get("title", "").lower() or "fundamentals" in m.get("title", "").lower()
+    ]
+    assert len(hands_on_or_core) > 0
+    # At least one such milestone has no misleading external course link
+    assert any(m.get("linked_opportunity_id") is None for m in hands_on_or_core)

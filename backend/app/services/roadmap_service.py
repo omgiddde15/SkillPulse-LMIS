@@ -122,6 +122,12 @@ class RoadmapService:
             k = normalize_skill_key(req["skill_key"])
             sname = req.get("skill_name") or get_skill_display_name(k)
             matched_course = skill_to_course.get(k)
+            # Ensure matched course reasonably supports learning this foundational skill
+            if matched_course:
+                course_title_lower = matched_course.get("title", "").lower()
+                # Exclude advanced applied programs (e.g. Generative AI) where Python is a prerequisite rather than foundational learning
+                if k == "python" and "generative ai" in course_title_lower:
+                    matched_course = None
 
             if matched_course:
                 milestones.append({

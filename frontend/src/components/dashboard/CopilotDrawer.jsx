@@ -296,10 +296,10 @@ export default function CopilotDrawer({
         >
           <span style={{ marginTop: '0.1rem', flexShrink: 0 }}><Icon name="shield" size={14} /></span>
           <div>
-            <strong>{isHindi ? 'पारदर्शिता गारंटी:' : 'Zero-Hallucination Policy:'}</strong>{' '}
+            <strong>{isHindi ? 'पारदर्शिता गारंटी:' : 'Deterministic, Source-Grounded Responses:'}</strong>{' '}
             {isHindi
-              ? 'सभी उत्तर वर्तमान एपीआई प्रेक्षणों से नियम-आधारित रूप से व्युत्पन्न हैं। कोई बाहरी अपुष्ट भाषा मॉडल नहीं।'
-              : 'Responses are deterministically computed from live backend API analytics. No unverified third-party LLM hallucinations.'}
+              ? 'सभी उत्तर वर्तमान एपीआई प्रेक्षणों से नियम-आधारित रूप से व्युत्पन्न हैं।'
+              : 'Responses are deterministically computed from verified backend API analytics, grounded directly in live system observations.'}
           </div>
         </div>
 

@@ -335,6 +335,27 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
           </div>
         </div>
 
+        {/* Selected Roadmap Context Callout */}
+        {activeRoadmap && (
+          <div className="roadmap-active-selection-callout">
+            <div className="roadmap-active-selection-callout-icon">
+              <Icon name="info" size={15} />
+            </div>
+            <div className="roadmap-active-selection-callout-content">
+              <span className="roadmap-active-selection-callout-label">
+                {isHindi ? 'वर्तमान में चयनित सहेजी गई योजना:' : 'Currently Inspected Saved Plan:'}
+              </span>
+              <strong> {activeRoadmap.role_title} ({activeRoadmap.horizon_days} {isHindi ? 'दिन' : 'Days'})</strong>
+              <span className="roadmap-active-selection-callout-hint">
+                {' — '}
+                {isHindi
+                  ? 'ऊपर दिए गए चयन को बदलने से सहेजी गई योजना पर तब तक कोई प्रभाव नहीं पड़ेगा जब तक आप नया रोडमैप तैयार नहीं करते।'
+                  : 'Changing generator inputs above will not alter this saved plan until you click Generate.'}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* AI Consent Status & Toggle Bar */}
         <div className="roadmap-consent-bar">
           <div className="roadmap-consent-info">
@@ -356,7 +377,7 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
           >
             <span>
               {consentAiProcessing
-                ? (isHindi ? 'सहमति वापस लें' : 'Disable AI Consent')
+                ? (isHindi ? 'सहमति वापस लें' : 'Revoke AI Consent')
                 : t('roadmap.enableConsent')}
             </span>
           </button>
@@ -476,6 +497,12 @@ export default function CareerRoadmap({ onNavigate, isHindi, t, isAuthenticated 
               {/* Header Card Info */}
               <div className="roadmap-active-header">
                 <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                    <span className="roadmap-inspected-plan-pill">
+                      <Icon name="bookmark" size={11} />
+                      <span>{isHindi ? 'सहेजी गई योजना' : 'Active Saved Plan'}</span>
+                    </span>
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {activeRoadmap.role_title}

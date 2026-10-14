@@ -338,8 +338,19 @@ class CopilotService:
         # Intent 1: Skill gaps / prioritization
         if any(w in q_lower for w in ("gap", "prioritize", "priority", "missing", "require")):
             if missing_req:
-                top_missing = missing_req[:3]
-                names = [m["name"] for m in top_missing]
+                total_missing = len(missing_req)
+                if total_missing <= 3:
+                    prioritized_text = f"You should prioritize learning all of these: **{', '.join(m['name'] for m in missing_req)}**."
+                else:
+                    top_missing = missing_req[:3]
+                    rem_missing = missing_req[3:]
+                    top_names = [m["name"] for m in top_missing]
+                    rem_names = [m["name"] for m in rem_missing]
+                    prioritized_text = (
+                        f"Your top 3 priorities out of {total_missing} are: **{', '.join(top_names)}**. "
+                        f"The remaining required competencies to address subsequently are: **{', '.join(rem_names)}**."
+                    )
+
                 if claimed_req:
                     claimed_note = (
                         f"Skills you have claimed but not yet verified with evidence include: "
@@ -353,11 +364,11 @@ class CopilotService:
                     )
 
                 answer = (
-                    f"For your target role as **{role['title']}**, you have {len(missing_req)} missing required competencies. "
-                    f"You should prioritize these first: **{', '.join(names)}**.\n\n"
+                    f"For your target role as **{role['title']}**, you have {total_missing} missing required competencies. "
+                    f"{prioritized_text}\n\n"
                     f"{claimed_note}"
                 )
-                for m in top_missing:
+                for m in missing_req:
                     sources.append({
                         "kind": "skill_gap",
                         "id": m["skill_key"],
@@ -386,6 +397,8 @@ class CopilotService:
                 matched_opp = None
                 for o in opps:
                     if first_skill["skill_key"] in o.get("skill_keys", []):
+                        if first_skill["skill_key"] == "python" and "generative ai" in o.get("title", "").lower():
+                            continue
                         matched_opp = o
                         break
 
@@ -496,11 +509,16 @@ class CopilotService:
         else:
             evidenced_count = len(skills["evidenced"])
             claimed_count = len(skills["claimed"])
+            missing_summary = (
+                ', '.join(m['name'] for m in missing_req[:3])
+                + (f" (top 3 out of {len(missing_req)} total missing requirements)" if len(missing_req) > 3 else "")
+                if missing_req else 'None'
+            )
             answer = (
                 f"As a candidate pursuing **{role['title']}**, you currently have **{evidenced_count} evidenced skills**, "
                 f"**{claimed_count} claimed skills**, and **{len(missing_req)} missing required competencies**.\n\n"
                 f"To advance toward your target role:\n"
-                f"1. Prioritize learning missing requirements: {', '.join(m['name'] for m in missing_req[:2]) if missing_req else 'None'}.\n"
+                f"1. Prioritize learning missing requirements: {missing_summary}.\n"
                 f"{'2. Convert claimed skills into evidenced proficiencies by completing practical portfolio projects.' if claimed_count > 0 else '2. No claimed-but-unverified skills are currently recorded in your profile. Continue evidencing new competencies through practical projects.'}\n"
                 f"3. Track your target applications and milestones in the Application Tracker and Roadmap."
             )

@@ -224,7 +224,7 @@
     "source_id": "SRC_SWAYAM_PLUS",
     "official_url": "https://swayamplus.education.gov.in/courses/generative-ai",
     "role_ids": ["ROLE_PY_BACKEND", "ROLE_DATA_ANALYST"],
-    "skill_keys": ["python", "rest_api"],
+    "skill_keys": ["machine_learning", "rest_api"],
     "eligibility": {
       "prerequisites": "Basic programming fundamentals (Python recommended) and understanding of web data structures.",
       "duration_hours": 90
@@ -248,7 +248,7 @@
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-09-15T00:00:00Z",
-    "provenance_notes": "Verified partner program on SWAYAM Plus portal. Commercial provider SmartBridge; verified fee of ₹5,999 for 90 learning hours. Not a free government course."
+    "provenance_notes": "Verified partner program on SWAYAM Plus portal. Commercial provider SmartBridge; verified fee of ₹5,999 for 90 learning hours. Not a free government course. Applied Generative AI program with Python prerequisite; does not teach foundational Python syntax or programming basics."
   },
   {
     "id": "OPP_CRS_SWAYAM_NPTEL_DBMS",

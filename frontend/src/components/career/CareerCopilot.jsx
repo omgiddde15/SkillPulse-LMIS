@@ -258,8 +258,8 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
               <Icon name={consentAiProcessing ? 'sparkles' : 'shield'} size={12} />
               <span>
                 {consentAiProcessing
-                  ? (isHindi ? 'एआई-सहायता प्राप्त मोड सक्रिय' : 'AI-Assisted Engine Active')
-                  : (isHindi ? 'नियतात्मक नियम इंजन (गोपनीयता सुरक्षित)' : 'Deterministic Grounded Engine')}
+                  ? (isHindi ? 'एआई सहमति: स्वीकृत' : 'AI Processing: Permitted')
+                  : (isHindi ? 'एआई सहमति: अस्वीकृत (नियतात्मक)' : 'AI Processing: Off (Deterministic)')}
               </span>
             </span>
           </div>
@@ -276,13 +276,13 @@ export default function CareerCopilot({ onNavigate, isHindi, t, isAuthenticated 
             className="btn btn-secondary btn-sm"
             onClick={handleToggleConsent}
             disabled={isUpdatingConsent}
-            title={consentAiProcessing ? 'Switch to Deterministic Mode' : 'Enable AI Assistance'}
+            title={consentAiProcessing ? 'Revoke AI Processing Consent' : 'Grant AI Processing Consent'}
           >
             <Icon name={consentAiProcessing ? 'toggle-right' : 'toggle-left'} size={14} />
             <span>
               {consentAiProcessing
-                ? (isHindi ? 'एआई सहमति अक्षम करें' : 'Disable AI Processing')
-                : (isHindi ? 'एआई सहायता सक्षम करें' : 'Enable AI Processing')}
+                ? (isHindi ? 'एआई सहमति वापस लें' : 'Revoke AI Consent')
+                : (isHindi ? 'एआई सहमति दें' : 'Grant AI Consent')}
             </span>
           </button>
 

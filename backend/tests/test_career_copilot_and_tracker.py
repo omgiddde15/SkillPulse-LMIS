@@ -341,6 +341,44 @@ def test_copilot_deterministic_mode_when_consent_disabled():
         # Sources include grounded benchmark or gap references
         assert len(data["sources"]) > 0
 
+        # Complete skill-gap answers: top 3 out of total missing requirements, remaining listed separately
+        assert "top 3 priorities out of 4" in data["content"]
+        assert "4 missing required competencies" in data["content"]
+        assert "The remaining required competencies to address subsequently" in data["content"]
+        assert "RESTful API Design" in data["content"]
+
+
+def test_copilot_course_relevance_excludes_genai_for_python_fundamentals():
+    """Verify that Copilot does not attach advanced Generative AI courses to foundational Python learning queries."""
+    client = TestClient(app)
+    register_user(client, "candidate_copilot_py_courses@example.com")
+
+    client.put(
+        "/api/v1/career/profile",
+        json={
+            "target_role_title": "Python Developer",
+            "target_occupation_id": "OCC_DEV_PY_01",
+            "consent_ai_processing": False,
+        },
+    )
+
+    conv = client.post(
+        "/api/v1/career/copilot/conversations",
+        json={"title": "Python Learning Resources"},
+    ).json()
+    conv_id = conv["id"]
+
+    msg_res = client.post(
+        f"/api/v1/career/copilot/conversations/{conv_id}/messages",
+        json={"content": "What courses can I take to learn Python?"},
+    )
+    assert msg_res.status_code == 201
+    data = msg_res.json()
+
+    # The course OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE should not be attached for foundational Python
+    source_ids = [s.get("id") for s in data.get("sources", [])]
+    assert "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE" not in source_ids
+
 
 def test_copilot_deterministic_mode_with_claimed_skills():
     """Verify deterministic guidance properly notes claimed skills when present."""
