@@ -313,10 +313,17 @@ class RoadmapService:
 
         # 2. If user HAS granted consent, check AI provider readiness
         if not self.ai_service.is_ai_available():
-            note = (
-                f"Generated using SkillPulse deterministic rules engine. Gemini API key is not configured on the server. "
-                f"Timings are planning estimates."
-            )
+            provider_id = getattr(self.ai_service.provider, "provider_id", "gemini")
+            if provider_id == "watsonx":
+                note = (
+                    "Generated using SkillPulse deterministic rules engine. IBM watsonx is not configured on the server. "
+                    "Timings are planning estimates."
+                )
+            else:
+                note = (
+                    "Generated using SkillPulse deterministic rules engine. Gemini API key is not configured on the server. "
+                    "Timings are planning estimates."
+                )
             return self.generate_deterministic_roadmap(
                 user_id=user_id,
                 target_role_id=target_role_id,

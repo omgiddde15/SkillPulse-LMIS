@@ -48,6 +48,9 @@ def get_bounded_timeout_ms(override_ms: Optional[int] = None) -> int:
 class GeminiProvider(AIProvider):
     """Google Gemini implementation conforming to AIProvider interface."""
 
+    provider_name: str = "Google Gemini"
+    provider_id: str = "gemini"
+
     def __init__(
         self,
         api_key: Optional[str] = None,

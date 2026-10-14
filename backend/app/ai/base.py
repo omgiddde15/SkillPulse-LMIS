@@ -31,7 +31,10 @@ class AISchemaValidationError(AIProviderError):
 
 
 class AIProvider(ABC):
-    """Abstract provider boundary for LLM integrations (Gemini, future providers)."""
+    """Abstract provider boundary for LLM integrations (Gemini, watsonx, future providers)."""
+
+    provider_name: str = "Generic AI"
+    provider_id: str = "generic"
 
     @abstractmethod
     def generate_structured_content(

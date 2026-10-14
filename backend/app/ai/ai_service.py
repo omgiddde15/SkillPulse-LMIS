@@ -50,8 +50,11 @@ class AIService:
         if provider:
             self.provider = provider
         else:
-            provider_type = os.getenv("AI_PROVIDER", "gemini").lower()
-            if provider_type == "gemini":
+            provider_type = os.getenv("AI_PROVIDER", "gemini").strip().lower()
+            if provider_type == "watsonx":
+                from app.ai.watsonx_provider import WatsonxProvider
+                self.provider = WatsonxProvider()
+            elif provider_type == "gemini":
                 self.provider = GeminiProvider()
             else:
                 logger.warning("Unsupported AI_PROVIDER '%s', defaulting to Gemini.", provider_type)
@@ -153,10 +156,19 @@ class AIService:
             logger.warning("No valid milestones after reference checking. Falling back.")
             return None
 
+        provider_id = getattr(self.provider, "provider_id", "gemini")
+        if provider_id == "watsonx":
+            model_label = getattr(self.provider, "model", "")
+            provider_note_label = f"IBM watsonx.ai ({model_label})" if model_label else "IBM watsonx.ai"
+        elif getattr(self.provider, "model", "") and getattr(self.provider, "model", "") != "gemini-3.8-flash":
+            provider_note_label = f"Gemini ({self.provider.model})"
+        else:
+            provider_note_label = "Gemini 3.8 Flash"
+
         return {
             "summary": validated.summary,
             "methodology_note": (
-                f"Personalized with Gemini 3.8 Flash based on your verified skill evidence and deterministic gap analysis. "
+                f"Personalized with {provider_note_label} based on your verified skill evidence and deterministic gap analysis. "
                 f"Sequenced for a {horizon_days}-day horizon with approximately {weekly_hours} hours/week effort. "
                 f"Timings are planning estimates, not guaranteed outcomes."
             ),
