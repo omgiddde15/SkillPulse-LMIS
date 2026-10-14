@@ -1,3 +1,13 @@
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load local environment configuration if present
+_env_path = Path(__file__).resolve().parent.parent / ".env"
+if _env_path.exists():
+    load_dotenv(dotenv_path=_env_path)
+else:
+    load_dotenv()
+
 from fastapi import FastAPI
 
 from app.api.v1.alerts import router as alerts_router

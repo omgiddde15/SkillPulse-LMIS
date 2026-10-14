@@ -55,7 +55,7 @@ class GeminiProvider(AIProvider):
         system_instruction: str,
         user_prompt: str,
         response_schema: Any,
-        timeout_ms: int = 15000,
+        timeout_ms: int = 35000,
     ) -> Dict[str, Any]:
         """Generates schema-conforming structured JSON via Google GenAI SDK."""
         if not self.is_configured():

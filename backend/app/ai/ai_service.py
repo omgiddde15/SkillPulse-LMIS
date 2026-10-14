@@ -93,7 +93,7 @@ class AIService:
                 system_instruction=SYSTEM_PROMPT,
                 user_prompt=user_prompt,
                 response_schema=AIRoadmapOutput,
-                timeout_ms=15000,
+                timeout_ms=int(os.getenv("AI_TIMEOUT_MS", "35000")),
             )
         except AIProviderError as exc:
             logger.warning("AI provider execution failed (%s): %s", exc.provider, str(exc))
