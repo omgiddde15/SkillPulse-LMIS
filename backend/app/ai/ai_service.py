@@ -10,7 +10,7 @@ from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 
 from app.ai.base import AIProvider, AIProviderError
-from app.ai.gemini_provider import GeminiProvider
+from app.ai.gemini_provider import GeminiProvider, get_bounded_timeout_ms
 from app.ai.prompts import SYSTEM_PROMPT, build_roadmap_prompt, assert_payload_privacy
 from app.services.role_catalogue import normalize_skill_key
 
@@ -93,7 +93,7 @@ class AIService:
                 system_instruction=SYSTEM_PROMPT,
                 user_prompt=user_prompt,
                 response_schema=AIRoadmapOutput,
-                timeout_ms=int(os.getenv("AI_TIMEOUT_MS", "35000")),
+                timeout_ms=get_bounded_timeout_ms(),
             )
         except AIProviderError as exc:
             logger.warning("AI provider execution failed (%s): %s", exc.provider, str(exc))

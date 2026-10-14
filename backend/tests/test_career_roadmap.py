@@ -544,3 +544,153 @@ def test_complete_10_step_integration_audit(tmp_path, monkeypatch):
     b_del = client_b.delete(f"/api/v1/career/roadmaps/{roadmap_a_id}")
     assert b_del.status_code == 404
 
+
+# -----------------------------------------------------------------------------
+# 6. Latency Hardening, Timeout Bounding & 503 Retry Tests
+# -----------------------------------------------------------------------------
+
+def test_get_bounded_timeout_ms(monkeypatch):
+    """Verifies that timeout configuration is read consistently and bounded between 5s and 30s."""
+    from app.ai.gemini_provider import (
+        get_bounded_timeout_ms,
+        DEFAULT_AI_TIMEOUT_MS,
+        MIN_AI_TIMEOUT_MS,
+        MAX_AI_TIMEOUT_MS,
+    )
+
+    # 1. Default when unset
+    monkeypatch.delenv("AI_TIMEOUT_MS", raising=False)
+    assert get_bounded_timeout_ms() == DEFAULT_AI_TIMEOUT_MS
+
+    # 2. Within bounds
+    monkeypatch.setenv("AI_TIMEOUT_MS", "15000")
+    assert get_bounded_timeout_ms() == 15000
+
+    # 3. Below minimum clamp
+    monkeypatch.setenv("AI_TIMEOUT_MS", "1000")
+    assert get_bounded_timeout_ms() == MIN_AI_TIMEOUT_MS
+
+    # 4. Above maximum clamp
+    monkeypatch.setenv("AI_TIMEOUT_MS", "60000")
+    assert get_bounded_timeout_ms() == MAX_AI_TIMEOUT_MS
+
+    # 5. Invalid string falls back to default
+    monkeypatch.setenv("AI_TIMEOUT_MS", "invalid_number")
+    assert get_bounded_timeout_ms() == DEFAULT_AI_TIMEOUT_MS
+
+    # 6. Explicit override parameter
+    assert get_bounded_timeout_ms(override_ms=25000) == 25000
+    assert get_bounded_timeout_ms(override_ms=500) == MIN_AI_TIMEOUT_MS
+    assert get_bounded_timeout_ms(override_ms=90000) == MAX_AI_TIMEOUT_MS
+
+
+def test_gemini_provider_thinking_config_and_token_bounds(monkeypatch):
+    """Verifies that GenerateContentConfig configures lower thinking budget and max token limits."""
+    from app.ai.gemini_provider import GeminiProvider
+
+    provider = GeminiProvider(api_key="fake-test-key")
+
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.parsed = {
+        "summary": "Mock summary",
+        "methodology_note": "Mock note",
+        "milestones": [],
+    }
+    mock_client.models.generate_content.return_value = mock_response
+
+    with patch("google.genai.Client", return_value=mock_client):
+        result = provider.generate_structured_content(
+            system_instruction="System",
+            user_prompt="Prompt",
+            response_schema=dict,
+            timeout_ms=10000,
+        )
+        assert result["summary"] == "Mock summary"
+
+        # Check the GenerateContentConfig passed to generate_content
+        call_kwargs = mock_client.models.generate_content.call_args.kwargs
+        config = call_kwargs["config"]
+        assert config.max_output_tokens == 3072
+        assert config.response_mime_type == "application/json"
+        assert config.thinking_config is not None
+        assert config.thinking_config.thinking_budget == 0
+        assert config.thinking_config.include_thoughts is False
+
+
+def test_gemini_provider_transient_503_retry_succeeds_on_attempt_2(monkeypatch):
+    """Verifies that a transient 503 triggers at most one retry and succeeds if the second attempt passes."""
+    from app.ai.gemini_provider import GeminiProvider
+    from google.genai.errors import APIError
+
+    provider = GeminiProvider(api_key="fake-test-key")
+
+    mock_client = MagicMock()
+    err_503 = APIError(503, "This model is currently experiencing high demand.")
+    mock_success = MagicMock()
+    mock_success.parsed = {
+        "summary": "Recovered plan",
+        "methodology_note": "AI note",
+        "milestones": [],
+    }
+    mock_client.models.generate_content.side_effect = [err_503, mock_success]
+
+    with patch("google.genai.Client", return_value=mock_client), patch("time.sleep") as mock_sleep:
+        res = provider.generate_structured_content(
+            system_instruction="System",
+            user_prompt="Prompt",
+            response_schema=dict,
+            timeout_ms=25000,
+        )
+        assert res["summary"] == "Recovered plan"
+        assert mock_client.models.generate_content.call_count == 2
+        mock_sleep.assert_called_once_with(1.5)
+
+
+def test_gemini_provider_transient_503_fails_after_single_retry(monkeypatch):
+    """Verifies that if both attempt 1 and attempt 2 return 503, exactly one retry is attempted and AIProviderError is raised."""
+    from app.ai.gemini_provider import GeminiProvider
+    from google.genai.errors import APIError
+
+    provider = GeminiProvider(api_key="fake-test-key")
+
+    mock_client = MagicMock()
+    err_503 = APIError(503, "High demand unavailable")
+    mock_client.models.generate_content.side_effect = [err_503, err_503]
+
+    with patch("google.genai.Client", return_value=mock_client), patch("time.sleep"):
+        with pytest.raises(AIProviderError):
+            provider.generate_structured_content(
+                system_instruction="System",
+                user_prompt="Prompt",
+                response_schema=dict,
+                timeout_ms=25000,
+            )
+        assert mock_client.models.generate_content.call_count == 2
+
+
+def test_gemini_provider_permanent_errors_never_retried(monkeypatch):
+    """Permanent errors (e.g., 400 Bad Request, 429 Rate Limit) are never retried."""
+    from app.ai.gemini_provider import GeminiProvider
+    from google.genai.errors import APIError
+
+    provider = GeminiProvider(api_key="fake-test-key")
+
+    # 400 Client error
+    mock_client = MagicMock()
+    mock_client.models.generate_content.side_effect = APIError(400, "Invalid argument")
+    with patch("google.genai.Client", return_value=mock_client), patch("time.sleep") as mock_sleep:
+        with pytest.raises(AIProviderError):
+            provider.generate_structured_content("Sys", "Prompt", dict)
+        assert mock_client.models.generate_content.call_count == 1
+        mock_sleep.assert_not_called()
+
+    # 429 Rate limit error
+    mock_client_429 = MagicMock()
+    mock_client_429.models.generate_content.side_effect = APIError(429, "Quota exceeded")
+    with patch("google.genai.Client", return_value=mock_client_429), patch("time.sleep") as mock_sleep:
+        with pytest.raises(AIRateLimitError):
+            provider.generate_structured_content("Sys", "Prompt", dict)
+        assert mock_client_429.models.generate_content.call_count == 1
+        mock_sleep.assert_not_called()
+
