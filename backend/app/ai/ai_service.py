@@ -47,18 +47,33 @@ class AIService:
     """Service boundary that isolates LLM interactions from domain business logic."""
 
     def __init__(self, provider: Optional[AIProvider] = None):
-        if provider:
-            self.provider = provider
-        else:
-            provider_type = os.getenv("AI_PROVIDER", "gemini").strip().lower()
-            if provider_type == "watsonx":
+        self._explicit_provider = provider
+        self._cached_gemini: Optional[GeminiProvider] = None
+        self._cached_watsonx = None
+
+    @property
+    def provider(self) -> AIProvider:
+        if self._explicit_provider is not None:
+            return self._explicit_provider
+        provider_type = os.getenv("AI_PROVIDER", "gemini").strip().lower()
+        if provider_type == "watsonx":
+            if self._cached_watsonx is None:
                 from app.ai.watsonx_provider import WatsonxProvider
-                self.provider = WatsonxProvider()
-            elif provider_type == "gemini":
-                self.provider = GeminiProvider()
-            else:
-                logger.warning("Unsupported AI_PROVIDER '%s', defaulting to Gemini.", provider_type)
-                self.provider = GeminiProvider()
+                self._cached_watsonx = WatsonxProvider()
+            return self._cached_watsonx
+        elif provider_type == "gemini":
+            if self._cached_gemini is None:
+                self._cached_gemini = GeminiProvider()
+            return self._cached_gemini
+        else:
+            logger.warning("Unsupported AI_PROVIDER '%s', defaulting to Gemini.", provider_type)
+            if self._cached_gemini is None:
+                self._cached_gemini = GeminiProvider()
+            return self._cached_gemini
+
+    @provider.setter
+    def provider(self, val: AIProvider):
+        self._explicit_provider = val
 
     def is_ai_available(self) -> bool:
         """Checks if the configured AI provider is ready to execute requests."""

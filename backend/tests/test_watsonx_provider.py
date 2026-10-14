@@ -65,6 +65,8 @@ def test_watsonx_missing_configuration_handled_safely(monkeypatch):
 
 def test_watsonx_partial_configuration_is_unconfigured(monkeypatch):
     """Verifies that having only some variables set still leaves provider unconfigured."""
+    monkeypatch.delenv("WATSONX_PROJECT_ID", raising=False)
+    monkeypatch.delenv("WATSONX_MODEL_ID", raising=False)
     provider = WatsonxProvider(api_key="key123", url="https://eu-gb.ml.cloud.ibm.com")
     assert provider.is_configured() is False
 
@@ -81,6 +83,18 @@ def test_watsonx_complete_configuration_recognized():
     assert provider.provider_name == "IBM watsonx.ai"
     assert provider.provider_id == "watsonx"
     assert provider.model == "meta-llama/llama-3-3-70b-instruct"
+    assert provider.max_tokens == 2048
+
+
+def test_watsonx_custom_max_tokens_override(monkeypatch):
+    """Verifies max_tokens can be customized via parameter or environment variable."""
+    p1 = WatsonxProvider(max_tokens=1024)
+    assert p1.max_tokens == 1024
+
+    monkeypatch.setenv("WATSONX_MAX_TOKENS", "1536")
+    p2 = WatsonxProvider()
+    assert p2.max_tokens == 1536
+
 
 
 # -----------------------------------------------------------------------------

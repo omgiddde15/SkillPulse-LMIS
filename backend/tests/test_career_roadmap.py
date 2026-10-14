@@ -33,6 +33,7 @@ def setup_isolated_db(tmp_path, monkeypatch):
     upload_dir = str(tmp_path / "uploads")
     monkeypatch.setenv("SKILLPULSE_DB_PATH", test_db)
     monkeypatch.setenv("SKILLPULSE_UPLOAD_DIR", upload_dir)
+    monkeypatch.setenv("AI_PROVIDER", "gemini")
     init_db(test_db)
     return test_db
 

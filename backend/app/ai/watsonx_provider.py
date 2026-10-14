@@ -32,6 +32,7 @@ from app.ai.gemini_provider import (
 logger = logging.getLogger(__name__)
 
 DEFAULT_WATSONX_API_VERSION = "2024-05-01"
+DEFAULT_WATSONX_MAX_TOKENS = 2048
 IBM_IAM_TOKEN_URL = "https://iam.cloud.ibm.com/identity/token"
 TOKEN_EXPIRATION_BUFFER_SECONDS = 300  # 5 minutes buffer
 
@@ -49,12 +50,14 @@ class WatsonxProvider(AIProvider):
         url: Optional[str] = None,
         model: Optional[str] = None,
         api_version: Optional[str] = None,
+        max_tokens: Optional[int] = None,
     ):
         self._api_key = api_key
         self._project_id = project_id
         self._url = url
         self._model = model
         self._api_version = api_version
+        self._max_tokens = max_tokens
 
         # In-memory token cache: (token_str, expires_at_timestamp)
         self._cached_token: Optional[str] = None
@@ -89,6 +92,18 @@ class WatsonxProvider(AIProvider):
         if self._api_version is not None:
             return self._api_version
         return os.getenv("WATSONX_API_VERSION", DEFAULT_WATSONX_API_VERSION).strip()
+
+    @property
+    def max_tokens(self) -> int:
+        if self._max_tokens is not None:
+            return self._max_tokens
+        env_val = os.getenv("WATSONX_MAX_TOKENS")
+        if env_val:
+            try:
+                return int(env_val)
+            except (ValueError, TypeError):
+                pass
+        return DEFAULT_WATSONX_MAX_TOKENS
 
     def is_configured(self) -> bool:
         """Returns True only when all mandatory watsonx parameters are explicitly configured."""
@@ -229,7 +244,7 @@ class WatsonxProvider(AIProvider):
             ],
             "parameters": {
                 "temperature": 0.2,
-                "max_tokens": 3072,
+                "max_tokens": self.max_tokens,
                 "response_format": {"type": "json_object"},
             },
         }
