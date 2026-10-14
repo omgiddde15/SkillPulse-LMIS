@@ -1,5 +1,6 @@
 """Pydantic schemas for SkillPulse Career Profile and Resume Processing."""
 
+from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, field_validator
 
@@ -503,6 +504,20 @@ class TrackerItemCreate(BaseModel):
             raise ValueError(f"Invalid stage '{v}'. Must be one of: {', '.join(VALID_TRACKER_STAGES)}")
         return clean
 
+    @field_validator("date_applied")
+    @classmethod
+    def validate_date_applied(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        clean = v.strip()
+        if not clean:
+            return None
+        try:
+            parsed = datetime.strptime(clean, "%Y-%m-%d").date()
+            return parsed.isoformat()
+        except ValueError:
+            raise ValueError(f"Invalid date format '{v}'. Expected YYYY-MM-DD.")
+
 
 class TrackerItemUpdate(BaseModel):
     """Payload to update an existing application tracker record."""
@@ -521,6 +536,20 @@ class TrackerItemUpdate(BaseModel):
         if clean not in VALID_TRACKER_STAGES:
             raise ValueError(f"Invalid stage '{v}'. Must be one of: {', '.join(VALID_TRACKER_STAGES)}")
         return clean
+
+    @field_validator("date_applied")
+    @classmethod
+    def validate_date_applied(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        clean = v.strip()
+        if not clean:
+            return None
+        try:
+            parsed = datetime.strptime(clean, "%Y-%m-%d").date()
+            return parsed.isoformat()
+        except ValueError:
+            raise ValueError(f"Invalid date format '{v}'. Expected YYYY-MM-DD.")
 
 
 class TrackerItemResponse(BaseModel):

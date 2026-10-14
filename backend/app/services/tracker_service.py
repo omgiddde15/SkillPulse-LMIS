@@ -137,7 +137,13 @@ class TrackerService:
             raise ValueError("Either an opportunity_id from the catalogue or a custom_title must be specified.")
 
         now = _now_iso()
-        date_applied = (data.get("date_applied") or "").strip() or None
+        raw_date = (data.get("date_applied") or "").strip() or None
+        date_applied = None
+        if raw_date:
+            try:
+                date_applied = datetime.strptime(raw_date, "%Y-%m-%d").date().isoformat()
+            except ValueError:
+                raise ValueError(f"Invalid date format for date_applied: '{raw_date}'. Expected YYYY-MM-DD.")
         notes = (data.get("notes") or "").strip() or None
 
         with get_db() as conn:
@@ -189,7 +195,13 @@ class TrackerService:
             params.append(raw_stage)
 
         if "date_applied" in data:
-            val = (data["date_applied"] or "").strip() or None
+            raw_date = (data["date_applied"] or "").strip() or None
+            val = None
+            if raw_date:
+                try:
+                    val = datetime.strptime(raw_date, "%Y-%m-%d").date().isoformat()
+                except ValueError:
+                    raise ValueError(f"Invalid date format for date_applied: '{raw_date}'. Expected YYYY-MM-DD.")
             updates.append("date_applied = ?")
             params.append(val)
 
@@ -200,6 +212,8 @@ class TrackerService:
 
         if "custom_title" in data:
             val = (data["custom_title"] or "").strip() or None
+            if not val and not existing.get("opportunity_id"):
+                raise ValueError("A title is required for manual external opportunities.")
             updates.append("custom_title = ?")
             params.append(val)
 

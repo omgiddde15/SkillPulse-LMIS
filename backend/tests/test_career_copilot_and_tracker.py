@@ -243,6 +243,184 @@ def test_tracker_multi_tenant_isolation():
     assert get_a.json()["stage"] == "saved"
 
 
+def test_tracker_manual_opportunity_requires_non_empty_title_on_create_and_update():
+    """Manual opportunities must have a non-empty title on creation and cannot be wiped on update."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_title_check@example.com")
+
+    # 1. Rejects blank/whitespace title on creation
+    res_blank = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "   ", "stage": "saved"},
+    )
+    assert res_blank.status_code in (400, 422)
+
+    # 2. Creates valid manual entry
+    res_valid = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "Frontend Architect", "custom_organization": "Open Source Foundation"},
+    )
+    assert res_valid.status_code == 201
+    item_id = res_valid.json()["id"]
+
+    # 3. Rejects updating title to empty string
+    res_wipe = client.put(
+        f"/api/v1/career/tracker/{item_id}",
+        json={"custom_title": "   "},
+    )
+    assert res_wipe.status_code in (400, 422)
+
+    # 4. Valid update succeeds
+    res_update = client.put(
+        f"/api/v1/career/tracker/{item_id}",
+        json={"custom_title": "Lead Frontend Architect"},
+    )
+    assert res_update.status_code == 200
+    assert res_update.json()["custom_title"] == "Lead Frontend Architect"
+
+
+def test_tracker_date_applied_validation_and_rejection():
+    """Validates YYYY-MM-DD date format and rejects invalid or malformed dates."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_dates@example.com")
+
+    # 1. Invalid date on create
+    res_invalid_create = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "Data Analyst", "date_applied": "2026-99-99"},
+    )
+    assert res_invalid_create.status_code in (400, 422)
+
+    res_garbage_date = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "Data Analyst", "date_applied": "invalid-date-string"},
+    )
+    assert res_garbage_date.status_code in (400, 422)
+
+    # 2. Valid date on create
+    res_valid = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "Data Analyst", "date_applied": "2026-10-14", "stage": "applied"},
+    )
+    assert res_valid.status_code == 201
+    item_id = res_valid.json()["id"]
+    assert res_valid.json()["date_applied"] == "2026-10-14"
+
+    # 3. Invalid date on update
+    res_invalid_update = client.put(
+        f"/api/v1/career/tracker/{item_id}",
+        json={"date_applied": "2026-02-31"},
+    )
+    assert res_invalid_update.status_code in (400, 422)
+
+    # 4. Valid date on update
+    res_update_ok = client.put(
+        f"/api/v1/career/tracker/{item_id}",
+        json={"date_applied": "2026-10-15"},
+    )
+    assert res_update_ok.status_code == 200
+    assert res_update_ok.json()["date_applied"] == "2026-10-15"
+
+
+def test_tracker_all_eight_stages_lifecycle():
+    """Verify that all 8 defined pipeline stages update correctly and persist."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_stages@example.com")
+
+    create_res = client.post(
+        "/api/v1/career/tracker",
+        json={"custom_title": "Full Stack Engineer", "stage": "saved"},
+    )
+    assert create_res.status_code == 201
+    item_id = create_res.json()["id"]
+
+    stages_sequence = [
+        "planning",
+        "applied",
+        "assessment",
+        "interview",
+        "offer",
+        "rejected",
+        "withdrawn",
+        "saved",
+    ]
+
+    for stage_val in stages_sequence:
+        up_res = client.put(
+            f"/api/v1/career/tracker/{item_id}",
+            json={"stage": stage_val},
+        )
+        assert up_res.status_code == 200
+        assert up_res.json()["stage"] == stage_val
+
+        # Verify filtered fetch confirms stage
+        filter_res = client.get(f"/api/v1/career/tracker?stage={stage_val}")
+        assert filter_res.status_code == 200
+        assert any(it["id"] == item_id for it in filter_res.json()["items"])
+
+
+def test_tracker_catalogue_metadata_preservation():
+    """Tracking a catalogue opportunity preserves authoritative verification and listing statuses without fabrication."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_meta@example.com")
+
+    # Track official opportunity
+    res = client.post(
+        "/api/v1/career/tracker",
+        json={"opportunity_id": "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE", "stage": "saved"},
+    )
+    assert res.status_code == 201
+    data = res.json()
+    linked = data.get("linked_opportunity")
+    assert linked is not None
+    assert linked["id"] == "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE"
+    assert linked["verification_status"] == "verified_official"
+    assert linked["provider_name"] == "SmartBridge (via SWAYAM Plus)"
+    assert linked["official_url"] is not None
+
+
+def test_tracker_duplicate_tracking_behavior():
+    """API allows tracking an opportunity multiple times per schema design, while preserving record integrity."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_dups@example.com")
+
+    res1 = client.post(
+        "/api/v1/career/tracker",
+        json={"opportunity_id": "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE", "stage": "saved"},
+    )
+    assert res1.status_code == 201
+    id1 = res1.json()["id"]
+
+    # Tracking again via direct API call succeeds and creates separate record with distinct ID
+    res2 = client.post(
+        "/api/v1/career/tracker",
+        json={"opportunity_id": "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE", "stage": "planning"},
+    )
+    assert res2.status_code == 201
+    id2 = res2.json()["id"]
+    assert id1 != id2
+
+    # Listing returns both distinct entries
+    items_res = client.get("/api/v1/career/tracker")
+    assert items_res.json()["count"] == 2
+
+
+def test_tracker_non_existent_and_invalid_ids():
+    """Non-existent and negative IDs return non-disclosing 404 responses."""
+    client = TestClient(app)
+    register_user(client, "candidate_track_nonexistent@example.com")
+
+    # Nonexistent positive ID
+    assert client.get("/api/v1/career/tracker/999999").status_code == 404
+    assert client.put("/api/v1/career/tracker/999999", json={"stage": "applied"}).status_code == 404
+    assert client.delete("/api/v1/career/tracker/999999").status_code == 404
+
+    # Negative ID
+    assert client.get("/api/v1/career/tracker/-1").status_code == 404
+    assert client.put("/api/v1/career/tracker/-1", json={"stage": "applied"}).status_code == 404
+    assert client.delete("/api/v1/career/tracker/-1").status_code == 404
+
+
 # =============================================================================
 # PART 2: Career Copilot Tests
 # =============================================================================

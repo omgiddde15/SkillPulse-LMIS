@@ -352,11 +352,25 @@ export default function ApplicationTracker({ onNavigate, isHindi, t, isAuthentic
               <div key={item.id} className="tracker-card">
                 <div className="tracker-card-top">
                   <div className="tracker-card-badges">
-                    <span className="tracker-type-badge">{oppType.replace('_', ' ')}</span>
+                    <span className="tracker-type-badge">
+                      {isLinked ? oppType.replace('_', ' ') : (isHindi ? 'बाहरी रिक्ति' : 'External Vacancy')}
+                    </span>
                     {isLinked && (
-                      <span className="tracker-verified-badge">
-                        <Icon name="check-circle" size={10} />
-                        <span>Verified Portal</span>
+                      item.linked_opportunity.verification_status === 'verified_official' ? (
+                        <span className="tracker-verified-badge" title="Verified against official portal">
+                          <Icon name="check-circle" size={10} />
+                          <span>{isHindi ? 'सत्यापित पोर्टल' : 'Verified Portal'}</span>
+                        </span>
+                      ) : (
+                        <span className="tracker-unconfirmed-badge" title="Source unconfirmed / awaiting verification">
+                          <Icon name="alert-triangle" size={10} />
+                          <span>{isHindi ? 'अपुष्ट सूची' : 'Unconfirmed Listing'}</span>
+                        </span>
+                      )
+                    )}
+                    {isLinked && item.linked_opportunity.listing_status && (
+                      <span className={`tracker-listing-badge ${item.linked_opportunity.listing_status}`}>
+                        {item.linked_opportunity.listing_status.replace('_', ' ')}
                       </span>
                     )}
                   </div>
