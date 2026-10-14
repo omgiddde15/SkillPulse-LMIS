@@ -212,7 +212,7 @@ export default function LandingPage({
             {/* Quick Ask Saarthi Header Button */}
             <button
               type="button"
-              onClick={() => onOpenCopilot?.('How do I use this site?')}
+              onClick={() => onOpenCopilot?.()}
               style={{
                 backgroundColor: 'var(--accent-soft-bg)',
                 border: '1px solid var(--accent-soft-border)',
@@ -428,7 +428,7 @@ export default function LandingPage({
 
             <button
               type="button"
-              onClick={() => onOpenCopilot?.('How do I use this site?')}
+              onClick={() => onOpenCopilot?.()}
               style={{
                 backgroundColor: 'var(--accent-soft-bg)',
                 color: 'var(--accent-soft-text)',
@@ -982,7 +982,7 @@ export default function LandingPage({
 
             <button
               type="button"
-              onClick={() => onOpenCopilot?.('How do I use this site?')}
+              onClick={() => onOpenCopilot?.()}
               style={{
                 backgroundColor: 'var(--accent-primary)',
                 color: '#ffffff',
@@ -1190,7 +1190,7 @@ export default function LandingPage({
               title: isHindi ? 'कैरियर प्रोफाइल एवं नेविगेटर' : 'Career Profile & Navigator',
               desc: isHindi
                 ? 'एनएसक्यूएफ लक्षित भूमिका अंतर विश्लेषण, 4-मील का पत्थर रोडमैप और उम्मीदवार कैरियर नेविगेटर सहायक।'
-                : 'Candidate skills audit, NSQF role gap breakdown, milestone learning roadmap, and dedicated Career Navigator copilot.',
+                : 'Candidate skills audit, NSQF role gap breakdown, milestone learning roadmap, and dedicated Career Navigator guidance.',
             },
             {
               tab: 'opportunities',

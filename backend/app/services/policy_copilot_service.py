@@ -211,7 +211,7 @@ class PolicyCopilotService:
                 "query": clean_q,
                 "period": target_period,
                 "intent": "greetings",
-                "title": "SkillPulse Policy Copilot (Saarthi)" if not is_hindi else "स्किलपल्स नीतिगत सह-पायलट (सारथी)",
+                "title": "SkillPulse Saarthi AI Assistant" if not is_hindi else "स्किलपल्स सारथी एआई सहायक",
                 "badge": "SKILLPULSE SAARTHI",
                 "badge_color": "var(--accent-primary)",
                 "answer": answer_hi if is_hindi else answer_en,

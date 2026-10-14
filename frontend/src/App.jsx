@@ -338,6 +338,7 @@ export default function App() {
           onNavigateToTab={handleNavigate}
           onNavigateWithContext={handleNavigateWithContext}
           initialQuery={copilotInitialQuery}
+          onClearInitialQuery={() => setCopilotInitialQuery(null)}
         />
       </>
     );
@@ -652,6 +653,7 @@ export default function App() {
         onNavigateToTab={handleNavigate}
         onNavigateWithContext={handleNavigateWithContext}
         initialQuery={copilotInitialQuery}
+        onClearInitialQuery={() => setCopilotInitialQuery(null)}
       />
     </div>
   );

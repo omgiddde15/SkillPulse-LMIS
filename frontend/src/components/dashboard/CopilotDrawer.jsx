@@ -92,6 +92,7 @@ export default function CopilotDrawer({
   onNavigateToTab,
   onNavigateWithContext,
   initialQuery = null,
+  onClearInitialQuery,
 }) {
   const { isHindi } = useLanguage();
   const [messages, setMessages] = useState([]);
@@ -103,12 +104,13 @@ export default function CopilotDrawer({
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const hasExecutedInitialRef = useRef(false);
+  const isSubmittingRef = useRef(false);
 
   // Initialize initial welcome message
   const getInitialAssistantMessage = () => ({
     id: 'msg-init',
     role: 'assistant',
-    title: isHindi ? 'स्किलपल्स सारथी (SkillPulse Saarthi)' : 'SkillPulse Saarthi',
+    title: isHindi ? 'स्किलपल्स सारथी एआई सहायक (SkillPulse Saarthi AI Assistant)' : 'SkillPulse Saarthi AI Assistant',
     badge: 'PLATFORM GUIDE & ANALYTICS',
     badge_color: 'var(--accent-primary)',
     intent: 'platform_guide',
@@ -151,16 +153,17 @@ export default function CopilotDrawer({
     }
   }, [period, isHindi]);
 
-  // Handle incoming initialQuery
+  // Handle incoming initialQuery cleanly without duplicate submission
   useEffect(() => {
     if (isOpen && initialQuery && !hasExecutedInitialRef.current) {
       hasExecutedInitialRef.current = true;
       handleSend(initialQuery);
+      onClearInitialQuery?.();
     }
     if (!isOpen) {
       hasExecutedInitialRef.current = false;
     }
-  }, [isOpen, initialQuery]);
+  }, [isOpen, initialQuery, onClearInitialQuery]);
 
   // Focus textarea when drawer opens
   useEffect(() => {
@@ -183,11 +186,15 @@ export default function CopilotDrawer({
   };
 
   const handleSend = async (queryText) => {
+    if (isSubmittingRef.current) return;
     const textToSend = (queryText !== undefined ? queryText : inputQuery).trim();
     if (!textToSend || isLoading) return;
 
+    isSubmittingRef.current = true;
+    setIsLoading(true);
+
     const userMessage = {
-      id: `usr-${Date.now()}`,
+      id: `usr-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       role: 'user',
       content: textToSend,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -195,7 +202,6 @@ export default function CopilotDrawer({
 
     setMessages((prev) => [...prev, userMessage]);
     setInputQuery('');
-    setIsLoading(true);
 
     try {
       // Build conversation history for entity memory
@@ -215,7 +221,7 @@ export default function CopilotDrawer({
       });
 
       const assistantMessage = {
-        id: `ast-${Date.now()}`,
+        id: `ast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         role: 'assistant',
         title: response.title,
         badge: response.badge,
@@ -236,7 +242,7 @@ export default function CopilotDrawer({
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       const errorMessage = {
-        id: `err-${Date.now()}`,
+        id: `err-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         role: 'assistant',
         title: isHindi ? 'विश्लेषणात्मक त्रुटि' : 'Assistant Query Error',
         badge: 'QUERY ERROR',
@@ -249,26 +255,33 @@ export default function CopilotDrawer({
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
+      isSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (!isSubmittingRef.current && !isLoading) {
+        handleSend();
+      }
     }
   };
 
   const handleActionClick = (msg) => {
     const targetRoute = msg.action_route || msg.action_tab;
     if (!targetRoute) return;
+    onClose?.();
     if (msg.action_context) {
       onNavigateWithContext?.(targetRoute, msg.action_context);
     } else {
       onNavigateToTab?.(targetRoute);
     }
-    onClose?.();
   };
 
   if (!isOpen) return null;
@@ -953,7 +966,7 @@ export default function CopilotDrawer({
           }}
         >
           <span>SkillPulse LMIS • SIH26246</span>
-          <span>SkillPulse Saarthi v2.0</span>
+          <span>SkillPulse Saarthi AI Assistant v2.0</span>
         </div>
       </div>
     </div>

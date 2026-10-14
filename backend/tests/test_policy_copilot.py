@@ -58,7 +58,8 @@ def test_policy_copilot_service_direct():
     # 8. Test greetings
     res_greet = service.process_query("Hello! Who are you?", period="2026-09")
     assert res_greet["intent"] == "greetings"
-    assert "SkillPulse Policy Copilot" in res_greet["title"]
+    assert "SkillPulse Saarthi AI Assistant" in res_greet["title"]
+    assert "copilot" not in res_greet["title"].lower()
 
     # 9. Test out of scope
     res_oos = service.process_query("Can you write a poem about the weather?", period="2026-09")
@@ -147,3 +148,30 @@ def test_policy_copilot_api_endpoint_hindi():
     data = response.json()
     assert data["intent"] == "gap_diagnostics"
     assert "धारवाड़" in data["title"] or "कौशल अंतर" in data["title"]
+
+
+def test_mixed_intent_dharwad_cnc_navigation_and_no_copilot_word():
+    """Verify that asking how to inspect Dharwad CNC gap returns exact route, context, and zero copilot references."""
+    service = PolicyCopilotService()
+    res = service.process_query("How do I inspect the CNC Machinist skill gap in Dharwad?", period="2026-09")
+    assert res["intent"] == "gap_diagnostics"
+    assert res["action_route"] == "gap"
+    assert res["action_tab"] == "gap"
+    assert res["action_context"] == {"district": "KA_DHA", "occupation": "OCC_MFG_001", "state": "KA"}
+    assert res["evidence"]["district_id"] == "KA_DHA"
+    assert res["evidence"]["occupation_id"] == "OCC_MFG_001"
+    assert round(res["evidence"]["demand_score"], 1) == 73.1
+    assert round(res["evidence"]["supply_score"], 1) == 17.0
+    assert round(res["evidence"]["mismatch_score"], 1) == 56.1
+    assert "Open Dharwad CNC Machine Operator in Skill Gaps" in res["action_label"]
+
+    # Strict check: "copilot" word must never appear in Saarthi responses
+    assert "copilot" not in res["title"].lower()
+    assert "copilot" not in res["badge"].lower()
+    assert "copilot" not in res["action_label"].lower()
+    assert "copilot" not in res["answer"].lower()
+
+    # Verify greeting title is strictly Saarthi AI Assistant
+    res_greet = service.process_query("Hi Saarthi", period="2026-09")
+    assert res_greet["title"] == "SkillPulse Saarthi AI Assistant"
+    assert "copilot" not in res_greet["title"].lower()
