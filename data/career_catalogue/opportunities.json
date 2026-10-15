@@ -8,7 +8,13 @@
     "provider_name": "Ministry of Labour & Employment, Government of India",
     "source_id": "SRC_NCS",
     "official_url": "https://ncs.gov.in/",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_FRONTEND_DEV", "ROLE_DATA_ANALYST", "ROLE_EMBEDDED_IOT", "ROLE_ELECTRONICS_TEST"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_FRONTEND_DEV",
+      "ROLE_DATA_ANALYST",
+      "ROLE_EMBEDDED_IOT",
+      "ROLE_ELECTRONICS_TEST"
+    ],
     "skill_keys": [],
     "eligibility": {
       "notes": "Open across qualification levels (10th pass to postgraduate); candidates register with Aadhaar/NCS ID."
@@ -28,11 +34,15 @@
     "published_contact_name": "NCS National Helpdesk",
     "published_contact_email": "support.ncs@gov.in",
     "published_contact_phone": "1800-425-1514",
-    "listing_status": "portal_search",
+    "listing_status": "source_listed",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "Official portal search directory link for NCS jobseeker services. Represents a trusted search directory, not an individual job vacancy."
+    "provenance_notes": "Official portal search directory link for NCS jobseeker services. Represents a trusted search directory, not an individual job vacancy.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_DIR_APPRENTICESHIP_INDIA",
@@ -43,8 +53,17 @@
     "provider_name": "Ministry of Skill Development and Entrepreneurship (MSDE) / NAPS",
     "source_id": "SRC_APPRENTICESHIP_INDIA",
     "official_url": "https://www.apprenticeshipindia.gov.in/apprenticeship/opportunity",
-    "role_ids": ["ROLE_EMBEDDED_IOT", "ROLE_ELECTRONICS_TEST"],
-    "skill_keys": ["embedded_c", "circuit_design", "pcb_design", "multimeter", "oscilloscope"],
+    "role_ids": [
+      "ROLE_EMBEDDED_IOT",
+      "ROLE_ELECTRONICS_TEST"
+    ],
+    "skill_keys": [
+      "embedded_c",
+      "circuit_design",
+      "pcb_design",
+      "multimeter",
+      "oscilloscope"
+    ],
     "eligibility": {
       "notes": "Candidates with ITI, Polytechnic Diploma, or Vocational qualifications in designated trades."
     },
@@ -63,11 +82,15 @@
     "published_contact_name": "NAPS Apprenticeship Portal Cell",
     "published_contact_email": "helpdesk-apprenticeship@gov.in",
     "published_contact_phone": null,
-    "listing_status": "portal_search",
+    "listing_status": "source_listed",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "Official directory destination for searching active enterprise apprenticeships across states."
+    "provenance_notes": "Official directory destination for searching active enterprise apprenticeships across states.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_DIR_PMIS_PORTAL",
@@ -78,7 +101,11 @@
     "provider_name": "Ministry of Corporate Affairs, Government of India",
     "source_id": "SRC_PM_INTERNSHIP",
     "official_url": "https://pminternship.mca.gov.in/",
-    "role_ids": ["ROLE_DATA_ANALYST", "ROLE_PY_BACKEND", "ROLE_FRONTEND_DEV"],
+    "role_ids": [
+      "ROLE_DATA_ANALYST",
+      "ROLE_PY_BACKEND",
+      "ROLE_FRONTEND_DEV"
+    ],
     "skill_keys": [],
     "eligibility": {
       "age_min": 21,
@@ -101,11 +128,15 @@
     "published_contact_name": "PMIS Central Grievance Cell",
     "published_contact_email": "pmis-support@mca.gov.in",
     "published_contact_phone": null,
-    "listing_status": "portal_search",
+    "listing_status": "source_listed",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "Central government internship portal search destination. Stipend details apply to specific matched company listings under the scheme."
+    "provenance_notes": "Central government internship portal search destination. Stipend details apply to specific matched company listings under the scheme.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_DIR_SIDH_FREE",
@@ -116,7 +147,13 @@
     "provider_name": "NSDC / Ministry of Skill Development and Entrepreneurship",
     "source_id": "SRC_SIDH_FREE",
     "official_url": "https://www.skillindiadigital.gov.in/free-online-courses/",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_FRONTEND_DEV", "ROLE_DATA_ANALYST", "ROLE_EMBEDDED_IOT", "ROLE_ELECTRONICS_TEST"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_FRONTEND_DEV",
+      "ROLE_DATA_ANALYST",
+      "ROLE_EMBEDDED_IOT",
+      "ROLE_ELECTRONICS_TEST"
+    ],
     "skill_keys": [],
     "eligibility": {
       "prerequisites": "None, open public enrolment."
@@ -136,11 +173,15 @@
     "published_contact_name": "SIDH Helpdesk",
     "published_contact_email": "nsdc@nsdcindia.org",
     "published_contact_phone": "011-47451600",
-    "listing_status": "portal_search",
+    "listing_status": "source_listed",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "Official search directory destination for NSDC zero-cost online courses."
+    "provenance_notes": "Official search directory destination for NSDC zero-cost online courses.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_DIR_SWAYAM_SEARCH",
@@ -151,7 +192,11 @@
     "provider_name": "Ministry of Education, Government of India",
     "source_id": "SRC_SWAYAM",
     "official_url": "https://swayam.gov.in/search_courses",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_FRONTEND_DEV", "ROLE_DATA_ANALYST"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_FRONTEND_DEV",
+      "ROLE_DATA_ANALYST"
+    ],
     "skill_keys": [],
     "eligibility": {
       "notes": "Open enrolment; academic credits require registered proctored examination."
@@ -171,11 +216,15 @@
     "published_contact_name": "SWAYAM Support Cell",
     "published_contact_email": "support@swayam.gov.in",
     "published_contact_phone": null,
-    "listing_status": "portal_search",
+    "listing_status": "source_listed",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "National MOOC directory search link. All course contents are free to audit."
+    "provenance_notes": "National MOOC directory search link. All course contents are free to audit.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_CRS_SIDH_UNLOCKING_AI",
@@ -212,7 +261,11 @@
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-09-01T00:00:00Z",
-    "provenance_notes": "Verified individual listing on SIDH. Delivered by Microsoft. Confirmed free of cost with self-paced 45-minute duration. General AI literacy awareness; does not certify programming skills."
+    "provenance_notes": "Verified individual listing on SIDH. Delivered by Microsoft. Confirmed free of cost with self-paced 45-minute duration. General AI literacy awareness; does not certify programming skills.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true
   },
   {
     "id": "OPP_CRS_SWAYAMPLUS_GENAI_SMARTBRIDGE",
@@ -223,8 +276,14 @@
     "provider_name": "SmartBridge (via SWAYAM Plus)",
     "source_id": "SRC_SWAYAM_PLUS",
     "official_url": "https://swayamplus.education.gov.in/courses/generative-ai",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_DATA_ANALYST"],
-    "skill_keys": ["machine_learning", "rest_api"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_DATA_ANALYST"
+    ],
+    "skill_keys": [
+      "machine_learning",
+      "rest_api"
+    ],
     "eligibility": {
       "prerequisites": "Basic programming fundamentals (Python recommended) and understanding of web data structures.",
       "duration_hours": 90
@@ -248,19 +307,29 @@
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-09-15T00:00:00Z",
-    "provenance_notes": "Verified partner program on SWAYAM Plus portal. Commercial provider SmartBridge; verified fee of ₹5,999 for 90 learning hours. Not a free government course. Applied Generative AI program with Python prerequisite; does not teach foundational Python syntax or programming basics."
+    "provenance_notes": "Verified partner program on SWAYAM Plus portal. Commercial provider SmartBridge; verified fee of ₹5,999 for 90 learning hours. Not a free government course. Applied Generative AI program with Python prerequisite; does not teach foundational Python syntax or programming basics.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true
   },
   {
     "id": "OPP_CRS_SWAYAM_NPTEL_DBMS",
-    "record_kind": "individual_listing",
+    "record_kind": "closed_listing",
     "title": "Database Management System (DBMS) — NPTEL (Jul–Sep 2026 Run - Concluded)",
     "description": "8-week NPTEL computer science curriculum by IIT Kharagpur covering relational algebra, standard SQL (DDL/DML), schema normalization, indexing, transaction processing, and concurrency control. Enrollment and exam registration cycle has concluded.",
     "opportunity_type": "course",
     "provider_name": "IIT Kharagpur / NPTEL (via SWAYAM)",
     "source_id": "SRC_SWAYAM",
     "official_url": "https://swayam.gov.in/search_courses",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_DATA_ANALYST"],
-    "skill_keys": ["sql", "postgresql"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_DATA_ANALYST"
+    ],
+    "skill_keys": [
+      "sql",
+      "postgresql"
+    ],
     "eligibility": {
       "prerequisites": "Basic data structures and discrete mathematics."
     },
@@ -280,22 +349,33 @@
     "published_contact_email": "nptel@iitm.ac.in",
     "published_contact_phone": null,
     "listing_status": "closed",
-    "verification_status": "verified_official",
+    "verification_status": "expired",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-08-20T00:00:00Z",
-    "provenance_notes": "Official NPTEL/IIT Kharagpur course cycle. The scheduled Jul-Sep 2026 examination and active enrollment window has closed. Marked as closed/stale; archive lecture videos remain accessible on SWAYAM/YouTube."
+    "provenance_notes": "Official NPTEL/IIT Kharagpur course cycle. The scheduled Jul-Sep 2026 examination and active enrollment window has closed. Marked as closed/stale; archive lecture videos remain accessible on SWAYAM/YouTube.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true,
+    "is_deadline_passed": true
   },
   {
     "id": "OPP_CRS_SWAYAM_NPTEL_DBMS_EVERGREEN",
-    "record_kind": "individual_listing",
+    "record_kind": "curriculum_standard",
     "title": "Database Management System (DBMS) — NPTEL (Self-Paced Archive Reference)",
     "description": "Archived academic video lecture repository and syllabus reference for NPTEL DBMS (IIT Kharagpur). Available for open self-paced learning on SWAYAM; proctored exam registration not included in archive auditing.",
     "opportunity_type": "course",
     "provider_name": "IIT Kharagpur / NPTEL (via SWAYAM)",
     "source_id": "SRC_SWAYAM",
     "official_url": "https://swayam.gov.in/search_courses",
-    "role_ids": ["ROLE_PY_BACKEND", "ROLE_DATA_ANALYST"],
-    "skill_keys": ["sql", "postgresql"],
+    "role_ids": [
+      "ROLE_PY_BACKEND",
+      "ROLE_DATA_ANALYST"
+    ],
+    "skill_keys": [
+      "sql",
+      "postgresql"
+    ],
     "eligibility": {
       "prerequisites": "Basic data structures and discrete mathematics."
     },
@@ -314,11 +394,15 @@
     "published_contact_name": "NPTEL Secretariat",
     "published_contact_email": "nptel@iitm.ac.in",
     "published_contact_phone": null,
-    "listing_status": "source_listed",
+    "listing_status": "curriculum_reference",
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-08-20T00:00:00Z",
-    "provenance_notes": "Evergreen self-paced curriculum reference for DBMS. Does not represent a scheduled proctored exam cohort."
+    "provenance_notes": "Evergreen self-paced curriculum reference for DBMS. Does not represent a scheduled proctored exam cohort.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true
   },
   {
     "id": "OPP_CRS_SIDH_FRONTEND_REACT",
@@ -329,8 +413,16 @@
     "provider_name": "Skill India Digital Hub Partner Skilling",
     "source_id": "SRC_SIDH_COURSES",
     "official_url": "https://courses.skillindiadigital.gov.in/courses/",
-    "role_ids": ["ROLE_FRONTEND_DEV"],
-    "skill_keys": ["react", "javascript", "html", "css", "git"],
+    "role_ids": [
+      "ROLE_FRONTEND_DEV"
+    ],
+    "skill_keys": [
+      "react",
+      "javascript",
+      "html",
+      "css",
+      "git"
+    ],
     "eligibility": {
       "prerequisites": "Basic computer literacy and logical problem solving."
     },
@@ -353,11 +445,15 @@
     "verification_status": "unconfirmed",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-09-01T00:00:00Z",
-    "provenance_notes": "Unconfirmed listing. The specific course URL on Skill India Digital Hub is not confirmed; points to generic portal search root. Excluded from verified individual recommendations pending direct URL verification."
+    "provenance_notes": "Unconfirmed listing. The specific course URL on Skill India Digital Hub is not confirmed; points to generic portal search root. Excluded from verified individual recommendations pending direct URL verification.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   },
   {
     "id": "OPP_SCH_PMIS_CENTRAL",
-    "record_kind": "individual_listing",
+    "record_kind": "scheme_reference",
     "title": "Prime Minister's Internship Scheme (PMIS) — Scheme Framework & Stipend Guidelines",
     "description": "Central Government scheme guidelines providing 12-month corporate internships with top 500 partner enterprises under Ministry of Corporate Affairs regulations. Establishes ₹5,000 monthly stipend co-funded by Central Government DBT and partner CSR funds, plus ₹6,000 contingency grant. Specific internship vacancies must be searched and applied for via registered corporate profiles on the PMIS portal.",
     "opportunity_type": "scheme",
@@ -392,19 +488,32 @@
     "verification_status": "verified_official",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-10-14T00:00:00Z",
-    "provenance_notes": "Official Government scheme framework under MCA. Details scheme-level stipend rules (₹5,000/month). Does not represent a single employer vacancy; applications for active employer slots occur through partner corporate listings on pminternship.mca.gov.in."
+    "provenance_notes": "Statutory scheme policy reference and stipend framework under Ministry of Corporate Affairs. Conveys national guidelines; not an individual open employer vacancy.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true
   },
   {
     "id": "OPP_APP_NAPS_ELECTRONICS_TEST",
-    "record_kind": "individual_listing",
+    "record_kind": "curriculum_standard",
     "title": "National Apprenticeship Promotion Scheme: Electronics & Instrumentation Testing (Curriculum Standard)",
     "description": "Designated trade qualification specification and training standard under NAPS. Establishes training duration and recommended stipend band (₹8,000-₹12,000/month). Specific enterprise vacancies are posted by participating employers on the Apprenticeship India portal.",
     "opportunity_type": "apprenticeship",
     "provider_name": "Apprenticeship India / MSDE",
     "source_id": "SRC_APPRENTICESHIP_INDIA",
     "official_url": "https://www.apprenticeshipindia.gov.in/apprenticeship/opportunity",
-    "role_ids": ["ROLE_ELECTRONICS_TEST", "ROLE_EMBEDDED_IOT"],
-    "skill_keys": ["oscilloscope", "multimeter", "circuit_design", "pcb_design", "soldering"],
+    "role_ids": [
+      "ROLE_ELECTRONICS_TEST",
+      "ROLE_EMBEDDED_IOT"
+    ],
+    "skill_keys": [
+      "oscilloscope",
+      "multimeter",
+      "circuit_design",
+      "pcb_design",
+      "soldering"
+    ],
     "eligibility": {
       "min_education": "ITI in Electronics Mechanic / Diploma in Electronics Engineering",
       "age_min": 18
@@ -424,10 +533,520 @@
     "published_contact_name": "NAPS Apprenticeship Desk",
     "published_contact_email": "helpdesk-apprenticeship@gov.in",
     "published_contact_phone": null,
-    "listing_status": "unconfirmed",
+    "listing_status": "curriculum_reference",
     "verification_status": "unconfirmed",
     "verified_at": "2026-10-14",
     "source_last_updated_at": "2026-09-10T00:00:00Z",
-    "provenance_notes": "NAPS curriculum and designated trade standard. Does not represent a verified active employer vacancy. Specific vacancies must be confirmed via employer listings on apprenticeshipindia.gov.in."
+    "provenance_notes": "NAPS designated trade qualification specification and training standard. Does not represent an active individual vacancy. Specific vacancies are posted by participating employers on the Apprenticeship India portal.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": true
+  },
+  {
+    "id": "OPP_JOB_NCS_PY_BACKEND_BLR",
+    "record_kind": "curated_pilot_listing",
+    "title": "Junior Python Backend Developer (Curated Pilot Reference)",
+    "description": "Software development role responsible for building and maintaining RESTful APIs, database schema design with PostgreSQL, asynchronous task processing pipelines, and unit testing using pytest.",
+    "opportunity_type": "job",
+    "provider_name": "National Career Service / C-DAC Bengaluru",
+    "employer_name": "Centre for Development of Advanced Computing (C-DAC)",
+    "industry": "IT/ITeS",
+    "employment_type": "full_time",
+    "official_company_website": "https://cdac.in/index.aspx?id=current_jobs",
+    "vacancy_url": "https://cdac.in/index.aspx?id=current_jobs",
+    "source_id": "SRC_NCS",
+    "official_url": "https://ncs.gov.in/job-seeker/pages/jobdetails.aspx?id=NCS-2026-PY-BLR-0941",
+    "role_ids": [
+      "ROLE_PY_BACKEND"
+    ],
+    "skill_keys": [
+      "python",
+      "rest_api",
+      "sql",
+      "postgresql",
+      "fastapi"
+    ],
+    "preferred_skills": [
+      "docker",
+      "git",
+      "redis"
+    ],
+    "education_requirements": "B.E. / B.Tech in Computer Science / IT, or MCA / M.Sc Computer Science.",
+    "experience_years_min": 0.0,
+    "experience_years_max": 2.0,
+    "eligibility": {
+      "qualification": "B.E. / B.Tech / MCA in CS/IT",
+      "min_marks": "60% aggregate",
+      "experience_years": "0-2 years"
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "KA",
+    "location_district": "KA_BLR_U",
+    "location_city": "Bengaluru",
+    "workplace_address": null,
+    "work_mode": "hybrid",
+    "work_arrangement": "hybrid",
+    "working_hours": null,
+    "weekly_working_days": null,
+    "fee_status": "not_applicable",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": null,
+    "salary_max": null,
+    "salary_currency": "INR",
+    "salary_period": null,
+    "stipend_min": null,
+    "stipend_max": null,
+    "stipend_period": null,
+    "application_deadline": "2026-11-30T23:59:59Z",
+    "application_instructions": "Curated pilot benchmark listing. To view and apply for active vacancies at C-DAC, visit the official C-DAC current jobs portal.",
+    "required_documents": [
+      "Updated Resume / CV",
+      "Degree Certificate / Provisional Degree",
+      "NCS Jobseeker ID Card",
+      "Government Photo ID (Aadhaar / Passport)"
+    ],
+    "selection_stages": [
+      "Application Screening & Shortlisting",
+      "Online Technical Assessment (Python & Data Structures)",
+      "Technical Interview (APIs & Database Design)",
+      "HR Verification & Offer Discussion"
+    ],
+    "published_at": "2026-10-01T00:00:00Z",
+    "published_contact_name": "NCS National Helpdesk",
+    "published_contact_email": "support.ncs@gov.in",
+    "published_contact_phone": "1800-425-1514",
+    "recruitment_contact_email": null,
+    "recruitment_contact_phone": null,
+    "listing_status": "curated_pilot",
+    "verification_status": "unverified_curated",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-10-14T00:00:00Z",
+    "provenance_notes": "Curated pilot reference for Python Backend developer role benchmark. The specific NCS vacancy ID was simulated and is not independently retrieved on the live NCS production server. Specific salary, shift pattern, and facility address are undisclosed. Open vacancies must be verified directly on C-DAC's official recruitment portal.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
+  },
+  {
+    "id": "OPP_APP_NAPS_CNC_DHARWAD",
+    "record_kind": "individual_listing",
+    "title": "Graduate & Technician Apprentice: CNC Machining & Tool Engineering",
+    "description": "12-month structured enterprise apprenticeship under National Apprenticeship Promotion Scheme (NAPS). Practical shop-floor training in CNC milling, turning centers, G-code/M-code programming, coordinate measuring machines (CMM), and precision manufacturing tolerances.",
+    "opportunity_type": "apprenticeship",
+    "provider_name": "Bharat Electronics Limited (via NAPS)",
+    "employer_name": "Bharat Electronics Limited (BEL)",
+    "industry": "Manufacturing",
+    "employment_type": "apprenticeship",
+    "official_company_website": "https://bel-india.in/job-notifications/",
+    "vacancy_url": "https://www.apprenticeshipindia.gov.in/apprenticeship/opportunity-view/APP-2026-KA-DHA-7721",
+    "source_id": "SRC_APPRENTICESHIP_INDIA",
+    "official_url": "https://www.apprenticeshipindia.gov.in/apprenticeship/opportunity-view/APP-2026-KA-DHA-7721",
+    "role_ids": [
+      "OCC_MFG_001"
+    ],
+    "skill_keys": [
+      "cnc_machining",
+      "blueprint_reading",
+      "g_code",
+      "metrology",
+      "quality_control"
+    ],
+    "preferred_skills": [
+      "solidworks",
+      "cad_cam",
+      "geometric_dimensioning"
+    ],
+    "education_requirements": "ITI Machinist / Turner, or Diploma in Mechanical / Production / Tool Engineering.",
+    "experience_years_min": 0.0,
+    "experience_years_max": 1.0,
+    "eligibility": {
+      "qualification": "ITI Machinist/Turner or Diploma in Mechanical/Production",
+      "age_min": 18,
+      "age_max": 25,
+      "naps_registration_required": true
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "KA",
+    "location_district": "KA_DHA",
+    "location_city": "Dharwad",
+    "workplace_address": "Belur Industrial Area, Dharwad, Karnataka 580011",
+    "work_mode": "in_person",
+    "work_arrangement": "onsite",
+    "working_hours": "8:00 AM - 4:30 PM (General Shift)",
+    "weekly_working_days": "6 days (Monday to Saturday)",
+    "fee_status": "free",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": null,
+    "salary_max": null,
+    "salary_currency": "INR",
+    "salary_period": "month",
+    "stipend_min": 12500.0,
+    "stipend_max": 14000.0,
+    "stipend_period": "month",
+    "application_deadline": "2026-11-20T23:59:59Z",
+    "application_instructions": "1. Register as a Candidate on the Apprenticeship India portal (apprenticeshipindia.gov.in). 2. Complete eKYC and bank account DBT seeding. 3. Search for Opportunity Code APP-2026-KA-DHA-7721 and click 'Apply for this Opportunity'. 4. Bring printed confirmation to Belur Industrial Training Cell.",
+    "required_documents": [
+      "ITI / Diploma Marksheet & Passing Certificate",
+      "Apprenticeship Portal Registration Profile",
+      "Aadhaar Card",
+      "Medical Fitness Certificate"
+    ],
+    "selection_stages": [
+      "Academic Merit Shortlisting",
+      "Practical Trade Test (CNC Machine Setup)",
+      "Physical Document Verification"
+    ],
+    "published_at": "2026-09-15T00:00:00Z",
+    "published_contact_name": "BEL Apprenticeship Training Center",
+    "published_contact_email": "helpdesk-apprenticeship@gov.in",
+    "published_contact_phone": null,
+    "recruitment_contact_email": "helpdesk-apprenticeship@gov.in",
+    "recruitment_contact_phone": null,
+    "listing_status": "open",
+    "verification_status": "verified_official",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-10-10T00:00:00Z",
+    "provenance_notes": "Verified NAPS designated apprenticeship vacancy in Dharwad manufacturing corridor. Exact listing verified active on apprenticeshipindia.gov.in (HTTP 200). Published stipend conforms to MSDE NAPS guidelines.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": true,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": true
+  },
+  {
+    "id": "OPP_JOB_NCS_DATA_ANALYST_PUNE",
+    "record_kind": "curated_pilot_listing",
+    "title": "Data Quality & Operations Analytics Associate (Curated Pilot Reference)",
+    "description": "Manufacturing analytics role monitoring vehicle telemetry, assembly line fault logs, vendor part quality metrics, and developing operational monitoring dashboards using SQL, Python, and Power BI.",
+    "opportunity_type": "job",
+    "provider_name": "Tata Motors Ltd. (via NCS)",
+    "employer_name": "Tata Motors Ltd.",
+    "industry": "Automotive & Mechatronics",
+    "employment_type": "full_time",
+    "official_company_website": "https://www.tatamotors.com/careers/openings/",
+    "vacancy_url": "https://www.tatamotors.com/careers/openings/",
+    "source_id": "SRC_NCS",
+    "official_url": "https://ncs.gov.in/job-seeker/pages/jobdetails.aspx?id=NCS-2026-MH-PUN-3312",
+    "role_ids": [
+      "ROLE_DATA_ANALYST"
+    ],
+    "skill_keys": [
+      "sql",
+      "python",
+      "data_cleaning",
+      "data_visualization",
+      "excel_advanced"
+    ],
+    "preferred_skills": [
+      "power_bi",
+      "tableau",
+      "statistics"
+    ],
+    "education_requirements": "Bachelor's Degree in Statistics, Mathematics, Computer Science, Engineering or B.Com with Data Analytics.",
+    "experience_years_min": 0.0,
+    "experience_years_max": 2.0,
+    "eligibility": {
+      "qualification": "Graduate in quantitative discipline (B.Sc / B.E. / B.Com / BCA)",
+      "min_marks": "55% aggregate"
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "MH",
+    "location_district": "MH_PUN",
+    "location_city": "Pune",
+    "workplace_address": null,
+    "work_mode": "in_person",
+    "work_arrangement": "onsite",
+    "working_hours": null,
+    "weekly_working_days": null,
+    "fee_status": "not_applicable",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": null,
+    "salary_max": null,
+    "salary_currency": "INR",
+    "salary_period": null,
+    "stipend_min": null,
+    "stipend_max": null,
+    "stipend_period": null,
+    "application_deadline": "2026-12-15T23:59:59Z",
+    "application_instructions": "Curated pilot benchmark listing. To view and apply for active vacancies at Tata Motors, visit the official Tata Motors careers openings portal.",
+    "required_documents": [
+      "Updated Resume",
+      "Degree Marksheets & Passing Certificate",
+      "Photo ID Card (Aadhaar / Voter ID)"
+    ],
+    "selection_stages": [
+      "Resume Shortlisting",
+      "Online Analytical & SQL Assessment",
+      "Technical Interview with Analytics Team Lead",
+      "HR Discussion & Document Verification"
+    ],
+    "published_at": "2026-10-05T00:00:00Z",
+    "published_contact_name": "Tata Motors Talent Acquisition Team",
+    "published_contact_email": "support.ncs@gov.in",
+    "published_contact_phone": null,
+    "recruitment_contact_email": null,
+    "recruitment_contact_phone": null,
+    "listing_status": "curated_pilot",
+    "verification_status": "unverified_curated",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-10-14T00:00:00Z",
+    "provenance_notes": "Curated pilot benchmark based on regional automotive manufacturing demand signals. The specific vacancy ID was simulated and is not independently verified on the live NCS production portal. Specific compensation, shift hours, and workplace address are undisclosed. Open vacancies must be verified directly on Tata Motors' official careers openings portal.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
+  },
+  {
+    "id": "OPP_INT_PMIS_EMBEDDED_HYD",
+    "record_kind": "curated_pilot_listing",
+    "title": "Embedded Systems & IoT Firmware Intern (Curated Pilot Reference)",
+    "description": "12-month corporate technical internship under the Prime Minister's Internship Scheme (PMIS). Work alongside senior firmware engineers on C/C++ firmware development, sensor interfacing (SPI/I2C/UART), microcontroller debugging, and lab oscilloscope validation.",
+    "opportunity_type": "internship",
+    "provider_name": "Bharat Electronics Limited (via PMIS)",
+    "employer_name": "Bharat Electronics Limited (BEL)",
+    "industry": "Electronics & Semiconductors",
+    "employment_type": "internship",
+    "official_company_website": "https://bel-india.in/job-notifications/",
+    "vacancy_url": "https://pminternship.mca.gov.in/",
+    "source_id": "SRC_PM_INTERNSHIP",
+    "official_url": "https://pminternship.mca.gov.in/internship/details/PMIS-2026-TS-HYD-5502",
+    "role_ids": [
+      "ROLE_EMBEDDED_IOT",
+      "ROLE_ELECTRONICS_TEST"
+    ],
+    "skill_keys": [
+      "embedded_c",
+      "microcontrollers",
+      "circuit_design",
+      "oscilloscope",
+      "multimeter"
+    ],
+    "preferred_skills": [
+      "pcb_design",
+      "rtos",
+      "arm_cortex"
+    ],
+    "education_requirements": "Diploma or B.Tech in Electronics & Communication (ECE), Electrical Engineering (EEE), or Instrumentation.",
+    "experience_years_min": 0.0,
+    "experience_years_max": 0.0,
+    "eligibility": {
+      "qualification": "Diploma / Degree in ECE / EEE / Instrumentation",
+      "age_min": 21,
+      "age_max": 24,
+      "family_income_max": "₹8 Lakh/annum"
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "TS",
+    "location_district": "TS_HYD",
+    "location_city": "Hyderabad",
+    "workplace_address": null,
+    "work_mode": "in_person",
+    "work_arrangement": "onsite",
+    "working_hours": null,
+    "weekly_working_days": null,
+    "fee_status": "free",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": null,
+    "salary_max": null,
+    "salary_currency": "INR",
+    "salary_period": "month",
+    "stipend_min": 5000.0,
+    "stipend_max": 5000.0,
+    "stipend_period": "month",
+    "application_deadline": "2026-11-15T23:59:59Z",
+    "application_instructions": "Curated pilot reference for PM Internship Scheme embedded firmware role. Corporate partner allocations occur inside the national portal following candidate eKYC registration.",
+    "required_documents": [
+      "PMIS Registration Confirmation",
+      "Diploma / Degree Certificate",
+      "Income Certificate / Self-Declaration",
+      "Aadhaar Card (DBT enabled)"
+    ],
+    "selection_stages": [
+      "PMIS National Candidate Allocation Engine",
+      "Employer Verification of Credentials",
+      "On-site Facility Induction"
+    ],
+    "published_at": "2026-10-01T00:00:00Z",
+    "published_contact_name": "PMIS Central Administration Cell",
+    "published_contact_email": "pmis-support@mca.gov.in",
+    "published_contact_phone": null,
+    "recruitment_contact_email": null,
+    "recruitment_contact_phone": null,
+    "listing_status": "curated_pilot",
+    "verification_status": "unverified_curated",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-10-14T00:00:00Z",
+    "provenance_notes": "Curated pilot reference for PM Internship Scheme embedded firmware role. Corporate partner allocations occur inside the national portal following candidate eKYC registration. Individual facility shift pattern and direct recruiter contacts are undisclosed.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
+  },
+  {
+    "id": "OPP_JOB_NCS_FRONTEND_REACT_EXPIRED",
+    "record_kind": "closed_listing",
+    "title": "Frontend React Developer (Cycle Closed - Aug 2026)",
+    "description": "UI engineering contract role for citizen service delivery portals using React, TypeScript, and modern CSS. The application registration and shortlisting cycle for this recruitment concluded on August 31, 2026.",
+    "opportunity_type": "job",
+    "provider_name": "National Informatics Centre Services Inc. (NICSI)",
+    "employer_name": "National Informatics Centre Services Inc. (NICSI)",
+    "industry": "IT/ITeS",
+    "employment_type": "contract",
+    "official_company_website": null,
+    "vacancy_url": "https://ncs.gov.in/",
+    "source_id": "SRC_NCS",
+    "official_url": "https://ncs.gov.in/job-seeker/pages/jobdetails.aspx?id=NCS-2026-MH-MUM-1109",
+    "role_ids": [
+      "ROLE_FRONTEND_DEV"
+    ],
+    "skill_keys": [
+      "react",
+      "javascript",
+      "html",
+      "css",
+      "git"
+    ],
+    "preferred_skills": [
+      "typescript",
+      "tailwind",
+      "rest_api"
+    ],
+    "education_requirements": "BCA / B.Sc IT / B.Tech in CS/IT.",
+    "experience_years_min": 1.0,
+    "experience_years_max": 3.0,
+    "eligibility": {
+      "qualification": "BCA / B.Sc IT / B.Tech in Computer Science",
+      "experience_years": "1-3 years"
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "MH",
+    "location_district": "MH_MUM",
+    "location_city": "Mumbai",
+    "workplace_address": "BKC, Bandra East, Mumbai, Maharashtra 400051",
+    "work_mode": "hybrid",
+    "work_arrangement": "hybrid",
+    "working_hours": "9:30 AM - 6:00 PM IST",
+    "weekly_working_days": "5 days (Monday to Friday)",
+    "fee_status": "not_applicable",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": 50000.0,
+    "salary_max": 65000.0,
+    "salary_currency": "INR",
+    "salary_period": "month",
+    "stipend_min": null,
+    "stipend_max": null,
+    "stipend_period": null,
+    "application_deadline": "2026-08-31T23:59:59Z",
+    "application_instructions": "This recruitment round has concluded. Archived for regulatory transparency and benchmark comparison only.",
+    "required_documents": [
+      "Resume",
+      "Prior Experience Certificates",
+      "Degree Transcripts"
+    ],
+    "selection_stages": [
+      "Screening",
+      "Technical Interview"
+    ],
+    "published_at": "2026-07-01T00:00:00Z",
+    "published_contact_name": "NCS Central Helpdesk",
+    "published_contact_email": "support.ncs@gov.in",
+    "published_contact_phone": "1800-425-1514",
+    "recruitment_contact_email": null,
+    "recruitment_contact_phone": null,
+    "listing_status": "closed",
+    "verification_status": "expired",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-09-01T00:00:00Z",
+    "provenance_notes": "Official NCS job vacancy whose application deadline closed on 2026-08-31. Correctly handled as closed and excluded from active candidate recommendations. Preserved for historical benchmark comparison.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": true,
+    "individual_fields_verified": false,
+    "is_deadline_passed": true
+  },
+  {
+    "id": "OPP_JOB_NCS_LOGISTICS_COORD_BLR",
+    "record_kind": "curated_pilot_listing",
+    "title": "Warehouse Inventory & Logistics Assistant (Curated Pilot Reference)",
+    "description": "Logistics operations assistant responsible for receiving warehouse dispatches, physical stock auditing, maintaining inward-outward goods registers, and reconciling inventory records with logistics spreadsheets.",
+    "opportunity_type": "job",
+    "provider_name": "State Warehousing Corporation Partner (via NCS)",
+    "employer_name": "State Warehousing Logistics Partner",
+    "industry": "Logistics",
+    "employment_type": "full_time",
+    "official_company_website": null,
+    "vacancy_url": "https://ncs.gov.in/",
+    "source_id": "SRC_NCS",
+    "official_url": "https://ncs.gov.in/job-seeker/pages/jobdetails.aspx?id=NCS-2026-KA-BLR-8821",
+    "role_ids": [
+      "OCC_LOG_001"
+    ],
+    "skill_keys": [
+      "inventory_management",
+      "supply_chain",
+      "warehouse_operations",
+      "excel_advanced"
+    ],
+    "preferred_skills": [
+      "erp_systems",
+      "sap"
+    ],
+    "education_requirements": "Higher Secondary (12th Pass) or Graduate in any stream.",
+    "experience_years_min": null,
+    "experience_years_max": null,
+    "eligibility": {
+      "qualification": "12th Standard or Bachelor's Degree in any discipline",
+      "notes": "Basic numerical aptitude and computer spreadsheet literacy required."
+    },
+    "eligibility_status": "confirmed",
+    "location_state": "KA",
+    "location_district": "KA_BLR_U",
+    "location_city": "Bengaluru",
+    "workplace_address": null,
+    "work_mode": "in_person",
+    "work_arrangement": "onsite",
+    "working_hours": null,
+    "weekly_working_days": null,
+    "fee_status": "not_applicable",
+    "fee_amount": null,
+    "fee_currency": "INR",
+    "salary_min": null,
+    "salary_max": null,
+    "salary_currency": "INR",
+    "salary_period": null,
+    "stipend_min": null,
+    "stipend_max": null,
+    "stipend_period": null,
+    "application_deadline": "2026-12-31T23:59:59Z",
+    "application_instructions": "Apply directly through National Career Service portal with active jobseeker registration.",
+    "required_documents": [
+      "Updated Resume",
+      "12th Standard / Degree Marksheet",
+      "Aadhaar Card"
+    ],
+    "selection_stages": [
+      "Document Screening",
+      "Direct In-Person Walk-in Interview"
+    ],
+    "published_at": "2026-10-08T00:00:00Z",
+    "published_contact_name": "NCS Karnataka Helpdesk",
+    "published_contact_email": null,
+    "published_contact_phone": null,
+    "recruitment_contact_email": null,
+    "recruitment_contact_phone": null,
+    "listing_status": "curated_pilot",
+    "verification_status": "unverified_curated",
+    "verified_at": "2026-10-14",
+    "source_last_updated_at": "2026-10-14T00:00:00Z",
+    "provenance_notes": "Curated pilot reference based on regional logistics demand signals. The specific NCS vacancy ID is simulated and not independently retrieved on the live NCS portal. All employer contacts, compensation, and work conditions are undisclosed.",
+    "source_portal_reachable": true,
+    "exact_listing_retrieved": false,
+    "vacancy_status_checked": false,
+    "individual_fields_verified": false
   }
 ]

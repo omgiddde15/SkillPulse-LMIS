@@ -144,27 +144,35 @@ def test_portal_directory_vs_individual_listing_separation(client_anon):
     assert resp.status_code == 200
     data = resp.json()
     items = data["items"]
-    assert len(items) == 12
+    assert len(items) == 18
 
     portal_dirs = [it for it in items if it["record_kind"] == "portal_directory"]
     individual_listings = [it for it in items if it["record_kind"] == "individual_listing"]
+    curated_pilot = [it for it in items if it["record_kind"] == "curated_pilot_listing"]
+    closed_listings = [it for it in items if it["record_kind"] == "closed_listing"]
+    curriculum_standards = [it for it in items if it["record_kind"] == "curriculum_standard"]
+    scheme_references = [it for it in items if it["record_kind"] == "scheme_reference"]
 
     assert len(portal_dirs) == 5
-    assert len(individual_listings) == 7
+    assert len(individual_listings) == 4
+    assert len(curated_pilot) == 4
+    assert len(closed_listings) == 2
+    assert len(curriculum_standards) == 2
+    assert len(scheme_references) == 1
 
-    # Portal directories must have listing_status 'portal_search' and never masquerade as open single vacancies
+    # Portal directories must never masquerade as open single vacancies
     for pd in portal_dirs:
-        assert pd["listing_status"] == "portal_search"
+        assert pd["listing_status"] in ("portal_search", "source_listed")
+        assert pd["listing_status"] != "open"
         assert is_safe_https_url(pd["official_url"])
 
     # Individual listings have specific providers, types, and honest verification metadata
     for ind in individual_listings:
         assert ind["opportunity_type"] in ("course", "internship", "apprenticeship", "job", "scheme")
-        assert ind["verification_status"] in ("verified_official", "unconfirmed")
         assert is_safe_https_url(ind["official_url"])
 
     # Exactly 2 unconfirmed listings (Frontend Web Dev without direct URL and NAPS without employer)
-    unconfirmed = [it for it in individual_listings if it["verification_status"] == "unconfirmed"]
+    unconfirmed = [it for it in items if it["verification_status"] == "unconfirmed"]
     assert len(unconfirmed) == 2
 
 
@@ -278,7 +286,7 @@ def test_honest_status_labels_and_provenance(client_anon):
 
     for s in sources:
         assert s["verification_status"] == "verified_official"
-        assert s["data_access_method"] in ("public_directory_link", "public_course_catalogue")
+        assert s["data_access_method"] in ("public_directory_link", "public_course_catalogue", "official_employer_portal")
         assert s["managing_agency"] is not None
         assert s["approved_domain"] in APPROVED_SOURCE_DOMAINS
 

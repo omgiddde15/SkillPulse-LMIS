@@ -425,14 +425,20 @@ def list_opportunities(
     role_id: Optional[str] = None,
     skill_key: Optional[str] = None,
     location_state: Optional[str] = None,
+    location_city: Optional[str] = None,
     work_mode: Optional[str] = None,
+    work_arrangement: Optional[str] = None,
     fee_status: Optional[str] = None,
     listing_status: Optional[str] = None,
     verification_status: Optional[str] = None,
+    industry: Optional[str] = None,
+    employer_name: Optional[str] = None,
+    min_salary: Optional[float] = None,
+    min_stipend: Optional[float] = None,
     limit: int = 50,
     offset: int = 0,
 ):
-    """Searches and filters the opportunity catalogue with pagination and freshness checks."""
+    """Searches and filters the opportunity catalogue with hiring filters, pagination, and freshness checks."""
     results = opportunity_service.get_opportunities(
         opportunity_type=opportunity_type,
         record_kind=record_kind,
@@ -440,10 +446,16 @@ def list_opportunities(
         role_id=role_id,
         skill_key=skill_key,
         location_state=location_state,
+        location_city=location_city,
         work_mode=work_mode,
+        work_arrangement=work_arrangement,
         fee_status=fee_status,
         listing_status=listing_status,
         verification_status=verification_status,
+        industry=industry,
+        employer_name=employer_name,
+        min_salary=min_salary,
+        min_stipend=min_stipend,
         limit=limit,
         offset=offset,
     )

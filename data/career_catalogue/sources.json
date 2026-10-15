@@ -110,5 +110,33 @@
     "last_verified_at": "2026-10-14",
     "refresh_interval": "monthly",
     "provenance_notes": "Official citizen scheme information hub detailing eligibility rules, entitlement benefits, application steps, and document checklists."
+  },
+  {
+    "source_id": "SRC_BEL_CAREERS",
+    "name": "Bharat Electronics Limited (BEL) — Apprenticeship & Career Notifications",
+    "home_url": "https://bel-india.in/careers/",
+    "approved_domain": "bel-india.in",
+    "managing_agency": "Bharat Electronics Limited, Ministry of Defence, Government of India",
+    "category": "public_sector_enterprise",
+    "supported_types": ["job", "apprenticeship"],
+    "verification_status": "verified_official",
+    "data_access_method": "official_employer_portal",
+    "last_verified_at": "2026-10-14",
+    "refresh_interval": "weekly",
+    "provenance_notes": "Official PSU recruitment portal under Ministry of Defence for technical apprenticeship and engineering trainee vacancies in Bengaluru and Hyderabad corridors."
+  },
+  {
+    "source_id": "SRC_TATA_MOTORS_CAREERS",
+    "name": "Tata Motors — Manufacturing & Technical Careers",
+    "home_url": "https://www.tatamotors.com/careers/",
+    "approved_domain": "tatamotors.com",
+    "managing_agency": "Tata Motors Ltd.",
+    "category": "official_employer",
+    "supported_types": ["job", "apprenticeship"],
+    "verification_status": "verified_official",
+    "data_access_method": "official_employer_portal",
+    "last_verified_at": "2026-10-14",
+    "refresh_interval": "weekly",
+    "provenance_notes": "Official automotive and EV manufacturing career portal for Pune manufacturing plant."
   }
 ]

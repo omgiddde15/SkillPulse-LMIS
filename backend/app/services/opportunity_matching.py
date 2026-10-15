@@ -107,6 +107,8 @@ class OpportunityMatchingEngine:
 
         # Candidate preferences
         user_state = (profile.get("current_state") or "").strip().upper()
+        user_district = (profile.get("current_district") or "").strip().upper()
+        user_years_exp = profile.get("years_experience")
         preferred_locs = [l.strip().upper() for l in (profile.get("preferred_locations") or [])]
         user_sector = (profile.get("target_sector") or "").strip().lower()
 
@@ -116,19 +118,29 @@ class OpportunityMatchingEngine:
 
         for item in catalogue_items:
             # Separate portal directory records
-            if item["record_kind"] == "portal_directory":
+            if item.get("record_kind") == "portal_directory":
                 portal_directories.append(item)
                 continue
 
-            # Phase 3.1 Availability & Verification Safety:
-            # Only sufficiently verified, active individual listings may be recommended.
-            # Closed, stale, expired, or availability-unconfirmed listings are strictly excluded.
-            if item.get("verification_status") != "verified_official":
+            # Exclude closed vacancy records or expired deadlines
+            if item.get("record_kind") == "closed_listing":
                 continue
-            if item.get("listing_status") in ("closed", "stale", "unconfirmed"):
+            if item.get("listing_status") in ("closed", "stale", "expired") or item.get("is_deadline_passed", False):
                 continue
-            if item.get("is_deadline_passed", False):
-                continue
+
+            # For courses:
+            if item.get("opportunity_type") == "course":
+                # Only verified official courses (exclude unconfirmed courses without links)
+                if item.get("verification_status") != "verified_official" or item.get("listing_status") == "unconfirmed":
+                    continue
+            else:
+                # For jobs, apprenticeships, and schemes:
+                # Exclude curriculum standards without individual employer vacancies (e.g. OPP_APP_NAPS_ELECTRONICS_TEST)
+                if item.get("record_kind") == "curriculum_standard" or item.get("listing_status") == "curriculum_reference":
+                    continue
+                # Exclude unconfirmed listings
+                if item.get("verification_status") not in ("verified_official", "unverified_curated"):
+                    continue
 
             item_type = item["opportunity_type"]
             item_roles = [r.upper() for r in item.get("role_ids", [])]
@@ -155,9 +167,12 @@ class OpportunityMatchingEngine:
                     item_roles=item_roles,
                     item_skills=item_skills,
                     evidenced_skill_keys=evidenced_skill_keys,
+                    claimed_skill_keys=claimed_skill_keys,
                     all_user_skill_keys=all_user_skill_keys,
                     selected_role_id=selected_role_id,
                     user_state=user_state,
+                    user_district=user_district,
+                    user_years_exp=user_years_exp,
                     preferred_locs=preferred_locs,
                     user_sector=user_sector,
                     is_custom_role=is_custom_role,
@@ -241,7 +256,6 @@ class OpportunityMatchingEngine:
                 })
 
         # 4. Zero-cost government/public accessibility (10 pts)
-        # Note: Accessibility bonus only applies if there is substantive curriculum relevance
         has_substantive_relevance = (
             score_breakdown["gap_skill_points"] > 0
             or score_breakdown["role_alignment_points"] > 0
@@ -266,6 +280,8 @@ class OpportunityMatchingEngine:
             "reasons": reasons,
             "matching_skills": list(set(matching_skills)),
             "addressed_gaps": list(set(addressed_gaps)),
+            "missing_required_skills": [],
+            "missing_preferred_skills": [],
         }
 
     def _score_opportunity(
@@ -274,9 +290,12 @@ class OpportunityMatchingEngine:
         item_roles: List[str],
         item_skills: List[str],
         evidenced_skill_keys: set,
+        claimed_skill_keys: set,
         all_user_skill_keys: set,
         selected_role_id: Optional[str],
         user_state: str,
+        user_district: str,
+        user_years_exp: Any,
         preferred_locs: List[str],
         user_sector: str,
         is_custom_role: bool,
@@ -284,60 +303,123 @@ class OpportunityMatchingEngine:
         """Calculates deterministic matching score and reasons for a job, internship, or scheme."""
         score_breakdown = {
             "evidenced_skill_points": 0.0,
+            "claimed_skill_points": 0.0,
+            "preferred_skill_points": 0.0,
             "role_or_sector_points": 0.0,
+            "experience_compatibility_points": 0.0,
             "location_points": 0.0,
             "flagship_scheme_points": 0.0,
         }
         reasons = []
         matching_skills = []
+        missing_required_skills = []
+        missing_preferred_skills = []
 
-        # 1. Demonstrated skills match (up to 40 pts)
-        if item_skills and evidenced_skill_keys:
+        # 1. Required skills match vs candidate evidenced & claimed competencies (up to 40 pts)
+        if item_skills:
             evidenced_matches = [sk for sk in item_skills if sk in evidenced_skill_keys]
+            claimed_matches = [sk for sk in item_skills if sk in claimed_skill_keys and sk not in evidenced_skill_keys]
+            missing_req = [sk for sk in item_skills if sk not in all_user_skill_keys]
+
+            missing_required_skills.extend(missing_req)
+
+            evidenced_pts = min(len(evidenced_matches) * 20.0, 40.0)
+            score_breakdown["evidenced_skill_points"] = evidenced_pts
+
             if evidenced_matches:
-                score_breakdown["evidenced_skill_points"] = min(len(evidenced_matches) * 20.0, 40.0)
                 matching_skills.extend(evidenced_matches)
                 reasons.append({
                     "code": "EVIDENCED_SKILL_MATCH",
                     "message": f"Demonstrated evidence in profile matches requirements: {', '.join([m.title() for m in evidenced_matches])}.",
                 })
 
-        # 2. Target role or sector match (up to 30 pts)
+            if claimed_matches:
+                matching_skills.extend(claimed_matches)
+                # Claimed skills receive partial credit (up to remaining room in 40 pts, max 20)
+                remaining_skill_cap = max(0.0, 40.0 - evidenced_pts)
+                claimed_pts = min(len(claimed_matches) * 10.0, min(20.0, remaining_skill_cap))
+                score_breakdown["claimed_skill_points"] = claimed_pts
+                reasons.append({
+                    "code": "CLAIMED_SKILL_MATCH",
+                    "message": f"Claimed / unconfirmed competencies partially match requirements (evidence recommended): {', '.join([m.title() for m in claimed_matches])}.",
+                })
+
+        # 2. Preferred skills match (up to 10 pts)
+        opp_preferred_raw = opp.get("preferred_skills") or []
+        opp_preferred = [normalize_skill_key(k) for k in opp_preferred_raw if normalize_skill_key(k)]
+        if opp_preferred:
+            pref_matches = [sk for sk in opp_preferred if sk in all_user_skill_keys]
+            pref_missing = [sk for sk in opp_preferred if sk not in all_user_skill_keys]
+            missing_preferred_skills.extend(pref_missing)
+            if pref_matches:
+                matching_skills.extend(pref_matches)
+                score_breakdown["preferred_skill_points"] = min(len(pref_matches) * 5.0, 10.0)
+                reasons.append({
+                    "code": "PREFERRED_SKILL_MATCH",
+                    "message": f"Matches preferred vacancy competencies: {', '.join([m.title() for m in pref_matches])}.",
+                })
+
+        # 3. Target role or sector match (up to 30 pts)
         if not is_custom_role and selected_role_id and selected_role_id in item_roles:
             score_breakdown["role_or_sector_points"] = 30.0
             reasons.append({
                 "code": "ROLE_ALIGNMENT",
                 "message": "Directly corresponds to your selected target occupation track.",
             })
-        elif user_sector and (user_sector in opp.get("description", "").lower() or user_sector in opp.get("title", "").lower()):
+        elif user_sector and (user_sector in opp.get("description", "").lower() or user_sector in opp.get("title", "").lower() or user_sector in (opp.get("industry") or "").lower()):
             score_breakdown["role_or_sector_points"] = 15.0
             reasons.append({
                 "code": "SECTOR_ALIGNMENT",
                 "message": "Aligned with candidate's target industry sector.",
             })
 
+        # 4. Experience compatibility (up to 10 pts)
+        min_exp = opp.get("experience_years_min")
+        if min_exp is not None and user_years_exp is not None:
+            try:
+                min_exp_val = float(min_exp)
+                user_exp_val = float(user_years_exp)
+                if user_exp_val >= min_exp_val:
+                    score_breakdown["experience_compatibility_points"] = 10.0
+                    reasons.append({
+                        "code": "EXPERIENCE_CRITERIA_MET",
+                        "message": f"Candidate experience ({user_exp_val:g} yrs) meets minimum requirement ({min_exp_val:g} yrs).",
+                    })
+            except (ValueError, TypeError):
+                pass
+
         is_flagship_scheme = (opp.get("opportunity_type") == "scheme")
 
         # Substantive relevance check:
         # For custom unmapped roles without matching skills/sector, do not force schemes.
-        if is_custom_role and not (score_breakdown["evidenced_skill_points"] > 0 or score_breakdown["role_or_sector_points"] > 0):
+        if is_custom_role and not (score_breakdown["evidenced_skill_points"] > 0 or score_breakdown["claimed_skill_points"] > 0 or score_breakdown["role_or_sector_points"] > 0):
             has_substantive_relevance = False
         else:
             has_substantive_relevance = (
                 score_breakdown["evidenced_skill_points"] > 0
+                or score_breakdown["claimed_skill_points"] > 0
                 or score_breakdown["role_or_sector_points"] > 0
                 or is_flagship_scheme
             )
 
-        # 3. Location compatibility (up to 15 pts) - bonus if substantively relevant
+        # 5. Location compatibility (up to 15 pts) - bonus if substantively relevant
         if has_substantive_relevance:
+            work_arrangement = (opp.get("work_arrangement") or "").lower()
             work_mode = opp.get("work_mode", "online")
             opp_state = (opp.get("location_state") or "").upper()
-            if work_mode in ("online", "all_india"):
+            opp_city = (opp.get("location_city") or "").upper()
+
+            if work_arrangement == "remote" or work_mode in ("online", "all_india"):
                 score_breakdown["location_points"] = 15.0
                 reasons.append({
                     "code": "LOCATION_ACCESSIBLE",
-                    "message": "All-India / nationwide accessibility.",
+                    "message": "All-India / remote accessibility.",
+                })
+            elif opp_city and (opp_city == user_district or opp_city in preferred_locs):
+                score_breakdown["location_points"] = 15.0
+                reasons.append({
+                    "code": "LOCATION_MATCH",
+                    "message": f"Directly located in candidate's target city/district ({opp.get('location_city')}).",
                 })
             elif opp_state and (opp_state == user_state or opp_state in preferred_locs):
                 score_breakdown["location_points"] = 15.0
@@ -346,13 +428,19 @@ class OpportunityMatchingEngine:
                     "message": f"Located in candidate's specified state ({opp_state}).",
                 })
 
-            # 4. Flagship Government Scheme / Portal backing
+            # 6. Flagship Government Scheme / Portal backing
             if is_flagship_scheme:
                 score_breakdown["flagship_scheme_points"] = 25.0
                 reasons.append({
                     "code": "OFFICIAL_FLAGSHIP_SCHEME",
                     "message": "Official Government of India youth skilling and stipend initiative.",
                 })
+
+        if opp.get("record_kind") == "curated_pilot_listing" or opp.get("verification_status") == "unverified_curated":
+            reasons.append({
+                "code": "CURATED_PILOT_BENCHMARK",
+                "message": "Curated pilot reference based on industry hiring demand. Check official employer portal for active vacancy status.",
+            })
 
         total_score = min(
             sum(score_breakdown.values()),
@@ -366,4 +454,6 @@ class OpportunityMatchingEngine:
             "reasons": reasons,
             "matching_skills": list(set(matching_skills)),
             "addressed_gaps": [],
+            "missing_required_skills": list(set(missing_required_skills)),
+            "missing_preferred_skills": list(set(missing_preferred_skills)),
         }

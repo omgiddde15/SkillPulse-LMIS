@@ -30,6 +30,8 @@ from app.services.platform_guide_data import (
     VALID_NAVIGATION_ROUTES,
 )
 
+from app.services.opportunity_service import OpportunityService
+
 logger = logging.getLogger(__name__)
 
 # Known geographic entities mapped to canonical district IDs
@@ -89,12 +91,14 @@ class PolicyCopilotService:
         alerts_service: Optional[EarlyWarningService] = None,
         forecasting_service: Optional[ForecastingService] = None,
         simulator_service: Optional[SeatSimulatorService] = None,
+        opportunity_service: Optional[OpportunityService] = None,
     ):
         self.demand_service = demand_service or DemandIndexService()
         self.gap_service = gap_service or GapAnalysisService(demand_service=self.demand_service)
         self.alerts_service = alerts_service or EarlyWarningService()
         self.forecasting_service = forecasting_service or ForecastingService()
         self.simulator_service = simulator_service or SeatSimulatorService(forecasting_service=self.forecasting_service)
+        self.opportunity_service = opportunity_service or OpportunityService()
 
     def _extract_entities(
         self,
@@ -289,6 +293,19 @@ class PolicyCopilotService:
         # ---------------------------------------------------------------------
         if any(w in q_lower for w in ("methodological limitations", "limitations of this dataset", "synthetic data", "census", "transparency", "पद्धतिगत सीमाएं", "सीमाएं", "सिंथेटिक", "डेटासेट सीमाएं")):
             return self._handle_limitations(clean_q, target_period, is_hindi)
+
+        # ---------------------------------------------------------------------
+        # 10.5. Policy Analytics: Verified Opportunities & Hiring Intelligence
+        # ---------------------------------------------------------------------
+        hiring_keywords = (
+            "opportunit", "vacancy", "vacancies", "job", "jobs", "internship", "internships",
+            "apprenticeship", "apprenticeships", "hiring", "recruiter", "apply", "application instructions",
+            "required skills am i missing", "qualifications does this", "what qualifications",
+            "recruitment contact", "recruiter contact", "recruiter's contact", "who is hiring",
+            "अवसर", "नौकरी", "नौकरियां", "इंटर्नशिप", "शिक्षुता", "भर्ती", "आवेदन"
+        )
+        if any(w in q_lower for w in hiring_keywords):
+            return self._handle_hiring_opportunities(clean_q, q_lower, target_period, matched_dist, matched_occ, is_hindi)
 
         # ---------------------------------------------------------------------
         # 11. Policy Analytics: Specific Role/District Skill Gap Diagnostics
@@ -1201,4 +1218,483 @@ class PolicyCopilotService:
             "evidence": {},
             "sources": [],
             "suggested_followups": [],
+        }
+
+    def _handle_hiring_opportunities(
+        self,
+        clean_q: str,
+        q_lower: str,
+        target_period: str,
+        matched_dist: Optional[Dict[str, str]],
+        matched_occ: Optional[Dict[str, str]],
+        is_hindi: bool,
+    ) -> Dict[str, Any]:
+        """Provides deterministic, factually grounded answers to hiring, vacancy, and opportunity questions."""
+        opp_res = self.opportunity_service.get_opportunities(limit=100)
+        items = opp_res.get("items", [])
+        individual_listings = [
+            it for it in items
+            if it.get("record_kind") in ("individual_listing", "curated_pilot_listing")
+        ]
+        portal_dirs = [it for it in items if it.get("record_kind") == "portal_directory"]
+
+        # 1. Identify specific target vacancy if referenced by employer, keyword, or role
+        target_opp = None
+        for it in individual_listings:
+            title_lower = (it.get("title") or "").lower()
+            emp_lower = (it.get("employer_name") or "").lower()
+            prov_lower = (it.get("provider_name") or "").lower()
+            opp_id = it.get("id", "").lower()
+            if (
+                opp_id in q_lower
+                or (emp_lower and emp_lower in q_lower)
+                or (prov_lower and prov_lower in q_lower)
+                or ("tata" in q_lower and "tata" in emp_lower)
+                or ("bel" in q_lower and "bel" in emp_lower)
+                or (("c-dac" in q_lower or "cdac" in q_lower) and "c-dac" in emp_lower)
+                or ("warehousing" in q_lower and "warehousing" in emp_lower)
+                or ("nicsi" in q_lower and "nicsi" in emp_lower)
+            ):
+                target_opp = it
+                break
+
+        # Fallback target opp if occupation or role is mentioned
+        if not target_opp and matched_occ:
+            for it in individual_listings:
+                if matched_occ["id"] in it.get("role_ids", []):
+                    target_opp = it
+                    break
+
+        sources = []
+        evidence = {
+            "total_catalogue_items": len(items),
+            "verified_individual_listings": len(individual_listings),
+            "official_portal_directories": len(portal_dirs),
+        }
+
+        # Case A: Recruiter / Recruitment Contact Inquiry
+        if any(w in q_lower for w in ("recruiter", "contact number", "phone number", "recruitment contact", "recruiter's contact", "call", "email")):
+            if target_opp:
+                emp = target_opp.get("employer_name") or target_opp.get("provider_name")
+                email = target_opp.get("recruitment_contact_email") or target_opp.get("published_contact_email")
+                phone = target_opp.get("recruitment_contact_phone") or target_opp.get("published_contact_phone")
+                vac_url = target_opp.get("vacancy_url") or target_opp.get("official_url")
+
+                answer_en = (
+                    f"### Recruitment Contact Details for **{target_opp['title']}** ({emp})\n\n"
+                    f"- **Recruitment Email:** {f'`{email}`' if email else 'Not disclosed'}\n"
+                    f"- **Direct Recruiter Phone:** {f'`{phone}`' if phone else 'Not disclosed by employer'}\n"
+                    f"- **Official Vacancy Link:** [{emp} Careers / Application Portal]({vac_url})\n\n"
+                    f"> [!IMPORTANT]\n"
+                    f"> **Anti-Fraud & Grounding Standard:** SkillPulse does NOT invent recruiter phone numbers or publish general company switchboards as personal contacts. "
+                    f"Please submit all inquiries through the verified official portal URL or published recruitment email above."
+                )
+                answer_hi = (
+                    f"### **{target_opp['title']}** ({emp}) के लिए भर्ती संपर्क विवरण\n\n"
+                    f"- **भर्ती ईमेल:** {f'`{email}`' if email else 'प्रकट नहीं किया गया'}\n"
+                    f"- **सीधा भर्तीकर्ता फोन:** {f'`{phone}`' if phone else 'नियोक्ता द्वारा प्रकट नहीं किया गया'}\n"
+                    f"- **आधिकारिक रिक्ति लिंक:** [{emp} करियर / आवेदन पोर्टल]({vac_url})\n\n"
+                    f"> [!IMPORTANT]\n"
+                    f"> **सुरक्षा और तथ्यपरक मानक:** स्किलपल्स कभी भी काल्पनिक फोन नंबर नहीं बनाता। आधिकारिक पोर्टल या सत्यापित ईमेल के माध्यम से ही संपर्क करें।"
+                )
+                sources.append({
+                    "kind": "vacancy_contact",
+                    "title": f"{emp} Verified Listing ({target_opp['id']})",
+                    "url": vac_url,
+                    "verification_status": target_opp.get("verification_status", "verified_official"),
+                })
+            else:
+                answer_en = (
+                    "### Recruitment Contact Disclosures\n\n"
+                    "Verified recruitment contacts in SkillPulse are sourced strictly from official Government of India and employer portals:\n"
+                    "- Direct recruiter phone numbers are listed only when officially published by the hiring organization; otherwise, they remain **'Not disclosed'**.\n"
+                    "- General company switchboards or personal numbers are never substituted.\n"
+                    "- For any vacancy, refer to the verified employer recruitment email and official application URL provided in the listing card.\n\n"
+                    "You can view specific contact details by opening the vacancy details in the **Opportunity Explorer**."
+                )
+                answer_hi = (
+                    "### भर्ती संपर्क प्रकटीकरण\n\n"
+                    "स्किलपल्स में सत्यापित भर्ती संपर्क केवल आधिकारिक सरकारी और नियोक्ता पोर्टलों से लिए जाते हैं।\n"
+                    "- व्यक्तिगत फोन नंबर केवल तभी दिखाए जाते हैं जब वे सार्वजनिक रूप से आधिकारिक हों; अन्यथा वे **'प्रकट नहीं'** रहते हैं।\n"
+                    "- किसी भी रिक्ति के लिए आधिकारिक आवेदन लिंक और ईमेल का ही उपयोग करें।"
+                )
+            title = "Recruitment Contact Information" if not is_hindi else "भर्ती संपर्क जानकारी"
+            return {
+                "query": clean_q,
+                "period": target_period,
+                "intent": "hiring_contact",
+                "title": title,
+                "badge": "VERIFIED CONTACT",
+                "badge_color": "var(--emerald-600)",
+                "answer": answer_hi if is_hindi else answer_en,
+                "evidence": evidence,
+                "action_label": "View Opportunity Details",
+                "action_tab": "opportunities",
+                "action_route": "opportunities",
+                "sources": sources,
+                "suggested_followups": [
+                    "What qualifications does this vacancy require?",
+                    "How do I apply for this job?",
+                    "Show opportunities in Pune.",
+                ],
+            }
+
+        # Case B: Application Instructions / How to apply
+        if any(w in q_lower for w in ("how do i apply", "how to apply", "application instructions", "apply for this job", "apply for this vacancy", "steps to apply")):
+            if not target_opp and individual_listings:
+                target_opp = individual_listings[0]
+
+            if target_opp:
+                emp = target_opp.get("employer_name") or target_opp.get("provider_name")
+                instructions = target_opp.get("application_instructions") or "Submit your application online through the official vacancy portal."
+                docs = target_opp.get("required_documents") or []
+                stages = target_opp.get("selection_stages") or []
+                vac_url = target_opp.get("vacancy_url") or target_opp.get("official_url")
+                deadline = target_opp.get("application_deadline") or "Open until filled"
+
+                doc_list = "\n".join([f"  - {d}" for d in docs]) if docs else "  - Standard resume and photo ID."
+                stage_list = " -> ".join(stages) if stages else "Application Screening -> Technical Assessment -> Interview"
+
+                comp_clause = f"  - [Official Employer Portal]({target_opp['official_company_website']})\n" if target_opp.get("official_company_website") else ""
+                answer_en = (
+                    f"### How to Apply for **{target_opp['title']}** ({emp})\n\n"
+                    f"**Step-by-Step Instructions:**\n"
+                    f"1. **Review Eligibility:** Confirm minimum education and required competencies.\n"
+                    f"2. **Official Application:** Navigate directly to the official vacancy URL:\n"
+                    f"   [{vac_url}]({vac_url})\n"
+                    f"{comp_clause}"
+                    f"3. **Required Documents:**\n{doc_list}\n"
+                    f"4. **Selection Stages:** {stage_list}\n"
+                    f"5. **Application Deadline:** {deadline}\n\n"
+                    f"> [!NOTE]\n"
+                    f"> **Application Tracker:** Clicking an external link does NOT automatically mark your application as submitted. "
+                    f"Use the **'Track Application'** action on SkillPulse to manage your progress across stages (Saved, Applied, Interview, Offer)."
+                )
+                answer_hi = (
+                    f"### **{target_opp['title']}** ({emp}) के लिए आवेदन कैसे करें\n\n"
+                    f"**चरण-दर-चरण निर्देश:**\n"
+                    f"1. **योग्यता की जांच:** आवश्यक शैक्षणिक स्तर और कौशल की पुष्टि करें।\n"
+                    f"2. **आधिकारिक आवेदन लिंक:** [{vac_url}]({vac_url})\n"
+                    f"3. **आवश्यक दस्तावेज:**\n{doc_list}\n"
+                    f"4. **चयन चरण:** {stage_list}\n"
+                    f"5. **अंतिम तिथि:** {deadline}\n\n"
+                    f"स्किलपल्स पर एप्लिकेशन ट्रैकर के माध्यम से अपनी प्रगति ट्रैक करें।"
+                )
+                sources.append({
+                    "kind": "application_url",
+                    "title": f"Official Vacancy: {target_opp['title']}",
+                    "url": vac_url,
+                    "verification_status": "verified_official",
+                })
+            else:
+                answer_en = (
+                    "### Official Application Instructions\n\n"
+                    "1. Explore verified vacancies in the **Opportunity Explorer**.\n"
+                    "2. Click **'Apply on Official Portal'** to visit the direct employer or government vacancy page (NCS, NAPS, PMIS).\n"
+                    "3. Submit the required credentials and documents on the external portal.\n"
+                    "4. Add the listing to your **Application Tracker** on SkillPulse to record stages and notes."
+                )
+                answer_hi = (
+                    "### आधिकारिक आवेदन निर्देश\n\n"
+                    "1. ऑपर्च्युनिटी एक्सप्लोरर में सत्यापित रिक्तियों का चयन करें।\n"
+                    "2. आधिकारिक पोर्टल पर सीधे आवेदन करने के लिए लिंक पर क्लिक करें।\n"
+                    "3. एप्लिकेशन ट्रैकर में अपनी आवेदन स्थिति को ट्रैक करें।"
+                )
+            title = "Application Instructions & Process" if not is_hindi else "आवेदन निर्देश एवं प्रक्रिया"
+            return {
+                "query": clean_q,
+                "period": target_period,
+                "intent": "hiring_application",
+                "title": title,
+                "badge": "OFFICIAL APPLICATION",
+                "badge_color": "var(--emerald-600)",
+                "answer": answer_hi if is_hindi else answer_en,
+                "evidence": evidence,
+                "action_label": "Go to Opportunity Explorer",
+                "action_tab": "opportunities",
+                "action_route": "opportunities",
+                "sources": sources,
+                "suggested_followups": [
+                    "What qualifications does this vacancy require?",
+                    "Can you give me the recruiter's contact number?",
+                    "Show opportunities in Pune.",
+                ],
+            }
+
+        # Case C: Qualifications / Requirements / Missing Skills
+        if any(w in q_lower for w in ("qualification", "qualifications", "required skills", "missing skills", "skills am i missing", "eligibility", "requirements")):
+            if not target_opp and individual_listings:
+                target_opp = individual_listings[0]
+
+            if target_opp:
+                emp = target_opp.get("employer_name") or target_opp.get("provider_name")
+                edu = target_opp.get("education_requirements") or "Not disclosed"
+                exp_min = target_opp.get("experience_years_min")
+                exp_max = target_opp.get("experience_years_max")
+                req_skills = target_opp.get("skill_keys") or []
+                pref_skills = target_opp.get("preferred_skills") or []
+                vac_url = target_opp.get("vacancy_url") or target_opp.get("official_url")
+
+                exp_str = (
+                    f"{exp_min:g} to {exp_max:g} years" if exp_min is not None and exp_max is not None
+                    else (f"Minimum {exp_min:g} years" if exp_min is not None else "Fresher / Entry level (0-1 years)")
+                )
+
+                answer_en = (
+                    f"### Verified Qualifications for **{target_opp['title']}** ({emp})\n\n"
+                    f"- **Minimum Education:** {edu}\n"
+                    f"- **Experience Level:** {exp_str}\n"
+                    f"- **Required Competencies:** {', '.join([s.replace('_', ' ').title() for s in req_skills]) if req_skills else 'Not disclosed'}\n"
+                    f"- **Preferred Competencies (Optional):** {', '.join([s.replace('_', ' ').title() for s in pref_skills]) if pref_skills else 'None specifically listed'}\n"
+                    f"- **Work Arrangement:** {target_opp.get('work_arrangement', 'onsite').title()} in {target_opp.get('location_city', 'Target District')}\n\n"
+                    f"**Missing Skill Analysis:** In SkillPulse, your evidenced skills receive full credit, while claimed skills require project verification. "
+                    f"Any required skill not yet in your profile is flagged as a gap under 'Missing Required Skills'."
+                )
+                answer_hi = (
+                    f"### **{target_opp['title']}** ({emp}) के लिए सत्यापित योग्यताएं\n\n"
+                    f"- **न्यूनतम शिक्षा:** {edu}\n"
+                    f"- **आवश्यक अनुभव:** {exp_str}\n"
+                    f"- **आवश्यक कौशल:** {', '.join([s.replace('_', ' ').title() for s in req_skills])}\n"
+                    f"- **पसंदीदा कौशल (वैकल्पिक):** {', '.join([s.replace('_', ' ').title() for s in pref_skills]) if pref_skills else 'कोई नहीं'}\n"
+                    f"- **कार्य व्यवस्था:** {target_opp.get('work_arrangement', 'onsite')} ({target_opp.get('location_city', '')})\n"
+                )
+                sources.append({
+                    "kind": "vacancy_requirements",
+                    "title": f"Requirements: {target_opp['title']}",
+                    "url": vac_url,
+                    "verification_status": "verified_official",
+                })
+            else:
+                answer_en = (
+                    "### Vacancy Qualifications & Candidate Benchmarking\n\n"
+                    "SkillPulse evaluates candidates against verified employer requirements:\n"
+                    "- **Required Skills:** Mandatory role competencies necessary to perform the job.\n"
+                    "- **Preferred Skills:** Secondary competencies providing competitive advantage.\n"
+                    "- **Evidence Distinction:** Verified project evidence receives full matching weight; self-reported resume claims are highlighted for validation.\n\n"
+                    "Open the **Career Profile** to register your verified projects and inspect specific vacancies."
+                )
+                answer_hi = (
+                    "### रिक्ति योग्यताएं और कौशल मिलान\n\n"
+                    "स्किलपल्स सत्यापित नियोक्ता आवश्यकताओं के अनुसार उम्मीदवारों का मूल्यांकन करता है।"
+                )
+            title = "Vacancy Qualifications & Eligibility" if not is_hindi else "रिक्ति योग्यताएं एवं पात्रता"
+            return {
+                "query": clean_q,
+                "period": target_period,
+                "intent": "hiring_qualifications",
+                "title": title,
+                "badge": "ELIGIBILITY & SKILLS",
+                "badge_color": "var(--emerald-600)",
+                "answer": answer_hi if is_hindi else answer_en,
+                "evidence": evidence,
+                "action_label": "Check My Skill Fit",
+                "action_tab": "opportunities",
+                "action_route": "opportunities",
+                "sources": sources,
+                "suggested_followups": [
+                    "How do I apply for this job?",
+                    "Can you give me the recruiter's contact number?",
+                    "Show opportunities in Pune.",
+                ],
+            }
+
+        # Case D: Location-based search (e.g. Pune, Bengaluru, Dharwad, Hyderabad, Mumbai)
+        loc_term = None
+        if matched_dist:
+            loc_term = matched_dist["name"].lower()
+        else:
+            for city in ("pune", "bengaluru", "bangalore", "dharwad", "hyderabad", "mumbai", "medchal", "jaipur", "delhi"):
+                if city in q_lower:
+                    loc_term = city
+                    break
+
+        if loc_term:
+            matched_loc_items = [
+                it for it in individual_listings
+                if (
+                    (it.get("location_city") and loc_term in it.get("location_city", "").lower())
+                    or (it.get("location_state") and loc_term in it.get("location_state", "").lower())
+                )
+            ]
+            if matched_loc_items:
+                cards = []
+                for it in matched_loc_items:
+                    emp = it.get("employer_name") or it.get("provider_name")
+                    arr = (it.get("work_arrangement") or "onsite").title()
+                    sal = (
+                        f"₹{it.get('salary_min'):,.0f} - ₹{it.get('salary_max'):,.0f} / {it.get('salary_period', 'mo')}"
+                        if it.get("salary_min") and it.get("salary_max")
+                        else (f"Stipend: ₹{it.get('stipend_min'):,.0f} / mo" if it.get("stipend_min") else "Pay: Not disclosed")
+                    )
+                    url = it.get("vacancy_url") or it.get("official_url")
+                    comp_link = f" | [Company Website]({it['official_company_website']})" if it.get("official_company_website") else ""
+                    cards.append(f"- **{it['title']}** at **{emp}** ({arr})\n  - {sal} | Deadline: {it.get('application_deadline', 'Open')}\n  - [Official Application Link]({url}){comp_link}")
+                    sources.append({
+                        "kind": "location_opportunity",
+                        "title": f"{it['title']} ({emp})",
+                        "url": url,
+                        "verification_status": it.get("verification_status", "verified_official"),
+                    })
+
+                list_str = "\n\n".join(cards)
+                answer_en = (
+                    f"### Opportunities in **{loc_term.title()}**\n\n"
+                    f"We found **{len(matched_loc_items)} opportunity listing(s)** (verified and curated pilot references) in {loc_term.title()}:\n\n"
+                    f"{list_str}\n\n"
+                    f"To view additional regional schemes or unlisted vacancies, explore official Government directories below."
+                )
+                answer_hi = (
+                    f"### **{loc_term.title()}** में अवसर\n\n"
+                    f"{loc_term.title()} में **{len(matched_loc_items)} सत्यापित रिक्तियां एवं पायलट संदर्भ अवसर** उपलब्ध हैं:\n\n"
+                    f"{list_str}"
+                )
+            else:
+                answer_en = (
+                    f"### Opportunities in **{loc_term.title()}**\n\n"
+                    f"There are currently **no verified individual vacancies for {loc_term.title()}** in the curated pilot catalogue.\n\n"
+                    f"> [!NOTE]\n"
+                    f"> The SkillPulse pilot catalogue is strictly grounded in verified employer listings across selected pilot hubs. "
+                    f"To explore unlisted openings or broader national vacancies, search directly on official Government of India directories:\n"
+                    f"> - **[National Career Service (NCS)](https://www.ncs.gov.in)**\n"
+                    f"> - **[Apprenticeship India (NAPS)](https://www.apprenticeshipindia.gov.in)**\n"
+                    f"> - **[PM Internship Scheme](https://pminternship.mca.gov.in)**"
+                )
+                answer_hi = (
+                    f"### **{loc_term.title()}** में अवसर\n\n"
+                    f"वर्तमान पायलट कैटलॉग में {loc_term.title()} के लिए कोई सत्यापित व्यक्तिगत रिक्ति दर्ज नहीं है।\n"
+                    f"कृपया राष्ट्रीय करियर सेवा (NCS) या शिक्षुता पोर्टल (NAPS) पर सीधे खोजें।"
+                )
+                for pd in portal_dirs[:3]:
+                    sources.append({
+                        "kind": "portal_directory",
+                        "title": pd["title"],
+                        "url": pd.get("official_url"),
+                        "verification_status": "verified_official",
+                    })
+
+            title = f"Opportunities in {loc_term.title()}" if not is_hindi else f"{loc_term.title()} में अवसर"
+            return {
+                "query": clean_q,
+                "period": target_period,
+                "intent": "hiring_location",
+                "title": title,
+                "badge": "LOCATION SEARCH",
+                "badge_color": "var(--emerald-600)",
+                "answer": answer_hi if is_hindi else answer_en,
+                "evidence": evidence,
+                "action_label": "Explore Full Catalogue",
+                "action_tab": "opportunities",
+                "action_route": "opportunities",
+                "sources": sources,
+                "suggested_followups": [
+                    "Find apprenticeships matching my target role.",
+                    "What qualifications does this vacancy require?",
+                    "How do I apply for this job?",
+                ],
+            }
+
+        # Case E: Apprenticeship search
+        if any(w in q_lower for w in ("apprenticeship", "apprenticeships", "शिक्षुता", "naps")):
+            app_items = [it for it in individual_listings if it.get("opportunity_type") == "apprenticeship"]
+            cards = []
+            for it in app_items:
+                emp = it.get("employer_name") or it.get("provider_name")
+                stip = f"Stipend: ₹{it.get('stipend_min'):,.0f} / mo" if it.get("stipend_min") else "Stipend: As per NAPS norms"
+                url = it.get("vacancy_url") or it.get("official_url")
+                cards.append(
+                    f"- **{it['title']}** at **{emp}** ({it.get('location_city', 'Karnataka')})\n"
+                    f"  - {stip} | Min Education: {it.get('education_requirements', 'ITI')}\n"
+                    f"  - [Official NAPS Application Link]({url})"
+                )
+                sources.append({
+                    "kind": "apprenticeship_listing",
+                    "title": f"{it['title']} ({emp})",
+                    "url": url,
+                    "verification_status": "verified_official",
+                })
+
+            list_str = "\n\n".join(cards) if cards else "No individual apprenticeship vacancies currently open."
+            answer_en = (
+                f"### Verified Apprenticeships (NAPS & Government Frameworks)\n\n"
+                f"{list_str}\n\n"
+                f"**Official Portal Directory:** You can also explore nationwide apprenticeship contracts on the official "
+                f"[Apprenticeship India (NAPS) Portal](https://www.apprenticeshipindia.gov.in)."
+            )
+            answer_hi = (
+                f"### सत्यापित शिक्षुता (NAPS एवं सरकारी योजनाएं)\n\n"
+                f"{list_str}\n\n"
+                f"अतिरिक्त अवसरों के लिए आधिकारिक शिक्षुता भारत पोर्टल पर जाएं।"
+            )
+            title = "Verified Apprenticeship Listings" if not is_hindi else "सत्यापित शिक्षुता सूचियां"
+            return {
+                "query": clean_q,
+                "period": target_period,
+                "intent": "hiring_apprenticeships",
+                "title": title,
+                "badge": "APPRENTICESHIPS",
+                "badge_color": "var(--emerald-600)",
+                "answer": answer_hi if is_hindi else answer_en,
+                "evidence": evidence,
+                "action_label": "View Apprenticeships",
+                "action_tab": "opportunities",
+                "action_route": "opportunities",
+                "sources": sources,
+                "suggested_followups": [
+                    "Show opportunities in Pune.",
+                    "What qualifications does this vacancy require?",
+                    "How do I apply for this job?",
+                ],
+            }
+
+        # Case F: General Hiring & Opportunities Overview
+        open_jobs = [it for it in individual_listings if it.get("opportunity_type") == "job" and it.get("listing_status") == "open"]
+        open_ints = [it for it in individual_listings if it.get("opportunity_type") == "internship" and it.get("listing_status") == "open"]
+        open_apps = [it for it in individual_listings if it.get("opportunity_type") == "apprenticeship" and it.get("listing_status") == "open"]
+
+        answer_en = (
+            f"### Verified Hiring Intelligence Overview\n\n"
+            f"SkillPulse tracks verified hiring opportunities directly linked to our labour-market pilot sectors:\n"
+            f"- **Active Jobs ({len(open_jobs)}):** Full-time roles at employers like C-DAC (Python Backend) and Tata Motors (Data Quality Analyst).\n"
+            f"- **Active Internships ({len(open_ints)}):** Government-backed internships including BEL Embedded Systems (PM Internship Scheme).\n"
+            f"- **Active Apprenticeships ({len(open_apps)}):** Industry apprentice openings including BEL CNC Machining (Dharwad).\n"
+            f"- **Official Portal Directories ({len(portal_dirs)}):** NCS, NAPS, PMIS, SWAYAM, and Skill India Digital Hub.\n\n"
+            f"> [!TIP]\n"
+            f"> In the **Opportunity Explorer**, use filters for **Work Arrangement** (Remote, Hybrid, Onsite), **Industry**, and **Location** to browse verified listings."
+        )
+        answer_hi = (
+            f"### सत्यापित भर्ती अवलोकन\n\n"
+            f"स्किलपल्स श्रम बाज़ार पायलट क्षेत्रों से जुड़े सत्यापित अवसरों को ट्रैक करता है:\n"
+            f"- **सक्रिय नौकरियां:** C-DAC, Tata Motors में खुली रिक्तियां।\n"
+            f"- **सक्रिय इंटर्नशिप:** BEL (पीएम इंटर्नशिप स्कीम)।\n"
+            f"- **सक्रिय शिक्षुता:** BEL सीएनसी मशीनिंग (धारवाड़)।\n"
+            f"- **आधिकारिक पोर्टल:** NCS, NAPS, PMIS, SWAYAM।"
+        )
+        for it in individual_listings[:3]:
+            sources.append({
+                "kind": "verified_listing",
+                "title": f"{it['title']} ({it.get('employer_name')})",
+                "url": it.get("vacancy_url") or it.get("official_url"),
+                "verification_status": "verified_official",
+            })
+
+        title = "Verified Opportunity Explorer" if not is_hindi else "सत्यापित अवसर एक्सप्लोरर"
+        return {
+            "query": clean_q,
+            "period": target_period,
+            "intent": "hiring_catalogue",
+            "title": title,
+            "badge": "HIRING INTELLIGENCE",
+            "badge_color": "var(--emerald-600)",
+            "answer": answer_hi if is_hindi else answer_en,
+            "evidence": evidence,
+            "action_label": "Explore Opportunities",
+            "action_tab": "opportunities",
+            "action_route": "opportunities",
+            "sources": sources,
+            "suggested_followups": [
+                "Find apprenticeships matching my target role.",
+                "Show opportunities in Pune.",
+                "What qualifications does this vacancy require?",
+                "How do I apply for this job?",
+            ],
         }

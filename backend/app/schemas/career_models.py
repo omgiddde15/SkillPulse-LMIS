@@ -286,6 +286,34 @@ class OpportunityItemResponse(BaseModel):
     source_last_updated_at: Optional[str] = None
     provenance_notes: Optional[str] = None
     is_deadline_passed: bool = False
+    # Structured Hiring Intelligence Fields
+    employer_name: Optional[str] = None
+    industry: Optional[str] = None
+    employment_type: Optional[str] = None
+    official_company_website: Optional[str] = None
+    vacancy_url: Optional[str] = None
+    location_city: Optional[str] = None
+    workplace_address: Optional[str] = None
+    work_arrangement: Optional[str] = None
+    working_hours: Optional[str] = None
+    weekly_working_days: Optional[str] = None
+    salary_min: Optional[float] = None
+    salary_max: Optional[float] = None
+    salary_currency: str = "INR"
+    salary_period: Optional[str] = "month"
+    experience_years_min: Optional[float] = None
+    experience_years_max: Optional[float] = None
+    education_requirements: Optional[str] = None
+    preferred_skills: List[str] = []
+    application_instructions: Optional[str] = None
+    required_documents: List[str] = []
+    selection_stages: List[str] = []
+    recruitment_contact_email: Optional[str] = None
+    recruitment_contact_phone: Optional[str] = None
+    source_portal_reachable: bool = False
+    exact_listing_retrieved: bool = False
+    vacancy_status_checked: bool = False
+    individual_fields_verified: bool = False
 
 
 class OpportunityRecommendationReason(BaseModel):
@@ -302,6 +330,8 @@ class OpportunityRecommendationItem(BaseModel):
     reasons: List[OpportunityRecommendationReason]
     matching_skills: List[str] = []
     addressed_gaps: List[str] = []
+    missing_required_skills: List[str] = []
+    missing_preferred_skills: List[str] = []
 
 
 class OpportunityRecommendationsResponse(BaseModel):

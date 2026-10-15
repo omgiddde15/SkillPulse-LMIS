@@ -31,6 +31,9 @@ APPROVED_SOURCE_DOMAINS = {
     "apprenticeshipindia.gov.in",
     "pminternship.mca.gov.in",
     "myscheme.gov.in",
+    "bel-india.in",
+    "tatamotors.com",
+    "cdac.in",
 }
 
 
@@ -169,10 +172,21 @@ class OpportunityService:
                         published_contact_name, published_contact_email,
                         published_contact_phone, listing_status, verification_status,
                         verified_at, source_last_updated_at, provenance_notes,
+                        employer_name, industry, employment_type, official_company_website,
+                        location_city, workplace_address, work_arrangement, working_hours,
+                        weekly_working_days, salary_min, salary_max, salary_currency,
+                        salary_period, experience_years_min, experience_years_max,
+                        education_requirements, preferred_skills_json, application_instructions,
+                        required_documents_json, selection_stages_json, recruitment_contact_email,
+                        recruitment_contact_phone, vacancy_url,
+                        source_portal_reachable, exact_listing_retrieved,
+                        vacancy_status_checked, individual_fields_verified,
                         created_at, updated_at
                     ) VALUES (
                         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?
                     )
                     ON CONFLICT(id) DO UPDATE SET
                         record_kind=excluded.record_kind,
@@ -205,6 +219,33 @@ class OpportunityService:
                         verified_at=excluded.verified_at,
                         source_last_updated_at=excluded.source_last_updated_at,
                         provenance_notes=excluded.provenance_notes,
+                        employer_name=excluded.employer_name,
+                        industry=excluded.industry,
+                        employment_type=excluded.employment_type,
+                        official_company_website=excluded.official_company_website,
+                        location_city=excluded.location_city,
+                        workplace_address=excluded.workplace_address,
+                        work_arrangement=excluded.work_arrangement,
+                        working_hours=excluded.working_hours,
+                        weekly_working_days=excluded.weekly_working_days,
+                        salary_min=excluded.salary_min,
+                        salary_max=excluded.salary_max,
+                        salary_currency=excluded.salary_currency,
+                        salary_period=excluded.salary_period,
+                        experience_years_min=excluded.experience_years_min,
+                        experience_years_max=excluded.experience_years_max,
+                        education_requirements=excluded.education_requirements,
+                        preferred_skills_json=excluded.preferred_skills_json,
+                        application_instructions=excluded.application_instructions,
+                        required_documents_json=excluded.required_documents_json,
+                        selection_stages_json=excluded.selection_stages_json,
+                        recruitment_contact_email=excluded.recruitment_contact_email,
+                        recruitment_contact_phone=excluded.recruitment_contact_phone,
+                        vacancy_url=excluded.vacancy_url,
+                        source_portal_reachable=excluded.source_portal_reachable,
+                        exact_listing_retrieved=excluded.exact_listing_retrieved,
+                        vacancy_status_checked=excluded.vacancy_status_checked,
+                        individual_fields_verified=excluded.individual_fields_verified,
                         updated_at=excluded.updated_at;
                 """, (
                     opp["id"],
@@ -238,6 +279,33 @@ class OpportunityService:
                     opp.get("verified_at", "2026-10-14"),
                     opp.get("source_last_updated_at"),
                     opp.get("provenance_notes"),
+                    opp.get("employer_name"),
+                    opp.get("industry"),
+                    opp.get("employment_type"),
+                    opp.get("official_company_website"),
+                    opp.get("location_city"),
+                    opp.get("workplace_address"),
+                    opp.get("work_arrangement") or opp.get("work_mode", "online"),
+                    opp.get("working_hours"),
+                    opp.get("weekly_working_days"),
+                    opp.get("salary_min"),
+                    opp.get("salary_max"),
+                    opp.get("salary_currency", "INR"),
+                    opp.get("salary_period", "month"),
+                    opp.get("experience_years_min"),
+                    opp.get("experience_years_max"),
+                    opp.get("education_requirements"),
+                    json.dumps(opp.get("preferred_skills", [])),
+                    opp.get("application_instructions"),
+                    json.dumps(opp.get("required_documents", [])),
+                    json.dumps(opp.get("selection_stages", [])),
+                    opp.get("recruitment_contact_email"),
+                    opp.get("recruitment_contact_phone"),
+                    opp.get("vacancy_url") or opp["official_url"],
+                    1 if opp.get("source_portal_reachable", True) else 0,
+                    1 if opp.get("exact_listing_retrieved", False) else 0,
+                    1 if opp.get("vacancy_status_checked", False) else 0,
+                    1 if opp.get("individual_fields_verified", False) else 0,
                     now_str,
                     now_str,
                 ))
@@ -290,21 +358,35 @@ class OpportunityService:
         role_id: Optional[str] = None,
         skill_key: Optional[str] = None,
         location_state: Optional[str] = None,
+        location_city: Optional[str] = None,
         work_mode: Optional[str] = None,
+        work_arrangement: Optional[str] = None,
         fee_status: Optional[str] = None,
         listing_status: Optional[str] = None,
         verification_status: Optional[str] = None,
+        industry: Optional[str] = None,
+        employer_name: Optional[str] = None,
+        min_salary: Optional[float] = None,
+        min_stipend: Optional[float] = None,
         limit: int = 50,
         offset: int = 0,
     ) -> Dict[str, Any]:
-        """Queries and filters opportunity catalogue with pagination and freshness checks."""
+        """Queries and filters opportunity catalogue with pagination, hiring intelligence filters, and freshness checks."""
         self._ensure_seeded()
         conditions = []
         params = []
 
         if opportunity_type:
+            clean_opp_type = opportunity_type.strip().lower()
             conditions.append("o.opportunity_type = ?")
-            params.append(opportunity_type.strip().lower())
+            params.append(clean_opp_type)
+            # When querying jobs, internships, or apprenticeships without an explicit record_kind,
+            # return only vacancy records (never portal directories, curriculum standards, or scheme documents)
+            if not record_kind:
+                if clean_opp_type in ("job", "internship", "apprenticeship"):
+                    conditions.append("o.record_kind NOT IN ('portal_directory', 'curriculum_standard', 'scheme_reference')")
+                elif clean_opp_type == "course":
+                    conditions.append("o.record_kind != 'portal_directory'")
 
         if record_kind:
             conditions.append("o.record_kind = ?")
@@ -318,13 +400,44 @@ class OpportunityService:
             conditions.append("o.work_mode = ?")
             params.append(work_mode.strip().lower())
 
+        if work_arrangement:
+            clean_arr = work_arrangement.strip().lower()
+            conditions.append("(LOWER(COALESCE(o.work_arrangement, '')) = ? OR LOWER(o.work_mode) = ?)")
+            params.extend([clean_arr, clean_arr])
+
         if location_state:
-            conditions.append("(o.location_state = ? OR o.location_state IS NULL OR o.work_mode = 'all_india' OR o.work_mode = 'online')")
+            conditions.append("(o.location_state = ? OR o.location_state IS NULL OR o.work_mode = 'all_india' OR o.work_mode = 'online' OR o.work_arrangement = 'remote')")
             params.append(location_state.strip().upper())
 
+        if location_city:
+            conditions.append("LOWER(COALESCE(o.location_city, '')) = ?")
+            params.append(location_city.strip().lower())
+
+        if industry:
+            conditions.append("LOWER(COALESCE(o.industry, '')) LIKE ?")
+            params.append(f"%{industry.strip().lower()}%")
+
+        if employer_name:
+            conditions.append("LOWER(COALESCE(o.employer_name, '')) LIKE ?")
+            params.append(f"%{employer_name.strip().lower()}%")
+
+        if min_salary is not None:
+            conditions.append("o.salary_min >= ?")
+            params.append(min_salary)
+
+        if min_stipend is not None:
+            conditions.append("o.stipend_min >= ?")
+            params.append(min_stipend)
+
         if listing_status:
-            conditions.append("o.listing_status = ?")
-            params.append(listing_status.strip().lower())
+            clean_status = listing_status.strip().lower()
+            if clean_status == "open":
+                now_utc_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                conditions.append("o.listing_status = 'open' AND (o.application_deadline IS NULL OR o.application_deadline >= ?)")
+                params.append(now_utc_str)
+            else:
+                conditions.append("o.listing_status = ?")
+                params.append(clean_status)
 
         if verification_status:
             conditions.append("o.verification_status = ?")
@@ -332,8 +445,11 @@ class OpportunityService:
 
         if search:
             search_pattern = f"%{search.strip().lower()}%"
-            conditions.append("(LOWER(o.title) LIKE ? OR LOWER(o.description) LIKE ? OR LOWER(o.provider_name) LIKE ?)")
-            params.extend([search_pattern, search_pattern, search_pattern])
+            conditions.append(
+                "(LOWER(o.title) LIKE ? OR LOWER(o.description) LIKE ? OR LOWER(o.provider_name) LIKE ? "
+                "OR LOWER(COALESCE(o.employer_name, '')) LIKE ? OR LOWER(COALESCE(o.industry, '')) LIKE ?)"
+            )
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern, search_pattern])
 
         where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -408,7 +524,7 @@ class OpportunityService:
             return self._format_opportunity_row(row)
 
     def _format_opportunity_row(self, r: Any) -> Dict[str, Any]:
-        """Maps a SQLite Row to a typed Opportunity item with freshness evaluation."""
+        """Maps a SQLite Row to a typed Opportunity item with freshness evaluation and hiring intelligence."""
         deadline_str = r["application_deadline"]
         is_expired = is_deadline_expired(deadline_str)
 
@@ -451,15 +567,50 @@ class OpportunityService:
             "source_last_updated_at": r["source_last_updated_at"],
             "provenance_notes": r["provenance_notes"],
             "is_deadline_passed": is_expired,
+            # Structured Hiring Intelligence Fields
+            "employer_name": r["employer_name"] if "employer_name" in r.keys() else None,
+            "industry": r["industry"] if "industry" in r.keys() else None,
+            "employment_type": r["employment_type"] if "employment_type" in r.keys() else None,
+            "official_company_website": r["official_company_website"] if "official_company_website" in r.keys() else None,
+            "vacancy_url": (r["vacancy_url"] or r["official_url"]) if "vacancy_url" in r.keys() else r["official_url"],
+            "location_city": r["location_city"] if "location_city" in r.keys() else None,
+            "workplace_address": r["workplace_address"] if "workplace_address" in r.keys() else None,
+            "work_arrangement": (r["work_arrangement"] or r["work_mode"]) if "work_arrangement" in r.keys() else r["work_mode"],
+            "working_hours": r["working_hours"] if "working_hours" in r.keys() else None,
+            "weekly_working_days": r["weekly_working_days"] if "weekly_working_days" in r.keys() else None,
+            "salary_min": r["salary_min"] if "salary_min" in r.keys() else None,
+            "salary_max": r["salary_max"] if "salary_max" in r.keys() else None,
+            "salary_currency": (r["salary_currency"] or "INR") if "salary_currency" in r.keys() else "INR",
+            "salary_period": (r["salary_period"] or "month") if "salary_period" in r.keys() else "month",
+            "experience_years_min": r["experience_years_min"] if "experience_years_min" in r.keys() else None,
+            "experience_years_max": r["experience_years_max"] if "experience_years_max" in r.keys() else None,
+            "education_requirements": r["education_requirements"] if "education_requirements" in r.keys() else None,
+            "preferred_skills": json.loads(r["preferred_skills_json"] or "[]") if "preferred_skills_json" in r.keys() else [],
+            "application_instructions": r["application_instructions"] if "application_instructions" in r.keys() else None,
+            "required_documents": json.loads(r["required_documents_json"] or "[]") if "required_documents_json" in r.keys() else [],
+            "selection_stages": json.loads(r["selection_stages_json"] or "[]") if "selection_stages_json" in r.keys() else [],
+            "recruitment_contact_email": r["recruitment_contact_email"] if "recruitment_contact_email" in r.keys() else None,
+            "recruitment_contact_phone": r["recruitment_contact_phone"] if "recruitment_contact_phone" in r.keys() else None,
+            "source_portal_reachable": bool(r["source_portal_reachable"]) if "source_portal_reachable" in r.keys() else True,
+            "exact_listing_retrieved": bool(r["exact_listing_retrieved"]) if "exact_listing_retrieved" in r.keys() else False,
+            "vacancy_status_checked": bool(r["vacancy_status_checked"]) if "vacancy_status_checked" in r.keys() else False,
+            "individual_fields_verified": bool(r["individual_fields_verified"]) if "individual_fields_verified" in r.keys() else False,
         }
 
     def _ensure_seeded(self) -> None:
-        """Helper to ensure seed data exists if database table is empty."""
+        """Helper to ensure seed data exists and is kept in sync with version-controlled seeds."""
         try:
             with get_db(self.db_path) as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT COUNT(*) as cnt FROM opportunity_sources;")
-                if cursor.fetchone()["cnt"] == 0:
+                cursor.execute("SELECT COUNT(*) as cnt FROM opportunity_catalogue;")
+                current_cnt = cursor.fetchone()["cnt"]
+
+                seed_cnt = 0
+                if OPPORTUNITIES_SEED_PATH.exists():
+                    with open(OPPORTUNITIES_SEED_PATH, "r", encoding="utf-8") as f:
+                        seed_cnt = len(json.load(f))
+
+                if current_cnt < seed_cnt:
                     self.seed_catalogue_if_empty()
         except Exception as exc:
             logger.warning("Could not check/seed catalogue automatically: %s", exc)

@@ -205,11 +205,74 @@ def init_db(db_path: str = None) -> None:
                 verified_at TEXT NOT NULL,
                 source_last_updated_at TEXT,
                 provenance_notes TEXT,
+                employer_name TEXT,
+                industry TEXT,
+                employment_type TEXT,
+                official_company_website TEXT,
+                location_city TEXT,
+                workplace_address TEXT,
+                work_arrangement TEXT,
+                working_hours TEXT,
+                weekly_working_days TEXT,
+                salary_min REAL,
+                salary_max REAL,
+                salary_currency TEXT DEFAULT 'INR',
+                salary_period TEXT DEFAULT 'month',
+                experience_years_min REAL,
+                experience_years_max REAL,
+                education_requirements TEXT,
+                preferred_skills_json TEXT DEFAULT '[]',
+                application_instructions TEXT,
+                required_documents_json TEXT DEFAULT '[]',
+                selection_stages_json TEXT DEFAULT '[]',
+                recruitment_contact_email TEXT,
+                recruitment_contact_phone TEXT,
+                vacancy_url TEXT,
+                source_portal_reachable INTEGER DEFAULT 0,
+                exact_listing_retrieved INTEGER DEFAULT 0,
+                vacancy_status_checked INTEGER DEFAULT 0,
+                individual_fields_verified INTEGER DEFAULT 0,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
                 FOREIGN KEY (source_id) REFERENCES opportunity_sources (source_id) ON DELETE CASCADE
             );
         """)
+
+        # Dynamic schema migration for existing SQLite databases
+        cursor.execute("PRAGMA table_info(opportunity_catalogue);")
+        existing_opp_cols = {row[1] for row in cursor.fetchall()}
+        hiring_columns = [
+            ("employer_name", "TEXT"),
+            ("industry", "TEXT"),
+            ("employment_type", "TEXT"),
+            ("official_company_website", "TEXT"),
+            ("location_city", "TEXT"),
+            ("workplace_address", "TEXT"),
+            ("work_arrangement", "TEXT"),
+            ("working_hours", "TEXT"),
+            ("weekly_working_days", "TEXT"),
+            ("salary_min", "REAL"),
+            ("salary_max", "REAL"),
+            ("salary_currency", "TEXT DEFAULT 'INR'"),
+            ("salary_period", "TEXT DEFAULT 'month'"),
+            ("experience_years_min", "REAL"),
+            ("experience_years_max", "REAL"),
+            ("education_requirements", "TEXT"),
+            ("preferred_skills_json", "TEXT DEFAULT '[]'"),
+            ("application_instructions", "TEXT"),
+            ("required_documents_json", "TEXT DEFAULT '[]'"),
+            ("selection_stages_json", "TEXT DEFAULT '[]'"),
+            ("recruitment_contact_email", "TEXT"),
+            ("recruitment_contact_phone", "TEXT"),
+            ("vacancy_url", "TEXT"),
+            ("source_portal_reachable", "INTEGER DEFAULT 0"),
+            ("exact_listing_retrieved", "INTEGER DEFAULT 0"),
+            ("vacancy_status_checked", "INTEGER DEFAULT 0"),
+            ("individual_fields_verified", "INTEGER DEFAULT 0"),
+        ]
+        for col_name, col_def in hiring_columns:
+            if col_name not in existing_opp_cols:
+                cursor.execute(f"ALTER TABLE opportunity_catalogue ADD COLUMN {col_name} {col_def};")
 
         # Career Roadmaps table (Phase 4)
         cursor.execute("""
@@ -311,6 +374,9 @@ def init_db(db_path: str = None) -> None:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_listing_status ON opportunity_catalogue(listing_status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_fee_status ON opportunity_catalogue(fee_status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_location ON opportunity_catalogue(location_state, location_district);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_employer ON opportunity_catalogue(employer_name);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_work_arrangement ON opportunity_catalogue(work_arrangement);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_opp_industry ON opportunity_catalogue(industry);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_user_id ON career_roadmaps(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_target_role ON career_roadmaps(target_role_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_roadmaps_token ON career_roadmaps(client_request_token);")

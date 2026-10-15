@@ -526,6 +526,45 @@ class CopilotService:
                     "What should I learn next for my target role?",
                 ]
 
+        # Intent 4A: Recruiter Contact
+        elif any(w in q_lower for w in ("recruiter", "recruitment contact", "recruiter contact", "contact number", "phone number")):
+            answer = (
+                "Verified recruitment contacts in SkillPulse are sourced strictly from official Government of India and employer portals. "
+                "Direct recruiter phone numbers are listed only when officially published by the hiring organization; otherwise, they remain 'Not disclosed'. "
+                "SkillPulse strictly does not fabricate recruiter phone numbers or publish general company switchboards as personal contacts. "
+                "Please submit inquiries through the verified employer application URL or published recruitment email in the Opportunity Explorer."
+            )
+            suggested_followups = [
+                "Which catalogue opportunities are relevant to my goals?",
+                "Which skill gaps should I prioritize?",
+            ]
+
+        # Intent 4B: How to apply / application instructions
+        elif any(w in q_lower for w in ("how do i apply", "how to apply", "application instructions", "apply for this job")):
+            answer = (
+                "To apply for a verified opportunity:\n"
+                "1. Click 'Apply on Official Portal' on the opportunity card to open the verified employer or government application page.\n"
+                "2. Complete and submit your application on the external portal.\n"
+                "3. Use the 'Track' button to add the listing to your Application Tracker on SkillPulse to manage stages from Applied to Interview and Offer.\n\n"
+                "Note: Opening an external link does not automatically mark you as applied; tracking allows you to manage your application journey responsibly."
+            )
+            suggested_followups = [
+                "Which catalogue opportunities are relevant to my goals?",
+                "What should I do this week based on my roadmap?",
+            ]
+
+        # Intent 4C: Vacancy Qualifications
+        elif any(w in q_lower for w in ("qualifications does this", "what qualifications", "eligibility requirements")):
+            answer = (
+                f"For opportunities aligned with **{role['title']}**, verified vacancies specify required educational criteria, "
+                f"minimum years of experience, and essential competencies. In the Opportunity Explorer, each individual listing shows "
+                f"the required skills alongside optional preferred skills, and compares them against your evidenced competencies."
+            )
+            suggested_followups = [
+                "Which skill gaps should I prioritize?",
+                "Which catalogue opportunities are relevant to my goals?",
+            ]
+
         # Intent 4: Opportunities / Jobs / Internships
         elif any(w in q_lower for w in ("opportunity", "job", "internship", "scheme", "catalogue", "opening")):
             if opps:
