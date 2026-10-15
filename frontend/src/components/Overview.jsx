@@ -35,6 +35,7 @@ export default function Overview({
   sectorFilter = '',
   onNavigate = () => {},
   onNavigateWithContext = () => {},
+  onOpenCopilot = () => {},
 }) {
   const { language, t } = useLanguage();
   const isHindi = language === 'hi';
@@ -42,6 +43,23 @@ export default function Overview({
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [prevGapData, setPrevGapData] = useState(null);
   const prevPeriod = React.useMemo(() => getPreviousPeriod(period), [period]);
+
+  const [isSaarthiWelcomeDismissed, setIsSaarthiWelcomeDismissed] = useState(() => {
+    try {
+      return localStorage.getItem('skillpulse_saarthi_welcome_dismissed') === 'true';
+    } catch (_e) {
+      return false;
+    }
+  });
+
+  const handleDismissSaarthiWelcome = () => {
+    setIsSaarthiWelcomeDismissed(true);
+    try {
+      localStorage.setItem('skillpulse_saarthi_welcome_dismissed', 'true');
+    } catch (_e) {
+      // Ignore local storage error
+    }
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -321,6 +339,52 @@ export default function Overview({
           </button>
         </div>
       </section>
+
+      {/* Saarthi Copilot Welcome Greeting Banner (Dismissible with LocalStorage Persistence) */}
+      {!isSaarthiWelcomeDismissed && (
+        <aside
+          className="saarthi-welcome-card"
+          aria-label={isHindi ? 'सारथी स्वागत संदेश' : 'Saarthi Welcome Greeting'}
+        >
+          <div className="saarthi-welcome-left">
+            <div className="saarthi-welcome-avatar">
+              <Icon name="compass" size={22} />
+            </div>
+            <div className="saarthi-welcome-content">
+              <h2 className="saarthi-welcome-title">
+                {t('overview.saarthiWelcomeTitle', "I'm here to help you explore SkillPulse.")}
+                <span className="saarthi-welcome-badge">Saarthi AI</span>
+              </h2>
+              <p className="saarthi-welcome-desc">
+                {t(
+                  'overview.saarthiWelcomeDesc',
+                  "Ask me about regional labor-demand shifts, vocational mismatch patterns, early warning alerts, or seat planning simulations across India's industrial corridors."
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="saarthi-welcome-actions">
+            <button
+              type="button"
+              onClick={() => onOpenCopilot && onOpenCopilot()}
+              className="saarthi-welcome-btn-primary"
+              title={isHindi ? 'स्किलपल्स सारथी असिस्टेंट खोलें' : 'Open SkillPulse Saarthi Assistant'}
+            >
+              <Icon name="compass" size={14} />
+              <span>{t('overview.saarthiWelcomeCta', 'Ask Saarthi')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDismissSaarthiWelcome}
+              className="saarthi-welcome-btn-dismiss"
+              title={t('overview.saarthiWelcomeDismiss', 'Dismiss')}
+              aria-label={t('overview.saarthiWelcomeDismiss', 'Dismiss')}
+            >
+              <Icon name="x" size={14} />
+            </button>
+          </div>
+        </aside>
+      )}
 
       {/* ZONE 2: 6 Live KPI Indicator Stat Cards */}
       <section className="overview-kpis-grid">
@@ -761,43 +825,44 @@ export default function Overview({
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+            <div className="scenario-card-meta-box">
+              <div className="scenario-card-meta-grid">
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>100 (Scenario)</strong>
+                  </span>
+                  <strong className="scenario-meta-value mono">100 (Scenario)</strong>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                  </span>
+                  <div className="scenario-meta-delta">
                     <strong style={{ color: 'var(--status-success-text)', fontFamily: 'var(--font-mono)' }}>-60.4 pts</strong>
                     <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>(+63.2 → +2.8 pts)</span>
                   </div>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item scenario-meta-trade-block">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>CNC Operator</strong>
+                  </span>
+                  <strong className="scenario-meta-trade-title">CNC Machine Operator</strong>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+              <div className="scenario-card-actions">
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
-                  style={{ border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  className="scenario-btn-evidence"
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'KA_DHA', occupation: 'OCC_MFG_001', state: 'KA' })}
-                  style={{ border: 'none', backgroundColor: '#ea580c', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  className="scenario-btn-simulate"
+                  style={{ backgroundColor: '#ea580c' }}
                 >
                   Simulate
                 </button>
@@ -836,43 +901,44 @@ export default function Overview({
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+            <div className="scenario-card-meta-box">
+              <div className="scenario-card-meta-grid">
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>80 (Scenario)</strong>
+                  </span>
+                  <strong className="scenario-meta-value mono">80 (Scenario)</strong>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                  </span>
+                  <div className="scenario-meta-delta">
                     <strong style={{ color: 'var(--status-supply-text)', fontFamily: 'var(--font-mono)' }}>+43.4 pts</strong>
                     <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>(-9.4 → +34.0 pts)</span>
                   </div>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item scenario-meta-trade-block">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>Cloud Associate</strong>
+                  </span>
+                  <strong className="scenario-meta-trade-title">Cloud Infrastructure Associate</strong>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+              <div className="scenario-card-actions">
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
-                  style={{ border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  className="scenario-btn-evidence"
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'KA_BLR_U', occupation: 'OCC_IT_001', state: 'KA' })}
-                  style={{ border: 'none', backgroundColor: '#0d9488', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  className="scenario-btn-simulate"
+                  style={{ backgroundColor: '#0d9488' }}
                 >
                   Simulate
                 </button>
@@ -911,43 +977,44 @@ export default function Overview({
               </p>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+            <div className="scenario-card-meta-box">
+              <div className="scenario-card-meta-grid">
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>60 (Scenario)</strong>
+                  </span>
+                  <strong className="scenario-meta-value mono">60 (Scenario)</strong>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                  </span>
+                  <div className="scenario-meta-delta">
                     <strong style={{ color: 'var(--status-supply-text)', fontFamily: 'var(--font-mono)' }}>+62.3 pts</strong>
                     <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>(-6.6 → +55.7 pts)</span>
                   </div>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 600 }}>
+                <div className="scenario-meta-item scenario-meta-trade-block">
+                  <span className="scenario-meta-label">
                     {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
-                  </div>
-                  <strong style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>EV Assembly</strong>
+                  </span>
+                  <strong className="scenario-meta-trade-title">Electric Vehicle Assembly Technician</strong>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+              <div className="scenario-card-actions">
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('gap', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
-                  style={{ border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '0.25rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                  className="scenario-btn-evidence"
                 >
                   View Evidence
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigateWithContext('simulator', { district: 'MH_PUN', occupation: 'OCC_MFG_003', state: 'MH' })}
-                  style={{ border: 'none', backgroundColor: '#3b82f6', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                  className="scenario-btn-simulate"
+                  style={{ backgroundColor: '#3b82f6' }}
                 >
                   Simulate
                 </button>
@@ -1067,7 +1134,7 @@ export default function Overview({
             <tbody>
               {displayedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--slate-500)' }}>
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     {t('overview.noMatchingRows', 'No matching mismatch records found for this view.')}
                   </td>
                 </tr>
@@ -1121,7 +1188,7 @@ export default function Overview({
                             : t('class.balanced', 'Balanced')}
                         </span>
                       </td>
-                      <td style={{ maxWidth: '300px', fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+                      <td style={{ maxWidth: '300px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         {formatExplanatoryFactor(primaryFactor, isHindi)}
                       </td>
                     </tr>

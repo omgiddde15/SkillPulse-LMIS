@@ -548,7 +548,7 @@ export default function GapAnalysis({
                 <p>{t('gap.tableSubtitle')}</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {t('common.showingRecords', { count: sortedResults.length })}
                 </span>
                 <button
@@ -610,7 +610,7 @@ export default function GapAnalysis({
                 <tbody>
                   {sortedResults.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--slate-500)' }}>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
                         {t('common.noData', 'No records match the selected filter criteria.')}
                       </td>
                     </tr>
@@ -674,9 +674,9 @@ export default function GapAnalysis({
                               style={{
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
-                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
+                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--border-subtle)',
                                 backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
-                                color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
+                                color: isSelected ? 'var(--teal-800)' : 'var(--text-secondary)',
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -719,7 +719,7 @@ export default function GapAnalysis({
               <div className="inspection-body">
                 {/* Section A: Certification Throughput Metrics */}
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '0.65rem' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.65rem' }}>
                     {t('gap.section1Title')}
                   </h4>
                   <div className="funnel-grid">
@@ -727,9 +727,9 @@ export default function GapAnalysis({
                       <span className="funnel-header">{t('gap.certVolume3m')}</span>
                       <span className="funnel-rate-value" style={{ color: 'var(--teal-800)' }}>
                         {selectedItem.throughput?.certifications_3m ?? t('common.na')}
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--slate-600)' }}> {t('gap.certifiedCandidates')}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}> {t('gap.certifiedCandidates')}</span>
                       </span>
-                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--slate-500)' }}>
+                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                         {t('gap.window')} {selectedItem.throughput?.window_periods_3m?.join(', ') || 'Recent 3 months'}
                       </span>
                     </div>
@@ -738,9 +738,9 @@ export default function GapAnalysis({
                       <span className="funnel-header">{t('gap.certVolume6m')}</span>
                       <span className="funnel-rate-value">
                         {selectedItem.throughput?.certifications_6m ?? t('common.na')}
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--slate-600)' }}> {t('gap.certifiedCandidates')}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}> {t('gap.certifiedCandidates')}</span>
                       </span>
-                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--slate-500)' }}>
+                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                         {t('gap.window')} {selectedItem.throughput?.window_periods_6m?.slice(0, 3).join(', ')}... (6 months)
                       </span>
                     </div>
@@ -749,9 +749,9 @@ export default function GapAnalysis({
                       <span className="funnel-header">{t('gap.supplyOutputRank')}</span>
                       <span className="funnel-rate-value">
                         {selectedItem.supply_output_index.toFixed(1)}
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--slate-600)' }}> /100</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}> /100</span>
                       </span>
-                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--slate-500)' }}>
+                      <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                         {isHindi
                           ? 'सभी क्षेत्रीय पायलट श्रृंखलाओं में 3-माह के प्रमाणीकरण थ्रूपुट का क्रॉस-सेक्शनल पर्सेंटाइल रैंक'
                           : 'Cross-sectional percentile rank of trailing 3-month certification volume across all pilot series'}
@@ -762,7 +762,7 @@ export default function GapAnalysis({
 
                 {/* Section B: Cohort Training Funnel Efficiency */}
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '0.65rem' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.65rem' }}>
                     {t('gap.section2Title')}
                   </h4>
                   <div className="funnel-grid">
@@ -845,7 +845,7 @@ export default function GapAnalysis({
                               {t('gap.pendingFollowup')}
                             </span>
                           </div>
-                          <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--slate-600)', marginTop: '0.35rem', lineHeight: 1.4 }}>
+                          <span className="funnel-subtext" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.35rem', lineHeight: 1.4 }}>
                             {t('gap.pendingFollowupNote')}
                           </span>
                         </>
@@ -855,17 +855,17 @@ export default function GapAnalysis({
                 </div>
 
                 {/* Section C: Principal Explanatory Factors & Coverage */}
-                <div style={{ background: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '0.4rem' }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
                     {t('gap.primaryDrivers')}
                   </h4>
-                  <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8rem', color: 'var(--slate-700)', lineHeight: 1.6 }}>
+                  <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {selectedItem.explanatory_factors?.map((factor, fIdx) => (
                       <li key={fIdx}>{formatExplanatoryFactor(factor, isHindi)}</li>
                     ))}
                   </ul>
 
-                  <div style={{ marginTop: '0.65rem', paddingTop: '0.65rem', borderTop: '1px solid var(--slate-200)', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                  <div style={{ marginTop: '0.65rem', paddingTop: '0.65rem', borderTop: '1px solid var(--border-subtle)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     <strong>{t('gap.inputCoverage')}</strong> {(selectedItem.index_data_coverage_pct || selectedItem.data_coverage_pct || 100).toFixed(0)}% •
                     {' '}{t('gap.missingSignals')} {selectedItem.missing_index_signals?.length === 0 ? t('gap.noneComplete') : selectedItem.missing_index_signals.join(', ')} •
                     {' '}{t('gap.trackingWindow')}
@@ -893,7 +893,7 @@ export default function GapAnalysis({
             <p style={{ marginTop: '0.35rem' }}>
               <strong>{t('gap.methodologyPlacementTitle')}</strong> {t('gap.methodologyPlacementText')}
             </p>
-            <p style={{ marginTop: '0.35rem', fontSize: '0.74rem', color: 'var(--slate-500)' }}>
+            <p style={{ marginTop: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
               <strong>{t('gap.methodologySyntheticTitle')}</strong> {t('gap.methodologySyntheticText')}
             </p>
           </section>

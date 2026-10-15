@@ -354,7 +354,7 @@ export default function DemandIntelligence({
                 <>
                   <div className="stat-card-value">
                     {summaryMetrics.highestScore.toFixed(1)}
-                    <span style={{ fontSize: '0.9rem', color: 'var(--slate-500)', fontWeight: 500 }}>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                       /100
                     </span>
                   </div>
@@ -377,7 +377,7 @@ export default function DemandIntelligence({
               </div>
               <div className="stat-card-value" style={{ fontFamily: 'var(--font-mono)' }}>
                 {summaryMetrics.total > 0 ? summaryMetrics.avgScore.toFixed(1) : t('common.na', 'N/A')}
-                <span style={{ fontSize: '0.9rem', color: 'var(--slate-500)', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                   /100
                 </span>
               </div>
@@ -397,7 +397,7 @@ export default function DemandIntelligence({
                 <h2>{t('demand.tableTitle', 'Composite Demand Index Rankings')}</h2>
                 <p>{t('demand.tableSubtitle', 'Click any row to inspect component breakdown, raw signal metrics, and driver weights.')}</p>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {t('common.showingRecords', 'Showing {count} records', { count: sortedResults.length })}
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function DemandIntelligence({
                 <tbody>
                   {sortedResults.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--slate-500)' }}>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
                         {t('demand.noMatchingPairs', 'No district-occupation pairs match the selected filters.')}
                       </td>
                     </tr>
@@ -476,7 +476,7 @@ export default function DemandIntelligence({
                                 </span>
                               ))
                             ) : (
-                              <span style={{ fontSize: '0.72rem', color: 'var(--slate-400)' }}>{t('demand.standardBaseline', 'Standard baseline')}</span>
+                              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t('demand.standardBaseline', 'Standard baseline')}</span>
                             )}
                           </td>
                           <td style={{ textAlign: 'center' }}>
@@ -486,9 +486,9 @@ export default function DemandIntelligence({
                               style={{
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
-                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
+                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--border-subtle)',
                                 backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
-                                color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
+                                color: isSelected ? 'var(--teal-800)' : 'var(--text-secondary)',
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -682,16 +682,16 @@ export default function DemandIntelligence({
                 </div>
 
                 {/* Explanatory Factors & Provenance */}
-                <div style={{ background: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '0.4rem' }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
                     {t('demand.driversHeader', 'Key Explanatory Drivers for this Occupation')}
                   </h4>
-                  <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8rem', color: 'var(--slate-700)', lineHeight: 1.6 }}>
+                  <ul style={{ paddingLeft: '1.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {selectedItem.key_drivers?.map((driver, kIdx) => (
                       <li key={kIdx}>{formatDemandDriver(driver, isHindi)}</li>
                     ))}
                   </ul>
-                  <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                  <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     <strong>{t('demand.provenanceLabel', 'Data Provenance:')}</strong>{' '}
                     {selectedItem.is_synthetic ? t('demand.syntheticPilot', 'Synthetic Pilot Observation') : t('demand.adminSignal', 'Validated Administrative Signal')} • {t('demand.missingSignalsLabel', 'Missing Signals:')}{' '}
                     {selectedItem.missing_signals?.length === 0 ? t('demand.noneComplete', 'None (100% complete)') : selectedItem.missing_signals.join(', ')}

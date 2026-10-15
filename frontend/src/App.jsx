@@ -439,6 +439,7 @@ export default function App() {
                   sectorFilter={sectorFilter}
                   onNavigate={handleNavigate}
                   onNavigateWithContext={handleNavigateWithContext}
+                  onOpenCopilot={handleOpenCopilot}
                 />
               )}
             </ErrorBoundary>

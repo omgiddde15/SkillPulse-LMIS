@@ -62,19 +62,19 @@ export default function OccupationsExplorer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="briefcase" size={20} /></span>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {t('occupations.title', 'Occupational Taxonomy & Registry')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 9 {isHindi ? 'मानक व्यवसाय' : 'Standard Occupations'} • 3 {isHindi ? 'क्षेत्र' : 'Sectors'}
               </span>
             </div>
-            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--slate-600)', maxWidth: '720px' }}>
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '720px' }}>
               {t(
                 'occupations.subtitle',
                 'Standardised 9 pilot occupations mapped to National Classification of Occupations (NCO) and Qualification Packs (QP).'
@@ -93,7 +93,7 @@ export default function OccupationsExplorer() {
                 fontSize: '0.78rem',
                 padding: '0.4rem 0.65rem',
                 borderRadius: '6px',
-                border: '1px solid var(--slate-300)',
+                border: '1px solid var(--border-strong)',
                 backgroundColor: 'var(--bg-input)',
                 color: 'var(--text-primary)',
                 width: '180px',
@@ -102,7 +102,7 @@ export default function OccupationsExplorer() {
             <select
               value={selectedSector}
               onChange={(e) => setSelectedSector(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
+              style={{ fontSize: '0.78rem', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
               <option value="IT/ITeS">IT/ITeS</option>
@@ -114,10 +114,10 @@ export default function OccupationsExplorer() {
       </div>
 
       {/* Main Table Card */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', overflowX: 'auto', boxShadow: 'var(--shadow-sm)' }}>
+        <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
           <thead>
-            <tr style={{ backgroundColor: 'var(--slate-50)', borderBottom: '1px solid var(--slate-200)', color: 'var(--slate-600)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <tr style={{ backgroundColor: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               <th style={{ padding: '0.75rem 1rem' }}>ID & Title</th>
               <th style={{ padding: '0.75rem 1rem' }}>Sector & Trade</th>
               <th style={{ padding: '0.75rem 1rem' }}>NCO-2015 Code</th>
@@ -131,37 +131,37 @@ export default function OccupationsExplorer() {
               <tr
                 key={occ.occupation_id}
                 style={{
-                  borderBottom: '1px solid var(--slate-100)',
-                  backgroundColor: idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--slate-50)',
+                  borderBottom: '1px solid var(--border-subtle)',
+                  backgroundColor: idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-subtle)',
                   transition: 'background-color 0.15s',
                 }}
               >
                 {/* ID & Title */}
                 <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ fontWeight: 700, color: 'var(--slate-900)' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
                     {getOccupationDisplayName(occ.occupation_title, isHindi)}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                     {occ.occupation_id}
                   </div>
                 </td>
 
                 {/* Sector & Trade */}
                 <td style={{ padding: '0.85rem 1rem' }}>
-                  <span style={{ display: 'inline-block', fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--bg-subtle)', color: 'var(--slate-700)', fontWeight: 600, border: '1px solid var(--slate-200)', marginBottom: '0.2rem' }}>
+                  <span style={{ display: 'inline-block', fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-primary)', fontWeight: 600, border: '1px solid var(--border-subtle)', marginBottom: '0.2rem' }}>
                     {getSectorDisplayName(occ.sector, isHindi)}
                   </span>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--slate-600)' }}>{occ.trade}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{occ.trade}</div>
                 </td>
 
                 {/* NCO-2015 Code */}
                 <td style={{ padding: '0.85rem 1rem' }}>
                   {occ.nco_code ? (
                     <div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--teal-800)', fontSize: '0.75rem', backgroundColor: 'var(--accent-soft-bg)', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid var(--accent-soft-border)' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent-soft-text)', fontSize: '0.75rem', backgroundColor: 'var(--accent-soft-bg)', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid var(--accent-soft-border)' }}>
                         {occ.nco_code}
                       </span>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.2rem' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
                         {occ.nco_title}
                       </div>
                     </div>
@@ -179,7 +179,7 @@ export default function OccupationsExplorer() {
                       <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--status-supply-text)', fontSize: '0.75rem', backgroundColor: 'var(--status-supply-bg)', padding: '0.15rem 0.45rem', borderRadius: '4px', border: '1px solid var(--status-supply-border)' }}>
                         {occ.qp_code}
                       </span>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.2rem' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
                         {occ.qp_title}
                       </div>
                     </div>
@@ -193,7 +193,7 @@ export default function OccupationsExplorer() {
                 {/* NSQF Level */}
                 <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
                   {occ.nsqf_level != null ? (
-                    <span style={{ display: 'inline-block', padding: '0.2rem 0.55rem', borderRadius: '100px', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--slate-300)', fontWeight: 800, fontSize: '0.75rem', color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                    <span style={{ display: 'inline-block', padding: '0.2rem 0.55rem', borderRadius: '100px', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-strong)', fontWeight: 800, fontSize: '0.75rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                       Level {occ.nsqf_level}
                     </span>
                   ) : (
@@ -207,9 +207,9 @@ export default function OccupationsExplorer() {
                     type="button"
                     onClick={() => setSelectedOccupation(occ)}
                     style={{
-                      border: '1px solid var(--slate-300)',
+                      border: '1px solid var(--border-strong)',
                       backgroundColor: 'var(--bg-surface)',
-                      color: 'var(--slate-700)',
+                      color: 'var(--text-primary)',
                       padding: '0.25rem 0.55rem',
                       borderRadius: '4px',
                       fontSize: '0.72rem',
@@ -237,19 +237,19 @@ export default function OccupationsExplorer() {
             boxShadow: 'var(--shadow-md)',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
             <div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--teal-700)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
                 {isHindi ? 'व्यवसाय विवरण' : 'Taxonomy Record Inspection'}
               </span>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0.2rem 0 0 0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0 0 0' }}>
                 {getOccupationDisplayName(selectedOccupation.occupation_title, isHindi)} ({selectedOccupation.occupation_id})
               </h3>
             </div>
             <button
               type="button"
               onClick={() => setSelectedOccupation(null)}
-              style={{ border: 'none', background: 'none', fontSize: '1.1rem', cursor: 'pointer', color: 'var(--slate-400)' }}
+              style={{ border: 'none', background: 'none', fontSize: '1.1rem', cursor: 'pointer', color: 'var(--text-muted)' }}
             >
               ✕
             </button>
@@ -257,24 +257,24 @@ export default function OccupationsExplorer() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', fontSize: '0.78rem' }}>
             <div>
-              <span style={{ color: 'var(--slate-500)', display: 'block', marginBottom: '0.2rem' }}>Sector & Trade:</span>
-              <strong style={{ color: 'var(--slate-800)' }}>{selectedOccupation.sector} • {selectedOccupation.trade}</strong>
+              <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.2rem' }}>Sector & Trade:</span>
+              <strong style={{ color: 'var(--text-primary)' }}>{selectedOccupation.sector} • {selectedOccupation.trade}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--slate-500)', display: 'block', marginBottom: '0.2rem' }}>NCO-2015 Classification:</span>
-              <strong style={{ color: 'var(--slate-800)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.2rem' }}>NCO-2015 Classification:</span>
+              <strong style={{ color: 'var(--text-primary)' }}>
                 {selectedOccupation.nco_code ? `${selectedOccupation.nco_code} (${selectedOccupation.nco_title})` : (isHindi ? 'अपुष्ट (मैप नहीं किया गया)' : 'Unverified (Not mapped)')}
               </strong>
             </div>
             <div>
-              <span style={{ color: 'var(--slate-500)', display: 'block', marginBottom: '0.2rem' }}>Qualification Pack (QP):</span>
-              <strong style={{ color: 'var(--slate-800)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.2rem' }}>Qualification Pack (QP):</span>
+              <strong style={{ color: 'var(--text-primary)' }}>
                 {selectedOccupation.qp_code ? `${selectedOccupation.qp_code} (${selectedOccupation.qp_title})` : 'N/A'}
               </strong>
             </div>
             <div>
-              <span style={{ color: 'var(--slate-500)', display: 'block', marginBottom: '0.2rem' }}>NSQF Framework Level:</span>
-              <strong style={{ color: 'var(--teal-700)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.2rem' }}>NSQF Framework Level:</span>
+              <strong style={{ color: 'var(--accent-primary)' }}>
                 {selectedOccupation.nsqf_level != null ? `NSQF Level ${selectedOccupation.nsqf_level}` : 'Unassigned'}
               </strong>
             </div>

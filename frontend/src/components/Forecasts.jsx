@@ -449,7 +449,7 @@ export default function Forecasts({
     if (lower == null || point == null || upper == null) {
       return (
         <div className="interval-visualizer">
-          <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textAlign: 'center' }}>
             {isHindi ? 'प्रेडिक्शन इंटरवल उपलब्ध नहीं' : 'Prediction interval unavailable'}
           </div>
         </div>
@@ -477,7 +477,7 @@ export default function Forecasts({
           <span>
             {isHindi ? 'निचली (80%):' : 'Lower (80%):'} {isPostings ? Math.round(lower) : Number(lower).toFixed(1)}
           </span>
-          <strong style={{ color: isPostings ? 'var(--teal-800)' : 'var(--slate-800)' }}>
+          <strong style={{ color: isPostings ? 'var(--teal-800)' : 'var(--text-primary)' }}>
             {isHindi ? 'बिंदु अनुमान:' : 'Point Forecast:'} {isPostings ? Math.round(point) : Number(point).toFixed(1)}
           </strong>
           <span>
@@ -485,7 +485,7 @@ export default function Forecasts({
           </span>
         </div>
 
-        <div className="interval-range-track" style={{ position: 'relative', height: '10px', backgroundColor: 'var(--slate-200)', borderRadius: '9999px', overflow: 'visible', margin: '0.45rem 0' }}>
+        <div className="interval-range-track" style={{ position: 'relative', height: '10px', backgroundColor: 'var(--border-subtle)', borderRadius: '9999px', overflow: 'visible', margin: '0.45rem 0' }}>
           {/* 80% Confidence Interval Fill */}
           <div
             className="interval-range-fill"
@@ -538,7 +538,7 @@ export default function Forecasts({
           )}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: 'var(--slate-500)', marginTop: '0.1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
           {observed != null && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#f59e0b', borderRadius: '2px' }}></span>
@@ -689,7 +689,7 @@ export default function Forecasts({
               </div>
               <div className="stat-card-value" style={{ color: 'var(--teal-800)' }}>
                 {summaryMetrics.validCount}
-                <span style={{ fontSize: '0.9rem', color: 'var(--slate-500)', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                   /{summaryMetrics.total}
                 </span>
               </div>
@@ -726,7 +726,7 @@ export default function Forecasts({
                 <>
                   <div className="stat-card-value">
                     {summaryMetrics.highestDemandItem.projected_mismatch?.forecast_demand_rank?.toFixed(1) ?? 'N/A'}
-                    <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)', fontWeight: 500 }}> {isHindi ? 'पर्सेंटाइल' : 'percentile'}</span>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}> {isHindi ? 'पर्सेंटाइल' : 'percentile'}</span>
                   </div>
                   <div className="stat-card-meta">
                     {summaryMetrics.highestDemandItem.occupation_title}
@@ -749,7 +749,7 @@ export default function Forecasts({
                 <p>{t('forecasts.tableSubtitle', 'Multi-horizon predictive mismatch indicators combining regression and time-series extrapolation.')}</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {t('common.showingRecords', 'Showing {count} records', { count: sortedResults.length })}
                 </span>
                 <button
@@ -813,7 +813,7 @@ export default function Forecasts({
                 <tbody>
                   {sortedResults.length === 0 ? (
                     <tr>
-                      <td colSpan={10} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--slate-500)' }}>
+                      <td colSpan={10} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
                         {t('common.noData', 'No forecast records match the selected filter criteria.')}
                       </td>
                     </tr>
@@ -849,9 +849,9 @@ export default function Forecasts({
                           </td>
                           <td style={{ textAlign: 'right' }}>
                             {row.demand_forecast?.status === 'valid' ? (
-                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--slate-900)' }}>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text-primary)' }}>
                                 {row.demand_forecast.point_forecast_integer}
-                                <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontWeight: 400 }}> {isHindi ? 'विज्ञापन' : 'jobs'}</span>
+                                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 400 }}> {isHindi ? 'विज्ञापन' : 'jobs'}</span>
                               </span>
                             ) : (
                               <span style={{ fontSize: '0.72rem', color: '#ea580c' }}>{isHindi ? 'अपर्याप्त इतिहास' : 'Insufficient history'}</span>
@@ -859,9 +859,9 @@ export default function Forecasts({
                           </td>
                           <td style={{ textAlign: 'right' }}>
                             {row.supply_forecast?.status === 'valid' ? (
-                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--slate-700)' }}>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-secondary)' }}>
                                 {row.supply_forecast.point_forecast?.toFixed(1)}
-                                <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontWeight: 400 }}> {isHindi ? 'प्रमाणित' : 'certs'}</span>
+                                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 400 }}> {isHindi ? 'प्रमाणित' : 'certs'}</span>
                               </span>
                             ) : (
                               <span style={{ fontSize: '0.72rem', color: '#ea580c' }}>{isHindi ? 'अपर्याप्त इतिहास' : 'Insufficient history'}</span>
@@ -900,9 +900,9 @@ export default function Forecasts({
                               style={{
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
-                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
+                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--border-subtle)',
                                 backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
-                                color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
+                                color: isSelected ? 'var(--teal-800)' : 'var(--text-secondary)',
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -969,7 +969,7 @@ export default function Forecasts({
                               <span className="model-badge">
                                 {isHindi ? 'मॉडल:' : 'Model:'} {getModelLabel(selectedItem.demand_forecast?.model_selected)}
                               </span>
-                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--slate-700)' }}>
+                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>
                                 +{selectedItem.horizon_months}M ({selectedItem.target_period})
                               </span>
                             </div>
@@ -982,16 +982,16 @@ export default function Forecasts({
                         </div>
 
                         {/* Observed History vs Forecast Point Side-by-Side Comparison */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                           <div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
                               {t('forecasts.observedHistorySynthetic', 'Observed History (Synthetic)')}
                             </div>
-                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                               {selectedItem.demand_forecast?.last_observed_value ?? 'N/A'}
-                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-500)' }}> {isHindi ? 'विज्ञापन' : 'postings'}</span>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}> {isHindi ? 'विज्ञापन' : 'postings'}</span>
                             </div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-400)' }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)' }}>
                               {isHindi ? 'आधार अवधि:' : 'Base:'} {selectedItem.base_period}
                             </div>
                           </div>
@@ -1011,7 +1011,7 @@ export default function Forecasts({
                         </div>
 
                         <div className="component-value-row" style={{ marginTop: '0.2rem' }}>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                             {isHindi ? 'क्रॉस-सेक्शनल पर्सेंटाइल:' : 'Cross-Sectional Rank:'}
                           </span>
                           <span className="component-score-val">
@@ -1031,11 +1031,11 @@ export default function Forecasts({
                         <div className="component-subtext" style={{ marginTop: '0.4rem' }}>
                           <strong>{isHindi ? 'बैकटेस्टिंग त्रुटि:' : 'Backtesting Error:'}</strong> MAE = {selectedItem.demand_forecast?.backtest_mae !== null && selectedItem.demand_forecast?.backtest_mae !== undefined ? selectedItem.demand_forecast.backtest_mae.toFixed(2) : 'N/A'} {isHindi ? 'विज्ञापन' : 'postings'} • WAPE = {selectedItem.demand_forecast?.backtest_wape !== null && selectedItem.demand_forecast?.backtest_wape !== undefined ? `${(selectedItem.demand_forecast.backtest_wape * 100).toFixed(1)}%` : 'N/A'}
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-600)', fontStyle: 'italic', marginTop: '0.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: '0.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
                           <Icon name="info" size={13} style={{ marginTop: '0.1rem' }} />
                           <span>{t('forecasts.predictionIntervalNote', 'The 80% prediction interval represents statistical model uncertainty based on backtest residuals, not a guaranteed policy or market outcome.')}</span>
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--slate-400)', marginTop: '0.15rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
                           <em>{selectedItem.demand_forecast?.interval_disclaimer || 'Normal error distribution approximation on out-of-sample RMSE.'}</em>
                         </div>
                       </div>
@@ -1049,7 +1049,7 @@ export default function Forecasts({
                               <span className="model-badge">
                                 {isHindi ? 'मॉडल:' : 'Model:'} {getModelLabel(selectedItem.supply_forecast?.model_selected)}
                               </span>
-                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--slate-700)' }}>
+                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>
                                 +{selectedItem.horizon_months}M ({selectedItem.target_period})
                               </span>
                             </div>
@@ -1062,36 +1062,36 @@ export default function Forecasts({
                         </div>
 
                         {/* Observed History vs Forecast Point Side-by-Side Comparison */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--slate-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.5rem 0', padding: '0.5rem 0.65rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                           <div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
                               {t('forecasts.observedHistorySynthetic', 'Observed History (Synthetic)')}
                             </div>
-                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                               {selectedItem.supply_forecast?.last_observed_value != null ? selectedItem.supply_forecast.last_observed_value.toFixed(1) : 'N/A'}
-                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-500)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
                             </div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-400)' }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-muted)' }}>
                               {isHindi ? 'आधार अवधि:' : 'Base:'} {selectedItem.base_period}
                             </div>
                           </div>
 
                           <div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-800)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
                               {t('forecasts.pointForecastLabel', 'Point Forecast')}
                             </div>
-                            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                               {selectedItem.supply_forecast?.point_forecast !== null && selectedItem.supply_forecast?.point_forecast !== undefined ? selectedItem.supply_forecast.point_forecast.toFixed(1) : 'N/A'}
-                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--slate-600)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-secondary)' }}> {isHindi ? 'उम्मीदवार' : 'candidates'}</span>
                             </div>
-                            <div style={{ fontSize: '0.66rem', color: 'var(--slate-600)' }}>
+                            <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)' }}>
                               {isHindi ? 'लक्षित अवधि:' : 'Target:'} {selectedItem.target_period} (+{selectedItem.horizon_months}M)
                             </div>
                           </div>
                         </div>
 
                         <div className="component-value-row" style={{ marginTop: '0.2rem' }}>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                             {isHindi ? 'क्रॉस-सेक्शनल पर्सेंटाइल:' : 'Cross-Sectional Rank:'}
                           </span>
                           <span className="component-score-val">
@@ -1111,11 +1111,11 @@ export default function Forecasts({
                         <div className="component-subtext" style={{ marginTop: '0.4rem' }}>
                           <strong>{isHindi ? 'बैकटेस्टिंग त्रुटि:' : 'Backtesting Error:'}</strong> MAE = {selectedItem.supply_forecast?.backtest_mae !== null && selectedItem.supply_forecast?.backtest_mae !== undefined ? selectedItem.supply_forecast.backtest_mae.toFixed(2) : 'N/A'} {isHindi ? 'प्रमाणित' : 'certs'} • WAPE = {selectedItem.supply_forecast?.backtest_wape !== null && selectedItem.supply_forecast?.backtest_wape !== undefined ? `${(selectedItem.supply_forecast.backtest_wape * 100).toFixed(1)}%` : 'N/A'}
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-600)', fontStyle: 'italic', marginTop: '0.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: '0.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
                           <Icon name="info" size={13} style={{ marginTop: '0.1rem' }} />
                           <span>{t('forecasts.predictionIntervalNote', 'The 80% prediction interval represents statistical model uncertainty based on backtest residuals, not a guaranteed policy or market outcome.')}</span>
                         </div>
-                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--slate-400)', marginTop: '0.15rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
                           <em>{selectedItem.supply_forecast?.interval_disclaimer || 'Normal error distribution approximation on out-of-sample RMSE.'}</em>
                         </div>
                       </div>
@@ -1126,7 +1126,7 @@ export default function Forecasts({
                           <div>
                             <span className="component-name">{isHindi ? '3. प्रशिक्षण-से-विज्ञापन मानक अनुपात' : '3. Training-to-Posting Benchmark Ratio'}</span>
                             <div style={{ marginTop: '0.2rem' }}>
-                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--slate-700)' }}>
+                              <span className="model-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>
                                 {isHindi ? 'वर्णनात्मक मानक अनुपात' : 'Descriptive Benchmark Ratio'}
                               </span>
                             </div>
@@ -1149,7 +1149,7 @@ export default function Forecasts({
                           </span>
                         </div>
 
-                        <div className="component-subtext" style={{ fontSize: '0.74rem', color: 'var(--slate-600)', marginTop: '0.35rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
                           <strong>{isHindi ? 'गणना सूत्र:' : 'Calculation:'}</strong>{' '}
                           {selectedItem.demand_forecast?.point_forecast_integer && selectedItem.demand_forecast.point_forecast_integer > 0 && selectedItem.supply_forecast?.point_forecast !== null && selectedItem.supply_forecast?.point_forecast !== undefined ? (
                             <code>
@@ -1160,7 +1160,7 @@ export default function Forecasts({
                           )}
                         </div>
 
-                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--slate-500)', marginTop: '0.35rem', lineHeight: 1.45, display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
+                        <div className="component-subtext" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.35rem', lineHeight: 1.45, display: 'flex', alignItems: 'flex-start', gap: '0.35rem' }}>
                           <Icon name="alert-triangle" size={13} style={{ marginTop: '0.1rem' }} />
                           <em>
                             <strong>{isHindi ? 'केवल वर्णनात्मक मानक:' : 'Descriptive Benchmark Only:'}</strong> {isHindi
@@ -1174,7 +1174,7 @@ export default function Forecasts({
                     {/* Interactive Full Time-Series Observation & Forecast Trend Chart */}
                     <div style={{ marginTop: '1.25rem', marginBottom: '1.25rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--slate-800)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                           <Icon name="trending-up" size={16} />
                           <span>{isHindi ? 'विस्तृत समय-श्रृंखला रुझान एवं अनिश्चितता चार्ट' : 'Time-Series Observation & Horizon Forecast Trend'}</span>
                         </h4>
@@ -1184,7 +1184,7 @@ export default function Forecasts({
                             style={{
                               border: 'none',
                               backgroundColor: activeTrendSeries === 'demand' ? 'var(--bg-surface)' : 'transparent',
-                              color: activeTrendSeries === 'demand' ? 'var(--teal-800)' : 'var(--slate-600)',
+                              color: activeTrendSeries === 'demand' ? 'var(--teal-800)' : 'var(--text-secondary)',
                               fontWeight: activeTrendSeries === 'demand' ? 700 : 500,
                               boxShadow: activeTrendSeries === 'demand' ? 'var(--shadow-sm)' : 'none',
                               padding: '0.25rem 0.65rem',
@@ -1201,7 +1201,7 @@ export default function Forecasts({
                             style={{
                               border: 'none',
                               backgroundColor: activeTrendSeries === 'supply' ? 'var(--bg-surface)' : 'transparent',
-                              color: activeTrendSeries === 'supply' ? 'var(--slate-900)' : 'var(--slate-600)',
+                              color: activeTrendSeries === 'supply' ? 'var(--text-primary)' : 'var(--text-secondary)',
                               fontWeight: activeTrendSeries === 'supply' ? 700 : 500,
                               boxShadow: activeTrendSeries === 'supply' ? 'var(--shadow-sm)' : 'none',
                               padding: '0.25rem 0.65rem',
@@ -1256,11 +1256,11 @@ export default function Forecasts({
                     </div>
 
                     {/* Mismatch & Methodological Summary Callout */}
-                    <div style={{ background: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
-                      <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: '0.35rem' }}>
+                    <div style={{ background: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                      <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
                         {isHindi ? 'प्रत्याशित क्रॉस-सेक्शनल पर्सेंटाइल संरेखण' : 'Projected Cross-Sectional Percentile Alignment'}
                       </h4>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--slate-700)', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                         {isHindi ? (
                           <>
                             {selectedItem.horizon_months}-माह के क्षितिज ({selectedItem.target_period}) पर, प्रत्याशित भर्ती मांग <strong>{selectedItem.projected_mismatch?.forecast_demand_rank !== null && selectedItem.projected_mismatch?.forecast_demand_rank !== undefined ? selectedItem.projected_mismatch.forecast_demand_rank.toFixed(1) : 'N/A'} पर्सेंटाइल</strong> पर है, जबकि प्रत्याशित प्रमाणीकरण थ्रूपुट <strong>{selectedItem.projected_mismatch?.forecast_supply_rank !== null && selectedItem.projected_mismatch?.forecast_supply_rank !== undefined ? selectedItem.projected_mismatch.forecast_supply_rank.toFixed(1) : 'N/A'} पर्सेंटाइल</strong> पर है। परिणामी प्रत्याशित सापेक्ष असंतुलन स्कोर <strong>{formatMismatch(selectedItem.projected_mismatch?.projected_mismatch_score)} अंक</strong> ({selectedItem.projected_mismatch?.classification}) है।
@@ -1271,10 +1271,10 @@ export default function Forecasts({
                           </>
                         )}
                       </p>
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: 'var(--slate-500)' }}>
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                         <strong>{isHindi ? 'पूर्णांकन नियम:' : 'Rounding Rule:'}</strong> {isHindi ? 'जॉब विज्ञापन संख्याओं को मध्य-बिंदु पूर्णांकन का उपयोग करके निकटतम गैर-ऋणात्मक पूर्णांकों में पूर्णांकित किया जाता है।' : 'Job posting counts are rounded to nearest non-negative integers using midpoint rounding. Candidate throughput is expressed as an expected continuous candidate count (1 decimal place).'}
                       </div>
-                      <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--slate-600)', background: 'var(--bg-surface)', padding: '0.45rem', borderRadius: '4px', border: '1px solid var(--slate-200)' }}>
+                      <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--text-secondary)', background: 'var(--bg-surface)', padding: '0.45rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
                         <strong>{isHindi ? 'मेट्रिक दायरा:' : 'Metric Scope:'}</strong> {isHindi ? 'प्रत्याशित असंतुलन एकल-मात्रा पूर्वानुमान श्रृंखला (विज्ञापन बनाम उम्मीदवार आउटपुट) के बीच भविष्य के रैंक अंतर का मूल्यांकन करता है।' : 'Projected mismatch evaluates future rank differences between single-quantity forecast series (postings vs candidate throughput). It does not include wage benchmarks or employer diversity factors present in current-period Gap Analysis.'}
                       </div>
                     </div>

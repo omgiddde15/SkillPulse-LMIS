@@ -526,12 +526,12 @@ export default function SeatSimulator({
 
       {/* Simulator Parameter Configuration Form */}
       <div className="simulator-config-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--slate-200)', paddingBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               {t('simulator.parametersHeader')}
             </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               {t('simulator.parametersDesc')}
             </p>
           </div>
@@ -550,7 +550,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-base-period" className="simulator-label">
               <span>{t('simulator.basePeriod')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.trailingCohorts')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.trailingCohorts')}</span>
             </label>
             <select
               id="sim-base-period"
@@ -574,7 +574,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-horizon" className="simulator-label">
               <span>{t('common.horizon')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.evaluationWindow')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.evaluationWindow')}</span>
             </label>
             <select
               id="sim-horizon"
@@ -593,7 +593,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-state" className="simulator-label">
               <span>{t('simulator.stateMission')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.geography')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.geography')}</span>
             </label>
             <select
               id="sim-state"
@@ -614,7 +614,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-district" className="simulator-label">
               <span>{t('common.district')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.localMarket')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.localMarket')}</span>
             </label>
             <select
               id="sim-district"
@@ -635,7 +635,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-sector" className="simulator-label">
               <span>{t('common.sector')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.industry')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.industry')}</span>
             </label>
             <select
               id="sim-sector"
@@ -656,7 +656,7 @@ export default function SeatSimulator({
           <div className="simulator-field">
             <label htmlFor="sim-occupation" className="simulator-label">
               <span>{t('simulator.occupationTrade')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.curriculum')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.curriculum')}</span>
             </label>
             <select
               id="sim-occupation"
@@ -677,7 +677,7 @@ export default function SeatSimulator({
           <div className="simulator-field" style={{ gridColumn: 'span 2' }}>
             <label htmlFor="sim-seats" className="simulator-label">
               <span>{t('simulator.proposedSeatsLabel')}</span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{t('simulator.seatsRange')}</span>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t('simulator.seatsRange')}</span>
             </label>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <input
@@ -711,21 +711,21 @@ export default function SeatSimulator({
             <span className="preview-tag">
               <Icon name="pin" size={13} /> <strong>{currentDistrictObj ? (isHindi ? getDistrictDisplayName(currentDistrictObj) : currentDistrictObj.name) : selectedDistrict}</strong> ({currentDistrictObj ? (isHindi ? getStateDisplayName({ code: currentDistrictObj.state, name: currentDistrictObj.stateName }) : currentDistrictObj.stateName) : selectedState})
             </span>
-            <span style={{ color: 'var(--slate-300)' }}>|</span>
+            <span style={{ color: 'var(--border-strong)' }}>|</span>
             <span className="preview-tag">
               <Icon name="briefcase" size={13} /> <strong>{currentOccupationObj ? currentOccupationObj.title : selectedOccupation}</strong> ({currentOccupationObj ? currentOccupationObj.trade : ''})
             </span>
-            <span style={{ color: 'var(--slate-300)' }}>|</span>
+            <span style={{ color: 'var(--border-strong)' }}>|</span>
             <span className="preview-tag">
               <Icon name="calendar" size={13} /> {t('simulator.basePeriod')}: <strong>{basePeriod}</strong> &rarr; {t('simulator.targetPeriod')}: <strong>{projectedTargetMonth}</strong> (+{horizonMonths}m)
             </span>
-            <span style={{ color: 'var(--slate-300)' }}>|</span>
+            <span style={{ color: 'var(--border-strong)' }}>|</span>
             <span className="preview-tag">
               <Icon name="target" size={13} /> {t('simulator.proposedIntake')}: <strong>{proposedSeats || 0}</strong> {t('simulator.seatsUnits', { count: '' }).trim()}
             </span>
           </div>
 
-          <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             {t('simulator.code')} {selectedDistrict} / {selectedOccupation}
           </div>
         </div>
@@ -783,7 +783,7 @@ export default function SeatSimulator({
           <div className="scenario-meta-bar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <span className="scenario-id-tag">ID: {currentScenario.scenario_id}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--slate-600)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {t('simulator.metaEvaluated', { target: currentScenario.parameters?.target_period, h: currentScenario.parameters?.horizon_months })}
               </span>
               <span className="badge-coming-soon" style={{ backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success-text)', border: '1px solid var(--status-success-border)' }}>
@@ -792,7 +792,7 @@ export default function SeatSimulator({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 <span>{t('simulator.scalingRatio', { ratio: currentScenario.proposed_seat_allocation?.scaling_ratio?.toFixed(4) })}</span>
               </div>
               <button
@@ -982,10 +982,10 @@ export default function SeatSimulator({
                   </tr>
                   <tr>
                     <td className="col-label">{t('simulator.thBaselineMismatchScore')}</td>
-                    <td className="col-val" style={{ color: currentScenario.baseline_projection?.mismatch_score >= 15 ? '#c2410c' : currentScenario.baseline_projection?.mismatch_score <= -15 ? '#1d4ed8' : 'var(--slate-800)' }}>
+                    <td className="col-val" style={{ color: currentScenario.baseline_projection?.mismatch_score >= 15 ? '#c2410c' : currentScenario.baseline_projection?.mismatch_score <= -15 ? '#1d4ed8' : 'var(--text-primary)' }}>
                       {currentScenario.baseline_projection?.mismatch_score >= 0 ? '+' : ''}
                       {currentScenario.baseline_projection?.mismatch_score?.toFixed(2)} {t('common.pts')}
-                      <span style={{ fontSize: '0.72rem', color: 'var(--slate-500)', display: 'block' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>
                         ({isHindi ? 'मांग रैंक' : 'Demand Rank'} {currentScenario.baseline_projection?.forecast_demand_rank?.toFixed(1)} − {isHindi ? 'आपूर्ति रैंक' : 'Supply Rank'} {currentScenario.baseline_projection?.forecast_supply_rank?.toFixed(1)})
                       </span>
                     </td>
@@ -1044,7 +1044,7 @@ export default function SeatSimulator({
                   </tr>
                   <tr>
                     <td className="col-label">{t('simulator.thProjectedMismatchScore')}</td>
-                    <td className="col-val" style={{ color: currentScenario.scenario_projection?.scenario_mismatch_score >= 15 ? '#c2410c' : currentScenario.scenario_projection?.scenario_mismatch_score <= -15 ? '#1d4ed8' : 'var(--slate-800)' }}>
+                    <td className="col-val" style={{ color: currentScenario.scenario_projection?.scenario_mismatch_score >= 15 ? '#c2410c' : currentScenario.scenario_projection?.scenario_mismatch_score <= -15 ? '#1d4ed8' : 'var(--text-primary)' }}>
                       {currentScenario.scenario_projection?.scenario_mismatch_score >= 0 ? '+' : ''}
                       {currentScenario.scenario_projection?.scenario_mismatch_score?.toFixed(2)} {t('common.pts')}
                     </td>
@@ -1090,11 +1090,11 @@ export default function SeatSimulator({
 
             <div className="card-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {/* Sliders Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', backgroundColor: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', backgroundColor: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                 {/* Slider 1: k (posting-to-opening multiplier) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem' }}>
-                    <label htmlFor="k-slider" style={{ fontWeight: 700, color: 'var(--slate-800)' }}>
+                    <label htmlFor="k-slider" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
                       {t('simulator.sliderK')}
                     </label>
                     <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--teal-800)', backgroundColor: 'var(--bg-surface)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid var(--teal-200)' }}>
@@ -1111,12 +1111,12 @@ export default function SeatSimulator({
                     onChange={(e) => setKMultiplier(parseFloat(e.target.value))}
                     style={{ accentColor: 'var(--teal-600)', width: '100%', cursor: 'pointer' }}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                     <span>{t('simulator.sliderKLow')}</span>
                     <span>{t('simulator.sliderKMid')}</span>
                     <span>{t('simulator.sliderKHigh')}</span>
                   </div>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--slate-600)', margin: '0.2rem 0 0 0', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0', lineHeight: 1.4 }}>
                     {t('simulator.sliderKNote', { postings: scenarioCoverage?.postings ?? 'N/A', openings: scenarioCoverage?.estimatedOpenings ?? 'N/A' })}
                   </p>
                 </div>
@@ -1124,7 +1124,7 @@ export default function SeatSimulator({
                 {/* Slider 2: alpha (local availability factor) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem' }}>
-                    <label htmlFor="alpha-slider" style={{ fontWeight: 700, color: 'var(--slate-800)' }}>
+                    <label htmlFor="alpha-slider" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
                       {t('simulator.sliderAlpha')}
                     </label>
                     <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--teal-800)', backgroundColor: 'var(--bg-surface)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid var(--teal-200)' }}>
@@ -1141,12 +1141,12 @@ export default function SeatSimulator({
                     onChange={(e) => setAlphaFactor(parseFloat(e.target.value))}
                     style={{ accentColor: 'var(--teal-600)', width: '100%', cursor: 'pointer' }}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                     <span>{t('simulator.sliderAlphaLow')}</span>
                     <span>70%</span>
                     <span>{t('simulator.sliderAlphaHigh')}</span>
                   </div>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--slate-600)', margin: '0.2rem 0 0 0', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0', lineHeight: 1.4 }}>
                     {t('simulator.sliderAlphaNote')}
                   </p>
                 </div>
@@ -1157,7 +1157,7 @@ export default function SeatSimulator({
                 {/* Metric 1: Estimated Openings */}
                 <div className="funnel-step" style={{ backgroundColor: 'var(--bg-surface)', textAlign: 'left', padding: '0.85rem' }}>
                   <span className="funnel-step-name">{t('simulator.covEstOpenings')}</span>
-                  <span className="funnel-step-rate" style={{ color: 'var(--slate-900)', fontSize: '1.25rem' }}>
+                  <span className="funnel-step-rate" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>
                     {scenarioCoverage?.estimatedOpenings !== null && scenarioCoverage?.estimatedOpenings !== undefined ? `${scenarioCoverage.estimatedOpenings}` : 'N/A'}
                   </span>
                   <span className="funnel-step-desc">
@@ -1168,7 +1168,7 @@ export default function SeatSimulator({
                 {/* Metric 2: Baseline Coverage */}
                 <div className="funnel-step" style={{ backgroundColor: 'var(--bg-surface)', textAlign: 'left', padding: '0.85rem' }}>
                   <span className="funnel-step-name">{t('simulator.covBaseline')}</span>
-                  <span className="funnel-step-rate" style={{ color: 'var(--slate-700)', fontSize: '1.25rem' }}>
+                  <span className="funnel-step-rate" style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>
                     {scenarioCoverage?.baselineCoveragePct !== null && scenarioCoverage?.baselineCoveragePct !== undefined ? `${scenarioCoverage.baselineCoveragePct.toFixed(1)}%` : 'N/A'}
                   </span>
                   <span className="funnel-step-desc">
@@ -1200,18 +1200,18 @@ export default function SeatSimulator({
               </div>
 
               {/* Descriptive Training-to-Posting Benchmark Ratio Sub-row */}
-              <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--slate-800)' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {t('simulator.benchmarkRatioHeader')}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.15rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
                     {t('simulator.benchmarkRatioSub')}
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontFamily: 'var(--font-mono)', fontSize: '0.8125rem' }}>
                   <div>
-                    <span style={{ color: 'var(--slate-500)', fontSize: '0.72rem' }}>{t('simulator.baselineLabel')} </span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>{t('simulator.baselineLabel')} </span>
                     <strong>{scenarioCoverage?.baselineBenchmarkRatio !== null && scenarioCoverage?.baselineBenchmarkRatio !== undefined ? `${scenarioCoverage.baselineBenchmarkRatio.toFixed(1)} ${t('simulator.candidatesPer100Postings')}` : 'N/A'}</strong>
                   </div>
                   <div>
@@ -1225,7 +1225,7 @@ export default function SeatSimulator({
               </div>
 
               {/* Guardrails and Disclaimers */}
-              <div style={{ fontSize: '0.72rem', color: 'var(--slate-600)', backgroundColor: 'var(--bg-subtle)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-200)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', backgroundColor: 'var(--bg-subtle)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', lineHeight: 1.5 }}>
                 <p style={{ margin: 0 }}>
                   {t('simulator.coverageCaveat')}
                 </p>
@@ -1280,12 +1280,12 @@ export default function SeatSimulator({
 
           {/* Section D: Comparative Visualizer Bars */}
           <div className="visual-comparison-panel">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--slate-200)', paddingBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {t('simulator.visualHeader')}
                 </h3>
-                <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {t('simulator.visualDesc')}
                 </p>
               </div>
@@ -1462,7 +1462,7 @@ export default function SeatSimulator({
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.35rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                   <span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#64748b', display: 'inline-block' }} />
                   <span>{t('simulator.legendBaseline')}: <strong>{currentScenario.baseline_projection?.mismatch_score?.toFixed(2)} {t('common.pts')}</strong> ({getClassificationLabel(currentScenario.baseline_projection?.classification)})</span>
@@ -1494,7 +1494,7 @@ export default function SeatSimulator({
                 <div>4. Supply Percentile Rank: Cross-sectional rank recalculated across all 54 pilot series</div>
                 <div>5. Projected Mismatch = Baseline Demand Rank (0–100) &minus; Scenario Supply Rank (0–100)</div>
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'var(--slate-500)', margin: 0 }}>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0 }}>
                 <strong>{t('simulator.calloutMethodology')}</strong> {currentScenario.methodology}
               </p>
             </div>
@@ -1512,7 +1512,7 @@ export default function SeatSimulator({
           </div>
 
           {/* Prototype Threshold Notice & Strategic Limitations */}
-          <div className="callout-box" style={{ borderLeftColor: 'var(--slate-400)', backgroundColor: 'var(--bg-surface)' }}>
+          <div className="callout-box" style={{ borderLeftColor: 'var(--border-strong)', backgroundColor: 'var(--bg-surface)' }}>
             <h4>{t('simulator.calloutThresholds')}</h4>
             <p style={{ marginBottom: '0.35rem' }}>
               {t('simulator.calloutThresholdsDesc')}
@@ -1523,7 +1523,7 @@ export default function SeatSimulator({
             <p style={{ marginBottom: '0.35rem' }}>
               <strong>{t('simulator.calloutDistinction')}</strong> {t('simulator.calloutDistinctionDesc')}
             </p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               <strong>{t('simulator.calloutLimitations')}</strong> {currentScenario.limitations}
             </p>
           </div>

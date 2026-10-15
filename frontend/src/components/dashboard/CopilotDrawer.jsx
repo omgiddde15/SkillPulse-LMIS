@@ -323,11 +323,11 @@ export default function CopilotDrawer({
         <div
           style={{
             padding: '1rem 1.25rem',
-            borderBottom: '1px solid var(--slate-200)',
+            borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
-            backgroundColor: 'var(--slate-50)',
+            backgroundColor: 'var(--bg-subtle)',
             flexShrink: 0,
           }}
         >
@@ -336,11 +336,11 @@ export default function CopilotDrawer({
               <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}>
                 <Icon name="compass" size={22} />
               </span>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {isHindi ? 'स्किलपल्स सारथी' : 'SkillPulse Saarthi'}
               </h2>
             </div>
-            <p style={{ margin: '0.2rem 0 0.35rem 0', fontSize: '0.72rem', color: 'var(--slate-600)', lineHeight: 1.3 }}>
+            <p style={{ margin: '0.2rem 0 0.35rem 0', fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>
               {isHindi
                 ? 'प्लेटफ़ॉर्म और श्रम बाज़ार विश्लेषण के लिए आपका मार्गदर्शक।'
                 : 'Your guide to the platform and labour-market intelligence.'}
@@ -360,7 +360,7 @@ export default function CopilotDrawer({
               >
                 DUAL-ENGINE ASSISTANT
               </span>
-              <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 Cycle {period}
               </span>
             </div>
@@ -372,10 +372,10 @@ export default function CopilotDrawer({
               onClick={handleResetConversation}
               style={{
                 background: 'none',
-                border: '1px solid var(--slate-300)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '4px',
                 fontSize: '0.72rem',
-                color: 'var(--slate-600)',
+                color: 'var(--text-secondary)',
                 cursor: 'pointer',
                 padding: '0.25rem 0.5rem',
                 fontWeight: 600,
@@ -396,7 +396,7 @@ export default function CopilotDrawer({
                 background: 'none',
                 border: 'none',
                 fontSize: '1.25rem',
-                color: 'var(--slate-400)',
+                color: 'var(--text-muted)',
                 cursor: 'pointer',
                 padding: '0.25rem',
                 lineHeight: 1,
@@ -448,8 +448,8 @@ export default function CopilotDrawer({
           {/* Quick Presets Section with Dual Category Switcher */}
           <div
             style={{
-              backgroundColor: 'var(--slate-50)',
-              border: '1px solid var(--slate-200)',
+              backgroundColor: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
               borderRadius: '8px',
               padding: '0.75rem',
             }}
@@ -465,11 +465,11 @@ export default function CopilotDrawer({
               onClick={() => setShowPresets((p) => !p)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-700)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
                   {isHindi ? 'त्वरित प्रश्न:' : 'Starter Inquiries:'}
                 </span>
               </div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                 {showPresets ? '▲' : '▼'}
               </span>
             </div>
@@ -482,7 +482,7 @@ export default function CopilotDrawer({
                     display: 'flex',
                     gap: '0.35rem',
                     marginBottom: '0.6rem',
-                    borderBottom: '1px solid var(--slate-200)',
+                    borderBottom: '1px solid var(--border-subtle)',
                     paddingBottom: '0.4rem',
                   }}
                 >
@@ -498,7 +498,7 @@ export default function CopilotDrawer({
                       fontSize: '0.7rem',
                       fontWeight: presetCategory === 'guide' ? 700 : 500,
                       backgroundColor: presetCategory === 'guide' ? 'var(--teal-600)' : 'transparent',
-                      color: presetCategory === 'guide' ? '#ffffff' : 'var(--slate-600)',
+                      color: presetCategory === 'guide' ? '#ffffff' : 'var(--text-muted)',
                       border: 'none',
                       cursor: 'pointer',
                       display: 'flex',
@@ -523,7 +523,7 @@ export default function CopilotDrawer({
                       fontSize: '0.7rem',
                       fontWeight: presetCategory === 'analytics' ? 700 : 500,
                       backgroundColor: presetCategory === 'analytics' ? 'var(--teal-600)' : 'transparent',
-                      color: presetCategory === 'analytics' ? '#ffffff' : 'var(--slate-600)',
+                      color: presetCategory === 'analytics' ? '#ffffff' : 'var(--text-muted)',
                       border: 'none',
                       cursor: 'pointer',
                       display: 'flex',
@@ -553,8 +553,8 @@ export default function CopilotDrawer({
                           fontSize: '0.72rem',
                           fontWeight: 500,
                           backgroundColor: 'var(--bg-elevated)',
-                          color: 'var(--slate-700)',
-                          border: '1px solid var(--slate-200)',
+                          color: 'var(--text-primary)',
+                          border: '1px solid var(--border-subtle)',
                           cursor: isLoading ? 'not-allowed' : 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -569,12 +569,12 @@ export default function CopilotDrawer({
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
-                          e.currentTarget.style.borderColor = 'var(--slate-200)';
+                          e.currentTarget.style.borderColor = 'var(--border-subtle)';
                         }}
                       >
                         <Icon name={inq.icon} size={13} />
                         <span style={{ flex: 1 }}>{label}</span>
-                        <span style={{ color: 'var(--slate-400)', fontSize: '0.75rem' }}>→</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>→</span>
                       </button>
                     );
                   })}
@@ -610,7 +610,7 @@ export default function CopilotDrawer({
                   >
                     {msg.content}
                   </div>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)', marginTop: '0.2rem', paddingRight: '0.25rem' }}>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem', paddingRight: '0.25rem' }}>
                     {msg.timestamp}
                   </span>
                 </div>
@@ -639,7 +639,7 @@ export default function CopilotDrawer({
                         ? 'var(--status-danger)'
                         : isGuide
                         ? 'var(--accent-soft-border)'
-                        : 'var(--slate-200)'
+                        : 'var(--border-subtle)'
                     }`,
                     borderRadius: '8px',
                     padding: '1.1rem',
@@ -671,7 +671,7 @@ export default function CopilotDrawer({
                       </span>
                     </div>
 
-                    <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
                       {msg.timestamp}
                     </span>
                   </div>
@@ -681,7 +681,7 @@ export default function CopilotDrawer({
                     style={{
                       fontSize: '0.94rem',
                       fontWeight: 700,
-                      color: 'var(--slate-900)',
+                      color: 'var(--text-primary)',
                       marginTop: 0,
                       marginBottom: '0.6rem',
                       lineHeight: 1.35,
@@ -694,7 +694,7 @@ export default function CopilotDrawer({
                   <div
                     style={{
                       fontSize: '0.8rem',
-                      color: 'var(--slate-700)',
+                      color: 'var(--text-secondary)',
                       lineHeight: 1.6,
                       marginBottom: msg.evidence && Object.keys(msg.evidence).length > 0 ? '0.75rem' : '0.5rem',
                     }}
@@ -706,15 +706,15 @@ export default function CopilotDrawer({
                   {msg.evidence && Object.keys(msg.evidence).length > 0 && (
                     <div
                       style={{
-                        backgroundColor: 'var(--slate-50)',
-                        border: '1px solid var(--slate-200)',
+                        backgroundColor: 'var(--bg-subtle)',
+                        border: '1px solid var(--border-subtle)',
                         borderRadius: '6px',
                         padding: '0.65rem 0.85rem',
                         marginBottom: '0.75rem',
                         fontSize: '0.72rem',
                       }}
                     >
-                      <div style={{ fontWeight: 700, color: 'var(--slate-700)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         <Icon name="check-circle" size={12} />
                         <span>{isHindi ? 'सत्यापित साक्ष्य मीट्रिक:' : 'Grounded Evidence Attributes:'}</span>
                       </div>
@@ -733,13 +733,13 @@ export default function CopilotDrawer({
                               key={k}
                               style={{
                                 backgroundColor: 'var(--bg-surface)',
-                                border: '1px solid var(--slate-200)',
+                                border: '1px solid var(--border-subtle)',
                                 borderRadius: '4px',
                                 padding: '3px 6px',
                               }}
                             >
-                              <div style={{ color: 'var(--slate-500)', fontSize: '0.65rem' }}>{formattedKey}</div>
-                              <div style={{ fontWeight: 700, color: 'var(--slate-800)', fontFamily: 'var(--font-mono)' }}>
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }}>{formattedKey}</div>
+                              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                                 {String(v)}
                               </div>
                             </div>
@@ -786,11 +786,11 @@ export default function CopilotDrawer({
 
                   {/* Sources List */}
                   {msg.sources && msg.sources.length > 0 && (
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--slate-500)' }}>
+                    <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                       <span style={{ fontWeight: 600 }}>{isHindi ? 'स्रोत दस्तावेज़: ' : 'Sources: '}</span>
                       {msg.sources.map((src, idx) => (
                         <span key={idx} style={{ marginRight: '0.4rem' }}>
-                          <code style={{ fontSize: '0.65rem', backgroundColor: 'var(--slate-100)', padding: '1px 4px', borderRadius: '3px' }}>
+                          <code style={{ fontSize: '0.65rem', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-secondary)', padding: '1px 4px', borderRadius: '3px' }}>
                             {src.title}
                           </code>
                           {idx < msg.sources.length - 1 && ', '}
@@ -801,8 +801,8 @@ export default function CopilotDrawer({
 
                   {/* Suggested Follow-ups */}
                   {msg.suggested_followups && msg.suggested_followups.length > 0 && (
-                    <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--slate-100)', paddingTop: '0.65rem' }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--slate-600)', marginBottom: '0.35rem' }}>
+                    <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                         {isHindi ? 'सुझाए गए अनुवर्ती प्रश्न:' : 'Suggested Follow-up Inquiries:'}
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -815,7 +815,7 @@ export default function CopilotDrawer({
                             style={{
                               textAlign: 'left',
                               background: 'none',
-                              border: '1px solid var(--slate-200)',
+                              border: '1px solid var(--border-subtle)',
                               borderRadius: '4px',
                               padding: '0.35rem 0.55rem',
                               fontSize: '0.7rem',
@@ -824,7 +824,7 @@ export default function CopilotDrawer({
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              backgroundColor: 'var(--slate-50)',
+                              backgroundColor: 'var(--bg-subtle)',
                               transition: 'all 0.15s ease',
                             }}
                             onMouseEnter={(e) => {
@@ -834,8 +834,8 @@ export default function CopilotDrawer({
                               }
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'var(--slate-50)';
-                              e.currentTarget.style.borderColor = 'var(--slate-200)';
+                              e.currentTarget.style.backgroundColor = 'var(--bg-subtle)';
+                              e.currentTarget.style.borderColor = 'var(--border-subtle)';
                             }}
                           >
                             <span>{followup}</span>
@@ -852,7 +852,7 @@ export default function CopilotDrawer({
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.25rem', color: 'var(--slate-500)', fontSize: '0.78rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.25rem', color: 'var(--text-muted)', fontSize: '0.78rem' }}>
               <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>
                 <Icon name="refresh" size={14} />
               </span>
@@ -868,7 +868,7 @@ export default function CopilotDrawer({
           style={{
             flexShrink: 0,
             padding: '0.85rem 1.25rem',
-            borderTop: '1px solid var(--slate-200)',
+            borderTop: '1px solid var(--border-subtle)',
             backgroundColor: 'var(--bg-surface)',
             boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.03)',
           }}
@@ -892,7 +892,7 @@ export default function CopilotDrawer({
                 padding: '0.65rem 0.85rem',
                 fontSize: '0.82rem',
                 borderRadius: '6px',
-                border: '1px solid var(--slate-300)',
+                border: '1px solid var(--border-strong)',
                 backgroundColor: 'var(--bg-elevated)',
                 color: 'var(--text-primary)',
                 resize: 'none',
@@ -903,10 +903,10 @@ export default function CopilotDrawer({
                 transition: 'border-color 0.15s ease',
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = 'var(--teal-600)';
+                e.currentTarget.style.borderColor = 'var(--accent-primary)';
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--slate-300)';
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
               }}
             />
           </div>
@@ -919,7 +919,7 @@ export default function CopilotDrawer({
               marginTop: '0.45rem',
             }}
           >
-            <div style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
               <span>{inputQuery.length}/1000</span>
               <span style={{ marginLeft: '0.4rem', display: 'inline-block' }}>
                 {isHindi ? 'Enter से भेजें, Shift+Enter से नई पंक्ति' : 'Enter to send, Shift+Enter for newline'}
@@ -932,7 +932,7 @@ export default function CopilotDrawer({
               onClick={() => handleSend()}
               style={{
                 padding: '0.45rem 0.95rem',
-                backgroundColor: !inputQuery.trim() || isLoading ? 'var(--slate-300)' : '#0d9488',
+                backgroundColor: !inputQuery.trim() || isLoading ? 'var(--border-strong)' : 'var(--accent-primary)',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '6px',
@@ -955,10 +955,10 @@ export default function CopilotDrawer({
         <div
           style={{
             padding: '0.5rem 1.25rem',
-            borderTop: '1px solid var(--slate-100)',
-            backgroundColor: 'var(--slate-50)',
+            borderTop: '1px solid var(--border-subtle)',
+            backgroundColor: 'var(--bg-subtle)',
             fontSize: '0.65rem',
-            color: 'var(--slate-500)',
+            color: 'var(--text-muted)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',

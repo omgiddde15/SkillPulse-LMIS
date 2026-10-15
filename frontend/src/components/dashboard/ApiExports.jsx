@@ -137,19 +137,19 @@ export default function ApiExports({ period = '2026-09' }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="zap" size={20} /></span>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {t('apiExports.title', 'Developer API & CSV Data Exports')}
               </h2>
               <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 FastAPI v0.1.0 • OpenAPI 3.1
               </span>
             </div>
-            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--slate-600)', maxWidth: '720px' }}>
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '720px' }}>
               {t(
                 'apiExports.subtitle',
                 'RESTful query endpoints, integration schemas, and transparent data exports with synthetic disclosures.'
@@ -160,14 +160,14 @@ export default function ApiExports({ period = '2026-09' }) {
       </div>
 
       {/* CSV Export Hub Card */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icon name="download" size={16} />
               <span>{isHindi ? 'सीधा सीएसवी डेटा निर्यात' : 'Direct CSV Data Exports'}</span>
             </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', margin: '0.2rem 0 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>
               {isHindi ? 'सभी निर्यातों में स्वचालित रूप से सिंथेटिक डेटा प्रकटीकरण हेडर शामिल होता है।' : 'All exports automatically include synthetic data disclosures and timestamped metadata.'}
             </p>
           </div>
@@ -186,8 +186,8 @@ export default function ApiExports({ period = '2026-09' }) {
             style={{
               padding: '0.75rem 1rem',
               borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: 'var(--slate-50)',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -195,11 +195,11 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <Icon name="trendUp" size={14} />
               <span>Demand Index CSV</span>
             </strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Composite scores &amp; vacancy indicators</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Composite scores &amp; vacancy indicators</span>
           </button>
 
           <button
@@ -209,8 +209,8 @@ export default function ApiExports({ period = '2026-09' }) {
             style={{
               padding: '0.75rem 1rem',
               borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: 'var(--slate-50)',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -218,11 +218,11 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <Icon name="scale" size={14} />
               <span>Skill Gap Analysis CSV</span>
             </strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Relative mismatch scores &amp; ranks</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Relative mismatch scores &amp; ranks</span>
           </button>
 
           <button
@@ -232,8 +232,8 @@ export default function ApiExports({ period = '2026-09' }) {
             style={{
               padding: '0.75rem 1rem',
               borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: 'var(--slate-50)',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -241,11 +241,11 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <Icon name="chart" size={14} />
               <span>Projections CSV (3M)</span>
             </strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Point forecasts &amp; 80% intervals</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Point forecasts &amp; 80% intervals</span>
           </button>
 
           <button
@@ -255,8 +255,8 @@ export default function ApiExports({ period = '2026-09' }) {
             style={{
               padding: '0.75rem 1rem',
               borderRadius: '6px',
-              border: '1px solid var(--slate-300)',
-              backgroundColor: 'var(--slate-50)',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-subtle)',
               cursor: 'pointer',
               textAlign: 'left',
               display: 'flex',
@@ -264,24 +264,24 @@ export default function ApiExports({ period = '2026-09' }) {
               gap: '0.25rem',
             }}
           >
-            <strong style={{ fontSize: '0.82rem', color: 'var(--slate-800)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <Icon name="alert" size={14} />
               <span>Early-Warning Alerts CSV</span>
             </strong>
-            <span style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Active risk tiers &amp; indicators</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Active risk tiers &amp; indicators</span>
           </button>
         </div>
       </div>
 
       {/* REST API Endpoints Catalog & Live Playground */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Icon name="globe" size={16} />
               <span>{isHindi ? 'लाइव रेस्ट एपीआई एंडपॉइंट्स एवं परीक्षण कंसोल' : 'Live REST API Endpoints & Interactive Playground'}</span>
             </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', margin: '0.2rem 0 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>
               {isHindi ? 'वर्तमान बैकएंड सेवा पर सीधे परीक्षण करने के लिए "परीक्षण करें" पर क्लिक करें।' : 'Click "Test Endpoint" on any route to inspect live JSON responses from FastAPI.'}
             </p>
           </div>
@@ -298,10 +298,10 @@ export default function ApiExports({ period = '2026-09' }) {
               <div
                 key={idx}
                 style={{
-                  border: isCurrentlyTested ? '1px solid var(--teal-600)' : '1px solid var(--slate-200)',
+                  border: isCurrentlyTested ? '1px solid var(--teal-600)' : '1px solid var(--border-subtle)',
                   borderRadius: '6px',
                   padding: '0.85rem 1rem',
-                  backgroundColor: isCurrentlyTested ? 'var(--accent-soft-bg)' : 'var(--slate-50)',
+                  backgroundColor: isCurrentlyTested ? 'var(--accent-soft-bg)' : 'var(--bg-subtle)',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -320,7 +320,7 @@ export default function ApiExports({ period = '2026-09' }) {
                     >
                       {ep.method}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.82rem', color: 'var(--slate-900)' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)' }}>
                       {ep.path}
                     </span>
                   </div>
@@ -347,28 +347,28 @@ export default function ApiExports({ period = '2026-09' }) {
                   </button>
                 </div>
 
-                <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', margin: '0 0 0.45rem 0', lineHeight: 1.4 }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0 0 0.45rem 0', lineHeight: 1.4 }}>
                   {ep.description}
                 </p>
 
-                <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   <strong>Parameters: </strong> {ep.params}
                 </div>
 
                 {/* Live JSON Response Preview Drawer */}
                 {isCurrentlyTested && (
-                  <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--slate-200)', paddingTop: '0.75rem' }}>
+                  <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-700)', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                         LIVE RESPONSE STATUS: {testLoading ? 'QUERYING...' : testError ? 'ERROR' : 'HTTP 200 OK'}
                       </span>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                         Reporting Period: {period}
                       </span>
                     </div>
 
                     {testLoading && (
-                      <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                      <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         Executing query against live backend...
                       </div>
                     )}

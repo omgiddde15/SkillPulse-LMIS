@@ -33,6 +33,12 @@ export default function OpportunityExplorer({ onNavigate }) {
   const [selectedFee, setSelectedFee] = useState('all');
   const [selectedMode, setSelectedMode] = useState('all');
   const [selectedKind, setSelectedKind] = useState('all');
+  const [selectedWorkArrangement, setSelectedWorkArrangement] = useState('all');
+  const [selectedIndustry, setSelectedIndustry] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
+
+  // Selected vacancy modal state
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
 
   // Error and feedback state
   const [errorMessage, setErrorMessage] = useState(null);
@@ -104,6 +110,9 @@ export default function OpportunityExplorer({ onNavigate }) {
       if (selectedFee !== 'all') params.fee_status = selectedFee;
       if (selectedMode !== 'all') params.work_mode = selectedMode;
       if (selectedKind !== 'all') params.record_kind = selectedKind;
+      if (selectedWorkArrangement !== 'all') params.work_arrangement = selectedWorkArrangement;
+      if (selectedIndustry !== 'all') params.industry = selectedIndustry;
+      if (selectedLocation !== 'all') params.location_city = selectedLocation;
       if (searchQuery.trim()) params.search = searchQuery.trim();
 
       const res = await fetchOpportunities(params);
@@ -116,7 +125,7 @@ export default function OpportunityExplorer({ onNavigate }) {
     } finally {
       setIsLoadingCatalogue(false);
     }
-  }, [selectedType, selectedFee, selectedMode, selectedKind, searchQuery]);
+  }, [selectedType, selectedFee, selectedMode, selectedKind, selectedWorkArrangement, selectedIndustry, selectedLocation, searchQuery]);
 
   // Initial loads
   useEffect(() => {
@@ -141,6 +150,9 @@ export default function OpportunityExplorer({ onNavigate }) {
     setSelectedFee('all');
     setSelectedMode('all');
     setSelectedKind('all');
+    setSelectedWorkArrangement('all');
+    setSelectedIndustry('all');
+    setSelectedLocation('all');
   };
 
   // Types definitions with counts
@@ -156,17 +168,47 @@ export default function OpportunityExplorer({ onNavigate }) {
   // Helper to render an individual opportunity card
   const renderOpportunityCard = (item, matchMeta = null) => {
     const isDirectory = item.record_kind === 'portal_directory';
+    const isCuratedPilot = item.record_kind === 'curated_pilot_listing';
+    const isCurriculum = item.record_kind === 'curriculum_standard';
+    const isClosed = item.record_kind === 'closed_listing' || item.listing_status === 'closed' || item.is_deadline_passed;
+    const isScheme = item.record_kind === 'scheme_reference' || item.opportunity_type === 'scheme';
     const isFree = item.fee_status === 'free';
     const isPaid = item.fee_status === 'paid';
+
+    let kindBadgeClass = 'listing';
+    let kindBadgeIcon = 'check-circle';
+    let kindBadgeLabel = item.opportunity_type === 'course' ? t('opp.badgeCourse') : t('opp.badgeVerifiedVacancy');
+
+    if (isDirectory) {
+      kindBadgeClass = 'directory';
+      kindBadgeIcon = 'globe';
+      kindBadgeLabel = t('opp.badgeDirectory');
+    } else if (isCuratedPilot) {
+      kindBadgeClass = 'curated-pilot';
+      kindBadgeIcon = 'alert-circle';
+      kindBadgeLabel = t('opp.badgeCuratedPilot');
+    } else if (isCurriculum) {
+      kindBadgeClass = 'curriculum';
+      kindBadgeIcon = 'book-open';
+      kindBadgeLabel = t('opp.badgeCurriculum');
+    } else if (isClosed) {
+      kindBadgeClass = 'closed';
+      kindBadgeIcon = 'clock';
+      kindBadgeLabel = t('opp.badgeClosed');
+    } else if (isScheme) {
+      kindBadgeClass = 'scheme';
+      kindBadgeIcon = 'shield';
+      kindBadgeLabel = t('opp.badgeScheme');
+    }
 
     return (
       <div key={item.id} className={`opportunity-card ${isDirectory ? 'directory-card' : 'listing-card'}`}>
         {/* Card Header Strip */}
         <div className="opportunity-card-header">
           <div className="opportunity-badge-row">
-            <span className={`opp-kind-badge ${isDirectory ? 'directory' : 'listing'}`}>
-              <Icon name={isDirectory ? 'globe' : 'check-circle'} size={12} />
-              <span>{isDirectory ? t('opp.badgeDirectory') : t('opp.badgeListing')}</span>
+            <span className={`opp-kind-badge ${kindBadgeClass}`}>
+              <Icon name={kindBadgeIcon} size={12} />
+              <span>{kindBadgeLabel}</span>
             </span>
 
             <span className={`opp-type-badge ${item.opportunity_type}`}>
@@ -184,7 +226,7 @@ export default function OpportunityExplorer({ onNavigate }) {
                 <span>₹{Number(item.fee_amount).toLocaleString()}</span>
               </span>
             )}
-            {!isFree && !isPaid && (
+            {!isFree && !isPaid && item.opportunity_type === 'course' && (
               <span className="opp-fee-badge unknown">
                 <span>Fee Unspecified</span>
               </span>
@@ -192,6 +234,11 @@ export default function OpportunityExplorer({ onNavigate }) {
             {item.verification_status === 'unconfirmed' && (
               <span className="opp-fee-badge" style={{ backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
                 <span>Unconfirmed</span>
+              </span>
+            )}
+            {isCuratedPilot && (
+              <span className="opp-fee-badge" style={{ backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#d97706', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                <span>Pilot Benchmark</span>
               </span>
             )}
           </div>
@@ -204,11 +251,14 @@ export default function OpportunityExplorer({ onNavigate }) {
           )}
         </div>
 
-        {/* Card Title & Provider */}
+        {/* Card Title & Provider / Employer */}
         <h3 className="opportunity-title">{item.title}</h3>
         <div className="opportunity-provider">
-          <Icon name="shield" size={13} />
-          <span>{item.provider_name}</span>
+          <Icon name={item.employer_name ? "briefcase" : "shield"} size={13} />
+          <span>{item.employer_name || item.provider_name}</span>
+          {item.employer_name && item.provider_name && item.employer_name !== item.provider_name && (
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.74rem' }}>via {item.provider_name}</span>
+          )}
         </div>
 
         {/* Description */}
@@ -226,9 +276,47 @@ export default function OpportunityExplorer({ onNavigate }) {
           </div>
         )}
 
+        {/* Missing Skills in Recommendations */}
+        {matchMeta?.missing_required_skills?.length > 0 && (
+          <div className="opp-missing-skills-strip">
+            <span className="opp-missing-skills-label">
+              <Icon name="alert-triangle" size={11} />
+              <span>{t('opp.missingReqSkills')}</span>
+            </span>
+            <div className="opp-missing-pills">
+              {matchMeta.missing_required_skills.map((sk, idx) => (
+                <span key={idx} className="opp-missing-pill">{sk.replace('_', ' ').toUpperCase()}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {matchMeta?.missing_preferred_skills?.length > 0 && (
+          <div className="opp-missing-skills-strip">
+            <span className="opp-missing-pref-label">
+              <Icon name="info" size={11} />
+              <span>{t('opp.missingPrefSkills')}</span>
+            </span>
+            <div className="opp-missing-pills">
+              {matchMeta.missing_preferred_skills.map((sk, idx) => (
+                <span key={idx} className="opp-missing-pill pref">{sk.replace('_', ' ').toUpperCase()}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Key Attributes Grid */}
         <div className="opportunity-meta-grid">
-          {item.stipend_min !== null && item.stipend_min !== undefined && (
+          {item.salary_min !== null && item.salary_min !== undefined ? (
+            <div className="opp-meta-item">
+              <span className="opp-meta-label">{t('opp.salary')}</span>
+              <span className="opp-meta-value highlight">
+                ₹{Number(item.salary_min).toLocaleString()}
+                {item.salary_max && item.salary_max !== item.salary_min ? ` - ₹${Number(item.salary_max).toLocaleString()}` : ''}
+                {item.salary_period ? ` / ${item.salary_period}` : ''}
+              </span>
+            </div>
+          ) : (item.stipend_min !== null && item.stipend_min !== undefined) ? (
             <div className="opp-meta-item">
               <span className="opp-meta-label">{t('opp.stipend')}</span>
               <span className="opp-meta-value highlight">
@@ -237,24 +325,36 @@ export default function OpportunityExplorer({ onNavigate }) {
                 {item.stipend_period ? ` / ${item.stipend_period}` : ''}
               </span>
             </div>
+          ) : (
+            <div className="opp-meta-item">
+              <span className="opp-meta-label">Pay / Fee</span>
+              <span className="opp-meta-value">{isFree ? t('opp.free') : (isPaid && item.fee_amount ? `₹${Number(item.fee_amount).toLocaleString()}` : t('opp.notDisclosed'))}</span>
+            </div>
           )}
 
           <div className="opp-meta-item">
-            <span className="opp-meta-label">Work Mode</span>
-            <span className="opp-meta-value">{item.work_mode.replace('_', ' ').toUpperCase()}</span>
+            <span className="opp-meta-label">Arrangement</span>
+            <span className="opp-meta-value">{(item.work_arrangement || item.work_mode).replace('_', ' ').toUpperCase()}</span>
           </div>
 
-          {item.location_state && (
-            <div className="opp-meta-item">
-              <span className="opp-meta-label">Location</span>
-              <span className="opp-meta-value">{item.location_state}</span>
-            </div>
-          )}
+          <div className="opp-meta-item">
+            <span className="opp-meta-label">Location</span>
+            <span className="opp-meta-value">{item.location_city ? `${item.location_city}, ${item.location_state || ''}` : (item.location_state || 'All-India')}</span>
+          </div>
 
           <div className="opp-meta-item">
             <span className="opp-meta-label">{t('opp.verifiedOn')}</span>
             <span className="opp-meta-value">{item.verified_at}</span>
           </div>
+
+          {item.application_deadline && (
+            <div className="opp-meta-item" style={{ gridColumn: 'span 2' }}>
+              <span className="opp-meta-label">Deadline</span>
+              <span className="opp-meta-value" style={{ color: item.is_deadline_passed ? '#ef4444' : 'inherit' }}>
+                {item.application_deadline} {item.is_deadline_passed ? `(${t('opp.deadlinePassed')})` : ''}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Published Eligibility Criteria if present */}
@@ -291,11 +391,23 @@ export default function OpportunityExplorer({ onNavigate }) {
 
         {/* Card Action Footer */}
         <div className="opportunity-card-footer">
-          <span className={`opp-status-pill ${item.listing_status}`}>
-            {item.listing_status.replace('_', ' ')}
+          <span className={`opp-status-pill ${item.is_deadline_passed ? 'closed' : item.listing_status}`}>
+            {item.is_deadline_passed ? 'closed' : item.listing_status.replace('_', ' ')}
           </span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {!isDirectory && (
+              <button
+                type="button"
+                className="opp-details-btn"
+                onClick={() => setSelectedVacancy(item)}
+                title={t('opp.viewDetails')}
+              >
+                <Icon name="info" size={12} />
+                <span>{isHindi ? 'विवरण' : 'Details'}</span>
+              </button>
+            )}
+
             {isAuthenticated && item.id && (
               <button
                 type="button"
@@ -305,17 +417,17 @@ export default function OpportunityExplorer({ onNavigate }) {
                 title={trackedOppIds.has(item.id) ? 'Already tracked' : 'Save to Application Tracker'}
               >
                 <Icon name={trackedOppIds.has(item.id) ? 'check' : 'clipboard-list'} size={11} />
-                <span>{trackedOppIds.has(item.id) ? 'Tracked' : (trackingId === item.id ? 'Saving...' : 'Track')}</span>
+                <span>{trackedOppIds.has(item.id) ? t('opp.trackedBtn') : (trackingId === item.id ? t('opp.savingTrack') : t('opp.trackBtn'))}</span>
               </button>
             )}
 
             <a
-              href={item.official_url}
+              href={item.vacancy_url || item.official_url}
               target="_blank"
               rel="noopener noreferrer"
               className={`opp-cta-button ${isDirectory ? 'directory' : 'listing'}`}
             >
-              <span>{isDirectory ? t('opp.openPortal') : t('opp.viewSource')}</span>
+              <span>{isDirectory ? t('opp.openPortal') : t('opp.applyOfficial')}</span>
               <Icon name="arrow-up-right" size={13} />
             </a>
           </div>
@@ -591,7 +703,7 @@ export default function OpportunityExplorer({ onNavigate }) {
             <div className="opp-secondary-filters">
               {/* Cost / Fee Filter */}
               <div className="opp-filter-group">
-                <label className="opp-filter-label">Cost:</label>
+                <label className="opp-filter-label">{t('opp.fee')}</label>
                 <select
                   className="form-select form-select-sm"
                   value={selectedFee}
@@ -600,6 +712,55 @@ export default function OpportunityExplorer({ onNavigate }) {
                   <option value="all">{t('opp.filterFeeAll')}</option>
                   <option value="free">{t('opp.feeFree')}</option>
                   <option value="paid">{t('opp.feePaid')}</option>
+                </select>
+              </div>
+
+              {/* Work Arrangement Filter */}
+              <div className="opp-filter-group">
+                <label className="opp-filter-label">{t('opp.filterArrangement')}</label>
+                <select
+                  className="form-select form-select-sm"
+                  value={selectedWorkArrangement}
+                  onChange={(e) => setSelectedWorkArrangement(e.target.value)}
+                >
+                  <option value="all">{t('opp.filterArrangementAll')}</option>
+                  <option value="onsite">{t('opp.arrOnsite')}</option>
+                  <option value="hybrid">{t('opp.arrHybrid')}</option>
+                  <option value="remote">{t('opp.arrRemote')}</option>
+                </select>
+              </div>
+
+              {/* Industry Filter */}
+              <div className="opp-filter-group">
+                <label className="opp-filter-label">{t('opp.filterIndustry')}</label>
+                <select
+                  className="form-select form-select-sm"
+                  value={selectedIndustry}
+                  onChange={(e) => setSelectedIndustry(e.target.value)}
+                >
+                  <option value="all">{t('opp.filterIndustryAll')}</option>
+                  <option value="IT/ITeS">IT / ITeS</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Logistics">Logistics</option>
+                  <option value="Automotive">Automotive</option>
+                  <option value="Aerospace & Defence">Aerospace & Defence</option>
+                </select>
+              </div>
+
+              {/* Location Filter */}
+              <div className="opp-filter-group">
+                <label className="opp-filter-label">{t('opp.filterLocation')}</label>
+                <select
+                  className="form-select form-select-sm"
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                >
+                  <option value="all">{t('opp.filterLocationAll')}</option>
+                  <option value="Bengaluru">Bengaluru</option>
+                  <option value="Pune">Pune</option>
+                  <option value="Dharwad">Dharwad</option>
+                  <option value="Hyderabad">Hyderabad</option>
+                  <option value="Mumbai">Mumbai</option>
                 </select>
               </div>
 
@@ -632,7 +793,7 @@ export default function OpportunityExplorer({ onNavigate }) {
                 </select>
               </div>
 
-              {(searchQuery || selectedType !== 'all' || selectedFee !== 'all' || selectedMode !== 'all' || selectedKind !== 'all') && (
+              {(searchQuery || selectedType !== 'all' || selectedFee !== 'all' || selectedMode !== 'all' || selectedKind !== 'all' || selectedWorkArrangement !== 'all' || selectedIndustry !== 'all' || selectedLocation !== 'all') && (
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
@@ -679,6 +840,353 @@ export default function OpportunityExplorer({ onNavigate }) {
           {t('opp.disclaimer')}
         </div>
       </div>
+
+      {/* Vacancy Detail Modal / Dialog */}
+      {selectedVacancy && (
+        <div className="vacancy-modal-backdrop" onClick={() => setSelectedVacancy(null)}>
+          <div className="vacancy-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="vacancy-modal-header">
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                  <span className={`opp-kind-badge ${selectedVacancy.record_kind === 'curated_pilot_listing' ? 'curated-pilot' : (selectedVacancy.record_kind === 'closed_listing' ? 'closed' : (selectedVacancy.record_kind === 'curriculum_standard' ? 'curriculum' : (selectedVacancy.record_kind === 'scheme_reference' ? 'scheme' : 'listing')))}`}>
+                    <Icon name={selectedVacancy.record_kind === 'curated_pilot_listing' ? 'alert-circle' : (selectedVacancy.record_kind === 'closed_listing' ? 'clock' : 'check-circle')} size={12} />
+                    <span>
+                      {selectedVacancy.record_kind === 'curated_pilot_listing'
+                        ? t('opp.badgeCuratedPilot')
+                        : (selectedVacancy.record_kind === 'closed_listing'
+                            ? t('opp.badgeClosed')
+                            : (selectedVacancy.record_kind === 'curriculum_standard' ? t('opp.badgeCurriculum') : (selectedVacancy.record_kind === 'scheme_reference' ? t('opp.badgeScheme') : t('opp.badgeVerifiedVacancy'))))}
+                    </span>
+                  </span>
+                  <span className={`opp-type-badge ${selectedVacancy.opportunity_type}`}>
+                    {selectedVacancy.opportunity_type.toUpperCase()}
+                  </span>
+                  {selectedVacancy.work_arrangement && (
+                    <span className="opp-type-badge" style={{ color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}>
+                      {selectedVacancy.work_arrangement.toUpperCase()}
+                    </span>
+                  )}
+                  <span className={`opp-status-pill ${selectedVacancy.listing_status}`}>
+                    {selectedVacancy.listing_status.toUpperCase()}
+                  </span>
+                </div>
+                <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+                  {selectedVacancy.title}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  <Icon name="briefcase" size={14} />
+                  <strong>{selectedVacancy.employer_name || selectedVacancy.provider_name}</strong>
+                  {selectedVacancy.industry && <span>• {selectedVacancy.industry}</span>}
+                </div>
+              </div>
+              <button
+                type="button"
+                className="chip-remove-btn"
+                onClick={() => setSelectedVacancy(null)}
+                style={{ width: '28px', height: '28px' }}
+                title="Close"
+              >
+                <Icon name="x" size={16} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="vacancy-modal-body">
+              {/* Pilot Disclosure Alert if curated/unverified */}
+              {selectedVacancy.record_kind === 'curated_pilot_listing' && (
+                <div style={{
+                  backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '6px',
+                  padding: '0.75rem 1rem',
+                  display: 'flex',
+                  gap: '0.65rem',
+                  alignItems: 'flex-start',
+                  marginBottom: '1rem'
+                }}>
+                  <Icon name="alert-triangle" size={18} style={{ color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
+                  <div style={{ fontSize: '0.82rem', lineHeight: '1.45', color: 'var(--text-secondary)' }}>
+                    <strong style={{ color: '#b45309', display: 'block', marginBottom: '0.2rem' }}>
+                      {t('opp.badgeCuratedPilot')}
+                    </strong>
+                    {t('opp.curatedPilotNotice')}
+                  </div>
+                </div>
+              )}
+
+              {/* Job / Position Overview */}
+              <div className="vacancy-section">
+                <span className="vacancy-section-title">
+                  <Icon name="file-text" size={13} />
+                  <span>Position & Role Overview</span>
+                </span>
+                <p style={{ margin: 0, fontSize: '0.84rem', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
+                  {selectedVacancy.description}
+                </p>
+                {selectedVacancy.official_company_website && (
+                  <div style={{ marginTop: '0.4rem', fontSize: '0.78rem' }}>
+                    <a
+                      href={selectedVacancy.official_company_website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                    >
+                      <Icon name="globe" size={12} />
+                      <span>{t('opp.companyWebsite')}</span>
+                      <Icon name="arrow-up-right" size={11} />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Work Conditions & Location */}
+              <div className="vacancy-section">
+                <span className="vacancy-section-title">
+                  <Icon name="map-pin" size={13} />
+                  <span>{t('opp.workConditions')}</span>
+                </span>
+                <div className="vacancy-grid-2">
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Location</span>
+                    <span className="vacancy-field-value">
+                      {selectedVacancy.location_city ? `${selectedVacancy.location_city}, ${selectedVacancy.location_state || ''}` : (selectedVacancy.location_state || 'All-India')}
+                    </span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Work Arrangement</span>
+                    <span className="vacancy-field-value">
+                      {selectedVacancy.work_arrangement ? selectedVacancy.work_arrangement.toUpperCase() : 'Onsite'}
+                    </span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Workplace Address</span>
+                    <span className="vacancy-field-value">{selectedVacancy.workplace_address || t('opp.notDisclosed')}</span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Working Hours & Schedule</span>
+                    <span className="vacancy-field-value">
+                      {selectedVacancy.working_hours ? `${selectedVacancy.working_hours} (${selectedVacancy.weekly_working_days || '5 days/week'})` : t('opp.notDisclosed')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compensation & Eligibility */}
+              <div className="vacancy-section">
+                <span className="vacancy-section-title">
+                  <Icon name="award" size={13} />
+                  <span>{t('opp.compensation')} & {t('opp.qualifications')}</span>
+                </span>
+                <div className="vacancy-grid-2">
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">{t('opp.salary')}</span>
+                    <span className="vacancy-field-value" style={{ color: '#10b981' }}>
+                      {selectedVacancy.salary_min !== null
+                        ? `₹${Number(selectedVacancy.salary_min).toLocaleString()} - ₹${Number(selectedVacancy.salary_max).toLocaleString()} / ${selectedVacancy.salary_period || 'month'}`
+                        : (selectedVacancy.stipend_min !== null
+                            ? `Stipend: ₹${Number(selectedVacancy.stipend_min).toLocaleString()} / ${selectedVacancy.stipend_period || 'month'}`
+                            : t('opp.notDisclosed'))
+                      }
+                    </span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">{t('opp.experienceReq')}</span>
+                    <span className="vacancy-field-value">
+                      {selectedVacancy.experience_years_min !== null
+                        ? `${selectedVacancy.experience_years_min} to ${selectedVacancy.experience_years_max ?? selectedVacancy.experience_years_min} years`
+                        : 'Entry level / Fresher (0-1 yrs)'}
+                    </span>
+                  </div>
+                  <div className="vacancy-field" style={{ gridColumn: 'span 2' }}>
+                    <span className="vacancy-field-label">Education Criteria</span>
+                    <span className="vacancy-field-value">
+                      {selectedVacancy.education_requirements || (selectedVacancy.eligibility?.qualification || t('opp.notDisclosed'))}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Skills tags */}
+                <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                  {selectedVacancy.skill_keys?.length > 0 && (
+                    <div>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                        {t('opp.requiredSkills')}:
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.25rem' }}>
+                        {selectedVacancy.skill_keys.map((sk, idx) => (
+                          <span key={idx} className="opp-reason-tag">
+                            <Icon name="check" size={11} />
+                            <span>{sk.replace('_', ' ').toUpperCase()}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedVacancy.preferred_skills?.length > 0 && (
+                    <div>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                        {t('opp.preferredSkills')}:
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.25rem' }}>
+                        {selectedVacancy.preferred_skills.map((sk, idx) => (
+                          <span key={idx} className="opp-reason-tag" style={{ backgroundColor: 'rgba(148, 163, 184, 0.1)', color: 'var(--text-secondary)', borderColor: 'rgba(148, 163, 184, 0.25)' }}>
+                            <Icon name="plus" size={11} />
+                            <span>{sk.replace('_', ' ').toUpperCase()}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Application Process & Instructions */}
+              <div className="vacancy-section">
+                <span className="vacancy-section-title">
+                  <Icon name="clipboard-list" size={13} />
+                  <span>{t('opp.appInstructions')}</span>
+                </span>
+                <p style={{ margin: 0, fontSize: '0.82rem', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
+                  {selectedVacancy.application_instructions || 'Review eligibility and apply directly on the official employer vacancy portal.'}
+                </p>
+
+                {/* Selection stages */}
+                {selectedVacancy.selection_stages?.length > 0 && (
+                  <div style={{ marginTop: '0.4rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>
+                      {t('opp.selectionStages')}:
+                    </span>
+                    <div className="vacancy-stages-flow">
+                      {selectedVacancy.selection_stages.map((stg, idx) => (
+                        <React.Fragment key={idx}>
+                          <span className="vacancy-stage-badge">
+                            <span>{idx + 1}. {stg}</span>
+                          </span>
+                          {idx < selectedVacancy.selection_stages.length - 1 && (
+                            <Icon name="arrow-right" size={12} style={{ color: 'var(--text-muted)' }} />
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Required Documents */}
+                {selectedVacancy.required_documents?.length > 0 && (
+                  <div style={{ marginTop: '0.4rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>
+                      {t('opp.reqDocuments')}:
+                    </span>
+                    <div className="vacancy-docs-list">
+                      {selectedVacancy.required_documents.map((doc, idx) => (
+                        <div key={idx} className="vacancy-doc-item">
+                          <Icon name="check-circle" size={12} style={{ color: '#10b981' }} />
+                          <span>{doc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Recruitment Contacts & Anti-Fraud Disclaimer */}
+              <div className="vacancy-section">
+                <span className="vacancy-section-title">
+                  <Icon name="shield" size={13} />
+                  <span>{t('opp.recruiterContact')} & Provenance</span>
+                </span>
+                <div className="vacancy-grid-2">
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">{t('opp.recruiterEmail')}</span>
+                    <span className="vacancy-field-value">{selectedVacancy.recruitment_contact_email || t('opp.notDisclosed')}</span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">{t('opp.recruiterPhone')}</span>
+                    <span className="vacancy-field-value">{selectedVacancy.recruitment_contact_phone || t('opp.notDisclosed')}</span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Verified At</span>
+                    <span className="vacancy-field-value">{selectedVacancy.verified_at}</span>
+                  </div>
+                  <div className="vacancy-field">
+                    <span className="vacancy-field-label">Application Deadline</span>
+                    <span className="vacancy-field-value" style={{ color: selectedVacancy.is_deadline_passed ? '#ef4444' : 'inherit' }}>
+                      {selectedVacancy.application_deadline ? `${selectedVacancy.application_deadline}${selectedVacancy.is_deadline_passed ? ' (Closed)' : ''}` : 'Open'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 4-Point Grounding Audit */}
+                <div style={{ marginTop: '0.75rem', padding: '0.65rem', backgroundColor: 'var(--bg-surface-elevated)', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.4rem' }}>
+                    {t('opp.verificationMetaTitle')}
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.45rem', fontSize: '0.76rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name={selectedVacancy.source_portal_reachable ? 'check-circle' : 'x-circle'} size={13} style={{ color: selectedVacancy.source_portal_reachable ? '#10b981' : '#ef4444' }} />
+                      <span>{t('opp.metaPortalReachable')}: <strong>{selectedVacancy.source_portal_reachable ? 'Yes' : 'No'}</strong></span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name={selectedVacancy.exact_listing_retrieved ? 'check-circle' : 'alert-circle'} size={13} style={{ color: selectedVacancy.exact_listing_retrieved ? '#10b981' : '#f59e0b' }} />
+                      <span>{t('opp.metaExactListing')}: <strong>{selectedVacancy.exact_listing_retrieved ? 'Yes' : 'No'}</strong></span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name={selectedVacancy.vacancy_status_checked ? 'check-circle' : 'alert-circle'} size={13} style={{ color: selectedVacancy.vacancy_status_checked ? '#10b981' : '#f59e0b' }} />
+                      <span>{t('opp.metaStatusChecked')}: <strong>{selectedVacancy.vacancy_status_checked ? 'Yes' : 'No'}</strong></span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Icon name={selectedVacancy.individual_fields_verified ? 'check-circle' : 'alert-circle'} size={13} style={{ color: selectedVacancy.individual_fields_verified ? '#10b981' : '#f59e0b' }} />
+                      <span>{t('opp.metaFieldsVerified')}: <strong>{selectedVacancy.individual_fields_verified ? 'Yes' : 'No'}</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: 'var(--radius-sm)', padding: '0.6rem 0.8rem', marginTop: '0.4rem', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+                  <Icon name="alert-triangle" size={13} style={{ color: '#ef4444', marginRight: '0.35rem', verticalAlign: 'text-bottom' }} />
+                  {t('opp.fraudWarning')}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="vacancy-modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setSelectedVacancy(null)}
+              >
+                <span>Close</span>
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {isAuthenticated && (
+                  <button
+                    type="button"
+                    className={`btn btn-secondary btn-sm ${trackedOppIds.has(selectedVacancy.id) ? 'tracked' : ''}`}
+                    onClick={() => handleTrackOpportunity(selectedVacancy)}
+                    disabled={trackedOppIds.has(selectedVacancy.id) || trackingId === selectedVacancy.id}
+                  >
+                    <Icon name={trackedOppIds.has(selectedVacancy.id) ? 'check' : 'clipboard-list'} size={13} />
+                    <span>{trackedOppIds.has(selectedVacancy.id) ? t('opp.trackedBtn') : (trackingId === selectedVacancy.id ? t('opp.savingTrack') : t('opp.trackBtn'))}</span>
+                  </button>
+                )}
+
+                <a
+                  href={selectedVacancy.vacancy_url || selectedVacancy.official_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-sm"
+                >
+                  <span>{t('opp.applyOfficial')}</span>
+                  <Icon name="arrow-up-right" size={13} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

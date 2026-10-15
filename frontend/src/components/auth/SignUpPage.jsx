@@ -118,7 +118,7 @@ export default function SignUpPage({ onNavigate, onEnterDemo }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="auth-header-actions">
           <ThemeToggle />
           <div className="lang-toggle-group" role="group" aria-label="Language selector">
             <button

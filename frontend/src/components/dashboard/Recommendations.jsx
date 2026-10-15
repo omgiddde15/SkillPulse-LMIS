@@ -197,19 +197,19 @@ export default function Recommendations({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="lightbulb" size={20} /></span>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {t('recommendations.title', 'Evidence-Based Policy Interventions')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 4 {isHindi ? 'रैंक किए गए हस्तक्षेप' : 'Ranked Interventions'} • {dossiers.length} {isHindi ? 'कार्यवाही योग्य मामले' : 'Total Dossiers'}
               </span>
             </div>
-            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--slate-600)', maxWidth: '720px' }}>
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '720px' }}>
               {t(
                 'recommendations.subtitle',
                 'Targeted capacity planning scenarios and curriculum adjustments derived directly from current alert and gap signals.'
@@ -219,14 +219,14 @@ export default function Recommendations({
 
           {/* Sector Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <label htmlFor="rec-sector" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-600)' }}>
+            <label htmlFor="rec-sector" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
               {t('common.sector', 'Sector')}:
             </label>
             <select
               id="rec-sector"
               value={sectorFilter}
               onChange={(e) => setSectorFilter(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
               <option value="IT/ITeS">IT/ITeS</option>
@@ -238,12 +238,12 @@ export default function Recommendations({
       </div>
 
       {/* TOP RANKED INTERVENTION DOSSIERS (#01 to #04) */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ marginBottom: '1rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.2rem 0' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.2rem 0' }}>
             {isHindi ? 'शीर्ष प्राथमिकता क्षमता योजना परिदृश्य (रैंक अनुसार)' : 'Top Priority Capacity Planning Scenarios (Ranked)'}
           </h3>
-          <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+          <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {isHindi
               ? 'हेयूरिस्टिक असंतुलन नियमों और पायलट डेटा सिमुलेशन के आधार पर प्रस्तावित योजना परिदृश्य। ये अन्वेषणात्मक नियोजन सिमुलेशन हैं, वास्तविक रोजगार या श्रमिकों की कमी में सत्यापित परिवर्तन नहीं।'
               : 'Deterministic heuristic planning scenarios backed by live gap scores and seat non-depletion constraints. Results represent exploratory planning simulations, not verified changes in real-world employment or worker shortages.'}
@@ -256,7 +256,7 @@ export default function Recommendations({
               key={item.rank}
               style={{
                 backgroundColor: 'var(--bg-elevated)',
-                border: '1px solid var(--slate-200)',
+                border: '1px solid var(--border-subtle)',
                 borderLeft: '4px solid #0d9488',
                 borderRadius: 'var(--radius-md)',
                 padding: '1.15rem',
@@ -272,52 +272,52 @@ export default function Recommendations({
                   <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-primary)' }}>
                     {item.rank} · {item.districtName.toUpperCase()}, {item.stateName.toUpperCase()}
                   </span>
-                  <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid var(--accent-soft-border)' }}>
+                  <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid var(--accent-soft-border)' }}>
                     {item.tierLabel}
                   </span>
                 </div>
-                <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.35rem 0' }}>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.35rem 0' }}>
                   {isHindi ? item.titleHi : item.titleEn}
                 </h4>
-                <p style={{ fontSize: '0.75rem', color: 'var(--slate-600)', lineHeight: 1.45, margin: 0 }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0 }}>
                   {isHindi ? item.summaryHi : item.summaryEn}
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid var(--slate-200)', paddingTop: '0.65rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: '0.5rem', marginBottom: '0.65rem', fontSize: '0.72rem' }}>
-                  <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+              <div className="scenario-card-meta-box">
+                <div className="scenario-card-meta-grid">
+                  <div className="scenario-meta-item">
+                    <span className="scenario-meta-label">
                       {isHindi ? 'योजनाबद्ध सीटें' : 'PLANNING SEATS'}
-                    </div>
-                    <strong style={{ color: 'var(--slate-900)', fontFamily: 'var(--font-mono)' }}>{item.seats} (Scenario)</strong>
+                    </span>
+                    <strong className="scenario-meta-value mono">{item.seats} (Scenario)</strong>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div className="scenario-meta-item">
+                    <span className="scenario-meta-label">
                       {isHindi ? 'सिम्युलेटेड सापेक्ष असंतुलन परिवर्तन' : 'SIMULATED RELATIVE MISMATCH CHANGE'}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    </span>
+                    <div className="scenario-meta-delta">
                       <strong style={{ color: item.mismatchDeltaPts < 0 ? 'var(--status-success-text)' : 'var(--status-supply-text)', fontFamily: 'var(--font-mono)' }}>
                         {item.mismatchDeltaPts >= 0 ? '+' : ''}{item.mismatchDeltaPts.toFixed(1)} pts
                       </strong>
-                      <span style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                         ({item.beforeMismatchPts >= 0 ? '+' : ''}{item.beforeMismatchPts.toFixed(1)} → {item.afterMismatchPts >= 0 ? '+' : ''}{item.afterMismatchPts.toFixed(1)} pts)
                       </span>
                     </div>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--slate-400)', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <div className="scenario-meta-item scenario-meta-trade-block">
+                    <span className="scenario-meta-label">
                       {isHindi ? 'लक्षित ट्रेड' : 'TARGET TRADE'}
-                    </div>
-                    <strong style={{ color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{item.occupationTitle}</strong>
+                    </span>
+                    <strong className="scenario-meta-trade-title">{item.occupationTitle}</strong>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem' }}>
+                <div className="scenario-card-actions">
                   <button
                     type="button"
                     onClick={() => onNavigateWithContext('gap', { district: item.districtId, occupation: item.occupationId, state: item.stateCode })}
-                    style={{ border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-surface)', color: 'var(--slate-700)', padding: '0.25rem 0.55rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                    className="scenario-btn-evidence"
                   >
                     View Evidence
                   </button>
@@ -330,7 +330,8 @@ export default function Recommendations({
                         onNavigateToSimulator(item.districtId, item.occupationId);
                       }
                     }}
-                    style={{ border: 'none', backgroundColor: '#0d9488', color: '#ffffff', padding: '0.25rem 0.65rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                    className="scenario-btn-simulate"
+                    style={{ backgroundColor: '#0d9488' }}
                   >
                     Simulate
                   </button>
@@ -349,7 +350,7 @@ export default function Recommendations({
           const accentColor = isExpand ? 'var(--status-demand-text)' : isReallocate ? 'var(--status-supply-text)' : 'var(--text-secondary)';
           const accentBg = isExpand ? 'var(--status-demand-bg)' : isReallocate ? 'var(--status-supply-bg)' : 'var(--bg-subtle)';
           const accentBorder = isExpand ? 'var(--status-demand-border)' : isReallocate ? 'var(--status-supply-border)' : 'var(--border-subtle)';
-          const leftBarColor = isExpand ? 'var(--status-demand)' : isReallocate ? 'var(--status-supply)' : 'var(--slate-400)';
+          const leftBarColor = isExpand ? 'var(--status-demand)' : isReallocate ? 'var(--status-supply)' : 'var(--border-strong)';
 
           return (
             <div
@@ -371,10 +372,10 @@ export default function Recommendations({
                 {/* District & Occupation Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+                    <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                       {getOccupationDisplayName(d.occupationTitle, isHindi)}
                     </h3>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--slate-500)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <Icon name="pin" size={12} />
                       <span>{getDistrictDisplayName(d.districtName, isHindi)}, {getStateDisplayName(d.stateCode, isHindi)} • {getSectorDisplayName(d.sector, isHindi)}</span>
                     </div>
@@ -403,14 +404,14 @@ export default function Recommendations({
                 </div>
 
                 {/* Evidence & Action Text */}
-                <p style={{ fontSize: '0.76rem', color: 'var(--slate-600)', lineHeight: 1.5, margin: 0 }}>
+                <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
                   {d.action}
                 </p>
               </div>
 
               {/* Card Footer: Metrics & Action */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--slate-100)', paddingTop: '0.65rem' }}>
-                <div style={{ fontSize: '0.68rem', color: 'var(--slate-500)', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   Demand: {d.demandIndex.toFixed(1)} | Supply: {d.supplyIndex.toFixed(1)}
                 </div>
 
@@ -420,8 +421,8 @@ export default function Recommendations({
                     onClick={() => onNavigateWithContext('gap', { district: d.districtId, occupation: d.occupationId, state: d.stateCode })}
                     style={{
                       backgroundColor: 'var(--bg-surface)',
-                      color: 'var(--slate-700)',
-                      border: '1px solid var(--slate-300)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-strong)',
                       borderRadius: '4px',
                       padding: '0.3rem 0.55rem',
                       fontSize: '0.72rem',

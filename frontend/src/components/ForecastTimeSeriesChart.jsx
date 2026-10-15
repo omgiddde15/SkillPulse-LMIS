@@ -81,7 +81,7 @@ export default function ForecastTimeSeriesChart({
 
   if (!timelineData || timelineData.hist.length === 0) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)', fontSize: '0.85rem' }}>
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
         {isHindi ? 'समय-श्रृंखला डेटा लोड हो रहा है...' : 'Loading time-series observation data...'}
       </div>
     );

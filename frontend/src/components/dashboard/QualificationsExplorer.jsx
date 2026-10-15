@@ -58,19 +58,19 @@ export default function QualificationsExplorer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header Banner */}
-      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', color: 'var(--accent-primary)' }}><Icon name="graduation" size={20} /></span>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', margin: 0 }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 {t('qualifications.title', 'TVET Qualifications & NSQF Alignment')}
               </h2>
-              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', borderRadius: '4px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)', fontWeight: 700 }}>
                 NSQF Levels 3.0 to 6.0
               </span>
             </div>
-            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--slate-600)', maxWidth: '720px' }}>
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '720px' }}>
               {t(
                 'qualifications.subtitle',
                 'National Skills Qualification Framework (NSQF) levels, Qualification Packs (QP), and awarding bodies.'
@@ -80,14 +80,14 @@ export default function QualificationsExplorer() {
 
           {/* Level Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <label htmlFor="nsqf-filter" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--slate-600)' }}>
+            <label htmlFor="nsqf-filter" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
               NSQF Level:
             </label>
             <select
               id="nsqf-filter"
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--slate-300)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}
             >
               <option value="">{isHindi ? 'सभी एनएसक्यूएफ स्तर' : 'All NSQF Levels'}</option>
               <option value="3.0">Level 3.0</option>
@@ -106,7 +106,7 @@ export default function QualificationsExplorer() {
             key={occ.occupation_id}
             style={{
               backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--slate-200)',
+              border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-md)',
               padding: '1.25rem',
               display: 'flex',
@@ -122,34 +122,34 @@ export default function QualificationsExplorer() {
                   {occ.qp_code || 'QP Code Pending'}
                 </span>
 
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.6rem', borderRadius: '100px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--teal-800)', border: '1px solid var(--accent-soft-border)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.6rem', borderRadius: '100px', backgroundColor: 'var(--accent-soft-bg)', color: 'var(--accent-soft-text)', border: '1px solid var(--accent-soft-border)' }}>
                   NSQF {occ.nsqf_level != null ? occ.nsqf_level : 'N/A'}
                 </span>
               </div>
 
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', margin: '0 0 0.25rem 0' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.25rem 0' }}>
                 {occ.qp_title || occ.occupation_title}
               </h3>
 
-              <div style={{ fontSize: '0.75rem', color: 'var(--slate-600)', marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
                 Maps to: <strong>{getOccupationDisplayName(occ.occupation_title, isHindi)}</strong> ({occ.occupation_id})
               </div>
 
-              <div style={{ backgroundColor: 'var(--slate-50)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--slate-200)', fontSize: '0.72rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-subtle)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--border-subtle)', fontSize: '0.72rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 <div>
-                  <span style={{ color: 'var(--slate-500)' }}>Sector Skill Body: </span>
-                  <span style={{ fontWeight: 600, color: 'var(--slate-700)' }}>{SSC_MAPPING[occ.sector] || occ.sector}</span>
+                  <span style={{ color: 'var(--text-muted)' }}>Sector Skill Body: </span>
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{SSC_MAPPING[occ.sector] || occ.sector}</span>
                 </div>
                 <div>
-                  <span style={{ color: 'var(--slate-500)' }}>National Classification (NCO): </span>
-                  <span style={{ fontWeight: 600, color: occ.nco_code ? 'var(--slate-700)' : 'var(--slate-400)' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>National Classification (NCO): </span>
+                  <span style={{ fontWeight: 600, color: occ.nco_code ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                     {occ.nco_code ? `${occ.nco_code} (${occ.nco_title})` : (isHindi ? 'अपुष्ट (मैप नहीं किया गया)' : 'Unverified (Not mapped)')}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: '0.68rem', color: 'var(--slate-500)', borderTop: '1px solid var(--slate-100)', paddingTop: '0.5rem' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.5rem' }}>
               Framework: National Skills Qualification Framework (MSDE / NCVET)
             </div>
           </div>

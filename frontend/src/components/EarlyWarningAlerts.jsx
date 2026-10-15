@@ -546,7 +546,7 @@ export default function EarlyWarningAlerts({
                 <h2>{t('alerts.tableTitle', 'Active Early-Warning Telemetry Signals')}</h2>
                 <p>{t('alerts.tableSubtitle', 'Click any alert row to inspect causal explanations, supporting horizon vectors, and suggested actions.')}</p>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {t('common.showingAlerts', { count: sortedAlerts.length }, `Showing ${sortedAlerts.length} active alerts`)}
               </div>
             </div>
@@ -578,7 +578,7 @@ export default function EarlyWarningAlerts({
                 <tbody>
                   {sortedAlerts.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--slate-500)' }}>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
                         {t('alerts.noAlerts', 'No early-warning alerts match the selected filter criteria.')}
                       </td>
                     </tr>
@@ -628,7 +628,7 @@ export default function EarlyWarningAlerts({
                           <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 600 }}>
                             {alert.horizon_months ? `+${alert.horizon_months}m` : (isHindi ? 'बहु-क्षितिज (3m, 6m, 12m)' : 'Multi (3m, 6m, 12m)')}
                           </td>
-                          <td style={{ fontSize: '0.75rem', color: 'var(--slate-600)', maxWidth: '300px' }}>
+                          <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)', maxWidth: '300px' }}>
                             {alert.key_values?.projected_mismatch_score !== undefined ? (
                               <span>{isHindi ? 'असंतुलन:' : 'Mismatch:'} <strong>{alert.key_values.projected_mismatch_score > 0 ? '+' : ''}{alert.key_values.projected_mismatch_score.toFixed(1)} {isHindi ? 'अंक' : 'pts'}</strong></span>
                             ) : isPersistent ? (
@@ -644,9 +644,9 @@ export default function EarlyWarningAlerts({
                               style={{
                                 padding: '0.2rem 0.5rem',
                                 fontSize: '0.72rem',
-                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--slate-300)',
+                                border: isSelected ? '1px solid var(--teal-600)' : '1px solid var(--border-subtle)',
                                 backgroundColor: isSelected ? 'var(--teal-50)' : 'var(--bg-surface)',
-                                color: isSelected ? 'var(--teal-800)' : 'var(--slate-700)',
+                                color: isSelected ? 'var(--teal-800)' : 'var(--text-secondary)',
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -709,7 +709,7 @@ export default function EarlyWarningAlerts({
 
                   {selectedItem.key_values?.is_persistent ? (
                     <div>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--slate-800)', marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                         <strong>{t('alerts.ruleApplied', 'Persistence Rule Applied:')}</strong> {selectedItem.key_values.persistence_rule || (isHindi ? '3m, 6m, 12m में से ≥2 समर्थित क्षितिजों पर समान दिशा में सीमा रेखा पार की।' : 'Mismatch crossed threshold in the same direction at >=2 supported horizons (3m, 6m, 12m).')}
                       </p>
                       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -724,7 +724,7 @@ export default function EarlyWarningAlerts({
                     </div>
                   ) : (
                     <div>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--slate-700)' }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                         {t('alerts.singleHorizonNotice', { h: selectedItem.horizon_months, target: selectedItem.target_period, crossed: selectedItem.key_values?.supporting_horizon_count ?? 1 }, `This is a single-horizon signal evaluated at the +${selectedItem.horizon_months}-month horizon (${selectedItem.target_period}). Persistence rule requires threshold crossing at two or more supported horizons (${selectedItem.key_values?.supporting_horizon_count ?? 1} currently crossed).`)}
                       </p>
                     </div>
@@ -732,15 +732,15 @@ export default function EarlyWarningAlerts({
                 </div>
 
                 {/* 2. Causal Narrative Explanation */}
-                <div style={{ background: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', boxShadow: 'var(--shadow-sm)' }}>
-                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <div style={{ background: 'var(--bg-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Icon name="search" size={15} />
                     <span>{t('alerts.causalExplanationTitle', 'Causal Explanation')}</span>
                   </h4>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--slate-800)', lineHeight: 1.6 }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {selectedItem.explanation}
                   </p>
-                  <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
+                  <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     <strong>{isHindi ? 'लागू सीमा रेखा:' : 'Threshold Applied:'}</strong> ±{selectedItem.key_values?.threshold_applied || 15.0} {isHindi ? 'अंक' : 'points'}
                   </div>
                 </div>
