@@ -8,7 +8,9 @@ if _env_path.exists():
 else:
     load_dotenv()
 
+import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.alerts import router as alerts_router
 from app.api.v1.auth import router as auth_router
@@ -28,6 +30,29 @@ app = FastAPI(
     title="SkillPulse LMIS",
     description="AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine (SIH 2026 - PS SIH26246)",
     version="0.1.0",
+)
+
+# CORS configuration for local development and deployed frontends (e.g. Vercel)
+_allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+_env_origins = os.getenv("FRONTEND_ORIGIN")
+if _env_origins:
+    for _origin in _env_origins.split(","):
+        _trimmed = _origin.strip().rstrip("/")
+        if _trimmed and _trimmed not in _allowed_origins:
+            _allowed_origins.append(_trimmed)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth_router, prefix="/api/v1")

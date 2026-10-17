@@ -1,11 +1,23 @@
 /**
  * SkillPulse LMIS API Client Module
  *
- * Uses relative paths (/api/v1/..., /health) to route through Vite proxy during development.
+ * Configurable API base URL via VITE_API_BASE_URL (defaults to empty string for relative paths
+ * routed through Vite proxy during local development).
  * Strictly adheres to backend schemas without hardcoded fallbacks or simulated data.
  */
 
-async function request(url, options = {}) {
+const API_BASE_URL = (import.meta.env?.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+
+function resolveUrl(path) {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return API_BASE_URL ? `${API_BASE_URL}${cleanPath}` : cleanPath;
+}
+
+async function request(path, options = {}) {
+  const url = resolveUrl(path);
   try {
     const res = await fetch(url, {
       credentials: 'include',
@@ -34,7 +46,8 @@ async function request(url, options = {}) {
     return await res.json();
   } catch (err) {
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      throw new Error('Unable to reach SkillPulse backend server. Please verify FastAPI is running at http://127.0.0.1:8000.');
+      const serverDesc = API_BASE_URL || 'http://127.0.0.1:8000';
+      throw new Error(`Unable to reach SkillPulse backend server at ${serverDesc}. Please verify FastAPI service is running.`);
     }
     throw err;
   }
