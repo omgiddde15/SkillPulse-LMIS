@@ -127,14 +127,24 @@ class TestDiscrepancyAuditAndRejection:
         assert official_title_1324_0101 != "Supply and Distribution Managers"
 
     def test_unmapped_occupations_have_null_nco(self):
-        """OCC_IT_001, OCC_IT_002, OCC_LOG_001, OCC_LOG_002, and OCC_LOG_003 must have null NCO fields."""
+        """OCC_IT_001, OCC_IT_002, OCC_LOG_002, and OCC_LOG_003 must have null NCO fields."""
         service = DemandIndexService()
         service.load_data()
 
-        for occ_id in ["OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"]:
+        for occ_id in ["OCC_IT_001", "OCC_IT_002", "OCC_LOG_002", "OCC_LOG_003"]:
             occ = service._occupations[occ_id]
             assert occ.nco_code is None, f"{occ_id} must have null nco_code"
             assert occ.nco_title is None, f"{occ_id} must have null nco_title"
+
+    def test_warehouse_inventory_coordinator_has_verified_nco_mapping(self):
+        """OCC_LOG_001 is mapped to verified NCO-2015 4321.0102 (Inventory Clerk) matching QP LSC/Q2108."""
+        service = DemandIndexService()
+        service.load_data()
+        occ = service._occupations["OCC_LOG_001"]
+        assert occ.nco_code == "4321.0102"
+        assert occ.nco_title == "Inventory Clerk"
+        assert occ.qp_code == "LSC/Q2108"
+        assert occ.nsqf_level == 3.0
 
     def test_industrial_automation_uses_verified_ias_q5601(self):
         """OCC_MFG_002 must use verified QP IAS/Q5601, rejecting non-existent IAS/Q8004."""
@@ -222,8 +232,8 @@ class TestDemoOccupationsTaxonomyIntegrity:
         "OCC_LOG_001": {
             "title": "Warehouse Inventory Coordinator",
             "sector": "Logistics",
-            "nco_code": None,
-            "nco_title": None,
+            "nco_code": "4321.0102",
+            "nco_title": "Inventory Clerk",
             "qp_code": "LSC/Q2108",
             "nsqf_level": 3.0,
         },
@@ -293,8 +303,8 @@ class TestApiTaxonomyExposure:
         records = result.get("results", [])
         assert len(records) > 0
 
-        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"}
-        mapped_ids = {"OCC_IT_003", "OCC_MFG_001", "OCC_MFG_002", "OCC_MFG_003"}
+        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_002", "OCC_LOG_003"}
+        mapped_ids = {"OCC_IT_003", "OCC_MFG_001", "OCC_MFG_002", "OCC_MFG_003", "OCC_LOG_001"}
 
         for rec in records:
             assert "nco_code" in rec
@@ -323,7 +333,7 @@ class TestApiTaxonomyExposure:
         items = result.get("results", [])
         assert len(items) > 0
 
-        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_001", "OCC_LOG_002", "OCC_LOG_003"}
+        unmapped_ids = {"OCC_IT_001", "OCC_IT_002", "OCC_LOG_002", "OCC_LOG_003"}
 
         for item in items:
             assert "nco_code" in item

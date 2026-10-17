@@ -1301,6 +1301,12 @@ select option {
   border: 1px solid var(--status-success-border);
 }
 
+.badge-classification.insufficient {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
 /* District Summary Grid */
 .district-cards-grid {
   display: grid;
@@ -1427,6 +1433,20 @@ select option {
   gap: 0.85rem;
 }
 
+.forecast-diagnostics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .forecast-diagnostics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 .component-card {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
@@ -1435,13 +1455,17 @@ select option {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .component-card-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .component-name {
@@ -1468,6 +1492,9 @@ select option {
   align-items: baseline;
   justify-content: space-between;
   margin-top: 0.2rem;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  min-width: 0;
 }
 
 .component-raw-val {
@@ -1613,32 +1640,143 @@ select option {
   line-height: 1.35;
 }
 
-/* Forecast Interval Bar & Model Badges */
-.interval-track {
-  position: relative;
-  height: 8px;
-  background-color: var(--bg-muted);
-  border-radius: 999px;
-  margin: 0.5rem 0 0.25rem;
-  overflow: hidden;
+/* Forecast Interval Visualizer & Model Badges */
+.interval-visualizer {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+  margin: 0.5rem 0 0.35rem;
+  min-width: 0;
 }
 
-.interval-range-bar {
+.interval-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.interval-metric-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.interval-metric-col.lower {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.interval-metric-col.point {
+  align-items: center;
+  text-align: center;
+  padding: 0 0.35rem;
+}
+
+.interval-metric-col.upper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.interval-metric-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.interval-metric-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.interval-metric-val.point-highlight {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.interval-range-track {
+  position: relative;
+  height: 10px;
+  background-color: var(--border-subtle);
+  border-radius: 9999px;
+  margin: 0.55rem 0 0.5rem;
+  overflow: visible;
+}
+
+.interval-range-fill {
   position: absolute;
   top: 0;
   bottom: 0;
-  background-color: var(--accent-soft-border);
-  border-radius: 999px;
+  border-radius: 9999px;
 }
 
-.interval-point-marker {
+.interval-marker {
   position: absolute;
-  top: -2px;
-  width: 4px;
-  height: 12px;
-  background-color: var(--accent-primary);
   border-radius: 2px;
   transform: translateX(-50%);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.interval-marker.point-marker {
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  z-index: 3;
+}
+
+.interval-marker.observed-marker {
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  background-color: #f59e0b;
+  z-index: 2;
+}
+
+.interval-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.interval-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.interval-legend-right {
+  margin-left: auto;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-dot.observed-dot {
+  background-color: #f59e0b;
+}
+
+.legend-dot.demand-band-dot {
+  background-color: var(--teal-600);
+}
+
+.legend-dot.supply-band-dot {
+  background-color: #64748b;
 }
 
 .model-badge {

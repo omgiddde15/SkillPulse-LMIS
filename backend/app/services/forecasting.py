@@ -353,6 +353,7 @@ class ForecastingService:
         horizon: int,
         quantity_type: str,
         periods: Optional[List[str]] = None,
+        base_period: Optional[str] = None,
     ) -> ForecastPoint:
         """Run backtesting, deterministic model selection, and forecast generation for a series.
         
@@ -361,6 +362,7 @@ class ForecastingService:
             horizon: Forecast horizon (3, 6, 12).
             quantity_type: 'online_job_postings' or 'certified_candidate_throughput'.
             periods: Optional chronological period identifiers corresponding to series.
+            base_period: Optional expected cutoff period (e.g. '2026-09') to verify calendar alignment.
             
         Returns:
             ForecastPoint model populated with point forecast, empirical intervals, and errors.
@@ -377,6 +379,147 @@ class ForecastingService:
                 )
                 for p, v in zip(periods, series)
             ]
+
+        # Calendar-continuity and base_period alignment validation
+        if periods is not None:
+            if len(periods) != n:
+                last_obs_mismatch = (
+                    float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+                ) if series else None
+                return ForecastPoint(
+                    quantity=quantity_type,
+                    model_selected=None,
+                    point_forecast=None,
+                    point_forecast_integer=None,
+                    last_observed_value=last_obs_mismatch,
+                    historical_series=hist_series,
+                    prediction_interval_lower=None,
+                    prediction_interval_upper=None,
+                    interval_confidence=0.80,
+                    interval_type="rmse_normal_approximation_80pct",
+                    interval_disclaimer=(
+                        "Prediction interval unavailable due to series length and period labels mismatch."
+                    ),
+                    residual_sample_size=None,
+                    uncertainty_evidence_status="insufficient_history",
+                    backtest_mae=None,
+                    backtest_wape=None,
+                    status="missing_inputs",
+                    status_detail=(
+                        f"Mismatch between series length ({n}) and period labels length ({len(periods)})."
+                    ),
+                    rounding_explanation=(
+                        "Job postings rounded to nearest integer; candidate throughput rounded to 1 decimal place."
+                    ),
+                )
+
+            # Check consecutive calendar months (no gaps, no duplicates, strictly ascending)
+            for i in range(len(periods) - 1):
+                diff = get_period_difference(periods[i], periods[i + 1])
+                if diff != 1:
+                    last_obs_gap = (
+                        float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+                    ) if series else None
+                    if diff > 1:
+                        detail = (
+                            f"Historical series contains a calendar gap between {periods[i]} and {periods[i + 1]} "
+                            f"({diff} months apart); continuous monthly series required for forecasting."
+                        )
+                    else:
+                        detail = (
+                            f"Historical series periods are non-chronological or duplicate "
+                            f"({periods[i]} followed by {periods[i + 1]}); continuous monthly series required for forecasting."
+                        )
+                    return ForecastPoint(
+                        quantity=quantity_type,
+                        model_selected=None,
+                        point_forecast=None,
+                        point_forecast_integer=None,
+                        last_observed_value=last_obs_gap,
+                        historical_series=hist_series,
+                        prediction_interval_lower=None,
+                        prediction_interval_upper=None,
+                        interval_confidence=0.80,
+                        interval_type="rmse_normal_approximation_80pct",
+                        interval_disclaimer=(
+                            "Prediction interval unavailable due to incomplete or non-consecutive historical series."
+                        ),
+                        residual_sample_size=None,
+                        uncertainty_evidence_status="insufficient_history",
+                        backtest_mae=None,
+                        backtest_wape=None,
+                        status="missing_inputs",
+                        status_detail=detail,
+                        rounding_explanation=(
+                            "Job postings rounded to nearest integer; candidate throughput rounded to 1 decimal place."
+                        ),
+                    )
+
+            # Check alignment with requested base_period
+            if base_period is not None and len(periods) > 0:
+                diff_base = get_period_difference(periods[-1], base_period)
+                if diff_base > 0:
+                    last_obs_early = (
+                        float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+                    ) if series else None
+                    return ForecastPoint(
+                        quantity=quantity_type,
+                        model_selected=None,
+                        point_forecast=None,
+                        point_forecast_integer=None,
+                        last_observed_value=last_obs_early,
+                        historical_series=hist_series,
+                        prediction_interval_lower=None,
+                        prediction_interval_upper=None,
+                        interval_confidence=0.80,
+                        interval_type="rmse_normal_approximation_80pct",
+                        interval_disclaimer=(
+                            "Prediction interval unavailable due to incomplete historical series ending before base period."
+                        ),
+                        residual_sample_size=None,
+                        uncertainty_evidence_status="insufficient_history",
+                        backtest_mae=None,
+                        backtest_wape=None,
+                        status="missing_inputs",
+                        status_detail=(
+                            f"Series ends at {periods[-1]}, before requested base period {base_period} "
+                            f"({diff_base} month(s) missing); continuous monthly observations up to base period required."
+                        ),
+                        rounding_explanation=(
+                            "Job postings rounded to nearest integer; candidate throughput rounded to 1 decimal place."
+                        ),
+                    )
+                elif diff_base < 0:
+                    last_obs_late = (
+                        float(int(round(series[-1]))) if is_postings else round(float(series[-1]), 1)
+                    ) if series else None
+                    return ForecastPoint(
+                        quantity=quantity_type,
+                        model_selected=None,
+                        point_forecast=None,
+                        point_forecast_integer=None,
+                        last_observed_value=last_obs_late,
+                        historical_series=hist_series,
+                        prediction_interval_lower=None,
+                        prediction_interval_upper=None,
+                        interval_confidence=0.80,
+                        interval_type="rmse_normal_approximation_80pct",
+                        interval_disclaimer=(
+                            "Prediction interval unavailable due to historical series extending beyond base period."
+                        ),
+                        residual_sample_size=None,
+                        uncertainty_evidence_status="insufficient_history",
+                        backtest_mae=None,
+                        backtest_wape=None,
+                        status="missing_inputs",
+                        status_detail=(
+                            f"Series ends at {periods[-1]}, after requested base period {base_period}; "
+                            f"historical series must end at base period."
+                        ),
+                        rounding_explanation=(
+                            "Job postings rounded to nearest integer; candidate throughput rounded to 1 decimal place."
+                        ),
+                    )
 
         if n < MIN_TRAIN_HISTORY + horizon:
             last_obs_insufficient = (
@@ -568,10 +711,18 @@ class ForecastingService:
 
                     # Compute individual forecasts
                     d_point = self.forecast_quantity(
-                        postings_series, h, "online_job_postings", periods=postings_periods
+                        postings_series,
+                        h,
+                        "online_job_postings",
+                        periods=postings_periods,
+                        base_period=base_period,
                     )
                     s_point = self.forecast_quantity(
-                        certs_series, h, "certified_candidate_throughput", periods=certs_periods
+                        certs_series,
+                        h,
+                        "certified_candidate_throughput",
+                        periods=certs_periods,
+                        base_period=base_period,
                     )
 
                     if d_point.status == "valid" and d_point.point_forecast is not None:
@@ -632,7 +783,10 @@ class ForecastingService:
                 else:
                     mismatch_score = None
                     classification = "Insufficient Data"
-                    mismatch_status = "insufficient_history"
+                    if d_point.status == "missing_inputs" or s_point.status == "missing_inputs":
+                        mismatch_status = "missing_inputs"
+                    else:
+                        mismatch_status = "insufficient_history"
 
                 mismatch_obj = ProjectedMismatch(
                     forecast_demand_rank=d_rank,

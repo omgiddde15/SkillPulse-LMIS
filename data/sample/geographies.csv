@@ -1,7 +1,7 @@
-district_id,district_name,state_code,state_name
-MH_PUN,Pune,MH,Maharashtra
-MH_MUM,Mumbai Suburban,MH,Maharashtra
-KA_BLR_U,Bengaluru Urban,KA,Karnataka
-KA_DHA,Dharwad,KA,Karnataka
-TS_HYD,Hyderabad,TS,Telangana
-TS_MED,Medchal-Malkajgiri,TS,Telangana
+district_id,district_name,state_code,state_name,plfs_state_code,plfs_district_code
+MH_PUN,Pune,MH,Maharashtra,27,25
+MH_MUM,Mumbai Suburban,MH,Maharashtra,27,22
+KA_BLR_U,Bengaluru Urban,KA,Karnataka,29,18
+KA_DHA,Dharwad,KA,Karnataka,29,08
+TS_HYD,Hyderabad,TS,Telangana,36,22
+TS_MED,Medchal-Malkajgiri,TS,Telangana,36,21

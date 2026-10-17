@@ -88,7 +88,7 @@ export default function Header({
           title={t('app.demoFullDisclaimer', 'Synthetic demonstration dataset for SIH26246 (not official statistics).')}
         >
           <Icon name="layers" size={12} />
-          <span>{t('app.compactDemoNotice', 'Synthetic Demo Data — Pilot Testing Only')}</span>
+          <span>{t('app.compactDemoNotice', 'Pilot Prototype')}</span>
         </span>
       </div>
 

@@ -451,7 +451,7 @@ export default function EarlyWarningAlerts({
               onSectorChange?.(e.target.value);
             }}
           >
-            <option value="">{t('common.allSectors', 'All Sectors')} ({sectorOptions.length})</option>
+            <option value="">{t('common.allSectors', 'All Sectors (3)')}</option>
             {sectorOptions.map((sec) => (
               <option key={sec} value={sec}>{getSectorDisplayName(sec)}</option>
             ))}

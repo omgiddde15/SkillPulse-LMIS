@@ -649,3 +649,135 @@ def test_forecast_historical_series_exposure(client: TestClient) -> None:
         assert isinstance(pt["period"], str)
         assert pt["value"] >= 0.0
 
+
+# ============================================================================
+# 16. Calendar-continuity and missing-month safeguards (Stage 5.1)
+# ============================================================================
+def test_calendar_continuity_complete_series_succeeds(forecast_service: ForecastingService) -> None:
+    """Verify that a complete, consecutive monthly series up to base period forecasts successfully."""
+    periods = [
+        "2025-10", "2025-11", "2025-12",
+        "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06",
+        "2026-07", "2026-08", "2026-09",
+    ]
+    series = [100.0 + i * 5.0 for i in range(len(periods))]
+
+    point = forecast_service.forecast_quantity(
+        series=series,
+        horizon=3,
+        quantity_type="online_job_postings",
+        periods=periods,
+        base_period="2026-09",
+    )
+    assert point.status == "valid"
+    assert point.point_forecast is not None
+    assert point.point_forecast_integer is not None
+    assert point.prediction_interval_lower is not None
+    assert point.prediction_interval_upper is not None
+    assert point.prediction_interval_lower <= point.point_forecast <= point.prediction_interval_upper
+
+
+def test_calendar_continuity_detects_missing_intermediate_month(forecast_service: ForecastingService) -> None:
+    """Verify that missing intermediate calendar months are rejected with missing_inputs status."""
+    # 12-month series with 2026-03 missing (gap between 2026-02 and 2026-04)
+    periods = [
+        "2025-10", "2025-11", "2025-12",
+        "2026-01", "2026-02",          # missing 2026-03
+        "2026-04", "2026-05", "2026-06",
+        "2026-07", "2026-08", "2026-09",
+    ]
+    series = [100.0 + i * 5.0 for i in range(len(periods))]
+
+    point = forecast_service.forecast_quantity(
+        series=series,
+        horizon=3,
+        quantity_type="online_job_postings",
+        periods=periods,
+        base_period="2026-09",
+    )
+    assert point.status == "missing_inputs"
+    assert point.point_forecast is None
+    assert point.point_forecast_integer is None
+    assert point.prediction_interval_lower is None
+    assert point.prediction_interval_upper is None
+    assert point.status_detail is not None
+    assert "calendar gap between 2026-02 and 2026-04" in point.status_detail
+
+
+def test_calendar_continuity_detects_series_ending_before_base_period(forecast_service: ForecastingService) -> None:
+    """Verify that a series ending before requested base_period is rejected with missing_inputs status."""
+    # Consecutive series ending at 2026-07 when base_period is 2026-09
+    periods = [
+        "2025-08", "2025-09", "2025-10", "2025-11", "2025-12",
+        "2026-01", "2026-02", "2026-03", "2026-04", "2026-05",
+        "2026-06", "2026-07",
+    ]
+    series = [100.0 + i * 5.0 for i in range(len(periods))]
+
+    point = forecast_service.forecast_quantity(
+        series=series,
+        horizon=3,
+        quantity_type="online_job_postings",
+        periods=periods,
+        base_period="2026-09",
+    )
+    assert point.status == "missing_inputs"
+    assert point.point_forecast is None
+    assert point.point_forecast_integer is None
+    assert point.prediction_interval_lower is None
+    assert point.prediction_interval_upper is None
+    assert point.status_detail is not None
+    assert "Series ends at 2026-07, before requested base period 2026-09" in point.status_detail
+
+
+def test_calendar_continuity_insufficient_history_preserved(forecast_service: ForecastingService) -> None:
+    """Verify that short series (< MIN_TRAIN_HISTORY + horizon) continue to return insufficient_history."""
+    # 4 consecutive periods ending at base_period: continuous, but length 4 < 6 + 3 = 9
+    periods = ["2026-06", "2026-07", "2026-08", "2026-09"]
+    series = [100.0, 105.0, 110.0, 115.0]
+
+    point = forecast_service.forecast_quantity(
+        series=series,
+        horizon=3,
+        quantity_type="online_job_postings",
+        periods=periods,
+        base_period="2026-09",
+    )
+    assert point.status == "insufficient_history"
+    assert point.point_forecast is None
+    assert point.point_forecast_integer is None
+    assert point.status_detail is not None
+    assert "requires at least 9 periods" in point.status_detail
+
+    # Legacy call without periods parameter also continues to return insufficient_history
+    point_no_periods = forecast_service.forecast_quantity(
+        series=series,
+        horizon=3,
+        quantity_type="online_job_postings",
+    )
+    assert point_no_periods.status == "insufficient_history"
+    assert point_no_periods.point_forecast is None
+
+
+def test_calculate_forecasts_handles_missing_inputs_district() -> None:
+    """Verify calculate_forecasts produces status='missing_inputs' if a series has gaps."""
+    svc = ForecastingService()
+    svc.load_data()
+    # Artificially remove one intermediate month for a specific series
+    key = ("MH_PUN", "OCC_IT_001")
+    if key in svc._postings_history:
+        original = dict(svc._postings_history[key])
+        try:
+            # Delete intermediate month 2025-06
+            del svc._postings_history[key]["2025-06"]
+            res = svc.calculate_forecasts(base_period="2026-09", horizon=3, district_id="MH_PUN")
+            item = next(
+                r for r in res["results"]
+                if r["district_id"] == "MH_PUN" and r["occupation_id"] == "OCC_IT_001"
+            )
+            assert item["demand_forecast"]["status"] == "missing_inputs"
+            assert "gap" in item["demand_forecast"]["status_detail"].lower()
+            assert item["projected_mismatch"]["status"] == "missing_inputs"
+            assert item["projected_mismatch"]["classification"] == "Insufficient Data"
+        finally:
+            svc._postings_history[key] = original
