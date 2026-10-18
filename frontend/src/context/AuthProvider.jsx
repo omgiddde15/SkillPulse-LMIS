@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AuthContext } from './AuthContext';
-import { fetchCurrentUser, loginUser, registerUser, logoutUser } from '../api/client';
+import {
+  fetchCurrentUser,
+  loginUser,
+  registerUser,
+  logoutUser,
+  setStoredSessionToken,
+  onUnauthorized,
+} from '../api/client';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -8,7 +15,7 @@ export function AuthProvider({ children }) {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Restore session from server HttpOnly cookie on initial mount or explicit check
+  // Restore session only after successful server validation
   const checkAuth = useCallback(async () => {
     try {
       const res = await fetchCurrentUser();
@@ -17,9 +24,11 @@ export function AuthProvider({ children }) {
         setIsDemo(false);
       } else {
         setUser(null);
+        setStoredSessionToken(null);
       }
     } catch {
       setUser(null);
+      setStoredSessionToken(null);
     } finally {
       setIsLoadingAuth(false);
     }
@@ -29,10 +38,22 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, [checkAuth]);
 
+  // Synchronize expired or invalid sessions when a protected request is rejected (HTTP 401)
+  useEffect(() => {
+    const unsubscribe = onUnauthorized(() => {
+      setUser(null);
+      setIsDemo(false);
+    });
+    return unsubscribe;
+  }, []);
+
   const login = useCallback(async (credentials) => {
     setAuthError(null);
     const res = await loginUser(credentials);
     if (res && res.user) {
+      if (res.token || res.session_id) {
+        setStoredSessionToken(res.token || res.session_id);
+      }
       setUser(res.user);
       setIsDemo(false);
       return res.user;
@@ -44,6 +65,9 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     const res = await registerUser(formData);
     if (res && res.user) {
+      if (res.token || res.session_id) {
+        setStoredSessionToken(res.token || res.session_id);
+      }
       setUser(res.user);
       setIsDemo(false);
       return res.user;
@@ -55,6 +79,7 @@ export function AuthProvider({ children }) {
     try {
       await logoutUser();
     } finally {
+      setStoredSessionToken(null);
       setUser(null);
       setIsDemo(false);
       setAuthError(null);

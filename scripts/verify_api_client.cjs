@@ -63,6 +63,52 @@ assert.ok(hasApiRewrite, 'vercel.json must rewrite /api/v1/:match*');
 assert.ok(hasSpaRewrite, 'vercel.json must provide SPA fallback rewrite to /index.html');
 console.log('✓ PASS: frontend/vercel.json configures /health, /api/v1, and SPA index.html rewrites.');
 
+// 4. Verify auth token storage conventions and methods
+assert.ok(
+  clientCode.includes('export function getStoredSessionToken'),
+  'client.js must export getStoredSessionToken()'
+);
+assert.ok(
+  clientCode.includes('export function setStoredSessionToken'),
+  'client.js must export setStoredSessionToken()'
+);
+assert.ok(
+  clientCode.includes("localStorage.getItem('sp_session')"),
+  "client.js must follow the existing 'sp_session' storage key convention"
+);
+assert.ok(
+  clientCode.includes("'Authorization': `Bearer ${token}`"),
+  "client.js must inject Bearer authorization header when session token is present"
+);
+assert.ok(
+  clientCode.includes('export function onUnauthorized'),
+  'client.js must export onUnauthorized listener'
+);
+assert.ok(
+  clientCode.includes('notifyUnauthorized()'),
+  'client.js must notify unauthorized subscribers on 401 responses'
+);
+console.log('✓ PASS: client.js implements sp_session token persistence, Bearer header injection, and 401 notifications.');
+
+// 5. Verify AuthProvider synchronizes auth state and handles 401 session expiration
+const authProviderCode = fs.readFileSync(
+  path.resolve(__dirname, '..', 'frontend', 'src', 'context', 'AuthProvider.jsx'),
+  'utf-8'
+);
+assert.ok(
+  authProviderCode.includes('setStoredSessionToken'),
+  'AuthProvider.jsx must import and use setStoredSessionToken'
+);
+assert.ok(
+  authProviderCode.includes('onUnauthorized'),
+  'AuthProvider.jsx must subscribe to onUnauthorized events'
+);
+assert.ok(
+  authProviderCode.includes('res.token || res.session_id'),
+  'AuthProvider.jsx must store session token on login and register'
+);
+console.log('✓ PASS: AuthProvider.jsx synchronizes token storage and 401 unauthorized session expiration.');
+
 console.log('\n================================================================');
-console.log('ALL API CLIENT & DEPLOYMENT VERIFICATION TESTS PASSED');
+console.log('ALL API CLIENT & AUTHENTICATION VERIFICATION TESTS PASSED');
 console.log('================================================================');

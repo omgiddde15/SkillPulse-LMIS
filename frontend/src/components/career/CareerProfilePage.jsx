@@ -222,7 +222,9 @@ export default function CareerProfilePage({ onNavigate }) {
         }
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to load career profile data.');
+      if (!err.message?.includes('Authentication required') && !err.message?.includes('401')) {
+        setErrorMessage(err.message || 'Failed to load career profile data.');
+      }
     } finally {
       setIsLoadingInitial(false);
     }

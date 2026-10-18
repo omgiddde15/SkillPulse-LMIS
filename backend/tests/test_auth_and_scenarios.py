@@ -346,3 +346,99 @@ def test_scenario_creation_and_ownership_isolation(client):
 
     list_a_after = client.get("/api/v1/scenarios")
     assert list_a_after.json()["count"] == 0
+
+
+def test_registration_and_login_return_token(client):
+    """Verifies that register and login return session token and session_id in JSON payload."""
+    reg_res = client.post("/api/v1/auth/register", json={
+        "email": "token_check@domain.gov",
+        "full_name": "Token Check User",
+        "password": "Password123!",
+    })
+    assert reg_res.status_code == 201
+    reg_data = reg_res.json()
+    assert "token" in reg_data
+    assert "session_id" in reg_data
+    assert len(reg_data["token"]) >= 32
+    assert reg_data["token"] == reg_data["session_id"]
+
+    login_res = client.post("/api/v1/auth/login", json={
+        "email": "token_check@domain.gov",
+        "password": "Password123!",
+    })
+    assert login_res.status_code == 200
+    login_data = login_res.json()
+    assert "token" in login_data
+    assert "session_id" in login_data
+    assert login_data["token"] == login_data["session_id"]
+
+
+def test_bearer_token_session_restoration_and_protected_access(client):
+    """Verifies Bearer token restores session via /me and authorizes protected career endpoints without cookies."""
+    # Register user to get session token
+    reg_res = client.post("/api/v1/auth/register", json={
+        "email": "bearer_candidate@domain.gov",
+        "full_name": "Bearer Candidate",
+        "password": "Password123!",
+    })
+    token = reg_res.json()["token"]
+
+    # Clear all cookies to strictly test Bearer header auth
+    client.cookies.clear()
+
+    # 1. Unauthenticated request without credentials must be rejected
+    unauth_resp = client.get("/api/v1/career/profile")
+    assert unauth_resp.status_code == 401
+    assert "Authentication required" in unauth_resp.json()["detail"]
+
+    # 2. Session restoration via /me using Bearer token
+    me_resp = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert me_resp.status_code == 200
+    assert me_resp.json()["authenticated"] is True
+    assert me_resp.json()["user"]["email"] == "bearer_candidate@domain.gov"
+
+    # 3. Access protected workspace resource via Bearer token
+    profile_resp = client.get("/api/v1/career/profile", headers={"Authorization": f"Bearer {token}"})
+    assert profile_resp.status_code == 200
+    assert profile_resp.json()["has_profile"] is False  # valid candidate with no profile yet
+
+    # 4. Invalid Bearer token must be rejected
+    invalid_resp = client.get("/api/v1/career/profile", headers={"Authorization": "Bearer invalid_nonexistent_token"})
+    assert invalid_resp.status_code == 401
+
+    # 5. Logout using Bearer token invalidates session
+    logout_resp = client.post("/api/v1/auth/logout", headers={"Authorization": f"Bearer {token}"})
+    assert logout_resp.status_code == 200
+
+    # 6. Post-logout request with invalidated token must be rejected
+    post_logout_resp = client.get("/api/v1/career/profile", headers={"Authorization": f"Bearer {token}"})
+    assert post_logout_resp.status_code == 401
+
+
+def test_https_cookie_attributes_samesite_none_secure(client):
+    """Verifies that reverse-proxied HTTPS requests (e.g. on Render) set SameSite=None and Secure=True."""
+    res = client.post(
+        "/api/v1/auth/login",
+        json={
+            "email": "test@nonexistent.gov",
+            "password": "Password123!",
+        },
+        headers={"X-Forwarded-Proto": "https"},
+    )
+    # Even if 401, test login with real user over HTTPS
+    client.post("/api/v1/auth/register", json={
+        "email": "https_cookie_user@domain.gov",
+        "full_name": "HTTPS User",
+        "password": "Password123!",
+    })
+    res = client.post(
+        "/api/v1/auth/login",
+        json={
+            "email": "https_cookie_user@domain.gov",
+            "password": "Password123!",
+        },
+        headers={"X-Forwarded-Proto": "https"},
+    )
+    assert res.status_code == 200
+    raw_cookies = res.headers.get_list("set-cookie")
+    assert any("samesite=none" in c.lower() and "secure" in c.lower() for c in raw_cookies)

@@ -26,6 +26,28 @@ auth_service = AuthService()
 IS_PRODUCTION = os.environ.get("ENVIRONMENT", "").lower() == "production"
 
 
+def _is_https_request(request: Request) -> bool:
+    """Detects whether incoming request was received or forwarded via HTTPS."""
+    proto = request.headers.get("x-forwarded-proto", "").lower()
+    return request.url.scheme == "https" or proto == "https" or IS_PRODUCTION
+
+
+def _get_cookie_attributes(request: Request) -> dict:
+    """Returns cookie security attributes tailored for deployment topology.
+
+    On HTTPS / production (e.g. Render with Vercel frontend), uses SameSite=None and Secure=True
+    to permit credentialed cross-origin API calls.
+    On local HTTP development, uses SameSite=Lax and Secure=False to avoid rejection over HTTP.
+    """
+    is_https = _is_https_request(request)
+    return {
+        "httponly": True,
+        "samesite": "none" if is_https else "lax",
+        "secure": is_https,
+        "path": "/",
+    }
+
+
 class RegisterRequest(BaseModel):
     email: str = Field(..., max_length=255)
     full_name: str = Field(..., min_length=2, max_length=100)
@@ -40,7 +62,7 @@ class LoginRequest(BaseModel):
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-def register(payload: RegisterRequest, response: Response):
+def register(payload: RegisterRequest, request: Request, response: Response):
     """Registers a new user account, creates session, and sets HttpOnly cookie."""
     try:
         user = auth_service.register_user(
@@ -62,26 +84,26 @@ def register(payload: RegisterRequest, response: Response):
 
     # Automatically sign in the user
     session = auth_service.create_session(user["id"], remember_me=False)
+    cookie_attrs = _get_cookie_attributes(request)
 
     response.set_cookie(
         key="sp_session",
         value=session["session_id"],
         max_age=session["max_age"],
-        httponly=True,
-        samesite="lax",
-        secure=IS_PRODUCTION,
-        path="/",
+        **cookie_attrs,
     )
 
     return {
         "status": "success",
         "message": "User registered successfully.",
         "user": user,
+        "token": session["session_id"],
+        "session_id": session["session_id"],
     }
 
 
 @router.post("/login")
-def login(payload: LoginRequest, response: Response):
+def login(payload: LoginRequest, request: Request, response: Response):
     """Authenticates credentials, creates session, and sets HttpOnly cookie."""
     try:
         user = auth_service.authenticate_user(payload.email, payload.password)
@@ -92,21 +114,21 @@ def login(payload: LoginRequest, response: Response):
         )
 
     session = auth_service.create_session(user["id"], remember_me=payload.remember_me)
+    cookie_attrs = _get_cookie_attributes(request)
 
     response.set_cookie(
         key="sp_session",
         value=session["session_id"],
         max_age=session["max_age"],
-        httponly=True,
-        samesite="lax",
-        secure=IS_PRODUCTION,
-        path="/",
+        **cookie_attrs,
     )
 
     return {
         "status": "success",
         "message": "Signed in successfully.",
         "user": user,
+        "token": session["session_id"],
+        "session_id": session["session_id"],
     }
 
 
@@ -144,7 +166,13 @@ def logout(request: Request, response: Response):
     if session_id:
         auth_service.delete_session(session_id)
 
-    response.delete_cookie(key="sp_session", path="/")
+    cookie_attrs = _get_cookie_attributes(request)
+    response.delete_cookie(
+        key="sp_session",
+        path="/",
+        samesite=cookie_attrs["samesite"],
+        secure=cookie_attrs["secure"],
+    )
 
     return {
         "status": "success",

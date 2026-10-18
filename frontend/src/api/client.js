@@ -8,6 +8,56 @@
 
 const API_BASE_URL = (import.meta.env?.VITE_API_BASE_URL || '').replace(/\/+$/, '');
 
+/**
+ * Retrieve session token from local storage following established 'sp_session' convention.
+ */
+export function getStoredSessionToken() {
+  try {
+    return localStorage.getItem('sp_session');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Persist or clear session token in local storage following established 'sp_session' convention.
+ */
+export function setStoredSessionToken(token) {
+  try {
+    if (token) {
+      localStorage.setItem('sp_session', token);
+    } else {
+      localStorage.removeItem('sp_session');
+    }
+  } catch {
+    // Graceful fallback for sandboxed storage environments
+  }
+}
+
+const unauthorizedListeners = new Set();
+
+/**
+ * Subscribe to unauthorized (HTTP 401) session expiration events from protected API requests.
+ * @param {Function} callback
+ * @returns {Function} Unsubscribe function
+ */
+export function onUnauthorized(callback) {
+  unauthorizedListeners.add(callback);
+  return () => {
+    unauthorizedListeners.delete(callback);
+  };
+}
+
+function notifyUnauthorized() {
+  unauthorizedListeners.forEach((cb) => {
+    try {
+      cb();
+    } catch {
+      // Ignore subscriber failure
+    }
+  });
+}
+
 function resolveUrl(path) {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
@@ -18,17 +68,29 @@ function resolveUrl(path) {
 
 async function request(path, options = {}) {
   const url = resolveUrl(path);
+  const token = getStoredSessionToken();
+  const authHeaders = token && !options.headers?.Authorization && !options.headers?.authorization
+    ? { 'Authorization': `Bearer ${token}` }
+    : {};
+
   try {
     const res = await fetch(url, {
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
+        ...authHeaders,
         ...options.headers,
       },
       ...options,
     });
 
     if (!res.ok) {
+      // If server rejects with 401 on protected resource, clear stale session and notify auth context
+      if (res.status === 401 && !path.includes('/auth/login') && !path.includes('/auth/register')) {
+        setStoredSessionToken(null);
+        notifyUnauthorized();
+      }
+
       let detail = `HTTP ${res.status}: ${res.statusText}`;
       try {
         const errorJson = await res.json();
@@ -214,9 +276,13 @@ export async function fetchCurrentUser() {
  * Invalidate server session and log out
  */
 export async function logoutUser() {
-  return request('/api/v1/auth/logout', {
-    method: 'POST',
-  });
+  try {
+    return await request('/api/v1/auth/logout', {
+      method: 'POST',
+    });
+  } finally {
+    setStoredSessionToken(null);
+  }
 }
 
 /**
